@@ -1,0 +1,197 @@
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeIn var(--transition-normal);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.settings-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.settings-section {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  border-bottom: 1px solid rgba(0, 0, 128, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.section-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: -1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(0, 0, 128, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
+  background: white;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+/* Visual Template Selector */
+.template-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.template-visual-card {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.template-visual-card:hover {
+  border-color: #bae6fd;
+  background: #f8fafc;
+}
+
+.template-visual-card.selected {
+  border-color: #0ea5e9;
+  background: #f0f9ff;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+}
+
+.template-visual-preview {
+  height: 120px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.template-visual-info {
+  padding: 12px 10px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.template-visual-card.selected .template-visual-info {
+  background: transparent;
+}
+
+.template-visual-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.template-visual-desc {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Mini Mockups (Scaled down) */
+.mini-mock-id {
+  width: 60px; height: 90px; background: white; border: 1px solid #cbd5e1; border-radius: 4px;
+  display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.mini-mock-id-h { height: 10px; background: #0a2540; }
+.mini-mock-id-p { width: 24px; height: 28px; background: #e2e8f0; margin: 6px auto; }
+.mini-mock-id-f { margin-top: auto; height: 8px; background: #0a2540; }
+
+.mini-mock-id-land {
+  width: 90px; height: 60px; background: white; border: 1px solid #cbd5e1; border-radius: 4px;
+  display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.mini-mock-id-land-l { width: 30px; background: #0a2540; display: flex; align-items: center; justify-content: center; }
+.mini-mock-id-land-p { width: 20px; height: 24px; background: white; }
+
+.mini-mock-id-sq {
+  width: 70px; height: 70px; background: white; border: 1px solid #cbd5e1; border-radius: 4px;
+  display: flex; flex-direction: column; align-items: center; padding-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.mini-mock-id-sq-p { width: 30px; height: 30px; border-radius: 50%; background: #e2e8f0; }
+
+.mini-mock-receipt-th {
+  width: 60px; height: 90px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 5px;
+}
+.mini-mock-receipt-a4 {
+  width: 80px; height: 100px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 8px;
+}
+
+.mini-mock-result-grid {
+  width: 100px; height: 80px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 5px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.mini-mock-result-mod {
+  width: 100px; height: 80px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 5px; border-radius: 4px;
+}
+
+.alert-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  padding: 1rem;
+  border-left: 4px solid #10b981;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+}

@@ -1,0 +1,157 @@
+.system-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+}
+
+.system-sidebar {
+  width: 260px;
+  background-color: #0f172a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 40;
+}
+
+.system-sidebar .sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.system-sidebar .sidebar-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  color: #f8fafc;
+}
+
+.system-sidebar .sidebar-header p {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.system-sidebar .sidebar-nav {
+  padding: 1rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.system-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.system-sidebar .nav-link .icon {
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.system-sidebar .nav-link:hover {
+  background-color: #1e293b;
+  color: white;
+}
+
+.system-sidebar .nav-link.active {
+  background-color: #2563eb;
+  color: white;
+}
+
+.system-sidebar .sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid #1e293b;
+}
+
+.system-sidebar .logout-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem;
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-radius: 0.375rem;
+}
+
+.system-sidebar .logout-btn .icon {
+  margin-right: 0.75rem;
+}
+
+.system-sidebar .logout-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.system-main {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.system-header {
+  height: 64px;
+  background-color: white;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.system-header .header-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.system-header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.system-header .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.system-header .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.system-header .user-profile span {
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.system-content {
+  padding: 2rem;
+  flex: 1;
+}
