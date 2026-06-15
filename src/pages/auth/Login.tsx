@@ -20,7 +20,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [schoolName, setSchoolName] = useState("School Portal");
+  const [schoolName, setSchoolName] = useState("Neotro SMS");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,14 +36,14 @@ export default function Login() {
   useEffect(() => {
     const fetchTenantDetails = async () => {
       const tenantId = schoolCode || getTenantId();
-      if (tenantId && tenantId !== 'dbo') {
+      if (tenantId && tenantId !== 'dbo' && tenantId !== 'system') {
         const details = await getPublicTenantDetails(tenantId);
         if (details) {
           if (details.schoolName) setSchoolName(details.schoolName);
           if (details.logoUrl) setLogoUrl(details.logoUrl);
         }
       } else {
-        setSchoolName("School Portal");
+        setSchoolName("Neotro SMS");
         setLogoUrl(null);
       }
     };
@@ -55,7 +55,7 @@ export default function Login() {
         }, 500);
         return () => clearTimeout(timer);
     } else if (!schoolCode) {
-        setSchoolName("School Portal");
+        setSchoolName("Neotro SMS");
         setLogoUrl(null);
     }
   }, [schoolCode]);
@@ -136,7 +136,7 @@ export default function Login() {
           {logoUrl ? (
             <img src={`${API_ROOT}${logoUrl}`} alt={`${schoolName} Logo`} className="school-logo" style={{ maxHeight: '80px', marginBottom: '10px' }} />
           ) : (
-            <div className="school-logo-placeholder">SP</div>
+            <div className="school-logo-placeholder">{schoolName === "Neotro SMS" ? "NS" : schoolName.substring(0, 2).toUpperCase()}</div>
           )}
           <h1>Welcome to {schoolName}</h1>
           <p>{isOtpMode ? 'Enter the OTP sent to your email to verify your account.' : 'Sign in to access your portal'}</p>
@@ -244,9 +244,6 @@ export default function Login() {
             <button className="btn btn-outline btn-full mt-3" onClick={() => navigate('/')}>
               Back to Home
             </button>
-            <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
-              Are you a Principal? <a href="#" onClick={(e) => { e.preventDefault(); navigate('/register-school'); }}>Register your school</a>
-            </p>
           </div>
         )}
       </div>
