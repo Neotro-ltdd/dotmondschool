@@ -327,4 +327,27 @@
   .dashboard-content {
     padding: 1rem;
   }
+
+  .header-search {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+
+  .top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 1rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mobile-menu-toggle {
+    margin-right: 0.5rem;
+    padding: 0.5rem;
+  }
 }
