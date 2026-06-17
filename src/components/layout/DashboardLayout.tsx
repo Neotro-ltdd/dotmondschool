@@ -10,6 +10,8 @@ export default function DashboardLayout() {
   const { isAuthenticated } = useAuth();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   useEffect(() => {
     if (isAuthenticated) {
       api.get('/setup/school-profile')
@@ -30,8 +32,14 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
+    <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+      )}
+      
+      <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      
       <div className="dashboard-main" style={{ position: 'relative' }}>
         {logoUrl && (
           <div 
@@ -53,7 +61,7 @@ export default function DashboardLayout() {
             }}
           />
         )}
-        <Header />
+        <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         <main className="dashboard-content" style={{ position: 'relative', zIndex: 1 }}>
           <Outlet />
         </main>

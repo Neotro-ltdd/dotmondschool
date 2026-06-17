@@ -1,10 +1,9 @@
 import React from 'react';
-
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import './Layout.css';
 
-export default function Header() {
+export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
   const { userName, userRole } = useAuth();
   
   // Format role for display: e.g. "Principal" -> "Super Admin" (optional) or just use the exact role
@@ -15,6 +14,11 @@ export default function Header() {
   return (
     <header className="top-header glass-panel">
       <div className="header-search">
+        {toggleSidebar && (
+          <button className="mobile-menu-toggle" onClick={toggleSidebar} aria-label="Toggle menu">
+            ☰
+          </button>
+        )}
         <span className="search-icon">🔍</span>
         <input type="text" placeholder="Search students, teachers..." className="search-input" />
       </div>
@@ -38,4 +42,3 @@ export default function Header() {
     </header>
   );
 }
-

@@ -5,7 +5,7 @@ import { useTenant } from '../../context/TenantContext';
 import { api } from '../../services/api';
 import './Layout.css';
 
-export default function Sidebar() {
+export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen?: boolean, setIsSidebarOpen?: (open: boolean) => void }) {
   const { logout, userRole } = useAuth();
   const { schoolName, logoUrl } = useTenant();
   const navigate = useNavigate();
@@ -21,7 +21,12 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="sidebar glass-panel">
+    <aside className={`sidebar glass-panel ${isSidebarOpen ? 'open' : ''}`}>
+      {setIsSidebarOpen && (
+        <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="Close menu">
+          ×
+        </button>
+      )}
       <div className="sidebar-brand">
         {logoUrl ? (
           <img src={logoUrl} alt="Logo" className="brand-logo-img" style={{ maxHeight: '40px', maxWidth: '40px', borderRadius: '4px' }} />
