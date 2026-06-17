@@ -1,18 +1,38 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { tenants, defaultTenantId } from '../config/tenantConfig';
 import './LandingPage.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Resolve tenant based on ?school= URL param
+  const schoolParam = searchParams.get('school')?.toLowerCase();
+  const currentTenant = schoolParam && tenants[schoolParam] ? tenants[schoolParam] : tenants[defaultTenantId];
+
+  // Map tenant colors to CSS variables inline
+  const themeStyles = {
+    '--indigo': currentTenant.colors.indigo,
+    '--indigo-dark': currentTenant.colors.indigoDark,
+    '--gold': currentTenant.colors.gold,
+    '--gold-dark': currentTenant.colors.goldDark,
+    '--sage': currentTenant.colors.sage,
+    '--sage-bg': currentTenant.colors.sageBg,
+    '--terracotta': currentTenant.colors.terracotta,
+    '--terracotta-bg': currentTenant.colors.terracottaBg,
+  } as React.CSSProperties;
 
   return (
-    <div className="landing-container">
+    <div className="landing-container" style={themeStyles}>
       <nav className="nav">
         <div className="nav-inner">
           <div className="brand">
-            <div className="brand-mark">DM</div>
+            <div className="brand-mark" style={{ fontSize: currentTenant.shortName.length > 3 ? '12px' : '15px' }}>
+              {currentTenant.shortName}
+            </div>
             <div>
-              <div className="brand-name">Dotmond School</div>
+              <div className="brand-name">{currentTenant.name}</div>
               <div className="brand-sub">Powered by Neotro SMS</div>
             </div>
           </div>
@@ -28,9 +48,9 @@ export default function LandingPage() {
 
       <section className="hero">
         <div>
-          <div className="eyebrow">Pre-nursery — SS3 · Lekki, Lagos</div>
+          <div className="eyebrow">Pre-nursery — SS3 · {currentTenant.location}</div>
           <h1 className="display">You'll know the<br />moment they're <em>safely<br />through the gate.</em></h1>
-          <p className="lede">Every Dotmond student taps their ID card at the gate. You get an SMS the second they arrive — and another the second they leave. No app to check, no waiting for a phone call.</p>
+          <p className="lede">Every {currentTenant.shortName} student taps their ID card at the gate. You get an SMS the second they arrive — and another the second they leave. No app to check, no waiting for a phone call.</p>
           <div className="hero-actions">
             <button className="btn btn-primary" onClick={() => navigate('/login')}>Go to my portal</button>
             <a href="#tap-in" className="btn btn-ghost">See how it works</a>
@@ -56,24 +76,24 @@ export default function LandingPage() {
             <div className="phone-notch"></div>
             <div className="phone-screen">
               <div className="sms-bubble" style={{ animationDelay: '.3s' }}>
-                <div className="sms-meta"><span className="sms-from">Dotmond School</span><span className="sms-time">7:42 AM</span></div>
-                <p>Amara Okafor arrived at school safely at 7:42 AM. — Dotmond School</p>
+                <div className="sms-meta"><span className="sms-from">{currentTenant.name}</span><span className="sms-time">7:42 AM</span></div>
+                <p>{currentTenant.studentName} arrived at school safely at 7:42 AM. — {currentTenant.name}</p>
               </div>
               <div className="sms-bubble" style={{ animationDelay: '1.4s' }}>
-                <div className="sms-meta"><span className="sms-from">Dotmond School</span><span className="sms-time">3:15 PM</span></div>
-                <p>Amara Okafor left school at 3:15 PM. Have a good evening. — Dotmond School</p>
+                <div className="sms-meta"><span className="sms-from">{currentTenant.name}</span><span className="sms-time">3:15 PM</span></div>
+                <p>{currentTenant.studentName} left school at 3:15 PM. Have a good evening. — {currentTenant.name}</p>
               </div>
             </div>
           </div>
 
           <div className="tap-card">
             <div className="tap-card-top">
-              <div className="card-id-mark" style={{ width: '24px', height: '24px', fontSize: '10px' }}>DM</div>
+              <div className="card-id-mark" style={{ width: '24px', height: '24px', fontSize: '10px' }}>{currentTenant.shortName}</div>
               <span>Student ID</span>
             </div>
             <div className="tap-card-photo"></div>
-            <p className="tap-card-name">Amara Okafor</p>
-            <span className="tap-card-class">JSS2 · ADM/24/0118</span>
+            <p className="tap-card-name">{currentTenant.studentName}</p>
+            <span className="tap-card-class">{currentTenant.studentClass}</span>
             <div className="tap-wave">
               <span></span><span></span><span></span>
             </div>
@@ -94,14 +114,14 @@ export default function LandingPage() {
               <div className="flow-icon icon-indigo">🪪</div>
               <span className="flow-tag">Morning</span>
               <h3>Student taps in</h3>
-              <p>Amara scans her ID card at the gate scanner on arrival — no queue, no sign-in book.</p>
+              <p>{currentTenant.studentName.split(' ')[0]} scans her ID card at the gate scanner on arrival — no queue, no sign-in book.</p>
             </div>
             <div className="flow-arrow">→</div>
             <div className="flow-step">
               <div className="flow-icon icon-sage">📨</div>
               <span className="flow-tag">Within seconds</span>
               <h3>You get an SMS</h3>
-              <p>"Amara Okafor arrived at school safely at 7:42 AM." Sent straight to the number on file — no app required.</p>
+              <p>"{currentTenant.studentName} arrived at school safely at 7:42 AM." Sent straight to the number on file — no app required.</p>
             </div>
             <div className="flow-arrow">→</div>
             <div className="flow-step">
@@ -115,7 +135,7 @@ export default function LandingPage() {
               <div className="flow-icon icon-sage">📨</div>
               <span className="flow-tag">Within seconds</span>
               <h3>A second SMS</h3>
-              <p>"Amara Okafor left school at 3:15 PM." You know she's on her way before she's out of sight.</p>
+              <p>"{currentTenant.studentName} left school at 3:15 PM." You know she's on her way before she's out of sight.</p>
             </div>
           </div>
 
@@ -284,7 +304,7 @@ export default function LandingPage() {
 
       <footer className="landing-footer">
         <div className="footer-inner">
-          <p>Dotmond School, Lekki, Lagos — system by Neotro Ltd</p>
+          <p>{currentTenant.name}, {currentTenant.location} — system by Neotro Ltd</p>
           <div className="footer-links">
             <a href="#">Admissions</a>
             <a href="#">Contact</a>
