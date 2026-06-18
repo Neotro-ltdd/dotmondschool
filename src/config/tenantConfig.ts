@@ -14,6 +14,10 @@ export interface TenantConfig {
     sageBg: string;
     terracotta: string;
     terracottaBg: string;
+    paper?: string;
+    paperLine?: string;
+    ink?: string;
+    inkSoft?: string;
   };
 }
 
@@ -26,14 +30,18 @@ export const tenants: Record<string, TenantConfig> = {
     studentName: 'Amara Okafor',
     studentClass: 'JSS2 · ADM/24/0118',
     colors: {
-      indigo: '#1B1464',
-      indigoDark: '#100C40',
-      gold: '#E8A33D',
-      goldDark: '#B97D1F',
-      sage: '#5C8463',
-      sageBg: '#E9F0E8',
+      indigo: '#1C5C82',
+      indigoDark: '#0E3A54',
+      gold: '#7C8A99',
+      goldDark: '#4F5D6B',
+      sage: '#2E9BD6',
+      sageBg: '#E2F1FA',
       terracotta: '#C75D3D',
       terracottaBg: '#FBEAE3',
+      paper: '#EEF1F3',
+      paperLine: '#D6DCE1',
+      ink: '#222B33',
+      inkSoft: '#5C6B7A',
     }
   },
   atwool: {

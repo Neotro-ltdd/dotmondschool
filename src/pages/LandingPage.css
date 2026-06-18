@@ -32,9 +32,9 @@
 /* ===== NAV ===== */
 .nav{
   position:sticky; top:0; z-index:50;
-  background:rgba(247,245,238,0.92);
+  background:var(--indigo-dark);
   backdrop-filter:blur(8px);
-  border-bottom:1px solid var(--paper-line);
+  border-bottom:1px solid rgba(255,255,255,0.1);
 }
 .nav-inner{
   max-width:1180px; margin:0 auto;
@@ -44,16 +44,16 @@
 .brand{display:flex; align-items:center; gap:10px;}
 .brand-mark{
   width:36px; height:36px; border-radius:8px;
-  background:var(--indigo); color:var(--gold);
+  background:var(--white); color:var(--indigo);
   display:flex; align-items:center; justify-content:center;
   font-family:'Fraunces',serif; font-weight:600; font-size:15px;
   flex-shrink:0;
 }
-.brand-name{font-family:'Fraunces',serif; font-weight:600; font-size:18px; color:var(--indigo-dark) !important;}
-.brand-sub{font-size:11px; color:var(--ink-soft); letter-spacing:0.04em; text-transform:uppercase; margin-top:-2px;}
+.brand-name{font-family:'Fraunces',serif; font-weight:600; font-size:18px; color:var(--white) !important;}
+.brand-sub{font-size:11px; color:rgba(255,255,255,0.7); letter-spacing:0.04em; text-transform:uppercase; margin-top:-2px;}
 .nav-links{display:flex; gap:36px; align-items:center;}
-.nav-link{font-size:14.5px; color:var(--ink-soft); font-weight:500; transition:color .15s;}
-.nav-link:hover{color:var(--ink);}
+.nav .nav-link{font-size:14.5px; color:rgba(255,255,255,0.8); font-weight:500; transition:color .15s;}
+.nav .nav-link:hover{color:var(--white);}
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   padding:11px 22px; border-radius:8px;
@@ -64,6 +64,8 @@
 }
 .btn-primary{background:var(--indigo); color:var(--white);}
 .btn-primary:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(27,20,100,0.25);}
+.nav .btn-primary{background:var(--white); color:var(--indigo-dark);}
+.nav .btn-primary:hover{background:var(--paper); box-shadow:0 6px 16px rgba(0,0,0,0.15);}
 .btn-ghost{background:transparent; color:var(--indigo); border-color:var(--indigo);}
 .btn-ghost:hover{background:var(--indigo); color:var(--white);}
 .btn-gold{background:var(--gold); color:var(--indigo-dark);}
@@ -307,7 +309,7 @@
 /* ===== CTA ===== */
 .cta{max-width:1180px; margin:0 auto; padding:96px 32px;}
 .cta-box{
-  background:var(--indigo); border-radius:20px; padding:64px 56px;
+  background:var(--indigo-dark); border-radius:20px; padding:64px 56px;
   display:grid; grid-template-columns:1.3fr 0.7fr; gap:40px; align-items:center;
   position:relative; overflow:hidden;
 }

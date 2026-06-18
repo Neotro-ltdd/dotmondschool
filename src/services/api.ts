@@ -19,7 +19,11 @@ export function getTenantId(): string {
 }
 
 export async function getPublicTenantDetails(tenantId: string) {
-    const response = await fetch(`${API_BASE_URL}/public/tenant/${tenantId}`);
+    const response = await fetch(`${API_BASE_URL}/public/tenant/${tenantId}`, {
+        headers: {
+            'X-Tenant-ID': tenantId
+        }
+    });
     if (!response.ok) {
         return null;
     }

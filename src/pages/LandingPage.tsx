@@ -21,6 +21,10 @@ export default function LandingPage() {
     '--sage-bg': currentTenant.colors.sageBg,
     '--terracotta': currentTenant.colors.terracotta,
     '--terracotta-bg': currentTenant.colors.terracottaBg,
+    ...(currentTenant.colors.paper && { '--paper': currentTenant.colors.paper }),
+    ...(currentTenant.colors.paperLine && { '--paper-line': currentTenant.colors.paperLine }),
+    ...(currentTenant.colors.ink && { '--ink': currentTenant.colors.ink }),
+    ...(currentTenant.colors.inkSoft && { '--ink-soft': currentTenant.colors.inkSoft }),
   } as React.CSSProperties;
 
   return (
