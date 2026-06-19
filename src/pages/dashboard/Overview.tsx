@@ -325,108 +325,109 @@ export default function Overview() {
           {loading ? <p>Loading your dashboard...</p> : teacherData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               
-              {/* Class Teacher Section */}
-              {teacherData.isClassTeacher && teacherData.classTeacherMetrics && (
-                <div className="class-teacher-section">
+              {/* Unified Teacher Section */}
+              {(teacherData.isClassTeacher || teacherData.isSubjectTeacher) && (
+                <div className="unified-teacher-section">
                   <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', color: '#f8fafc' }}>
-                    Form Class Overview ({teacherData.classTeacherMetrics.className})
+                    Teacher Overview {teacherData.isClassTeacher ? `(Form: ${teacherData.classTeacherMetrics.className})` : ''}
                   </h2>
                   <div className="stats-grid">
-                    <div className="stat-card glass-panel">
-                      <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🎓</div>
-                      <div className="stat-content">
-                        <p className="stat-label">Total Students</p>
-                        <h3 className="stat-value">{teacherData.classTeacherMetrics.totalStudents}</h3>
-                      </div>
-                    </div>
-                    
-                    <div className="stat-card glass-panel">
-                      <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>✅</div>
-                      <div className="stat-content">
-                        <p className="stat-label">Present Today</p>
-                        <h3 className="stat-value">{teacherData.classTeacherMetrics.attendanceToday.present}</h3>
-                      </div>
-                    </div>
+                    {teacherData.isClassTeacher && (
+                      <>
+                        <div className="stat-card glass-panel">
+                          <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🎓</div>
+                          <div className="stat-content">
+                            <p className="stat-label">Form Class Students</p>
+                            <h3 className="stat-value">{teacherData.classTeacherMetrics.totalStudents}</h3>
+                          </div>
+                        </div>
+                        <div className="stat-card glass-panel">
+                          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>📊</div>
+                          <div className="stat-content">
+                            <p className="stat-label">Form Attendance</p>
+                            <h3 className="stat-value">{teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%</h3>
+                            <p className="stat-trend">Present: {teacherData.classTeacherMetrics.attendanceToday.present}</p>
+                          </div>
+                        </div>
+                        <div className="stat-card glass-panel">
+                          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>📝</div>
+                          <div className="stat-content">
+                            <p className="stat-label">Pending Remarks</p>
+                            <h3 className="stat-value">{teacherData.classTeacherMetrics.pendingRemarks}</h3>
+                          </div>
+                        </div>
+                      </>
+                    )}
 
-                    <div className="stat-card glass-panel">
-                      <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>❌</div>
-                      <div className="stat-content">
-                        <p className="stat-label">Absent Today</p>
-                        <h3 className="stat-value">{teacherData.classTeacherMetrics.attendanceToday.absent}</h3>
-                      </div>
-                    </div>
-
-                    <div className="stat-card glass-panel">
-                      <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>📝</div>
-                      <div className="stat-content">
-                        <p className="stat-label">Pending Remarks</p>
-                        <h3 className="stat-value">{teacherData.classTeacherMetrics.pendingRemarks}</h3>
-                      </div>
-                    </div>
+                    {teacherData.isSubjectTeacher && (
+                      <>
+                        <div className="stat-card glass-panel">
+                          <div className="stat-icon" style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>📚</div>
+                          <div className="stat-content">
+                            <p className="stat-label">Subject Allocations</p>
+                            <h3 className="stat-value">{teacherData.subjectTeacherMetrics.totalAllocations}</h3>
+                          </div>
+                        </div>
+                        <div className="stat-card glass-panel">
+                          <div className="stat-icon" style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#ec4899' }}>👥</div>
+                          <div className="stat-content">
+                            <p className="stat-label">Total Students Taught</p>
+                            <h3 className="stat-value">{teacherData.subjectTeacherMetrics.totalStudents}</h3>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {teacherData.classTeacherMetrics.topStudents && teacherData.classTeacherMetrics.topStudents.length > 0 && (
-                    <div className="widget-card glass-panel" style={{ marginTop: '1.5rem' }}>
-                      <div className="widget-header">
-                        <h3>Top 5 Students (Latest Results)</h3>
-                      </div>
-                      <div className="widget-body">
-                        <table className="table data-table" style={{ width: '100%' }}>
-                          <thead>
-                            <tr>
-                              <th>Position</th>
-                              <th>Student Name</th>
-                              <th>Average Score</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {teacherData.classTeacherMetrics.topStudents.map((s: any, idx: number) => (
-                              <tr key={idx}>
-                                <td>{s.position || (idx + 1)}</td>
-                                <td>{s.studentName}</td>
-                                <td>{s.averageScore.toFixed(2)}%</td>
+                  {/* Detailed Widgets */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
+                    {teacherData.isClassTeacher && teacherData.classTeacherMetrics.topStudents && teacherData.classTeacherMetrics.topStudents.length > 0 && (
+                      <div className="widget-card glass-panel">
+                        <div className="widget-header">
+                          <h3>Top 5 Students (Latest Results)</h3>
+                        </div>
+                        <div className="widget-body">
+                          <table className="table data-table" style={{ width: '100%' }}>
+                            <thead>
+                              <tr>
+                                <th>Position</th>
+                                <th>Student Name</th>
+                                <th>Average Score</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {teacherData.classTeacherMetrics.topStudents.map((s: any, idx: number) => (
+                                <tr key={idx}>
+                                  <td>{s.position || (idx + 1)}</td>
+                                  <td>{s.studentName}</td>
+                                  <td>{s.averageScore.toFixed(2)}%</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                    )}
 
-              {/* Subject Teacher Section */}
-              {teacherData.isSubjectTeacher && teacherData.subjectTeacherMetrics && (
-                <div className="subject-teacher-section">
-                  <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', color: '#f8fafc' }}>
-                    Subject Teacher Overview
-                  </h2>
-                  <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
-                    <div className="stat-card glass-panel">
-                      <div className="stat-icon" style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>📚</div>
-                      <div className="stat-content">
-                        <p className="stat-label">Total Assigned Classes</p>
-                        <h3 className="stat-value">{teacherData.subjectTeacherMetrics.totalAllocations}</h3>
+                    {teacherData.isSubjectTeacher && (
+                      <div className="widget-card glass-panel">
+                        <div className="widget-header">
+                          <h3>Your Subjects & Classes</h3>
+                        </div>
+                        <div className="widget-body">
+                          <ul className="activity-list">
+                            {teacherData.subjectTeacherMetrics.allocations.map((a: any, idx: number) => (
+                              <li className="activity-item" key={idx}>
+                                <div className="activity-icon" style={{ fontSize: '1.2rem' }}>📌</div>
+                                <div className="activity-details">
+                                  <p><strong>{a.subjectName}</strong> in <strong>{a.className}</strong></p>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  <div className="widget-card glass-panel" style={{ marginTop: '1.5rem' }}>
-                    <div className="widget-header">
-                      <h3>Your Subjects & Classes</h3>
-                    </div>
-                    <div className="widget-body">
-                      <ul className="activity-list">
-                        {teacherData.subjectTeacherMetrics.allocations.map((a: any, idx: number) => (
-                          <li className="activity-item" key={idx}>
-                            <div className="activity-icon" style={{ fontSize: '1.2rem' }}>📌</div>
-                            <div className="activity-details">
-                              <p><strong>{a.subjectName}</strong> in <strong>{a.className}</strong></p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
