@@ -9,16 +9,47 @@ interface ClassItem {
   section: string;
 }
 
+interface SubjectStatus {
+  subjectId: string;
+  subjectName: string;
+  isSubmitted: boolean;
+  totalStudents: number;
+  scoresEntered: number;
+}
+
 export default function ResultManagement() {
   const [session, setSession] = useState(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
   const [term, setTerm] = useState('First Term');
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [compiling, setCompiling] = useState(false);
+  
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [classStatus, setClassStatus] = useState<{ allSubmitted: boolean, subjects: SubjectStatus[] } | null>(null);
 
   useEffect(() => {
     fetchClasses();
   }, []);
+
+  useEffect(() => {
+    if (selectedClassId) {
+      fetchClassStatus();
+    } else {
+      setClassStatus(null);
+    }
+  }, [selectedClassId, session, term]);
+
+  const fetchClassStatus = async () => {
+    try {
+      setStatusLoading(true);
+      const data = await api.get(`/academics/scores/status?classId=${selectedClassId}&session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`);
+      setClassStatus(data);
+    } catch (err) {
+      console.error('Failed to fetch class status', err);
+    } finally {
+      setStatusLoading(false);
+    }
+  };
 
   const fetchClasses = async () => {
     try {
@@ -116,6 +147,39 @@ export default function ResultManagement() {
               Requires all subjects to be submitted. Results will be marked as "Submitted to Admin".
             </small>
           </div>
+
+          {statusLoading && <p style={{ marginTop: '1rem' }}>Loading subject status...</p>}
+          
+          {!statusLoading && classStatus && (
+            <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+              <h4 style={{ marginBottom: '1rem' }}>Subject Submission Status</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                {classStatus.subjects.map(sub => (
+                  <div key={sub.subjectId} style={{ 
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    border: `1px solid ${sub.isSubmitted ? '#10b981' : '#e2e8f0'}`,
+                    backgroundColor: sub.isSubmitted ? 'rgba(16, 185, 129, 0.05)' : '#fff',
+                    color: sub.isSubmitted ? 'inherit' : '#333'
+                  }}>
+                    <div style={{ fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
+                      {sub.subjectName}
+                      <span>{sub.isSubmitted ? '✅' : '⏳'}</span>
+                    </div>
+                    <div className="text-sm text-muted" style={{ marginTop: '0.25rem' }}>
+                      {sub.scoresEntered} / {sub.totalStudents} Scores
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {!classStatus.allSubmitted && (
+                <div className="alert alert-warning" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '1rem', borderRadius: '8px', marginTop: '1rem' }}>
+                  ⚠️ Not all subject scores have been submitted yet. 
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
