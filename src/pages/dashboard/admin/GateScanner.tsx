@@ -150,6 +150,21 @@ const GateScanner: React.FC = () => {
       const res = await api.post('/attendance/scan', { qrPayload: decodedText });
       setScanResult(res.data);
       
+      // Play a success beep
+      try {
+         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+         const oscillator = audioContext.createOscillator();
+         const gainNode = audioContext.createGain();
+         oscillator.type = 'sine';
+         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+         gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+         oscillator.connect(gainNode);
+         gainNode.connect(audioContext.destination);
+         oscillator.start();
+         setTimeout(() => oscillator.stop(), 200);
+      } catch(e) {}
+
+      
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       scanTimeoutRef.current = setTimeout(() => {
         setScanResult(null);
@@ -182,6 +197,20 @@ const GateScanner: React.FC = () => {
         }, 3000);
       } else {
         setError(err.response?.data?.message || 'Failed to scan ID.');
+        
+        // Play error beep
+        try {
+           const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+           const oscillator = audioContext.createOscillator();
+           const gainNode = audioContext.createGain();
+           oscillator.type = 'sawtooth';
+           oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+           gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+           oscillator.connect(gainNode);
+           gainNode.connect(audioContext.destination);
+           oscillator.start();
+           setTimeout(() => oscillator.stop(), 300);
+        } catch(e) {}
         
         if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
         scanTimeoutRef.current = setTimeout(() => {
@@ -233,42 +262,31 @@ const GateScanner: React.FC = () => {
                     <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                 </div>
             )}
+            
+            {/* OVERLAYS */}
+            {scanResult && !isProcessing && (
+                <div className={`absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in ${scanResult.status === 'Offline' ? 'bg-orange-500 bg-opacity-95' : 'bg-green-500 bg-opacity-95'}`}>
+                    <svg className="w-16 h-16 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d={scanResult.status === 'Offline' ? "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" : "M5 13l4 4L19 7"} />
+                    </svg>
+                    <p className="text-white font-bold text-xl text-center px-4">{scanResult.studentName}</p>
+                    <p className="text-white text-md text-center font-medium mt-1">{scanResult.message}</p>
+                </div>
+            )}
+            {error && !isProcessing && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in bg-red-500 bg-opacity-95">
+                    <svg className="w-16 h-16 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <p className="text-white font-bold text-xl text-center">Error</p>
+                    <p className="text-white text-md text-center px-4 font-medium mt-1">{error}</p>
+                </div>
+            )}
         </div>
 
-        <div className="mt-8 w-full h-32 flex items-center justify-center">
-          {scanResult && (
-            <div className={`w-full p-4 rounded-lg text-center shadow-sm animate-fade-in ${scanResult.status === 'Offline' ? 'bg-orange-50 text-orange-800 border-orange-200' : 'bg-green-50 text-green-800 border-green-200'}`}>
-              <div className="flex justify-center mb-2">
-                {scanResult.status === 'Offline' ? (
-                   <svg className="w-10 h-10 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                   </svg>
-                ) : (
-                   <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                   </svg>
-                )}
-              </div>
-              <p className="font-bold text-lg">{scanResult.studentName}</p>
-              <p className="text-sm">{scanResult.message}</p>
-              <p className="text-xs mt-1 opacity-80">{new Date(scanResult.time).toLocaleTimeString()}</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="w-full p-4 bg-red-50 text-red-800 border border-red-200 rounded-lg text-center shadow-sm animate-fade-in">
-              <div className="flex justify-center mb-2">
-                <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </div>
-              <p className="font-bold text-lg">Error</p>
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-
+        <div className="mt-8 w-full flex flex-col items-center justify-center">
           {!scanResult && !error && (
-            <p className="text-gray-500 text-sm text-center">
+            <p className="text-gray-500 text-sm text-center px-4">
               {isProcessing ? "Processing scan..." : "Align the student's ID card within the scanning frame above."}
             </p>
           )}
