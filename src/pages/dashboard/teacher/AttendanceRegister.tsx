@@ -4,8 +4,10 @@ import { api } from '../../../services/api';
 interface StudentAttendance {
   studentId: string;
   name: string;
+  registrationNumber: string;
   status: 'Present' | 'Absent' | 'Late' | 'Excused';
-  remarks: string;
+  timeIn: string | null;
+  timeOut: string | null;
 }
 
 interface MyClass {
@@ -113,14 +115,19 @@ export default function AttendanceRegister() {
             <thead>
               <tr>
                 <th>Student Name</th>
+                <th>Registration No.</th>
+                <th>Time In</th>
+                <th>Time Out</th>
                 <th>Status</th>
-                <th>Gate Scan Times</th>
               </tr>
             </thead>
             <tbody>
               {attendance.map(student => (
                 <tr key={student.studentId}>
                   <td><strong>{student.name}</strong></td>
+                  <td>{student.registrationNumber || '-'}</td>
+                  <td style={{ color: '#555', fontSize: '0.9rem' }}>{student.timeIn || '-'}</td>
+                  <td style={{ color: '#555', fontSize: '0.9rem' }}>{student.timeOut || '-'}</td>
                   <td>
                     <span
                       style={{
@@ -135,9 +142,6 @@ export default function AttendanceRegister() {
                     >
                       {student.status}
                     </span>
-                  </td>
-                  <td style={{ color: '#555', fontSize: '0.9rem' }}>
-                    {student.remarks || '-'}
                   </td>
                 </tr>
               ))}
