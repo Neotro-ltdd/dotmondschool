@@ -149,6 +149,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     Approvals
                   </NavLink>
                 )}
+
+                {userRole !== 'Accountant' && userRole !== 'Parent' && userRole !== 'Teacher' && userRole !== 'SubjectTeacher' && (
+                  <NavLink to="/dashboard/operations/result-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <span className="nav-icon">📊</span>
+                    Result Management
+                  </NavLink>
+                )}
                 
                 {(userRole === 'Accountant' || userRole === 'Superadmin') && (
                   <>

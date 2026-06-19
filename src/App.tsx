@@ -22,6 +22,7 @@ import FinanceFeeBuilder from './pages/dashboard/finance-setup/FinanceFeeBuilder
 import ClassFees from './pages/dashboard/finance-setup/ClassFees';
 import Reports from './pages/dashboard/reports/Reports';
 import ResultSheetViewer from './pages/dashboard/reports/ResultSheetViewer';
+import ResultManagement from './pages/dashboard/results/ResultManagement';
 import RoleManagement from './pages/dashboard/admin/operations/RoleManagement';
 import SubjectAllocations from './pages/dashboard/admin/operations/SubjectAllocations';
 import ClassAllocations from './pages/dashboard/admin/operations/ClassAllocations';
@@ -96,6 +97,7 @@ function App() {
               <Route path="grading" element={<GradingRules />} />
               <Route path="gate-scanner" element={<GateScanner />} />
               <Route path="gate-logs" element={<GateAttendanceLog />} />
+              <Route path="result-management" element={<ResultManagement />} />
             </Route>
             <Route path="allocations">
               <Route path="class-allocations" element={<ClassAllocations />} />

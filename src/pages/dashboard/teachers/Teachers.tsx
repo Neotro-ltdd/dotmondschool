@@ -97,6 +97,16 @@ export default function Teachers() {
     }
   };
 
+  const handleRemove = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to remove ${name} from the system? They will lose all access.`)) return;
+    try {
+      await api.post(`/setup/teachers/${id}/deactivate`, {});
+      alert('Staff member deactivated successfully.');
+      fetchTeachers();
+    } catch (err: any) {
+      alert(err.message || 'Failed to deactivate staff member.');
+    }
+  };
 
   return (
     <div className="management-page">
@@ -125,6 +135,7 @@ export default function Teachers() {
                 <th>Contact</th>
                 <th>Role</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -177,6 +188,17 @@ export default function Teachers() {
                       <span className="badge badge-success">Active</span>
                     ) : (
                       <span className="badge badge-warning">Inactive</span>
+                    )}
+                  </td>
+                  <td>
+                    {teacher.isActive && (
+                      <button 
+                        className="btn btn-secondary" 
+                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+                        onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                      >
+                        Remove
+                      </button>
                     )}
                   </td>
                 </tr>
