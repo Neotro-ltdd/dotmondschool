@@ -21,7 +21,6 @@ export default function AttendanceRegister() {
   const [myClass, setMyClass] = useState<MyClass | null>(null);
   const [attendance, setAttendance] = useState<StudentAttendance[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -60,35 +59,6 @@ export default function AttendanceRegister() {
     fetchClassAndAttendance();
   }, [date]);
 
-  const handleStatusChange = (studentId: string, status: any) => {
-    setAttendance(prev => prev.map(a => a.studentId === studentId ? { ...a, status } : a));
-  };
-
-  const handleRemarksChange = (studentId: string, remarks: string) => {
-    setAttendance(prev => prev.map(a => a.studentId === studentId ? { ...a, remarks } : a));
-  };
-
-  const handleMarkAll = (status: any) => {
-    setAttendance(prev => prev.map(a => ({ ...a, status })));
-  };
-
-  const handleSaveAttendance = async () => {
-    if (!myClass) return;
-    try {
-      setSaving(true);
-      await api.post(`/academics/classes/${myClass.id}/attendance`, {
-        classId: myClass.id,
-        date: date,
-        term: term,
-        students: attendance
-      });
-      alert('Attendance saved successfully!');
-    } catch (err: any) {
-      alert(err.message || 'Failed to save attendance.');
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return (
     <div className="page-container fade-in">
@@ -128,11 +98,7 @@ export default function AttendanceRegister() {
             <option value="Third Term">Third Term</option>
           </select>
         </div>
-        <div>
-          <button className="btn btn-secondary" onClick={() => handleMarkAll('Present')} disabled={!myClass || loading}>
-            Mark All Present
-          </button>
-        </div>
+
       </div>
 
       {error && <div className="alert-error" style={{ marginBottom: '1rem', color: '#dc3545' }}>{error}</div>}
@@ -148,7 +114,7 @@ export default function AttendanceRegister() {
               <tr>
                 <th>Student Name</th>
                 <th>Status</th>
-                <th>Remarks (Optional)</th>
+                <th>Gate Scan Times</th>
               </tr>
             </thead>
             <tbody>
@@ -156,36 +122,22 @@ export default function AttendanceRegister() {
                 <tr key={student.studentId}>
                   <td><strong>{student.name}</strong></td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      {['Present', 'Absent', 'Late', 'Excused'].map(status => (
-                        <button
-                          key={status}
-                          onClick={() => handleStatusChange(student.studentId, status)}
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '20px',
-                            border: '1px solid ' + (student.status === status ? getStatusColor(status) : '#ccc'),
-                            background: student.status === status ? getStatusColor(status) : 'transparent',
-                            color: student.status === status ? '#fff' : '#666',
-                            cursor: 'pointer',
-                            fontSize: '0.85rem',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
+                    <span
+                      style={{
+                        padding: '0.25rem 0.75rem',
+                        borderRadius: '20px',
+                        border: '1px solid ' + getStatusColor(student.status),
+                        background: getStatusColor(student.status),
+                        color: '#fff',
+                        fontSize: '0.85rem',
+                        fontWeight: '600'
+                      }}
+                    >
+                      {student.status}
+                    </span>
                   </td>
-                  <td>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      value={student.remarks} 
-                      onChange={(e) => handleRemarksChange(student.studentId, e.target.value)}
-                      placeholder="Add note..."
-                      style={{ backgroundColor: '#f0f8ff', borderRadius: '12px', border: '1px solid #cce0ff', padding: '0.5rem 1rem', width: '100%' }}
-                    />
+                  <td style={{ color: '#555', fontSize: '0.9rem' }}>
+                    {student.remarks || '-'}
                   </td>
                 </tr>
               ))}
@@ -194,18 +146,7 @@ export default function AttendanceRegister() {
         )}
       </div>
 
-      {myClass && attendance.length > 0 && (
-        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-          <button 
-            className="btn btn-primary" 
-            onClick={handleSaveAttendance} 
-            disabled={saving}
-            style={{ padding: '0.75rem 2rem', fontSize: '1.1rem' }}
-          >
-            {saving ? 'Saving...' : 'Save Attendance'}
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }
