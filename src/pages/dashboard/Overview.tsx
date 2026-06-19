@@ -49,7 +49,7 @@ export default function Overview() {
         }
       };
       fetchAccountantData();
-    } else if (userRole === 'Teacher') {
+    } else if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
       const fetchTeacherData = async () => {
         try {
           setLoading(true);
@@ -320,7 +320,7 @@ export default function Overview() {
             </div>
           )}
         </div>
-      ) : userRole === 'Teacher' ? (
+      ) : (userRole === 'Teacher' || userRole === 'SubjectTeacher') ? (
         <div className="analytics-section">
           {loading ? <p>Loading your dashboard...</p> : teacherData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
