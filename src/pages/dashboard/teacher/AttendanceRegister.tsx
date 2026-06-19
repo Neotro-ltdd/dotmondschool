@@ -114,8 +114,8 @@ export default function AttendanceRegister() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Student Name</th>
                 <th>Registration No.</th>
+                <th>Student Name</th>
                 <th>Time In</th>
                 <th>Time Out</th>
                 <th>Status</th>
@@ -124,8 +124,8 @@ export default function AttendanceRegister() {
             <tbody>
               {attendance.map(student => (
                 <tr key={student.studentId}>
+                  <td><strong>{student.registrationNumber || '-'}</strong></td>
                   <td><strong>{student.name}</strong></td>
-                  <td>{student.registrationNumber || '-'}</td>
                   <td style={{ color: '#555', fontSize: '0.9rem' }}>{student.timeIn || '-'}</td>
                   <td style={{ color: '#555', fontSize: '0.9rem' }}>{student.timeOut || '-'}</td>
                   <td>
