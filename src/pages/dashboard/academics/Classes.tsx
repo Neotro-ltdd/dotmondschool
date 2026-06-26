@@ -186,6 +186,7 @@ export default function Classes() {
                   <option value="Junior Secondary" style={{ color: '#000' }}>Junior Secondary</option>
                   <option value="Primary" style={{ color: '#000' }}>Primary</option>
                   <option value="Nursery" style={{ color: '#000' }}>Nursery</option>
+                  <option value="Kindergarten" style={{ color: '#000' }}>Kindergarten</option>
                 </select>
               </div>
               <div className="form-group">

@@ -71,7 +71,7 @@ export default function SubjectAllocations() {
   }, [levelFilter]);
 
   const activeClass = allocations.find(c => c.classId === selectedClassId);
-  const isPrimaryOrNursery = levelFilter.toLowerCase().includes('primary') || levelFilter.toLowerCase().includes('nursery');
+  const isPrimaryOrNursery = levelFilter.toLowerCase().includes('primary') || levelFilter.toLowerCase().includes('nursery') || levelFilter.toLowerCase().includes('kindergarten');
 
   const openAssignModal = (sub: SubjectItem) => {
     setSelectedSubject(sub);
@@ -113,6 +113,7 @@ export default function SubjectAllocations() {
             <option value="Junior Secondary">Junior Secondary</option>
             <option value="Primary">Primary</option>
             <option value="Nursery">Nursery</option>
+            <option value="Kindergarten">Kindergarten</option>
           </select>
 
           {allocations.length > 0 && (

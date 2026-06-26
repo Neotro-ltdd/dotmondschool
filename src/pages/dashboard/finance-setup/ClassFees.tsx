@@ -110,6 +110,7 @@ export default function ClassFees() {
             <option value="Junior Secondary">Junior Secondary</option>
             <option value="Primary">Primary</option>
             <option value="Nursery">Nursery</option>
+            <option value="Kindergarten">Kindergarten</option>
           </select>
         </div>
         <div style={{ flex: 1, minWidth: '150px' }}>
