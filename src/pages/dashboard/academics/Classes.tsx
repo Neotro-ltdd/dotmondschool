@@ -162,7 +162,6 @@ export default function Classes() {
                 <th>Session</th>
                 <th>Class Teacher</th>
                 <th>Students</th>
-                <th>Roster Status</th>
                 <th style={{ textAlign: 'center' }}>Actions</th>
               </tr>
             </thead>
@@ -176,13 +175,6 @@ export default function Classes() {
                   <td>{cls.classTeacherName || <span className="text-muted">Not Assigned</span>}</td>
                   <td>
                     <span className="badge badge-info">{cls.studentCount} Students</span>
-                  </td>
-                  <td>
-                    {cls.isRosterApproved ? (
-                      <span className="badge badge-success">Approved</span>
-                    ) : (
-                      <span className="badge badge-warning">Pending</span>
-                    )}
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <button className="btn-icon" onClick={() => handleEdit(cls)} title="Edit Class" style={{ marginRight: '0.5rem', color: 'var(--color-primary-light)' }}>
