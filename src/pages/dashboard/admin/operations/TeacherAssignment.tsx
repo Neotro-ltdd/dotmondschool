@@ -44,7 +44,7 @@ export default function TeacherAssignment() {
   const fetchData = async () => {
     try {
       const [tData, cData, sData] = await Promise.all([
-        api.get('/setup/teachers'),
+        api.get('/setup/staff'),
         api.get('/setup/classes'),
         api.get('/academics/subjects')
       ]);
@@ -64,7 +64,7 @@ export default function TeacherAssignment() {
     
     try {
       setAssigningClass(true);
-      const res = await api.post(`/setup/teachers/${classTeacherId}/manage-assignments`, {
+      const res = await api.post(`/setup/staff/${classTeacherId}/manage-assignments`, {
         teacherId: classTeacherId,
         assignmentType: 'Class',
         targetId: classId,
@@ -90,7 +90,7 @@ export default function TeacherAssignment() {
     
     try {
       setAssigningSubject(true);
-      const res = await api.post(`/setup/teachers/${subjectTeacherId}/manage-assignments`, {
+      const res = await api.post(`/setup/staff/${subjectTeacherId}/manage-assignments`, {
         teacherId: subjectTeacherId,
         assignmentType: 'Subject',
         targetId: subjectId,

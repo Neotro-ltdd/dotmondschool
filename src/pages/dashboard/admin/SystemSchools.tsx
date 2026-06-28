@@ -11,6 +11,9 @@ interface School {
     isSuspended: boolean;
     createdAt: string;
     studentCount: number;
+    sizeMB: number;
+    customSenderName?: string;
+    isSmsEnabled: boolean;
 }
 
 export default function SystemSchools() {
@@ -42,15 +45,7 @@ export default function SystemSchools() {
         fetchSchools();
     }, []);
 
-    const toggleStatus = async (id: number) => {
-        try {
-            await api.post(`/system/schools/${id}/toggle-status`, {});
-            fetchSchools();
-        } catch (err) {
-            console.error(err);
-            alert("Failed to toggle status");
-        }
-    };
+
 
     const handleProvision = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -94,6 +89,7 @@ export default function SystemSchools() {
                                 <th>Tenant ID</th>
                                 <th>School Name</th>
                                 <th>Students</th>
+                                <th>Storage (MB)</th>
                                 <th>Created</th>
                                 <th>Status</th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
@@ -107,6 +103,7 @@ export default function SystemSchools() {
                                     <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{school.tenantId}</td>
                                     <td style={{ fontWeight: 'bold' }}>{school.schoolName}</td>
                                     <td>{school.studentCount}</td>
+                                    <td>{school.sizeMB?.toFixed(2) || '0.00'}</td>
                                     <td>{new Date(school.createdAt).toLocaleDateString()}</td>
                                     <td>
                                         <span className={`status-badge ${school.isSuspended ? 'suspended' : 'active'}`}>
@@ -115,9 +112,9 @@ export default function SystemSchools() {
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <button 
-                                            onClick={() => toggleStatus(school.id)}
-                                            className={`action-btn ${school.isSuspended ? 'activate' : 'suspend'}`}>
-                                            {school.isSuspended ? 'Activate' : 'Suspend'}
+                                            onClick={() => navigate(`/system-admin/schools/${school.tenantId}`)}
+                                            className="action-btn" style={{ background: '#0f172a', color: 'white' }}>
+                                            ⚙️ Manage
                                         </button>
                                     </td>
                                 </tr>
@@ -158,6 +155,7 @@ export default function SystemSchools() {
                         </div>
                     </div>
                 )}
+
         </div>
     );
 }

@@ -38,7 +38,7 @@ export default function ClassAllocations() {
       setLoading(true);
       const [classData, teacherData] = await Promise.all([
         api.get('/setup/classes'),
-        api.get('/setup/teachers')
+        api.get('/setup/staff')
       ]);
       setClasses(classData);
       setTeachers(teacherData);

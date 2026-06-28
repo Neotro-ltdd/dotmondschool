@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { api } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 
 interface ScanResult {
   message: string;
@@ -14,6 +15,7 @@ const GateScanner: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
+  const { userName } = useAuth();
   
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,7 +47,7 @@ const GateScanner: React.FC = () => {
       // Try to sync the oldest scan
       const payload = queue[0];
       try {
-        await api.post('/attendance/scan', { qrPayload: payload });
+        await api.post('/attendance/scan', { qrPayload: payload, scannedById: userName });
         // Success, remove from queue
         queue.shift();
         localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
@@ -147,7 +149,7 @@ const GateScanner: React.FC = () => {
 
     try {
       setError(null);
-      const res = await api.post('/attendance/scan', { qrPayload: decodedText });
+      const res = await api.post('/attendance/scan', { qrPayload: decodedText, scannedById: userName });
       setScanResult(res.data);
       
       // Play a success beep

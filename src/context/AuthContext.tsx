@@ -6,6 +6,7 @@ interface AuthContextType {
     userRole: string | null;
     userName: string;
     userEmail: string | null;
+    requiresPasswordChange: boolean;
     login: (token: string) => void;
     logout: () => void;
 }
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [userRole, setUserRole] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userName, setUserName] = useState<string>('User');
+    const [requiresPasswordChange, setRequiresPasswordChange] = useState<boolean>(false);
 
     useEffect(() => {
         if (token) {
@@ -48,12 +50,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const namePart = email.split('@')[0];
                     setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1));
                 }
+
+                if (decoded['requires_password_change'] === 'true') {
+                    setRequiresPasswordChange(true);
+                } else {
+                    setRequiresPasswordChange(false);
+                }
             }
         } else {
             localStorage.removeItem('srms_token');
             setUserRole(null);
             setUserEmail(null);
             setUserName('User');
+            setRequiresPasswordChange(false);
         }
     }, [token]);
 
@@ -66,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, userName, userEmail, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, userName, userEmail, requiresPasswordChange, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

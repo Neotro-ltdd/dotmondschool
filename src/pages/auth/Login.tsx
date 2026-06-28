@@ -76,7 +76,11 @@ export default function Login() {
     try {
       const response = await api.post('/auth/login', { email, password });
       login(response.token);
-      navigate('/dashboard'); 
+      if (response.requiresPasswordChange) {
+        navigate('/change-password');
+      } else {
+        navigate('/dashboard'); 
+      }
     } catch (err: any) {
       if (err instanceof ApiError && err.message.includes('Account not verified')) {
         setIsOtpMode(true);
@@ -121,7 +125,11 @@ export default function Login() {
       
       const response = await api.post('/auth/login', { email, password: loginPassword });
       login(response.token);
-      navigate('/dashboard');
+      if (response.requiresPasswordChange) {
+        navigate('/change-password');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setError(err.message || "Failed to verify OTP.");
     } finally {

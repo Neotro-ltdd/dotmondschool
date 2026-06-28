@@ -21,7 +21,7 @@ export default function RoleManagement() {
 
   const fetchTeachers = async () => {
     try {
-      const data = await api.get('/setup/teachers');
+      const data = await api.get('/setup/staff');
       setTeachers(data);
     } catch (err) {
       console.error("Failed to load teachers for role management", err);

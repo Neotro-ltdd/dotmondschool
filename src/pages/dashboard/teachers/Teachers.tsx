@@ -40,6 +40,7 @@ export default function Teachers() {
     otherNames: '',
     phoneNumber: '',
     email: '',
+    designation: '',
     role: 'Teacher'
   });
   const [submitting, setSubmitting] = useState(false);
@@ -52,7 +53,7 @@ export default function Teachers() {
   const fetchTeachers = async () => {
     try {
       setLoading(true);
-      const data = await api.get('/setup/teachers');
+      const data = await api.get('/setup/staff');
       setTeachers(data);
       setError(null);
     } catch (err: any) {
@@ -85,7 +86,7 @@ export default function Teachers() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post('/setup/teachers', {
+      await api.post('/setup/staff', {
         ...formData
       });
       setShowModal(false);
@@ -100,7 +101,7 @@ export default function Teachers() {
   const handleRemove = async (id: string, name: string) => {
     if (!window.confirm(`Are you sure you want to remove ${name} from the system? They will lose all access.`)) return;
     try {
-      await api.post(`/setup/teachers/${id}/deactivate`, {});
+      await api.post(`/setup/staff/${id}/deactivate`, {});
       alert('Staff member deactivated successfully.');
       fetchTeachers();
     } catch (err: any) {
@@ -237,6 +238,11 @@ export default function Teachers() {
                 
                 <div className="form-group full-width section-divider">
                   <h3>Role Details</h3>
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Designation / Job Title</label>
+                  <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Mathematics Teacher, Senior Accountant" required />
                 </div>
 
                 <div className="form-group full-width">

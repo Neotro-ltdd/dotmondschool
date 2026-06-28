@@ -46,7 +46,7 @@ export default function SubjectAllocations() {
       const query = levelFilter ? `?level=${encodeURIComponent(levelFilter)}` : '';
       const [allocData, teacherData] = await Promise.all([
         api.get(`/academics/subject-allocations${query}`),
-        api.get('/setup/teachers')
+        api.get('/setup/staff')
       ]);
       setAllocations(allocData);
       setTeachers(teacherData.filter((t: any) => t.role === 'SubjectTeacher'));

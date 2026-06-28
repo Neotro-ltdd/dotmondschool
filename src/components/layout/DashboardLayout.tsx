@@ -7,7 +7,7 @@ import { api, API_ROOT } from '../../services/api';
 import './Layout.css';
 
 export default function DashboardLayout() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, requiresPasswordChange } = useAuth();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,6 +29,10 @@ export default function DashboardLayout() {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requiresPasswordChange) {
+    return <Navigate to="/change-password" replace />;
   }
 
   return (

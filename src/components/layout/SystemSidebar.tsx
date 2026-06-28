@@ -36,6 +36,14 @@ export default function SystemSidebar() {
           <span className="icon">🏫</span>
           Provisioned Schools
         </NavLink>
+
+        <NavLink 
+          to="/system-admin/settings" 
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <span className="icon">⚙️</span>
+          Platform Settings
+        </NavLink>
       </nav>
 
       <div className="sidebar-footer">

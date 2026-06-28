@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { TenantProvider } from './context/TenantContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/auth/Login';
+import ChangePassword from './pages/auth/ChangePassword';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Overview from './pages/dashboard/Overview';
 import SchoolConfig from './pages/dashboard/settings/SchoolConfig';
@@ -37,6 +38,8 @@ import MasterLogin from './pages/auth/MasterLogin';
 import SystemLayout from './components/layout/SystemLayout';
 import SystemOverview from './pages/dashboard/admin/SystemOverview';
 import SystemSchools from './pages/dashboard/admin/SystemSchools';
+import SchoolManagement from './pages/dashboard/admin/SchoolManagement';
+import SystemSettings from './pages/dashboard/admin/SystemSettings';
 
 import MyClass from './pages/dashboard/teacher/MyClass';
 import ContinuousAssessment from './pages/dashboard/teacher/ContinuousAssessment';
@@ -56,11 +59,14 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/master-login" element={<MasterLogin />} />
           
           <Route path="/system-admin" element={<SystemLayout />}>
             <Route index element={<SystemOverview />} />
             <Route path="schools" element={<SystemSchools />} />
+            <Route path="schools/:id" element={<SchoolManagement />} />
+            <Route path="settings" element={<SystemSettings />} />
           </Route>
           
           {/* Protected Dashboard Routes */}
