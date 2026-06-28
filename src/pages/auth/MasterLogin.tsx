@@ -24,7 +24,11 @@ const MasterLogin: React.FC = () => {
       const res = await api.post('/auth/login', { email, password });
       
       login(res.token);
-      navigate('/system-admin');
+      if (res.requiresPasswordChange) {
+        navigate('/change-password');
+      } else {
+        navigate('/system-admin');
+      }
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Invalid master credentials.');
