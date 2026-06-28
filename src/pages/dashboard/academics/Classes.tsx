@@ -104,6 +104,35 @@ export default function Classes() {
     setShowModal(true);
   };
 
+  const levelOrder: Record<string, number> = {
+    'Senior Secondary': 1,
+    'Junior Secondary': 2,
+    'Primary': 3,
+    'Kindergarten': 4,
+    'Nursery': 5
+  };
+
+  const sortedClasses = [...classes].sort((a, b) => {
+    const levelA = levelOrder[a.level] || 99;
+    const levelB = levelOrder[b.level] || 99;
+    
+    if (levelA !== levelB) {
+      return levelA - levelB;
+    }
+    
+    const numA = parseInt(a.name.replace(/\D/g, '')) || 0;
+    const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
+    
+    if (numA !== numB) {
+      if (a.level === 'Senior Secondary') {
+        return numB - numA; // Descending for SS
+      }
+      return numA - numB; // Ascending for others
+    }
+    
+    return (a.section || '').localeCompare(b.section || '');
+  });
+
   return (
     <div className="academics-page">
       <div className="page-header">
@@ -121,7 +150,7 @@ export default function Classes() {
       <div className="table-container glass-panel">
         {loading ? (
           <p className="loading-text">Loading classes...</p>
-        ) : classes.length === 0 ? (
+        ) : sortedClasses.length === 0 ? (
           <p className="empty-text">No classes found. Add your first class to get started.</p>
         ) : (
           <table className="data-table">
@@ -138,7 +167,7 @@ export default function Classes() {
               </tr>
             </thead>
             <tbody>
-              {classes.map(cls => (
+              {sortedClasses.map(cls => (
                 <tr key={cls.id}>
                   <td>{cls.level}</td>
                   <td>{cls.name}</td>
