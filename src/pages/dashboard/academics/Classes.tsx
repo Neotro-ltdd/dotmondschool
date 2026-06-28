@@ -124,8 +124,8 @@ export default function Classes() {
     const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
     
     if (numA !== numB) {
-      if (a.level === 'Senior Secondary') {
-        return numB - numA; // Descending for SS
+      if (a.level === 'Senior Secondary' || a.level === 'Junior Secondary') {
+        return numB - numA; // Descending for SS and JSS
       }
       return numA - numB; // Ascending for others
     }
