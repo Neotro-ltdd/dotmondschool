@@ -16,6 +16,7 @@ interface StudentItem {
   level?: string;
   status: string;
   isCleared: boolean;
+  departmentTrack?: string;
 }
 
 interface ClassItem {
@@ -46,7 +47,8 @@ export default function Students() {
     otherNames: '',
     parentPhoneNumber: '',
     parentEmail: '',
-    classId: ''
+    classId: '',
+    departmentTrack: 'General'
   });
   const [submitting, setSubmitting] = useState(false);
   
@@ -100,7 +102,8 @@ export default function Students() {
         otherNames: '',
         parentPhoneNumber: '',
         parentEmail: '',
-        classId: formData.classId // Keep the class selected for rapid entry
+        classId: formData.classId, // Keep the class selected for rapid entry
+        departmentTrack: 'General'
       });
       fetchStudents();
     } catch (err: any) {
@@ -308,6 +311,16 @@ export default function Students() {
                     {classes.map(cls => (
                       <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
                     ))}
+                  </select>
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Department / Track (For Senior Students)</label>
+                  <select name="departmentTrack" value={formData.departmentTrack} onChange={handleInputChange}>
+                    <option value="General">General (Junior / Primary)</option>
+                    <option value="Science">Science</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Commercial">Commercial</option>
                   </select>
                 </div>
 
