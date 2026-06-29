@@ -5,7 +5,7 @@ import './Academics.css';
 interface SubjectItem {
   id: string;
   name: string;
-  level: string;
+  category: string;
   subjectTeacherName?: string;
   isLocked: boolean;
   isParent?: boolean;
@@ -111,7 +111,7 @@ export default function Subjects() {
     setFormData({
       id: subject.id,
       name: subject.name,
-      level: subject.level,
+      level: subject.category, // Map backend 'category' back to UI 'level' for the form
       isParent: subject.isParent || false,
       parentSubjectId: subject.parentSubjectId || '',
       departmentTrack: subject.departmentTrack || 'General'
@@ -179,10 +179,12 @@ export default function Subjects() {
               </tr>
             </thead>
             <tbody>
-              {subjects.map(sub => (
+              {subjects
+                .filter(sub => !filterLevel || sub.category === filterLevel)
+                .map(sub => (
                 <tr key={sub.id}>
                   <td><strong>{sub.name}</strong></td>
-                  <td><span className="badge badge-info">{sub.level}</span></td>
+                  <td><span className="badge badge-info">{sub.category}</span></td>
                   <td>
                     {sub.isLocked ? (
                       <span className="badge badge-warning">Locked</span>
@@ -254,7 +256,7 @@ export default function Subjects() {
                       <label>Parent Subject (Optional)</label>
                       <select name="parentSubjectId" value={formData.parentSubjectId} onChange={handleInputChange}>
                         <option value="">-- No Parent (Standalone) --</option>
-                        {subjects.filter(s => s.isParent && s.level === formData.level).map(parentSub => (
+                        {subjects.filter(s => s.isParent && s.category === formData.level).map(parentSub => (
                           <option key={parentSub.id} value={parentSub.id}>{parentSub.name}</option>
                         ))}
                       </select>
