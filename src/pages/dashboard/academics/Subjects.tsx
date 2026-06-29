@@ -8,6 +8,9 @@ interface SubjectItem {
   level: string;
   subjectTeacherName?: string;
   isLocked: boolean;
+  isParent?: boolean;
+  parentSubjectId?: string | null;
+  departmentTrack?: string;
 }
 
 interface ClassItem {
@@ -31,7 +34,10 @@ export default function Subjects() {
   const [formData, setFormData] = useState({
     id: '',
     name: '',
-    level: ''
+    level: '',
+    isParent: false,
+    parentSubjectId: '',
+    departmentTrack: 'General'
   });
   const [submitting, setSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -68,20 +74,29 @@ export default function Subjects() {
   }, [filterLevel]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleCreateOrUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setSubmitting(true);
+      const payload = {
+        name: formData.name,
+        level: formData.level,
+        isParent: formData.isParent,
+        parentSubjectId: formData.parentSubjectId || null,
+        departmentTrack: formData.departmentTrack || 'General'
+      };
+
       if (isEditing) {
-        await api.put(`/academics/subjects/${formData.id}`, { name: formData.name, level: formData.level });
+        await api.put(`/academics/subjects/${formData.id}`, payload);
       } else {
-        await api.post('/academics/subjects', { name: formData.name, level: formData.level });
+        await api.post('/academics/subjects', payload);
       }
       setShowModal(false);
-      setFormData({ id: '', name: '', level: formData.level });
+      setFormData({ id: '', name: '', level: formData.level, isParent: false, parentSubjectId: '', departmentTrack: 'General' });
       fetchSubjects();
     } catch (err: any) {
       alert(err.message || `Failed to ${isEditing ? 'update' : 'create'} subject`);
@@ -94,7 +109,10 @@ export default function Subjects() {
     setFormData({
       id: subject.id,
       name: subject.name,
-      level: subject.level
+      level: subject.level,
+      isParent: subject.isParent || false,
+      parentSubjectId: subject.parentSubjectId || '',
+      departmentTrack: subject.departmentTrack || 'General'
     });
     setIsEditing(true);
     setShowModal(true);
@@ -114,7 +132,7 @@ export default function Subjects() {
   };
 
   const openCreateModal = () => {
-    setFormData({ id: '', name: '', level: filterLevel });
+    setFormData({ id: '', name: '', level: filterLevel, isParent: false, parentSubjectId: '', departmentTrack: 'General' });
     setIsEditing(false);
     setShowModal(true);
   };
@@ -197,10 +215,51 @@ export default function Subjects() {
                   ))}
                 </select>
               </div>
+              
               <div className="form-group">
                 <label>Subject Name</label>
                 <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="e.g. Mathematics" required />
               </div>
+
+              {formData.level === 'Senior Secondary' && (
+                <div className="form-group">
+                  <label>Department / Track</label>
+                  <select name="departmentTrack" value={formData.departmentTrack} onChange={handleInputChange}>
+                    <option value="General">General (Cross-Cutting)</option>
+                    <option value="Science">Science</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Commercial">Commercial</option>
+                  </select>
+                </div>
+              )}
+
+              {formData.level && formData.level !== 'Senior Secondary' && (
+                <>
+                  <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+                    <input 
+                      type="checkbox" 
+                      id="isParent" 
+                      name="isParent" 
+                      checked={formData.isParent} 
+                      onChange={handleInputChange} 
+                      style={{ width: 'auto' }} 
+                    />
+                    <label htmlFor="isParent" style={{ margin: 0, fontWeight: 'normal' }}>Is this a Parent Subject? (e.g. NVE, Basic Science & Tech)</label>
+                  </div>
+
+                  {!formData.isParent && (
+                    <div className="form-group">
+                      <label>Parent Subject (Optional)</label>
+                      <select name="parentSubjectId" value={formData.parentSubjectId} onChange={handleInputChange}>
+                        <option value="">-- No Parent (Standalone) --</option>
+                        {subjects.filter(s => s.isParent && s.level === formData.level).map(parentSub => (
+                          <option key={parentSub.id} value={parentSub.id}>{parentSub.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </>
+              )}
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
