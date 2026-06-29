@@ -51,6 +51,14 @@ async function handleResponse(response: Response) {
     }
 
     if (!response.ok) {
+        if (response.status === 401) {
+            localStorage.removeItem('srms_token');
+            localStorage.removeItem('srms_user');
+            // If we are not already on the login page, redirect
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
+        }
         const message = data?.message || data?.Message || data?.title || 'An error occurred';
         throw new ApiError(response.status, message, data);
     }
