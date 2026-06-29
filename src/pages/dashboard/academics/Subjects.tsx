@@ -83,8 +83,10 @@ export default function Subjects() {
     try {
       setSubmitting(true);
       const payload = {
+        id: isEditing ? formData.id : undefined,
         name: formData.name,
-        level: formData.level,
+        code: '', // Ensure code is provided as empty string if unused
+        category: formData.level, // Backend uses 'Category' instead of 'Level'
         isParent: formData.isParent,
         parentSubjectId: formData.parentSubjectId || null,
         departmentTrack: formData.departmentTrack || 'General'
