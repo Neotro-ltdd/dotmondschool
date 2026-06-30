@@ -46,7 +46,7 @@ const MasterLogin: React.FC = () => {
           <p>Secure System Management</p>
         </div>
         
-        {error && <div className="error-alert">{error}</div>}
+        {error && <div className="alert-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">

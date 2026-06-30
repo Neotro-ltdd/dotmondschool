@@ -150,7 +150,7 @@ export default function Login() {
           <p>{isOtpMode ? 'Enter the OTP sent to your email to verify your account.' : 'Sign in to access your portal'}</p>
         </div>
         
-        {error && <div className="error-alert">{error}</div>}
+        {error && <div className="alert-error">{error}</div>}
 
         {!isOtpMode ? (
           <form onSubmit={handleLoginSubmit} className="login-form">
