@@ -249,10 +249,12 @@ export default function Teachers() {
                   <label>Staff Role</label>
                   <select name="role" value={formData.role} onChange={handleInputChange} required>
                     <option value="Teacher">Teacher</option>
+                    <option value="SubjectTeacher">SubjectTeacher</option>
                     <option value="Vendor">Vendor</option>
                     <option value="Accountant">Accountant</option>
                     <option value="Principal">Principal</option>
                     <option value="Admin">Admin</option>
+                    <option value="Staff">Staff</option>
                   </select>
                 </div>
               </div>
