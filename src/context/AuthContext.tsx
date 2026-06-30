@@ -51,11 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     if (savedRole && roles.includes(savedRole)) {
                         setUserRole(savedRole);
                     } else {
-                        // Default priority: SystemAdmin -> Admin -> Class Teacher -> Subject Teacher -> Staff
+                        // Default priority: SystemAdmin -> Admin -> Teacher -> SubjectTeacher -> Staff
                         if (roles.includes("SystemAdmin")) setUserRole("SystemAdmin");
                         else if (roles.includes("Admin")) setUserRole("Admin");
-                        else if (roles.includes("Class Teacher")) setUserRole("Class Teacher");
-                        else if (roles.includes("Subject Teacher")) setUserRole("Subject Teacher");
+                        else if (roles.includes("Teacher")) setUserRole("Teacher");
+                        else if (roles.includes("SubjectTeacher")) setUserRole("SubjectTeacher");
                         else if (roles.includes("Accountant")) setUserRole("Accountant");
                         else setUserRole(roles[0]);
                     }

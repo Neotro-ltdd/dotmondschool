@@ -88,8 +88,8 @@ export default function RoleManagement() {
             >
               <option value="Admin">Admin</option>
               <option value="Accountant">Accountant</option>
-              <option value="Class Teacher">Class Teacher</option>
-              <option value="Subject Teacher">Subject Teacher</option>
+              <option value="Teacher">Teacher</option>
+              <option value="SubjectTeacher">SubjectTeacher</option>
               <option value="Vendor">Vendor</option>
             </select>
           </div>
