@@ -437,7 +437,7 @@ export default function Overview() {
                 <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', marginTop: '1rem' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎓</div>
                   <h3>Welcome, {teacherData.teacherName || 'Teacher'}</h3>
-                  <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>You are not currently assigned as a Form Master or Subject Teacher to any active classes.</p>
+                  <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>You are not currently assigned as a Class Teacher or Subject Teacher to any active classes.</p>
                 </div>
               )}
             </div>
