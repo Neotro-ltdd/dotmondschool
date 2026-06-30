@@ -107,9 +107,11 @@ export default function Classes() {
   const levelOrder: Record<string, number> = {
     'Senior Secondary': 1,
     'Junior Secondary': 2,
-    'Primary': 3,
-    'Kindergarten': 4,
-    'Nursery': 5
+    'Upper Primary': 3,
+    'Lower Primary': 4,
+    'Primary': 5,
+    'Kindergarten': 6,
+    'Nursery': 7
   };
 
   const sortedClasses = [...classes].sort((a, b) => {
@@ -124,7 +126,7 @@ export default function Classes() {
     const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
     
     if (numA !== numB) {
-      if (['Senior Secondary', 'Junior Secondary', 'Primary', 'Nursery'].includes(a.level)) {
+      if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Lower Primary', 'Primary', 'Nursery'].includes(a.level)) {
         return numB - numA; // Descending for SS, JSS, Primary, and Nursery
       }
       return numA - numB; // Ascending for others
@@ -205,7 +207,9 @@ export default function Classes() {
                 <select name="level" value={formData.level} onChange={handleInputChange} required className="form-control" style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'inherit' }}>
                   <option value="Senior Secondary" style={{ color: '#000' }}>Senior Secondary</option>
                   <option value="Junior Secondary" style={{ color: '#000' }}>Junior Secondary</option>
-                  <option value="Primary" style={{ color: '#000' }}>Primary</option>
+                  <option value="Upper Primary" style={{ color: '#000' }}>Upper Primary (Primary 4-5)</option>
+                  <option value="Lower Primary" style={{ color: '#000' }}>Lower Primary (Primary 1-3)</option>
+                  <option value="Primary" style={{ color: '#000' }}>Primary (Legacy/Combined)</option>
                   <option value="Nursery" style={{ color: '#000' }}>Nursery</option>
                   <option value="Kindergarten" style={{ color: '#000' }}>Kindergarten</option>
                 </select>
