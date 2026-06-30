@@ -18,8 +18,8 @@ interface SubjectStatus {
 }
 
 export default function ResultManagement() {
-  const [session, setSession] = useState(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-  const [term, setTerm] = useState('First Term');
+  const [session, setSession] = useState('');
+  const [term, setTerm] = useState('');
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [compiling, setCompiling] = useState(false);
@@ -28,6 +28,7 @@ export default function ResultManagement() {
   const [classStatus, setClassStatus] = useState<{ allSubmitted: boolean, subjects: SubjectStatus[] } | null>(null);
 
   useEffect(() => {
+    fetchActiveTerm();
     fetchClasses();
   }, []);
 
@@ -39,7 +40,21 @@ export default function ResultManagement() {
     }
   }, [selectedClassId, session, term]);
 
+  const fetchActiveTerm = async () => {
+    try {
+      const data = await api.get('/setup/school-profile');
+      if (data.currentSession) setSession(data.currentSession);
+      if (data.currentTerm) setTerm(data.currentTerm);
+    } catch (err) {
+      console.error('Failed to load active term', err);
+      // Fallback
+      if (!session) setSession(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
+      if (!term) setTerm('First Term');
+    }
+  };
+
   const fetchClassStatus = async () => {
+    if (!session || !term) return; // Wait until defaults are loaded
     try {
       setStatusLoading(true);
       const data = await api.get(`/academics/scores/status?classId=${selectedClassId}&session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`);
