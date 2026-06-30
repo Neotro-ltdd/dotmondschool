@@ -59,7 +59,13 @@ async function handleResponse(response: Response) {
                 window.location.href = '/login';
             }
         }
-        const message = data?.message || data?.Message || data?.title || 'An error occurred';
+        let message = data?.message || data?.Message || data?.title || 'An error occurred';
+        if (data?.errors) {
+            const validationErrors = Object.values(data.errors).flat() as string[];
+            if (validationErrors.length > 0) {
+                message = validationErrors.join(' ');
+            }
+        }
         throw new ApiError(response.status, message, data);
     }
 
@@ -186,7 +192,13 @@ export const api = {
             } catch {
                 data = null;
             }
-            const message = data?.message || data?.Message || data?.title || 'An error occurred';
+            let message = data?.message || data?.Message || data?.title || 'An error occurred';
+            if (data?.errors) {
+                const validationErrors = Object.values(data.errors).flat() as string[];
+                if (validationErrors.length > 0) {
+                    message = validationErrors.join(' ');
+                }
+            }
             throw new ApiError(response.status, message, data);
         }
 
