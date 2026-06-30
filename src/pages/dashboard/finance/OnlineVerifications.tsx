@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../../services/api';
+import { api, API_ROOT } from '../../../services/api';
 import './Finance.css';
 
 interface PendingPayment {
@@ -108,7 +108,7 @@ export default function OnlineVerifications() {
                   <td>{payment.bankReference || 'N/A'}</td>
                   <td>{new Date(payment.uploadedAt).toLocaleDateString()}</td>
                   <td>
-                    <a href={`https://localhost:7138${payment.proofUrl}`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+                    <a href={`${API_ROOT}${payment.proofUrl}`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
                       View Receipt
                     </a>
                   </td>
@@ -135,7 +135,7 @@ export default function OnlineVerifications() {
             <div className="modal-body" style={{ display: 'flex', gap: '2rem' }}>
               <div className="receipt-preview" style={{ flex: 1, background: '#fff', padding: '1rem', borderRadius: '8px' }}>
                 <img 
-                  src={`https://localhost:7138${selectedPayment.proofUrl}`} 
+                  src={`${API_ROOT}${selectedPayment.proofUrl}`} 
                   alt="Receipt Proof" 
                   style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }} 
                 />

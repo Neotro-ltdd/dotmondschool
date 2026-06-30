@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api, ApiError } from '../../../services/api';
+import { api, API_ROOT, ApiError } from '../../../services/api';
 import './Settings.css';
 
 export default function SchoolConfig() {
@@ -181,7 +181,7 @@ export default function SchoolConfig() {
 
             <div className="form-group full-width">
               <label>School Logo {currentLogoUrl && "(Upload new to replace)"}</label>
-              {currentLogoUrl && !logoFile && <img src={`https://localhost:7138${currentLogoUrl}`} alt="Current Logo" style={{maxHeight: '50px', marginBottom: '10px'}} />}
+              {currentLogoUrl && !logoFile && <img src={`${API_ROOT}${currentLogoUrl}`} alt="Current Logo" style={{maxHeight: '50px', marginBottom: '10px'}} />}
               <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setLogoFile)} />
             </div>
           </div>
