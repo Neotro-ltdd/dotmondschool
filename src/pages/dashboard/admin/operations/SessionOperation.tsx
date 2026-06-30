@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
+import { useActiveTerm } from '../../../../hooks/useActiveTerm';
 import '../SystemOperations.css';
 
 export default function SessionOperation() {
-  const [session, setSession] = useState('2026/2027');
+  const { session, setSession } = useActiveTerm();
   const [promoClassId, setPromoClassId] = useState('');
   const [promoProcessing, setPromoProcessing] = useState(false);
 

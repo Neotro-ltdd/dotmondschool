@@ -3,8 +3,7 @@ import { api } from '../../../../services/api';
 import '../SystemOperations.css';
 
 export default function TermSetup() {
-  const [session, setSession] = useState('2026/2027');
-  const [term, setTerm] = useState('First Term');
+  const { session, term, setSession, setTerm } = useActiveTerm();
   const [resumptionDate, setResumptionDate] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [caWeightFirst, setCaWeightFirst] = useState(20);

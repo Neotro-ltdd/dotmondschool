@@ -4,8 +4,7 @@ import './Reports.css';
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState<'overview' | 'finance' | 'audit'>('overview');
-  const [session, setSession] = useState('2026/2027');
-  const [term, setTerm] = useState('First');
+  const { session, term, setSession, setTerm } = useActiveTerm();
   
   // Data States
   const [overviewData, setOverviewData] = useState<any>(null);

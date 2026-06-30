@@ -8,8 +8,7 @@ interface CAComponent {
 }
 
 export default function Templates() {
-  const [session, setSession] = useState('2026/2027');
-  const [term, setTerm] = useState('First Term');
+  const { session, term, setSession, setTerm } = useActiveTerm();
   
   const [caComponents, setCaComponents] = useState<CAComponent[]>([
     { name: '1st Test', weight: 10 },

@@ -31,8 +31,7 @@ export default function ClassFees() {
   // Filters
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>('');
-  const [filterSession, setFilterSession] = useState<string>(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-  const [filterTerm, setFilterTerm] = useState<string>('First Term');
+  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
 
   // Modal State
   const [selectedTemplate, setSelectedTemplate] = useState<FeeTemplateDetailDto | null>(null);

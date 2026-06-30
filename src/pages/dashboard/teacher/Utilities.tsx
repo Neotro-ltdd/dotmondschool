@@ -26,8 +26,7 @@ export default function Utilities() {
   const [scoreFile, setScoreFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const [filterSession, setFilterSession] = useState<string>(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-  const [filterTerm, setFilterTerm] = useState<string>('First Term');
+  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
 
   const fetchMyClasses = async () => {
     try {

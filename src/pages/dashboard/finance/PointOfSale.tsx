@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
+import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import './Finance.css';
 
 interface PosStudent {
@@ -16,8 +17,7 @@ export default function PointOfSale() {
   const [selectedStudent, setSelectedStudent] = useState<PosStudent | null>(null);
   
   const [targetInvoiceId, setTargetInvoiceId] = useState<string | 'new'>('new');
-  const [posTerm, setPosTerm] = useState('First Term');
-  const [posSession, setPosSession] = useState(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
+  const { session: posSession, term: posTerm, setSession: setPosSession, setTerm: setPosTerm } = useActiveTerm();
   const [posAmountDue, setPosAmountDue] = useState<number>(0);
   const [posAmountPaid, setPosAmountPaid] = useState<number>(0);
   const [directMethod, setDirectMethod] = useState('Cash');

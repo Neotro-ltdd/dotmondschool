@@ -59,8 +59,7 @@ export default function ContinuousAssessment() {
   const [classStatus, setClassStatus] = useState<{ allSubmitted: boolean, subjects: SubjectStatus[] } | null>(null);
   const [compiling, setCompiling] = useState(false);
 
-  const [filterSession, setFilterSession] = useState<string>(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-  const [filterTerm, setFilterTerm] = useState<string>('First Term');
+  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
 
   const fetchMyClasses = async () => {
     try {

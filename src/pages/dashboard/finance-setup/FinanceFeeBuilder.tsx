@@ -11,8 +11,7 @@ export default function FinanceFeeBuilder() {
   const [classes, setClasses] = useState<any[]>([]);
   
   // Form State
-  const [session, setSession] = useState(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-  const [term, setTerm] = useState('First Term');
+  const { session, term, setSession, setTerm } = useActiveTerm();
   const [classId, setClassId] = useState('');
   
   const [feeItems, setFeeItems] = useState<FeeTemplateItem[]>([
