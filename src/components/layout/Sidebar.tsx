@@ -241,9 +241,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                         <NavLink to="/dashboard/operations/session" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
                           Session Operation
                         </NavLink>
-                        <NavLink to="/dashboard/operations/templates" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
-                          Templates
-                        </NavLink>
+
                         <NavLink to="/dashboard/operations/grading" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
                           Grading Rules
                         </NavLink>

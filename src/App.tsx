@@ -29,7 +29,7 @@ import SubjectAllocations from './pages/dashboard/admin/operations/SubjectAlloca
 import ClassAllocations from './pages/dashboard/admin/operations/ClassAllocations';
 import SessionOperation from './pages/dashboard/admin/operations/SessionOperation';
 import TermSetup from './pages/dashboard/admin/operations/TermSetup';
-import Templates from './pages/dashboard/admin/operations/Templates';
+
 import TemplateGallery from './pages/dashboard/admin/operations/TemplateGallery';
 import GradingRules from './pages/dashboard/admin/operations/GradingRules';
 import GateScanner from './pages/dashboard/admin/GateScanner';
@@ -98,7 +98,7 @@ function App() {
               <Route path="roles" element={<RoleManagement />} />
               <Route path="term-setup" element={<TermSetup />} />
               <Route path="session" element={<SessionOperation />} />
-              <Route path="templates" element={<Templates />} />
+
               <Route path="template-gallery" element={<TemplateGallery />} />
               <Route path="grading" element={<GradingRules />} />
               <Route path="gate-scanner" element={<GateScanner />} />
