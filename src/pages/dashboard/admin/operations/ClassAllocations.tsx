@@ -161,9 +161,12 @@ export default function ClassAllocations() {
                   <td>
                     {cls.classTeacherName ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span className="avatar-small placeholder-avatar" style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}>
-                          {cls.classTeacherName.charAt(0)}
-                        </span>
+                        <img 
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(cls.classTeacherName)}&background=000080&color=fff&rounded=true&bold=true`}
+                          alt="Avatar" 
+                          className="avatar-small" 
+                          style={{ width: '24px', height: '24px', margin: 0 }}
+                        />
                         {cls.classTeacherName}
                       </div>
                     ) : (

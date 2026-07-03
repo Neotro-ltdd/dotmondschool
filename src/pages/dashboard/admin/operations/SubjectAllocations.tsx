@@ -165,9 +165,12 @@ export default function SubjectAllocations() {
                     <td>
                       {sub.assignedTeacher ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span className="avatar-small placeholder-avatar" style={{ width: '24px', height: '24px', fontSize: '0.7rem' }}>
-                            {sub.assignedTeacher.teacherName.charAt(0)}
-                          </span>
+                          <img 
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(sub.assignedTeacher.teacherName)}&background=000080&color=fff&rounded=true&bold=true`}
+                            alt="Avatar" 
+                            className="avatar-small" 
+                            style={{ width: '24px', height: '24px', margin: 0 }}
+                          />
                           {sub.assignedTeacher.teacherName}
                         </div>
                       ) : (
