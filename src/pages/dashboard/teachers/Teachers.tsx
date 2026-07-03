@@ -109,6 +109,17 @@ export default function Teachers() {
     }
   };
 
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`)) return;
+    try {
+      await api.delete(`/setup/staff/${id}`);
+      alert('Staff member permanently deleted.');
+      fetchTeachers();
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete staff member.');
+    }
+  };
+
   return (
     <div className="management-page">
       <div className="page-header">
@@ -192,15 +203,26 @@ export default function Teachers() {
                     )}
                   </td>
                   <td>
-                    {teacher.isActive && (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {teacher.isActive && (
+                        <button 
+                          className="btn btn-secondary" 
+                          title="Temporarily deactivate this staff member"
+                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#f59e0b', color: 'white', border: 'none' }}
+                          onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                        >
+                          Deactivate
+                        </button>
+                      )}
                       <button 
                         className="btn btn-secondary" 
+                        title="Permanently delete this staff member"
                         style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
-                        onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                        onClick={() => handleDelete(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
                       >
-                        Remove
+                        Delete
                       </button>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))}
