@@ -203,6 +203,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                           <NavLink to="/dashboard/finance/ledger" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
                             Student Ledger
                           </NavLink>
+                          <NavLink to="/dashboard/operations/manual-clearance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem', color: '#ef4444' }}>
+                            Manual Clearance
+                          </NavLink>
                         </div>
                       )}
                     </div>
@@ -267,6 +270,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                         </NavLink>
                         <NavLink to="/dashboard/operations/gate-logs" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
                           Gate Logs
+                        </NavLink>
+                        <NavLink to="/dashboard/operations/manual-clearance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem', color: '#ef4444' }}>
+                          Manual Clearance
                         </NavLink>
                       </div>
                     )}
