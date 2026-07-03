@@ -166,30 +166,22 @@ export default function Teachers() {
                 <tr key={teacher.id}>
                   <td>
                     <div className="user-info">
-                      {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' ? (
+                      {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' ? (
                         <img 
                           src={teacher.avatarUrl} 
                           alt="Avatar" 
                           className="avatar-small" 
                           onError={(e) => {
-                            // Fallback to placeholder if image fails to load
-                            e.currentTarget.style.display = 'none';
-                            const parent = e.currentTarget.parentElement;
-                            if (parent) {
-                              const placeholder = document.createElement('div');
-                              placeholder.className = 'avatar-small placeholder-avatar';
-                              placeholder.style.borderRadius = '50%';
-                              placeholder.style.flexShrink = '0';
-                              placeholder.style.marginRight = '1rem';
-                              placeholder.innerText = teacher.surname ? teacher.surname.charAt(0).toUpperCase() : 'T';
-                              parent.insertBefore(placeholder, parent.firstChild);
-                            }
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=000080&color=fff&rounded=true&bold=true`;
                           }}
                         />
                       ) : (
-                        <div className="avatar-small placeholder-avatar" style={{ borderRadius: '50%', flexShrink: 0, marginRight: '1rem' }}>
-                          {teacher.surname ? teacher.surname.charAt(0).toUpperCase() : 'T'}
-                        </div>
+                        <img 
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=000080&color=fff&rounded=true&bold=true`}
+                          alt="Avatar" 
+                          className="avatar-small" 
+                        />
                       )}
                       <div>
                         <strong>{teacher.surname} {teacher.firstName}</strong>
