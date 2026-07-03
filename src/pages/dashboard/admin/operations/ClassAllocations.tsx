@@ -53,7 +53,40 @@ export default function ClassAllocations() {
     fetchData();
   }, []);
 
-  const filteredClasses = levelFilter ? classes.filter(c => c.level === levelFilter) : classes;
+  const levelOrder: Record<string, number> = {
+    'Senior Secondary': 1,
+    'Junior Secondary': 2,
+    'Upper Primary': 3,
+    'Lower Primary': 4,
+    'Primary': 5,
+    'Nursery 2': 6,
+    'Nursery 1': 7,
+    'Nursery': 8,
+    'Kindergarten': 9
+  };
+
+  const sortedClasses = [...classes].sort((a, b) => {
+    const levelA = levelOrder[a.level] || 99;
+    const levelB = levelOrder[b.level] || 99;
+    
+    if (levelA !== levelB) {
+      return levelA - levelB;
+    }
+    
+    const numA = parseInt(a.name.replace(/\D/g, '')) || 0;
+    const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
+    
+    if (numA !== numB) {
+      if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Lower Primary', 'Primary', 'Nursery 2', 'Nursery 1', 'Nursery'].includes(a.level)) {
+        return numB - numA; // Descending
+      }
+      return numA - numB; // Ascending
+    }
+    
+    return (a.section || '').localeCompare(b.section || '');
+  });
+
+  const filteredClasses = levelFilter ? sortedClasses.filter(c => c.level === levelFilter) : sortedClasses;
 
   const openAssignModal = (cls: ClassItem) => {
     setSelectedClass(cls);
