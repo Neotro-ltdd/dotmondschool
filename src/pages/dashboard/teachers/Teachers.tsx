@@ -109,6 +109,17 @@ export default function Teachers() {
     }
   };
 
+  const handleActivate = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to restore access for ${name}?`)) return;
+    try {
+      await api.post(`/setup/staff/${id}/activate`, {});
+      alert('Staff member activated successfully.');
+      fetchTeachers();
+    } catch (err: any) {
+      alert(err.message || 'Failed to activate staff member.');
+    }
+  };
+
   const handleDelete = async (id: string, name: string) => {
     if (!window.confirm(`Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`)) return;
     try {
@@ -204,7 +215,7 @@ export default function Teachers() {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      {teacher.isActive && (
+                      {teacher.isActive ? (
                         <button 
                           className="btn btn-secondary" 
                           title="Temporarily deactivate this staff member"
@@ -212,6 +223,15 @@ export default function Teachers() {
                           onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
                         >
                           Deactivate
+                        </button>
+                      ) : (
+                        <button 
+                          className="btn btn-secondary" 
+                          title="Restore access for this staff member"
+                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#10b981', color: 'white', border: 'none' }}
+                          onClick={() => handleActivate(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                        >
+                          Activate
                         </button>
                       )}
                       <button 
