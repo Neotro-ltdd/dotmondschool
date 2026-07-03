@@ -206,7 +206,11 @@ export default function Students() {
             <option value="Senior Secondary">Senior Secondary</option>
             <option value="Junior Secondary">Junior Secondary</option>
             <option value="Primary">Primary</option>
+            <option value="Upper Primary">Upper Primary</option>
+            <option value="Lower Primary">Lower Primary</option>
             <option value="Nursery">Nursery</option>
+            <option value="Nursery 2">Nursery 2</option>
+            <option value="Nursery 1">Nursery 1</option>
             <option value="Kindergarten">Kindergarten</option>
           </select>
         </div>
