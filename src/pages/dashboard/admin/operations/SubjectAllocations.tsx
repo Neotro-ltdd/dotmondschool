@@ -159,7 +159,7 @@ export default function SubjectAllocations() {
                   <tr>
                     <td colSpan={3} style={{ textAlign: 'center' }}>No subjects found. Please configure subjects first.</td>
                   </tr>
-                ) : activeClass.subjects.map(sub => (
+                ) : [...activeClass.subjects].sort((a, b) => a.subjectName.localeCompare(b.subjectName)).map(sub => (
                   <tr key={sub.subjectId}>
                     <td style={{ fontWeight: '500' }}>{sub.subjectName}</td>
                     <td>
