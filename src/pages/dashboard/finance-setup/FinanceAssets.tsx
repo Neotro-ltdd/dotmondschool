@@ -69,7 +69,7 @@ export default function FinanceAssets() {
           <label style={{ fontWeight: 'bold', marginBottom: '0.5rem', display: 'block' }}>School Logo</label>
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <div style={{ width: 100, height: 100, borderRadius: '12px', background: '#f8f9fa', border: '2px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {logoUrl ? <img src={`${API_ROOT}${logoUrl}`} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <span style={{fontSize: '2.5rem'}}>🏫</span>}
+              {logoUrl ? <img src={logoUrl.startsWith('http') ? logoUrl : `${API_ROOT}${logoUrl}`} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <span style={{fontSize: '2.5rem'}}>🏫</span>}
             </div>
             <div style={{ flex: 1 }}>
               <input type="file" accept="image/*" className="form-control" onChange={e => handleFileUpload(e, 'logo')} style={{ padding: '0.8rem' }} />

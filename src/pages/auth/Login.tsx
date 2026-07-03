@@ -142,7 +142,12 @@ export default function Login() {
       <div className="login-panel glass-panel">
         <div className="login-header">
           {logoUrl ? (
-            <img src={`${API_ROOT}${logoUrl}`} alt={`${schoolName} Logo`} className="school-logo" style={{ maxHeight: '80px', marginBottom: '10px' }} />
+            <img 
+              src={logoUrl.startsWith('http') ? logoUrl : `${API_ROOT}${logoUrl}`} 
+              alt={`${schoolName} Logo`} 
+              className="school-logo" 
+              style={{ maxHeight: '80px', marginBottom: '10px' }} 
+            />
           ) : (
             <div className="school-logo-placeholder">{schoolName === "Neotro SMS" ? "NS" : schoolName.substring(0, 2).toUpperCase()}</div>
           )}

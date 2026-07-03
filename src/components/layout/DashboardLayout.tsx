@@ -17,10 +17,10 @@ export default function DashboardLayout() {
       api.get('/setup/school-profile')
         .then(data => {
           if (data?.logoUrl) {
-            const url = data.logoUrl.startsWith('http') || data.logoUrl.startsWith('data:') 
-              ? data.logoUrl 
-              : `${API_ROOT}${data.logoUrl}`;
-            setLogoUrl(url);
+            const fullLogoUrl = data.logoUrl 
+                ? (data.logoUrl.startsWith('http') ? data.logoUrl : `${API_ROOT}${data.logoUrl}`)
+                : null;
+              setLogoUrl(fullLogoUrl);
           }
         })
         .catch(err => console.error("Could not load school profile", err));

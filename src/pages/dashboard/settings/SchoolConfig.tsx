@@ -181,8 +181,8 @@ export default function SchoolConfig() {
 
             <div className="form-group full-width">
               <label>School Logo {currentLogoUrl && "(Upload new to replace)"}</label>
-              {currentLogoUrl && !logoFile && <img src={`${API_ROOT}${currentLogoUrl}`} alt="Current Logo" style={{maxHeight: '50px', marginBottom: '10px'}} />}
-              <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setLogoFile)} />
+              {currentLogoUrl && !logoFile && <img src={currentLogoUrl.startsWith('http') ? currentLogoUrl : `${API_ROOT}${currentLogoUrl}`} alt="Current Logo" style={{maxHeight: '50px', marginBottom: '10px'}} />}
+              <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setLogoFile)} className="form-control" />
             </div>
           </div>
         </div>
