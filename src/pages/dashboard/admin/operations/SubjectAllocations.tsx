@@ -49,7 +49,7 @@ export default function SubjectAllocations() {
         api.get('/setup/staff')
       ]);
       setAllocations(allocData);
-      setTeachers(teacherData.filter((t: any) => t.role === 'SubjectTeacher'));
+      setTeachers(teacherData.filter((t: any) => t.role?.includes('Teacher')));
       
       // Auto-select first class if none selected or if level changes
       if (allocData.length > 0) {
