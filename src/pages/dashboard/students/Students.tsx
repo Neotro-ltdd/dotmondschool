@@ -12,6 +12,7 @@ interface StudentItem {
   registrationNumber: string;
   parentEmail: string;
   parentPhoneNumber: string;
+  parentIdentityUserId?: string;
   className: string;
   classId?: string;
   level?: string;
@@ -51,6 +52,11 @@ export default function Students() {
     departmentTrack: 'General'
   });
   const [submitting, setSubmitting] = useState(false);
+  
+  // Credentials Modal State
+  const [showCredsModal, setShowCredsModal] = useState(false);
+  const [credsData, setCredsData] = useState<{username: string, password: string, emailQueued: boolean} | null>(null);
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
   
   // Upload State
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -110,6 +116,29 @@ export default function Students() {
       alert(err.message || 'Failed to admit student');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
+    if (!identityUserId) {
+        alert('This parent does not have an active login account.');
+        return;
+    }
+    if (!window.confirm(`Are you sure you want to regenerate credentials for ${name}'s Parent? Their old password will be invalidated immediately.`)) return;
+    
+    try {
+        setGeneratingId(identityUserId);
+        const response = await api.post('/user-management/regenerate-credentials', { userId: identityUserId });
+        setCredsData({
+            username: response.username,
+            password: response.password,
+            emailQueued: response.emailQueued
+        });
+        setShowCredsModal(true);
+    } catch (err: any) {
+        alert(err.message || 'Failed to regenerate credentials.');
+    } finally {
+        setGeneratingId(null);
     }
   };
 
@@ -258,6 +287,7 @@ export default function Students() {
                 <th>Parent Contact</th>
                 <th>Clearance</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -284,9 +314,20 @@ export default function Students() {
                     </span>
                   </td>
                   <td>
-                    <button className="btn btn-secondary btn-sm" onClick={() => setPrintStudentId(student.id)}>
-                      🪪 ID Card
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button className="btn btn-secondary btn-sm" onClick={() => setPrintStudentId(student.id)}>
+                        🪪 ID Card
+                      </button>
+                      <button 
+                        className="btn btn-secondary btn-sm" 
+                        title="Parent Credentials"
+                        style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none' }}
+                        onClick={() => handleRegenerateCredentials(student.parentIdentityUserId!, `${student.surname} ${student.firstName}`)}
+                        disabled={generatingId === student.parentIdentityUserId || !student.parentIdentityUserId}
+                      >
+                        {generatingId === student.parentIdentityUserId ? 'Generating...' : '🔐 Credentials'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -350,8 +391,8 @@ export default function Students() {
                   <input type="tel" name="parentPhoneNumber" value={formData.parentPhoneNumber} onChange={handleInputChange} required />
                 </div>
                 <div className="form-group">
-                  <label>Parent Email Address</label>
-                  <input type="email" name="parentEmail" value={formData.parentEmail} onChange={handleInputChange} required />
+                  <label>Parent Email Address (Optional)</label>
+                  <input type="email" name="parentEmail" value={formData.parentEmail} onChange={handleInputChange} />
                 </div>
               </div>
 
@@ -362,6 +403,44 @@ export default function Students() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showCredsModal && credsData && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel">
+            <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '1rem', marginBottom: '1rem' }}>
+                <h2 style={{ margin: 0, color: '#10b981' }}>Parent Credentials Regenerated!</h2>
+                <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
+            </div>
+            
+            <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <div style={{ marginBottom: '1rem' }}>
+                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>Username / Email</label>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
+                </div>
+                <div>
+                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>New Password</label>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 'bold', letterSpacing: '2px', color: '#60a5fa' }}>{credsData.password}</div>
+                </div>
+            </div>
+
+            {credsData.emailQueued ? (
+                <div className="alert-success" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                    ✅ A welcome email containing these credentials has also been queued for delivery.
+                </div>
+            ) : (
+                <div className="alert-warning" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                    ⚠️ No email was sent because this parent does not have a real email address on file. You MUST copy this password and send it to them manually.
+                </div>
+            )}
+
+            <div className="modal-actions" style={{ justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn-primary" onClick={() => setShowCredsModal(false)}>
+                    I have copied the password
+                </button>
+            </div>
           </div>
         </div>
       )}

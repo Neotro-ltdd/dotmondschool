@@ -4,6 +4,7 @@ import './Management.css';
 
 interface TeacherItem {
   id: string;
+  identityUserId?: string;
   surname: string;
   firstName: string;
   otherNames: string;
@@ -44,6 +45,11 @@ export default function Teachers() {
     role: 'Teacher'
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // Credentials Modal State
+  const [showCredsModal, setShowCredsModal] = useState(false);
+  const [credsData, setCredsData] = useState<{username: string, password: string, emailQueued: boolean} | null>(null);
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
 
   // Form dependencies
   const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -131,6 +137,29 @@ export default function Teachers() {
     }
   };
 
+  const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
+    if (!identityUserId) {
+        alert('This user does not have an active login account.');
+        return;
+    }
+    if (!window.confirm(`Are you sure you want to regenerate credentials for ${name}? Their old password will be invalidated immediately.`)) return;
+    
+    try {
+        setGeneratingId(identityUserId);
+        const response = await api.post('/user-management/regenerate-credentials', { userId: identityUserId });
+        setCredsData({
+            username: response.username,
+            password: response.password,
+            emailQueued: response.emailQueued
+        });
+        setShowCredsModal(true);
+    } catch (err: any) {
+        alert(err.message || 'Failed to regenerate credentials.');
+    } finally {
+        setGeneratingId(null);
+    }
+  };
+
   return (
     <div className="management-page">
       <div className="page-header">
@@ -206,7 +235,16 @@ export default function Teachers() {
                     )}
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button 
+                        className="btn btn-secondary" 
+                        title="Regenerate Credentials"
+                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#3b82f6', color: 'white', border: 'none' }}
+                        onClick={() => handleRegenerateCredentials(teacher.identityUserId!, `${teacher.surname} ${teacher.firstName}`)}
+                        disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                      >
+                        {generatingId === teacher.identityUserId ? 'Generating...' : 'Credentials'}
+                      </button>
                       {teacher.isActive ? (
                         <button 
                           className="btn btn-secondary" 
@@ -300,6 +338,44 @@ export default function Teachers() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showCredsModal && credsData && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel">
+            <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '1rem', marginBottom: '1rem' }}>
+                <h2 style={{ margin: 0, color: '#10b981' }}>Credentials Regenerated!</h2>
+                <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
+            </div>
+            
+            <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                <div style={{ marginBottom: '1rem' }}>
+                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>Username / Email</label>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
+                </div>
+                <div>
+                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>New Password</label>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 'bold', letterSpacing: '2px', color: '#60a5fa' }}>{credsData.password}</div>
+                </div>
+            </div>
+
+            {credsData.emailQueued ? (
+                <div className="alert-success" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                    ✅ A welcome email containing these credentials has also been queued for delivery.
+                </div>
+            ) : (
+                <div className="alert-warning" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                    ⚠️ No email was sent because this user does not have a real email address on file. You MUST copy this password and send it to them manually.
+                </div>
+            )}
+
+            <div className="modal-actions" style={{ justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn-primary" onClick={() => setShowCredsModal(false)}>
+                    I have copied the password
+                </button>
+            </div>
           </div>
         </div>
       )}
