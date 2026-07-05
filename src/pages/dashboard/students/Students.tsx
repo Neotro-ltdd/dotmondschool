@@ -195,7 +195,7 @@ export default function Students() {
           <div style={{ display: 'flex', gap: '1rem' }}>
             <input 
               type="file" 
-              accept=".csv" 
+              accept=".xlsx,.xls" 
               ref={fileInputRef} 
               style={{ display: 'none' }} 
               onChange={handleFileUpload} 
@@ -205,14 +205,14 @@ export default function Students() {
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
             >
-              <span className="icon">📁</span> {uploading ? 'Uploading...' : 'Bulk Upload (CSV)'}
+              <span className="icon">📁</span> {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
             </button>
             <button className="btn btn-primary" onClick={() => setShowModal(true)}>
               <span className="icon">➕</span> Add Student
             </button>
           </div>
           <small style={{ color: 'var(--color-text-light)', fontSize: '0.8rem' }}>
-            CSV Format: Surname, FirstName, OtherNames, Gender, DOB, Class, Phone, Email
+            Excel Format: Surname, FirstName, OtherNames, Gender, DOB, Class, Phone, Email, DepartmentTrack
           </small>
         </div>
       </div>
