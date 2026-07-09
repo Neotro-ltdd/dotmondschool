@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
+import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
 import './Dashboard.css';
 
@@ -229,6 +230,11 @@ export default function Overview() {
         </div>
       ) : userRole === 'Accountant' ? (
         <div className="analytics-section">
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
+            <Link to="/dashboard/operations/manual-clearance" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ef4444' }}>
+              <span>✅</span> Manual Student Clearance
+            </Link>
+          </div>
           {loading ? <p>Loading your dashboard...</p> : accountantData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div className="stats-grid">
