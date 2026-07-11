@@ -127,22 +127,20 @@ export default function ContinuousAssessment() {
       if (field === 'exam') {
         newScore.exam = value !== null && value > 60 ? 60 : value; // Max 60 for exam
       } else {
-        const prevCaData = newScore.caData || { "First Test": null, "Second Test": null, "Assignment": null };
-        const updatedCaData = { ...prevCaData, [field]: value } as { "First Test": number | null; "Second Test": number | null; "Assignment": number | null };
+        const prevCaData = newScore.caData || { "First Test": null, "Second Test": null };
+        const updatedCaData = { ...prevCaData, [field]: value } as { "First Test": number | null; "Second Test": number | null };
         newScore.caData = updatedCaData;
         
         // Enforce max limits
-        if (field === 'First Test' && newScore.caData["First Test"] !== null && newScore.caData["First Test"]! > 15) newScore.caData["First Test"] = 15;
-        if (field === 'Second Test' && newScore.caData["Second Test"] !== null && newScore.caData["Second Test"]! > 15) newScore.caData["Second Test"] = 15;
-        if (field === 'Assignment' && newScore.caData["Assignment"] !== null && newScore.caData["Assignment"]! > 10) newScore.caData["Assignment"] = 10;
+        if (field === 'First Test' && newScore.caData["First Test"] !== null && newScore.caData["First Test"]! > 20) newScore.caData["First Test"] = 20;
+        if (field === 'Second Test' && newScore.caData["Second Test"] !== null && newScore.caData["Second Test"]! > 20) newScore.caData["Second Test"] = 20;
         
         const first = newScore.caData["First Test"] || 0;
         const second = newScore.caData["Second Test"] || 0;
-        const assignment = newScore.caData["Assignment"] || 0;
         
-        newScore.caTotal = (newScore.caData["First Test"] === null && newScore.caData["Second Test"] === null && newScore.caData["Assignment"] === null) 
+        newScore.caTotal = (newScore.caData["First Test"] === null && newScore.caData["Second Test"] === null) 
                             ? null 
-                            : (first + second + assignment);
+                            : (first + second);
       }
       
       if (newScore.caTotal === null && newScore.exam === null) {
@@ -160,13 +158,13 @@ export default function ContinuousAssessment() {
       setSavingScores(true);
       const promises = scores.map(s => {
         // Only send if not completely null
-        const isCompletelyNull = s.exam === null && (!s.caData || (s.caData["First Test"] === null && s.caData["Second Test"] === null && s.caData["Assignment"] === null));
+        const isCompletelyNull = s.exam === null && (!s.caData || (s.caData["First Test"] === null && s.caData["Second Test"] === null));
         return api.post('/academics/scores', {
           studentId: s.studentId,
           subjectId: selectedSubjectId,
           session: filterSession,
           term: filterTerm,
-          caData: isCompletelyNull ? null : (s.caData || { "First Test": 0, "Second Test": 0, "Assignment": 0 }),
+          caData: isCompletelyNull ? null : (s.caData || { "First Test": 0, "Second Test": 0 }),
           exam: isCompletelyNull ? null : (s.exam || 0)
         });
       });
@@ -187,13 +185,13 @@ export default function ContinuousAssessment() {
       
       // Auto-save scores before locking to ensure no data is lost
       const savePromises = scores.map(s => {
-        const isCompletelyNull = s.exam === null && (!s.caData || (s.caData["First Test"] === null && s.caData["Second Test"] === null && s.caData["Assignment"] === null));
+        const isCompletelyNull = s.exam === null && (!s.caData || (s.caData["First Test"] === null && s.caData["Second Test"] === null));
         return api.post('/academics/scores', {
           studentId: s.studentId,
           subjectId: selectedSubjectId,
           session: filterSession,
           term: filterTerm,
-          caData: isCompletelyNull ? null : (s.caData || { "First Test": 0, "Second Test": 0, "Assignment": 0 }),
+          caData: isCompletelyNull ? null : (s.caData || { "First Test": 0, "Second Test": 0 }),
           exam: isCompletelyNull ? null : (s.exam || 0)
         });
       });
@@ -331,9 +329,8 @@ export default function ContinuousAssessment() {
                         <thead>
                           <tr>
                             <th>Student</th>
-                            <th style={{ width: '120px' }}>1st Test (15)</th>
-                            <th style={{ width: '120px' }}>2nd Test (15)</th>
-                            <th style={{ width: '120px' }}>Assignment (10)</th>
+                            <th style={{ width: '120px' }}>1st Test (20)</th>
+                            <th style={{ width: '120px' }}>2nd Test (20)</th>
                             <th style={{ width: '80px', textAlign: 'center' }}>Total CA</th>
                           </tr>
                         </thead>
@@ -352,7 +349,7 @@ export default function ContinuousAssessment() {
                                     type="number" 
                                     className="form-control" 
                                     style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max="15" 
+                                    min="0" max="20" 
                                     value={score.caData?.["First Test"] ?? ''}
                                     disabled={isLocked}
                                     onChange={e => handleScoreChange(score.studentId, 'First Test', e.target.value)} 
@@ -363,21 +360,10 @@ export default function ContinuousAssessment() {
                                     type="number" 
                                     className="form-control" 
                                     style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max="15" 
+                                    min="0" max="20" 
                                     value={score.caData?.["Second Test"] ?? ''}
                                     disabled={isLocked}
                                     onChange={e => handleScoreChange(score.studentId, 'Second Test', e.target.value)} 
-                                  />
-                                </td>
-                                <td>
-                                  <input 
-                                    type="number" 
-                                    className="form-control" 
-                                    style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max="10" 
-                                    value={score.caData?.["Assignment"] ?? ''}
-                                    disabled={isLocked}
-                                    onChange={e => handleScoreChange(score.studentId, 'Assignment', e.target.value)} 
                                   />
                                 </td>
                                 <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
