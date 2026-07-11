@@ -27,7 +27,6 @@ interface ScoreRecord {
   caData: {
     "First Test": number | null;
     "Second Test": number | null;
-    "Assignment": number | null;
   } | null;
   caTotal: number | null;
   exam: number | null;
@@ -59,6 +58,9 @@ export default function ContinuousAssessment() {
   const [statusLoading, setStatusLoading] = useState(false);
   const [classStatus, setClassStatus] = useState<{ allSubmitted: boolean, subjects: SubjectStatus[] } | null>(null);
   const [compiling, setCompiling] = useState(false);
+
+  // Term Setup
+  const [termSetup, setTermSetup] = useState<{ caWeightFirst: number, caWeightSecond: number, examWeight: number } | null>(null);
 
   const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
 
@@ -112,6 +114,14 @@ export default function ContinuousAssessment() {
   }, [selectedClass, selectedSubjectId, filterSession, filterTerm, activeTab]);
 
   useEffect(() => {
+    if (filterSession && filterTerm) {
+      api.get(`/setup/terms?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`)
+        .then(data => setTermSetup(data))
+        .catch(err => console.error('Failed to load term setup', err));
+    }
+  }, [filterSession, filterTerm]);
+
+  useEffect(() => {
     if (selectedClass && activeTab === 'compile') {
       fetchClassStatus();
     }
@@ -125,15 +135,19 @@ export default function ContinuousAssessment() {
       const value = valueStr === '' ? null : parseFloat(valueStr);
       
       if (field === 'exam') {
-        newScore.exam = value !== null && value > 60 ? 60 : value; // Max 60 for exam
+        const maxExam = termSetup?.examWeight ?? 60;
+        newScore.exam = value !== null && value > maxExam ? maxExam : value;
       } else {
         const prevCaData = newScore.caData || { "First Test": null, "Second Test": null };
         const updatedCaData = { ...prevCaData, [field]: value } as { "First Test": number | null; "Second Test": number | null };
         newScore.caData = updatedCaData;
         
+        const maxFirst = termSetup?.caWeightFirst ?? 20;
+        const maxSecond = termSetup?.caWeightSecond ?? 20;
+
         // Enforce max limits
-        if (field === 'First Test' && newScore.caData["First Test"] !== null && newScore.caData["First Test"]! > 20) newScore.caData["First Test"] = 20;
-        if (field === 'Second Test' && newScore.caData["Second Test"] !== null && newScore.caData["Second Test"]! > 20) newScore.caData["Second Test"] = 20;
+        if (field === 'First Test' && newScore.caData["First Test"] !== null && newScore.caData["First Test"]! > maxFirst) newScore.caData["First Test"] = maxFirst;
+        if (field === 'Second Test' && newScore.caData["Second Test"] !== null && newScore.caData["Second Test"]! > maxSecond) newScore.caData["Second Test"] = maxSecond;
         
         const first = newScore.caData["First Test"] || 0;
         const second = newScore.caData["Second Test"] || 0;
@@ -329,8 +343,8 @@ export default function ContinuousAssessment() {
                         <thead>
                           <tr>
                             <th>Student</th>
-                            <th style={{ width: '120px' }}>1st Test (20)</th>
-                            <th style={{ width: '120px' }}>2nd Test (20)</th>
+                            <th style={{ width: '120px' }}>1st Test ({termSetup?.caWeightFirst ?? 20})</th>
+                            <th style={{ width: '120px' }}>2nd Test ({termSetup?.caWeightSecond ?? 20})</th>
                             <th style={{ width: '80px', textAlign: 'center' }}>Total CA</th>
                           </tr>
                         </thead>
@@ -349,7 +363,7 @@ export default function ContinuousAssessment() {
                                     type="number" 
                                     className="form-control" 
                                     style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max="20" 
+                                    min="0" max={termSetup?.caWeightFirst ?? 20} 
                                     value={score.caData?.["First Test"] ?? ''}
                                     disabled={isLocked}
                                     onChange={e => handleScoreChange(score.studentId, 'First Test', e.target.value)} 
@@ -360,14 +374,14 @@ export default function ContinuousAssessment() {
                                     type="number" 
                                     className="form-control" 
                                     style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max="20" 
+                                    min="0" max={termSetup?.caWeightSecond ?? 20} 
                                     value={score.caData?.["Second Test"] ?? ''}
                                     disabled={isLocked}
                                     onChange={e => handleScoreChange(score.studentId, 'Second Test', e.target.value)} 
                                   />
                                 </td>
                                 <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
-                                  {score.caTotal} / 40
+                                  {score.caTotal} / {(termSetup?.caWeightFirst ?? 20) + (termSetup?.caWeightSecond ?? 20)}
                                 </td>
                               </tr>
                             );
@@ -410,7 +424,7 @@ export default function ContinuousAssessment() {
                           <tr>
                             <th>Student</th>
                             <th style={{ width: '80px', textAlign: 'center' }}>Total CA</th>
-                            <th style={{ width: '150px' }}>Exam Score (60)</th>
+                            <th style={{ width: '150px' }}>Exam Score ({termSetup?.examWeight ?? 60})</th>
                             <th style={{ width: '100px', textAlign: 'center' }}>Total Score</th>
                           </tr>
                         </thead>
@@ -424,13 +438,13 @@ export default function ContinuousAssessment() {
                                   <div className="text-sm text-muted">{score.registrationNumber}</div>
                                   {isLocked && <span className="badge badge-success" style={{ fontSize: '0.65rem' }}>Submitted</span>}
                                 </td>
-                                <td style={{ textAlign: 'center' }}>{score.caTotal} / 40</td>
+                                <td style={{ textAlign: 'center' }}>{score.caTotal} / {(termSetup?.caWeightFirst ?? 20) + (termSetup?.caWeightSecond ?? 20)}</td>
                                 <td>
                                   <input 
                                     type="number" 
                                     className="form-control" 
                                     style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max="60" 
+                                    min="0" max={termSetup?.examWeight ?? 60} 
                                     value={score.exam ?? ''}
                                     disabled={isLocked}
                                     onChange={e => handleScoreChange(score.studentId, 'exam', e.target.value)} 
