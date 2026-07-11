@@ -1,318 +1,522 @@
-import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { tenants, defaultTenantId } from '../config/tenantConfig';
-import './LandingPage.css';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useTenant } from "../context/TenantContext";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  
-  // Resolve tenant based on ?school= URL param
-  const schoolParam = searchParams.get('school')?.toLowerCase();
-  const currentTenant = schoolParam && tenants[schoolParam] ? tenants[schoolParam] : tenants[defaultTenantId];
-
-  // Map tenant colors to CSS variables inline
-  const themeStyles = {
-    '--indigo': currentTenant.colors.indigo,
-    '--indigo-dark': currentTenant.colors.indigoDark,
-    '--gold': currentTenant.colors.gold,
-    '--gold-dark': currentTenant.colors.goldDark,
-    '--sage': currentTenant.colors.sage,
-    '--sage-bg': currentTenant.colors.sageBg,
-    '--terracotta': currentTenant.colors.terracotta,
-    '--terracotta-bg': currentTenant.colors.terracottaBg,
-    ...(currentTenant.colors.paper && { '--paper': currentTenant.colors.paper }),
-    ...(currentTenant.colors.paperLine && { '--paper-line': currentTenant.colors.paperLine }),
-    ...(currentTenant.colors.ink && { '--ink': currentTenant.colors.ink }),
-    ...(currentTenant.colors.inkSoft && { '--ink-soft': currentTenant.colors.inkSoft }),
-  } as React.CSSProperties;
+  const { logoUrl, schoolName } = useTenant();
 
   return (
-    <div className="landing-container" style={themeStyles}>
-      <nav className="nav">
-        <div className="nav-inner">
-          <div className="brand">
-            <div className="brand-mark" style={{ fontSize: currentTenant.shortName.length > 3 ? '12px' : '15px' }}>
-              {currentTenant.shortName}
-            </div>
-            <div>
-              <div className="brand-name">{currentTenant.name}</div>
-              <div className="brand-sub">Powered by Neotro SMS</div>
+    <div className="flex h-full w-full flex-col items-center bg-[#ffffff]">
+      <header className="flex w-full items-center justify-center border-b border-solid border-[#e5e7eb] bg-[#ffffff] sticky top-0 z-50">
+        <div className="container max-w-none flex grow shrink-0 basis-0 items-center justify-between py-4">
+          <div className="flex items-center gap-3">
+            {logoUrl ? (
+              <img src={logoUrl} alt={schoolName} className="flex h-10 w-10 flex-none items-center justify-center rounded-[6px] object-cover" />
+            ) : (
+              <div className="flex h-10 w-10 flex-none items-center justify-center rounded-[6px] bg-[#0ea5e9] text-[#ffffff]">
+                <svg
+                  className="font-['Inter'] text-[20px] font-[400] leading-[30px] text-[#ffffff]"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm0 2.18 7 3.12V11c0 4.67-3.13 9.06-7 10.2-3.87-1.14-7-5.53-7-10.2V6.3z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                  <path
+                    d="M12 6 8 8v3c0 2.5 1.7 4.8 4 5.5 2.3-.7 4-3 4-5.5V8z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+              </div>
+            )}
+            <div className="flex flex-col items-start">
+              <span className="w-full font-['Inter'] text-[18px] font-[700] leading-[20px] text-[#1f2937]">
+                DOTMOND
+              </span>
+              <span className="w-full font-['Inter'] text-[10px] font-[600] leading-[16px] tracking-wider text-[#0ea5e9]">
+                PRIMARY &amp; SECONDARY SCHOOL
+              </span>
             </div>
           </div>
-          <div className="nav-links">
-            <a className="nav-link" href="#modules">Modules</a>
-            <a className="nav-link" href="#audience">Who it's for</a>
-            <a className="nav-link" href="#">Admissions</a>
-            <a className="nav-link" href="#">Support</a>
+          <nav className="flex items-center gap-8 mobile:hidden">
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#374151]">
+              About
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#374151]">
+              Academics
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#374151]">
+              Admissions
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#374151]">
+              Contact
+            </span>
+          </nav>
+          <div 
+            onClick={() => navigate('/login')}
+            className="flex items-center justify-center rounded-[6px] bg-[#0ea5e9] px-5 py-2.5 cursor-pointer hover:bg-[#0284c7] transition-colors"
+          >
+            <span className="font-['Inter'] text-[14px] font-[600] leading-[21px] text-[#ffffff]">
+              Portal Login
+            </span>
           </div>
-          <button className="btn btn-primary" onClick={() => navigate('/login')}>Portal login</button>
         </div>
-      </nav>
-
-      <section className="hero">
-        <div>
-          <div className="eyebrow">Pre-nursery — SS3 · {currentTenant.location}</div>
-          <h1 className="display">You'll know the<br />moment they're <em>safely<br />through the gate.</em></h1>
-          <p className="lede">Every {currentTenant.shortName} student taps their ID card at the gate. You get an SMS the second they arrive — and another the second they leave. No app to check, no waiting for a phone call.</p>
-          <div className="hero-actions">
-            <button className="btn btn-primary" onClick={() => navigate('/login')}>Go to my portal</button>
-            <a href="#tap-in" className="btn btn-ghost">See how it works</a>
-          </div>
-          <div className="hero-trust">
-            <div className="trust-item">
-              <span className="trust-num">&lt;3s</span>
-              <span className="trust-label">From tap to<br />SMS sent</span>
+      </header>
+      <section className="flex w-full items-center justify-center bg-gradient-to-br from-[#E0F2FE] to-[#F3F4F6]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 items-center gap-12 py-20 mobile:flex-col mobile:gap-8 mobile:py-12">
+          <div className="flex flex-col items-start gap-6 flex-1">
+            <div className="flex items-center gap-2 rounded-[9999px] bg-[#bae6fd] px-4 py-1.5">
+              <span className="font-['Inter'] text-[12px] font-[600] leading-[18px] text-[#0369a1]">
+                ★ Admissions Open for 2025/2026 Session
+              </span>
             </div>
-            <div className="trust-item">
-              <span className="trust-num">2×</span>
-              <span className="trust-label">Daily alerts —<br />in and out</span>
-            </div>
-            <div className="trust-item">
-              <span className="trust-num">100%</span>
-              <span className="trust-label">Of taps logged<br />to attendance</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="hero-visual">
-          <div className="phone-frame">
-            <div className="phone-notch"></div>
-            <div className="phone-screen">
-              <div className="sms-bubble" style={{ animationDelay: '.3s' }}>
-                <div className="sms-meta"><span className="sms-from">{currentTenant.name}</span><span className="sms-time">7:42 AM</span></div>
-                <p>{currentTenant.studentName} arrived at school safely at 7:42 AM. — {currentTenant.name}</p>
+            <h1 className="font-['Inter'] text-[52px] font-[800] leading-[58px] text-[#1f2937] mobile:text-[34px] mobile:leading-[40px] mobile:tracking-normal">
+              Steady Progress and Brightness Future
+            </h1>
+            <p className="font-['Inter'] text-[18px] font-[400] leading-[28px] text-[#4b5563] mobile:text-[16px] mobile:leading-[24px] mobile:tracking-normal">
+              At Dotmond School, we are committed to providing quality education
+              that builds character, fosters creativity, and prepares every
+              child for a brighter tomorrow. Join a community where excellence
+              is the standard.
+            </p>
+            <div className="flex items-center gap-4 mobile:w-full mobile:flex-none mobile:flex-col">
+              <div 
+                onClick={() => navigate('/login')}
+                className="flex items-center justify-center rounded-[6px] bg-[#0ea5e9] px-6 py-3 cursor-pointer hover:bg-[#0284c7] transition-colors mobile:w-full mobile:flex-none"
+              >
+                <span className="font-['Inter'] text-[15px] font-[600] leading-[23px] text-[#ffffff]">
+                  Apply for Admission
+                </span>
               </div>
-              <div className="sms-bubble" style={{ animationDelay: '1.4s' }}>
-                <div className="sms-meta"><span className="sms-from">{currentTenant.name}</span><span className="sms-time">3:15 PM</span></div>
-                <p>{currentTenant.studentName} left school at 3:15 PM. Have a good evening. — {currentTenant.name}</p>
+              <div className="flex items-center justify-center gap-2 rounded-[6px] border border-solid border-[#0ea5e9] px-6 py-3 cursor-pointer hover:bg-[#e0f2fe] transition-colors mobile:w-full mobile:flex-none">
+                <span className="font-['Inter'] text-[15px] font-[600] leading-[23px] text-[#0ea5e9]">
+                  Schedule a Visit
+                </span>
               </div>
             </div>
           </div>
-
-          <div className="tap-card">
-            <div className="tap-card-top">
-              <div className="card-id-mark" style={{ width: '24px', height: '24px', fontSize: '10px' }}>{currentTenant.shortName}</div>
-              <span>Student ID</span>
-            </div>
-            <div className="tap-card-photo"></div>
-            <p className="tap-card-name">{currentTenant.studentName}</p>
-            <span className="tap-card-class">{currentTenant.studentClass}</span>
-            <div className="tap-wave">
-              <span></span><span></span><span></span>
-            </div>
-          </div>
-
-          <div className="scribble"><span>Tap.<br />Notified.</span></div>
-        </div>
-      </section>
-
-      <section className="howit" id="tap-in">
-        <div className="howit-inner">
-          <div className="section-eyebrow">The selling point</div>
-          <h2 className="display">Two taps a day.<br />Two texts to you.</h2>
-          <p className="howit-lede">No app to open, no portal to check while you're at work. The school gate does the work — your phone just receives the answer.</p>
-
-          <div className="howit-flow">
-            <div className="flow-step">
-              <div className="flow-icon icon-indigo">🪪</div>
-              <span className="flow-tag">Morning</span>
-              <h3>Student taps in</h3>
-              <p>{currentTenant.studentName.split(' ')[0]} scans her ID card at the gate scanner on arrival — no queue, no sign-in book.</p>
-            </div>
-            <div className="flow-arrow">→</div>
-            <div className="flow-step">
-              <div className="flow-icon icon-sage">📨</div>
-              <span className="flow-tag">Within seconds</span>
-              <h3>You get an SMS</h3>
-              <p>"{currentTenant.studentName} arrived at school safely at 7:42 AM." Sent straight to the number on file — no app required.</p>
-            </div>
-            <div className="flow-arrow">→</div>
-            <div className="flow-step">
-              <div className="flow-icon icon-gold">🪪</div>
-              <span className="flow-tag">Afternoon</span>
-              <h3>Student taps out</h3>
-              <p>Same card, same scanner, on the way out. The system logs the exact time she left.</p>
-            </div>
-            <div className="flow-arrow">→</div>
-            <div className="flow-step">
-              <div className="flow-icon icon-sage">📨</div>
-              <span className="flow-tag">Within seconds</span>
-              <h3>A second SMS</h3>
-              <p>"{currentTenant.studentName} left school at 3:15 PM." You know she's on her way before she's out of sight.</p>
-            </div>
-          </div>
-
-          <div className="howit-why">
-            <div className="why-item">
-              <div className="why-mark">i</div>
-              <div>
-                <h4>Information</h4>
-                <p>Attendance registers itself. No teacher chasing a paper sheet, no end-of-term surprise about how many days were missed.</p>
-              </div>
-            </div>
-            <div className="why-item">
-              <div className="why-mark">s</div>
-              <div>
-                <h4>Security</h4>
-                <p>If a card isn't tapped by the usual time, the gap is visible immediately — not discovered hours later.</p>
-              </div>
-            </div>
+          <div className="flex items-center justify-center flex-1">
+            <img
+              className="grow shrink-0 basis-0 rounded-2xl shadow-[0px_10px_15px_-3px_#0000001a,0px_4px_6px_-4px_#0000001a] h-[440px] mobile:h-[280px]"
+              src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=900&q=80"
+              alt="School Campus"
+            />
           </div>
         </div>
       </section>
-
-      <section className="ledger-section">
-        <div className="ledger-inner">
-          <div className="ledger-head">
-            <h2>And it all still lands in one record</h2>
-            <p>Every tap, score, invoice and lesson feeds the same student file — attendance just happens to be the one that texts you.</p>
+      <section className="flex w-full items-center justify-center bg-[#1f2937]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 items-center justify-between py-12 mobile:flex-col mobile:gap-8">
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <span className="font-['Inter'] text-[40px] font-[800] leading-[60px] text-[#ffffff] mobile:text-[32px] mobile:leading-[48px] mobile:tracking-normal">
+              15+
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#bae6fd]">
+              Years of Excellence
+            </span>
           </div>
-          <div className="ledger-table">
-            <div className="ledger-col-head">
-              <span>Module</span><span>This term</span><span>Status</span><span>Last updated</span><span>Owner</span>
-            </div>
-            <div className="ledger-row">
-              <div className="ledger-mod">
-                <div className="ledger-icon icon-sage" style={{ background: 'rgba(92,131,99,0.18)', color: '#9CC4A2' }}>🗓</div>
-                <div><div className="ledger-mod-name">Attendance</div><div className="ledger-mod-tag">AAS · gate scan + SMS</div></div>
-              </div>
-              <div className="ledger-val">96% avg</div>
-              <div><span className="pill pill-good">Live</span></div>
-              <div className="ledger-val">9:02 AM</div>
-              <div className="ledger-val">Gate scanner</div>
-            </div>
-            <div className="ledger-row">
-              <div className="ledger-mod">
-                <div className="ledger-icon icon-indigo" style={{ background: 'rgba(127,119,221,0.18)', color: '#C4BFF2' }}>📊</div>
-                <div><div className="ledger-mod-name">Results</div><div className="ledger-mod-tag">RMS</div></div>
-              </div>
-              <div className="ledger-val">3rd term</div>
-              <div><span className="pill pill-good">Published</span></div>
-              <div className="ledger-val">Today</div>
-              <div className="ledger-val">Class teachers</div>
-            </div>
-            <div className="ledger-row">
-              <div className="ledger-mod">
-                <div className="ledger-icon icon-gold" style={{ background: 'rgba(232,163,61,0.18)', color: 'var(--gold)' }}>💳</div>
-                <div><div className="ledger-mod-name">Fees</div><div className="ledger-mod-tag">FMS</div></div>
-              </div>
-              <div className="ledger-val">3rd term</div>
-              <div><span className="pill pill-warn">12 pending</span></div>
-              <div className="ledger-val">Yesterday</div>
-              <div className="ledger-val">Bursary</div>
-            </div>
-            <div className="ledger-row">
-              <div className="ledger-mod">
-                <div className="ledger-icon" style={{ background: 'rgba(212,83,126,0.18)', color: '#F0A8C0' }}>📚</div>
-                <div><div className="ledger-mod-name">Learning</div><div className="ledger-mod-tag">LMS</div></div>
-              </div>
-              <div className="ledger-val">14 modules</div>
-              <div><span className="pill pill-good">Active</span></div>
-              <div className="ledger-val">2 hrs ago</div>
-              <div className="ledger-val">Subject staff</div>
-            </div>
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <span className="font-['Inter'] text-[40px] font-[800] leading-[60px] text-[#ffffff] mobile:text-[32px] mobile:leading-[48px] mobile:tracking-normal">
+              2,500+
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#bae6fd]">
+              Happy Students
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <span className="font-['Inter'] text-[40px] font-[800] leading-[60px] text-[#ffffff] mobile:text-[32px] mobile:leading-[48px] mobile:tracking-normal">
+              120
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#bae6fd]">
+              Dedicated Teachers
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1 flex-1">
+            <span className="font-['Inter'] text-[40px] font-[800] leading-[60px] text-[#38bdf8] mobile:text-[32px] mobile:leading-[48px] mobile:tracking-normal">
+              97%
+            </span>
+            <span className="font-['Inter'] text-[14px] font-[500] leading-[21px] text-[#bae6fd]">
+              Exam Success Rate
+            </span>
           </div>
         </div>
       </section>
-
-      <section className="modules" id="modules">
-        <div className="section-head">
-          <div className="section-eyebrow">What's inside</div>
-          <h2>Four systems, built<br />to work as one.</h2>
-          <p>Each module solves a problem a Nigerian school actually has — not a generic feature checklist.</p>
-        </div>
-
-        <div className="module-grid">
-          <div className="module-card">
-            <span className="module-num">01 / Attendance</span>
-            <div className="module-icon icon-sage">🗓</div>
-            <h3>Daily Attendance</h3>
-            <p>Every tap of a student's ID card at the gate logs the time and fires an SMS to their parent — arrival and departure, automatically.</p>
-            <a href="#tap-in" className="module-link">See how a tap becomes a text →</a>
+      <section className="flex w-full items-center justify-center bg-[#ffffff]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 flex-col items-center gap-12 py-20 mobile:py-12">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <span className="font-['Inter'] text-[13px] font-[700] leading-[20px] tracking-wide text-[#0ea5e9]">
+              WHY CHOOSE DOTMOND
+            </span>
+            <h2 className="font-['Inter'] text-[36px] font-[800] leading-[54px] text-[#1f2937] mobile:text-[26px] mobile:leading-[39px] mobile:tracking-normal">
+              Building Foundations for Lifelong Success
+            </h2>
+            <p className="font-['Inter'] text-[16px] font-[400] leading-[24px] text-[#4b5563] max-w-[600px]">
+              We combine academic rigor with character development, ensuring
+              every student is prepared to lead and succeed.
+            </p>
           </div>
-          <div className="module-card">
-            <span className="module-num">02 / Results</span>
-            <div className="module-icon icon-indigo">📊</div>
-            <h3>Result Management</h3>
-            <p>Teachers enter scores once. The system grades, ranks and compiles report cards for every term, term after term, with no re-typing.</p>
-            <a href="#" className="module-link">See a sample result sheet →</a>
-          </div>
-          <div className="module-card">
-            <span className="module-num">03 / Fees</span>
-            <div className="module-icon icon-gold">💳</div>
-            <h3>Fee Management</h3>
-            <p>Invoices go out automatically each term. Part-payments are tracked to the naira, so no parent or bursar loses track of a balance.</p>
-            <a href="#" className="module-link">See payment options →</a>
-          </div>
-          <div className="module-card">
-            <span className="module-num">04 / Learning</span>
-            <div className="module-icon icon-terra">📚</div>
-            <h3>Learning Resources</h3>
-            <p>Subject teachers post notes, assignments and class materials to one shared shelf — organised by class, term and subject.</p>
-            <a href="#" className="module-link">Browse a class shelf →</a>
-          </div>
-        </div>
-      </section>
-
-      <section className="audience" id="audience">
-        <div className="audience-inner">
-          <div className="section-head" style={{ marginBottom: '0' }}>
-            <div className="section-eyebrow">Who logs in</div>
-            <h2>Three people, three<br />reasons to open the portal.</h2>
-          </div>
-          <div className="audience-grid">
-            <div className="audience-card">
-              <div className="audience-tag">Parent</div>
-              <h3>Stay close, without<br />visiting the office</h3>
-              <ul>
-                <li>Get an SMS the second your child taps in, and again when they leave</li>
-                <li>Check this term's result the day it's released</li>
-                <li>Get an SMS the moment a fee invoice is due</li>
-              </ul>
+          <div className="w-full items-start gap-6 grid grid-cols-4 mobile:grid mobile:grid-cols-1">
+            <div className="flex flex-col items-start gap-3 self-stretch rounded-xl border border-solid border-[#e5e7eb] bg-[#e0f2fe] px-6 py-6">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-[8px] bg-[#0ea5e9] text-[#ffffff]">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#ffffff]"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+              </div>
+              <span className="font-['Inter'] text-[18px] font-[700] leading-[27px] text-[#1f2937]">
+                Expert Educators
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                Highly qualified and passionate teachers who inspire every
+                student to reach their full potential.
+              </span>
             </div>
-            <div className="audience-card">
-              <div className="audience-tag">Teacher</div>
-              <h3>Less marking admin,<br />more actual teaching</h3>
-              <ul>
-                <li>Enter scores once — report cards build themselves</li>
-                <li>Mark a register in under a minute, from a phone</li>
-                <li>Share class notes without a single printout</li>
-              </ul>
+            <div className="flex flex-col items-start gap-3 self-stretch rounded-xl border border-solid border-[#e5e7eb] bg-[#f3f4f6] px-6 py-6">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-[8px] bg-[#374151] text-[#ffffff]">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#ffffff]"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 3 2 9l10 6 10-6zm0 13.5L4 11v6l8 4.5 8-4.5v-6z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+              </div>
+              <span className="font-['Inter'] text-[18px] font-[700] leading-[27px] text-[#1f2937]">
+                Modern Facilities
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                State-of-the-art science labs, computer rooms, a well-stocked
+                library, and expansive sports grounds.
+              </span>
             </div>
-            <div className="audience-card">
-              <div className="audience-tag">Administrator</div>
-              <h3>One view of every<br />class, term and account</h3>
-              <ul>
-                <li>See which classes still have unpaid balances</li>
-                <li>Approve results before they reach a parent</li>
-                <li>Pull enrolment and attendance trends in seconds</li>
-              </ul>
+            <div className="flex flex-col items-start gap-3 self-stretch rounded-xl border border-solid border-[#e5e7eb] bg-[#e0f2fe] px-6 py-6">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-[8px] bg-[#0ea5e9] text-[#ffffff]">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#ffffff]"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2 4 5v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V5zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-2.62z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+              </div>
+              <span className="font-['Inter'] text-[18px] font-[700] leading-[27px] text-[#1f2937]">
+                Holistic Development
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                A balanced curriculum covering academics, sports, arts, and
+                moral education for the well-rounded child.
+              </span>
+            </div>
+            <div className="flex flex-col items-start gap-3 self-stretch rounded-xl border border-solid border-[#e5e7eb] bg-[#f3f4f6] px-6 py-6">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-[8px] bg-[#374151] text-[#ffffff]">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#ffffff]"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm-2 16-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+              </div>
+              <span className="font-['Inter'] text-[18px] font-[700] leading-[27px] text-[#1f2937]">
+                Safe &amp; Secure Campus
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                Round-the-clock security, CCTV surveillance, and a caring staff
+                to ensure every child is safe and happy.
+              </span>
             </div>
           </div>
         </div>
       </section>
-
-      <section className="cta">
-        <div className="cta-box">
-          <div>
-            <h2 className="display">Ready to see your child's record?</h2>
-            <p>Parents, staff and students all sign in through the same portal — just with different keys to different rooms.</p>
+      <section className="flex w-full items-center justify-center bg-[#f9fafb]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 flex-col items-center gap-12 py-20 mobile:py-12">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <span className="font-['Inter'] text-[13px] font-[700] leading-[20px] tracking-wide text-[#0ea5e9]">
+              OUR PROGRAMS
+            </span>
+            <h2 className="font-['Inter'] text-[36px] font-[800] leading-[54px] text-[#1f2937] mobile:text-[26px] mobile:leading-[39px] mobile:tracking-normal">
+              Academic Programs for Every Stage
+            </h2>
           </div>
-          <div className="cta-actions">
-            <button className="btn btn-gold" onClick={() => navigate('/login')}>Log in to the portal</button>
-            <a href="#" className="btn" style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }}>Request a school tour</a>
+          <div className="w-full items-start gap-8 grid grid-cols-3 mobile:grid mobile:grid-cols-1">
+            <div className="flex flex-col items-start self-stretch overflow-hidden rounded-xl border border-solid border-[#e5e7eb] bg-[#ffffff]">
+              <img
+                className="h-52 w-full flex-none object-cover"
+                src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=600&q=80"
+                alt="Early Years"
+              />
+              <div className="flex flex-col items-start gap-3 px-6 py-6">
+                <span className="font-['Inter'] text-[12px] font-[600] leading-[18px] text-[#0369a1] rounded-full bg-[#E0F2FE] px-3 py-1">
+                  Ages 2 - 5
+                </span>
+                <span className="font-['Inter'] text-[22px] font-[700] leading-[33px] text-[#1f2937]">
+                  Nursery &amp; Early Years
+                </span>
+                <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                  A fun and nurturing environment where young learners explore,
+                  play, and build the foundation for lifelong curiosity.
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-start self-stretch overflow-hidden rounded-xl border border-solid border-[#e5e7eb] bg-[#ffffff]">
+              <img
+                className="h-52 w-full flex-none object-cover"
+                src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&q=80"
+                alt="Primary School"
+              />
+              <div className="flex flex-col items-start gap-3 px-6 py-6">
+                <span className="font-['Inter'] text-[12px] font-[600] leading-[18px] text-[#374151] rounded-full bg-[#F3F4F6] px-3 py-1">
+                  Ages 6 - 11
+                </span>
+                <span className="font-['Inter'] text-[22px] font-[700] leading-[33px] text-[#1f2937]">
+                  Primary School
+                </span>
+                <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                  Developing strong foundations in literacy, numeracy, science,
+                  and critical thinking for confident young minds.
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-start self-stretch overflow-hidden rounded-xl border border-solid border-[#e5e7eb] bg-[#ffffff]">
+              <img
+                className="h-52 w-full flex-none object-cover"
+                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80"
+                alt="Secondary School"
+              />
+              <div className="flex flex-col items-start gap-3 px-6 py-6">
+                <span className="font-['Inter'] text-[12px] font-[600] leading-[18px] text-[#0369a1] rounded-full bg-[#E0F2FE] px-3 py-1">
+                  Ages 12 - 17
+                </span>
+                <span className="font-['Inter'] text-[22px] font-[700] leading-[33px] text-[#1f2937]">
+                  Secondary School
+                </span>
+                <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#4b5563]">
+                  Preparing students for WAEC, NECO, and university entrance
+                  with academic excellence, discipline, and integrity.
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
-      <footer className="landing-footer">
-        <div className="footer-inner">
-          <p>{currentTenant.name}, {currentTenant.location} — system by Neotro Ltd</p>
-          <div className="footer-links">
-            <a href="#">Admissions</a>
-            <a href="#">Contact</a>
-            <a href="#">Privacy</a>
+      <section className="flex w-full items-center justify-center bg-[#ffffff]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 items-center justify-center py-20 mobile:py-12">
+          <div className="flex flex-col items-center gap-6 rounded-2xl bg-[#e0f2fe] px-12 py-12 max-w-[820px] text-center mobile:px-6 mobile:py-6">
+            <span className="font-['Inter'] text-[48px] font-[800] leading-[40px] text-[#38bdf8]">
+              &quot;
+            </span>
+            <p className="font-['Inter'] text-[22px] font-[500] leading-[34px] text-[#1f2937] mobile:text-[18px] mobile:leading-[28px] mobile:tracking-normal">
+              Dotmond School has been a blessing to our family. My children have
+              grown in confidence, character, and academic excellence. The
+              teachers genuinely care about every student&#39;s progress.
+            </p>
+            <div className="flex items-center gap-4">
+              <img
+                className="h-14 w-14 flex-none rounded-[9999px] object-cover"
+                src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80"
+                alt="Parent"
+              />
+              <div className="flex flex-col items-start">
+                <span className="font-['Inter'] text-[15px] font-[700] leading-[23px] text-[#1f2937]">
+                  Mrs. Funke Adeyemi
+                </span>
+                <span className="font-['Inter'] text-[13px] font-[400] leading-[20px] text-[#6b7280]">
+                  Parent, Ikeja, Lagos
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="flex w-full items-center justify-center bg-gradient-to-r from-[#1F2937] to-[#0EA5E9]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 items-center justify-between py-16 gap-8 mobile:flex-col mobile:items-start mobile:justify-start mobile:gap-8 mobile:py-12 mobile:text-left">
+          <div className="flex flex-col items-start gap-3">
+            <h2 className="font-['Inter'] text-[34px] font-[800] leading-[51px] text-[#ffffff] mobile:text-[26px] mobile:leading-[39px] mobile:tracking-normal">
+              Enroll Your Child at Dotmond School
+            </h2>
+            <p className="font-['Inter'] text-[16px] font-[400] leading-[24px] text-[#bae6fd] max-w-[520px]">
+              Admissions for the 2025/2026 academic session are now open. Spaces
+              are limited — take the first step toward your child&#39;s brighter
+              future today.
+            </p>
+          </div>
+          <div className="flex items-center gap-4 mobile:w-full mobile:flex-none mobile:flex-col">
+            <div 
+              onClick={() => navigate('/login')}
+              className="flex items-center justify-center rounded-[6px] bg-[#38bdf8] px-7 py-3.5 cursor-pointer hover:bg-[#7dd3fc] transition-colors mobile:w-full mobile:flex-none"
+            >
+              <span className="font-['Inter'] text-[15px] font-[700] leading-[23px] text-[#1f2937]">
+                Start Application
+              </span>
+            </div>
+            <div className="flex items-center justify-center rounded-[6px] border border-solid border-[#7dd3fc] px-7 py-3.5 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors mobile:w-full mobile:flex-none">
+              <span className="font-['Inter'] text-[15px] font-[600] leading-[23px] text-[#ffffff]">
+                Call Us
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer className="flex w-full items-center justify-center bg-[#111827]">
+        <div className="container max-w-none flex grow shrink-0 basis-0 flex-col items-start gap-10 py-16 mobile:py-12">
+          <div className="flex w-full items-start justify-between gap-10 mobile:flex-col">
+            <div className="flex max-w-[320px] flex-col items-start gap-4">
+              <div className="flex items-center gap-3">
+                {logoUrl ? (
+                  <img src={logoUrl} alt={schoolName} className="flex h-10 w-10 flex-none items-center justify-center rounded-[6px] object-cover" />
+                ) : (
+                  <div className="flex h-10 w-10 flex-none items-center justify-center rounded-[6px] bg-[#0ea5e9] text-[#ffffff]">
+                    <svg
+                      className="font-['Inter'] text-[20px] font-[400] leading-[30px] text-[#ffffff]"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm0 2.18 7 3.12V11c0 4.67-3.13 9.06-7 10.2-3.87-1.14-7-5.53-7-10.2V6.3z"
+                        fill="currentColor"
+                        fillOpacity="1"
+                      />
+                      <path
+                        d="M12 6 8 8v3c0 2.5 1.7 4.8 4 5.5 2.3-.7 4-3 4-5.5V8z"
+                        fill="currentColor"
+                        fillOpacity="1"
+                      />
+                    </svg>
+                  </div>
+                )}
+                <span className="font-['Inter'] text-[18px] font-[700] leading-[27px] text-[#ffffff]">
+                  Dotmond School
+                </span>
+              </div>
+              <p className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#9ca3af]">
+                Steady progress and a brighter future through quality education,
+                strong values, and a caring community.
+              </p>
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <span className="font-['Inter'] text-[14px] font-[700] leading-[21px] text-[#ffffff]">
+                Quick Links
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af] cursor-pointer hover:text-white">
+                About Us
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af] cursor-pointer hover:text-white">
+                Academics
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af] cursor-pointer hover:text-white">
+                Admissions
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af] cursor-pointer hover:text-white">
+                Gallery
+              </span>
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <span className="font-['Inter'] text-[14px] font-[700] leading-[21px] text-[#ffffff]">
+                Contact Us
+              </span>
+              <div className="flex items-start gap-2">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#38bdf8] mt-0.5 flex-none"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+                <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#9ca3af]">
+                  12 Admiralty Way, Lekki Phase 1, Lagos, Nigeria
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#38bdf8] flex-none"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+                <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af]">
+                  +234 812 345 6789
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="font-['Inter'] text-[14px] font-[400] leading-[20px] text-[#38bdf8] flex-none"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4-8 5-8-5V6l8 5 8-5z"
+                    fill="currentColor"
+                    fillOpacity="1"
+                  />
+                </svg>
+                <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af]">
+                  info@dotmondschool.edu.ng
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-start gap-3">
+              <span className="font-['Inter'] text-[14px] font-[700] leading-[21px] text-[#ffffff]">
+                School Hours
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[22px] text-[#9ca3af]">
+                Monday - Friday
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af]">
+                7:30 AM - 3:30 PM
+              </span>
+              <span className="font-['Inter'] text-[14px] font-[400] leading-[21px] text-[#9ca3af]">
+                After-school clubs until 5:00 PM
+              </span>
+            </div>
+          </div>
+          <div className="flex w-full items-center justify-between border-t border-solid border-[#374151] pt-6 mobile:flex-col mobile:gap-3">
+            <span className="font-['Inter'] text-[13px] font-[400] leading-[20px] text-[#9ca3af]">
+              © 2025 Dotmond Primary &amp; Secondary School. All rights
+              reserved.
+            </span>
+            <span className="font-['Inter'] text-[13px] font-[400] leading-[20px] text-[#9ca3af]">
+              Privacy Policy · Terms of Service
+            </span>
           </div>
         </div>
       </footer>
