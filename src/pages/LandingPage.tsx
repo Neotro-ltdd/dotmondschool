@@ -49,10 +49,9 @@ export default function LandingPage() {
               Steady Progress and Brightness Future
             </h1>
             <p className="lp-subtitle">
-              At Dotmond School, we are committed to providing quality education
-              that builds character, fosters creativity, and prepares every
-              child for a brighter tomorrow. Join a community where excellence
-              is the standard.
+              Nurturing young minds from ages 3 to 18. Our caring teachers provide the
+              best start in nursery, lay strong foundations in primary, and empower
+              success in secondary. Join us for a journey of growth and achievement.
             </p>
             <div className="lp-btn-group">
               <button onClick={() => navigate('/login')} className="lp-btn lp-btn-primary">
@@ -97,11 +96,10 @@ export default function LandingPage() {
       <section className="lp-features" id="why-us">
         <div className="lp-inner">
           <div className="lp-section-header">
-            <span className="lp-section-subtitle">WHY CHOOSE DOTMOND</span>
-            <h2 className="lp-section-title">Building Foundations for Lifelong Success</h2>
+            <span className="lp-section-subtitle">ABOUT US</span>
+            <h2 className="lp-section-title">Discover Dotmond School</h2>
             <p className="lp-subtitle" style={{ marginBottom: 0 }}>
-              We combine academic rigor with character development, ensuring
-              every student is prepared to lead and succeed.
+              Learn more about our philosophy, history, achievements, and commitment to your child's safety.
             </p>
           </div>
           <div className="lp-features-grid">
@@ -111,8 +109,8 @@ export default function LandingPage() {
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4" />
                 </svg>
               </div>
-              <span className="lp-feature-title">Expert Educators</span>
-              <span className="lp-feature-desc">Highly qualified and passionate teachers who inspire every student to reach their full potential.</span>
+              <span className="lp-feature-title">Our Philosophy</span>
+              <span className="lp-feature-desc">Dotmond School believes in providing a nurturing and stimulating environment that fosters the holistic development of each child.</span>
             </div>
             <div className="lp-feature-card secondary">
               <div className="lp-feature-icon">
@@ -120,8 +118,8 @@ export default function LandingPage() {
                   <path d="M12 3 2 9l10 6 10-6zm0 13.5L4 11v6l8 4.5 8-4.5v-6z" />
                 </svg>
               </div>
-              <span className="lp-feature-title">Modern Facilities</span>
-              <span className="lp-feature-desc">State-of-the-art science labs, computer rooms, a well-stocked library, and expansive sports grounds.</span>
+              <span className="lp-feature-title">Our History</span>
+              <span className="lp-feature-desc">Founded on September 2, 2010. Despite humble beginnings, with support from our parents and the grace of God, we have steadily improved our facilities over time.</span>
             </div>
             <div className="lp-feature-card primary">
               <div className="lp-feature-icon">
@@ -129,8 +127,8 @@ export default function LandingPage() {
                   <path d="M12 2 4 5v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V5zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-2.62z" />
                 </svg>
               </div>
-              <span className="lp-feature-title">Holistic Development</span>
-              <span className="lp-feature-desc">A balanced curriculum covering academics, sports, arts, and moral education for the well-rounded child.</span>
+              <span className="lp-feature-title">Our Achievements</span>
+              <span className="lp-feature-desc">We have consistently excelled, winning first place in numerous competitions. Our SS3 students have achieved remarkable success with an approximately 80% pass rate.</span>
             </div>
             <div className="lp-feature-card secondary">
               <div className="lp-feature-icon">
@@ -138,8 +136,8 @@ export default function LandingPage() {
                   <path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm-2 16-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z" />
                 </svg>
               </div>
-              <span className="lp-feature-title">Safe &amp; Secure</span>
-              <span className="lp-feature-desc">Round-the-clock security, CCTV surveillance, and a caring staff to ensure every child is safe and happy.</span>
+              <span className="lp-feature-title">Health &amp; Safety</span>
+              <span className="lp-feature-desc">The safety and well-being of our students are our top priorities. Parents are encouraged to actively engage with our safety policies.</span>
             </div>
           </div>
         </div>
