@@ -19,6 +19,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
     firstName: student.firstName || '',
     otherNames: student.otherNames || '',
     gender: student.gender || 'Male',
+    departmentTrack: student.departmentTrack || 'General',
     parentPhoneNumber: student.parentPhoneNumber || '',
     parentEmail: student.parentEmail || '',
   });
@@ -51,6 +52,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
       payload.append('firstName', formData.firstName);
       payload.append('otherNames', formData.otherNames);
       payload.append('gender', formData.gender);
+      payload.append('departmentTrack', formData.departmentTrack);
       payload.append('parentPhoneNumber', formData.parentPhoneNumber);
       payload.append('parentEmail', formData.parentEmail);
       if (passport) {
@@ -96,6 +98,15 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
                 <select name="gender" className="form-control" value={formData.gender} onChange={handleInputChange}>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
+                </select>
+              </div>
+              <div>
+                <label className="form-label">Department</label>
+                <select name="departmentTrack" className="form-control" value={formData.departmentTrack} onChange={handleInputChange}>
+                  <option value="General">General</option>
+                  <option value="Science">Science</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Arts">Arts</option>
                 </select>
               </div>
               <div>

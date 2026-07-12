@@ -17,6 +17,7 @@ interface StudentItem {
   level?: string;
   gender?: string;
   passportUrl?: string;
+  departmentTrack?: string;
   status: string;
   isCleared: boolean;
 }
@@ -159,7 +160,12 @@ export default function MyClass() {
                     <strong>{student.surname} {student.firstName}</strong>
                     <div className="text-muted text-sm">{student.otherNames}</div>
                   </td>
-                  <td><span className="badge badge-info">{student.className || 'Unassigned'}</span></td>
+                  <td>
+                    <span className="badge badge-info" style={{ marginRight: '0.5rem' }}>{student.className || 'Unassigned'}</span>
+                    {student.departmentTrack && student.departmentTrack !== 'General' && (
+                      <span className="badge" style={{ backgroundColor: '#6f42c1', color: 'white' }}>{student.departmentTrack}</span>
+                    )}
+                  </td>
                   <td>
                     <div>{student.parentEmail}</div>
                     <div className="text-muted text-sm">{student.parentPhoneNumber}</div>
