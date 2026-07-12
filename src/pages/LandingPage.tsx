@@ -36,17 +36,31 @@ const TESTIMONIALS = [
   }
 ];
 
+const HERO_IMAGES = [
+  "/images/hero-slide-1.jpg",
+  "/images/hero-slide-2.jpg",
+  "https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-111-900-x-800-px.png"
+];
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const { logoUrl, schoolName } = useTenant();
   
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % TESTIMONIALS.length);
     }, 6000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const heroTimer = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(heroTimer);
   }, []);
 
   return (
@@ -104,12 +118,24 @@ export default function LandingPage() {
               </button>
             </div>
           </div>
-          <div className="lp-hero-image-wrapper">
-            <img
-              className="lp-hero-img"
-              src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-111-900-x-800-px.png"
-              alt="Dotmond School Building"
-            />
+          <div className="lp-hero-image-wrapper" style={{ position: 'relative', width: '100%', height: '440px', overflow: 'hidden', borderRadius: '1rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)' }}>
+            {HERO_IMAGES.map((img, index) => (
+              <img
+                key={index}
+                className="lp-hero-img"
+                style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  opacity: index === currentHeroSlide ? 1 : 0, 
+                  transition: 'opacity 1s ease-in-out',
+                  boxShadow: 'none',
+                  borderRadius: '0'
+                }}
+                src={img}
+                alt="Dotmond School"
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -314,7 +340,7 @@ export default function LandingPage() {
                 <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
                   <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z" />
                 </svg>
-                <span>+234 812 345 6789</span>
+                <span>+234 816 891 7447, +234 805 140 9106</span>
               </div>
             </div>
           </div>
