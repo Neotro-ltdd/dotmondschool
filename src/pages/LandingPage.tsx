@@ -1,11 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTenant } from "../context/TenantContext";
 import "./LandingPage.css";
 
+const TESTIMONIALS = [
+  {
+    text: "Dotmond School has been a blessing to our family. My children have grown in confidence, character, and academic excellence. The teachers genuinely care about every student's progress.",
+    name: "Mrs. Funke Adeyemi",
+    role: "Parent, Ikeja, Lagos",
+    img: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80"
+  },
+  {
+    text: "The nurturing environment at Dotmond School is unmatched. The teachers lay strong foundations for our children and it reflects in their outstanding performances.",
+    name: "Mr. Chinedu Okafor",
+    role: "Parent, Ajah, Lagos",
+    img: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&q=80"
+  },
+  {
+    text: "I am amazed at the level of care and academic rigor Dotmond School provides. My son's performance has improved tremendously since joining the school.",
+    name: "Mrs. Amina Yusuf",
+    role: "Parent, Lekki, Lagos",
+    img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80"
+  },
+  {
+    text: "Dotmond School offers more than just education; they offer holistic development. The extra-curricular activities and sports are fantastic.",
+    name: "Mr. David Olatunde",
+    role: "Parent, VGC, Lagos",
+    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80"
+  },
+  {
+    text: "We love the safety and security at Dotmond. As parents, having peace of mind while our children are learning is our top priority, and Dotmond delivers.",
+    name: "Mrs. Grace Edet",
+    role: "Parent, Sangotedo, Lagos",
+    img: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=200&q=80"
+  }
+];
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const { logoUrl, schoolName } = useTenant();
+  
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % TESTIMONIALS.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="lp-container">
@@ -65,8 +107,8 @@ export default function LandingPage() {
           <div className="lp-hero-image-wrapper">
             <img
               className="lp-hero-img"
-              src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=900&q=80"
-              alt="School Campus"
+              src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-111-900-x-800-px.png"
+              alt="Dotmond School Building"
             />
           </div>
         </div>
@@ -159,7 +201,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="lp-program-card">
-              <img className="lp-program-img" src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&q=80" alt="Primary School" />
+              <img className="lp-program-img" src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-Award-1280-x-853-px-1.png" alt="Primary School" />
               <div className="lp-program-content">
                 <span className="lp-badge lp-badge-dark">Ages 6 - 11</span>
                 <span className="lp-program-title">Primary School</span>
@@ -167,7 +209,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="lp-program-card">
-              <img className="lp-program-img" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80" alt="Secondary School" />
+              <img className="lp-program-img" src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-Award-1280-x-853-px.png" alt="Secondary School" />
               <div className="lp-program-content">
                 <span className="lp-badge">Ages 12 - 17</span>
                 <span className="lp-program-title">Secondary School</span>
@@ -180,20 +222,30 @@ export default function LandingPage() {
 
       <section className="lp-testimonial">
         <div className="lp-inner">
-          <div className="lp-testimonial-card">
-            <span className="lp-quote-mark">&quot;</span>
-            <p className="lp-quote-text">
-              Dotmond School has been a blessing to our family. My children have
-              grown in confidence, character, and academic excellence. The
-              teachers genuinely care about every student's progress.
-            </p>
-            <div className="lp-quote-author">
-              <img className="lp-quote-img" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80" alt="Parent" />
-              <div className="lp-quote-info">
-                <span className="lp-quote-name">Mrs. Funke Adeyemi</span>
-                <span className="lp-quote-role">Parent, Ikeja, Lagos</span>
+          <div className="lp-testimonial-container" style={{ minHeight: '320px' }}>
+            {TESTIMONIALS.map((t, index) => (
+              <div key={index} className={`lp-testimonial-card ${index === currentSlide ? 'active' : ''}`}>
+                <span className="lp-quote-mark">&quot;</span>
+                <p className="lp-quote-text">{t.text}</p>
+                <div className="lp-quote-author">
+                  <img className="lp-quote-img" src={t.img} alt="Parent" />
+                  <div className="lp-quote-info">
+                    <span className="lp-quote-name">{t.name}</span>
+                    <span className="lp-quote-role">{t.role}</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
+          <div className="lp-slideshow-dots">
+            {TESTIMONIALS.map((_, index) => (
+              <button 
+                key={index} 
+                className={`lp-dot ${index === currentSlide ? 'active' : ''}`}
+                onClick={() => setCurrentSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -201,19 +253,15 @@ export default function LandingPage() {
       <section className="lp-cta" id="admissions">
         <div className="lp-inner lp-cta-content">
           <div className="lp-cta-text">
-            <h2 className="lp-cta-title">Enroll Your Child at Dotmond School</h2>
+            <h2 className="lp-cta-title">Admissions for 2025 in Progress!</h2>
             <p className="lp-cta-desc">
-              Admissions for the 2025/2026 academic session are now open. Spaces
-              are limited — take the first step toward your child's brighter
-              future today.
+              Embark on an exciting educational journey with Dotmond
+              School as we open the doors to admissions for the year 2025!
             </p>
           </div>
           <div className="lp-btn-group">
             <button onClick={() => navigate('/login')} className="lp-btn lp-btn-primary">
-              Start Application
-            </button>
-            <button className="lp-btn lp-btn-outline">
-              Call Us
+              Enroll Now
             </button>
           </div>
         </div>
@@ -234,29 +282,33 @@ export default function LandingPage() {
                     </svg>
                   </div>
                 )}
-                <span className="lp-footer-title">Dotmond School</span>
               </div>
               <p className="lp-footer-desc">
-                Steady progress and a brighter future through quality education,
-                strong values, and a caring community.
+                At Dotmond Secondary School, we inspire students to dream big and explore the joy of learning. Our nurturing environment fosters curiosity and cultivates well-rounded individuals ready to thrive in the world. Join us and discover the endless possibilities.
               </p>
             </div>
             
             <div className="lp-footer-col">
-              <span className="lp-footer-heading">Quick Links</span>
-              <span className="lp-footer-link">About Us</span>
-              <span className="lp-footer-link">Academics</span>
-              <span className="lp-footer-link">Admissions</span>
-              <span className="lp-footer-link">Gallery</span>
+              <span className="lp-footer-heading">School</span>
+              <a href="#about" className="lp-footer-link">About Us</a>
+              <a href="#gallery" className="lp-footer-link">Gallery</a>
+              <a href="#event" className="lp-footer-link">Event</a>
             </div>
 
             <div className="lp-footer-col">
+              <span className="lp-footer-heading">Get Help</span>
+              <a href="#register" className="lp-footer-link">Register</a>
+              <a href="#admissions" className="lp-footer-link">Admission</a>
+              <a href="#contact" className="lp-footer-link">Contact us</a>
+            </div>
+            
+            <div className="lp-footer-col" style={{ maxWidth: '280px' }}>
               <span className="lp-footer-heading">Contact Us</span>
               <div className="lp-footer-contact">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5" />
                 </svg>
-                <span>12 Admiralty Way, Lekki Phase 1, Lagos, Nigeria</span>
+                <span>Happyland Estate, Ajah, Lagos State, Nigeria</span>
               </div>
               <div className="lp-footer-contact">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
@@ -264,19 +316,6 @@ export default function LandingPage() {
                 </svg>
                 <span>+234 812 345 6789</span>
               </div>
-              <div className="lp-footer-contact">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4-8 5-8-5V6l8 5 8-5z" />
-                </svg>
-                <span>info@dotmondschool.edu.ng</span>
-              </div>
-            </div>
-
-            <div className="lp-footer-col">
-              <span className="lp-footer-heading">School Hours</span>
-              <span className="lp-footer-desc">Monday - Friday</span>
-              <span className="lp-footer-desc">7:30 AM - 3:30 PM</span>
-              <span className="lp-footer-desc">After-school clubs until 5:00 PM</span>
             </div>
           </div>
           

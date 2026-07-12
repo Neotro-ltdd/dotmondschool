@@ -12,8 +12,8 @@
   --lp-bg-white: #ffffff;
   --lp-bg-light: #f9fafb;
   --lp-bg-gray: #f3f4f6;
-  --lp-bg-dark: #1f2937;
-  --lp-bg-darker: #111827;
+  --lp-bg-dark: #4a154b; /* Updated to match dotmond purple from screenshot */
+  --lp-bg-darker: #360f36;
   
   --lp-border: #e5e7eb;
   
@@ -374,11 +374,16 @@
   padding: 5rem 0;
   background-color: var(--lp-bg-white);
   text-align: center;
+  overflow: hidden;
+}
+
+.lp-testimonial-container {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto;
 }
 
 .lp-testimonial-card {
-  max-width: 820px;
-  margin: 0 auto;
   background-color: var(--lp-primary-light);
   padding: 3rem;
   border-radius: 1rem;
@@ -386,6 +391,19 @@
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.lp-testimonial-card.active {
+  opacity: 1;
+  position: relative;
+  pointer-events: auto;
 }
 
 .lp-quote-mark {
@@ -431,9 +449,31 @@
   color: var(--lp-text-muted);
 }
 
+.lp-slideshow-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.lp-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: background-color 0.3s;
+}
+
+.lp-dot.active {
+  background-color: var(--lp-primary);
+}
+
 /* CTA Section */
 .lp-cta {
-  background: linear-gradient(to right, var(--lp-bg-dark), var(--lp-primary));
+  background: linear-gradient(to right, var(--lp-bg-dark), var(--lp-bg-darker));
   padding: 4rem 0;
 }
 
@@ -482,7 +522,7 @@
 .lp-footer {
   background-color: var(--lp-bg-darker);
   padding: 4rem 0 2rem;
-  color: #9ca3af;
+  color: #d1d5db;
 }
 
 .lp-footer-grid {
@@ -493,7 +533,7 @@
 }
 
 .lp-footer-brand {
-  max-width: 320px;
+  max-width: 380px;
 }
 
 .lp-footer-logo {
@@ -527,13 +567,16 @@
 .lp-footer-heading {
   color: white;
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
 }
 
 .lp-footer-link {
   font-size: 0.875rem;
   cursor: pointer;
   transition: color 0.2s;
+  color: #d1d5db;
+  text-decoration: none;
 }
 
 .lp-footer-link:hover {
@@ -554,7 +597,7 @@
 }
 
 .lp-footer-bottom {
-  border-top: 1px solid #374151;
+  border-top: 1px solid #4b5563;
   padding-top: 1.5rem;
   display: flex;
   justify-content: space-between;
