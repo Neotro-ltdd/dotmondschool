@@ -39,6 +39,9 @@ const TESTIMONIALS = [
 const HERO_IMAGES = [
   "/images/hero-slide-1.jpg",
   "/images/hero-slide-2.jpg",
+  "/images/hero-slide-3.png",
+  "/images/hero-slide-4.png",
+  "/images/hero-slide-5.png",
   "https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-111-900-x-800-px.png"
 ];
 
