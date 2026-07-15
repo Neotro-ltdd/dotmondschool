@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './Management.css'; // We'll share CSS with Teachers
 import IdCardPrintModal from './IdCardPrintModal';
+import EditStudentModal from './EditStudentModal';
 
 interface StudentItem {
   id: string;
@@ -41,6 +42,7 @@ export default function Students() {
   const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
   // Modal State
   const [showModal, setShowModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [printStudentId, setPrintStudentId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     surname: '',
@@ -161,6 +163,19 @@ export default function Students() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleDelete = async (studentId: string, studentName: string) => {
+    if (!window.confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await api.delete(`/setup/students/${studentId}`);
+      alert('Student deleted successfully');
+      fetchStudents();
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete student');
     }
   };
 
@@ -315,6 +330,12 @@ export default function Students() {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button className="btn btn-primary btn-sm" onClick={() => setEditingStudent(student)}>
+                        Edit
+                      </button>
+                      <button className="btn btn-danger btn-sm" style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '4px' }} onClick={() => handleDelete(student.id, `${student.surname} ${student.firstName}`)}>
+                        Delete
+                      </button>
                       <button className="btn btn-secondary btn-sm" onClick={() => setPrintStudentId(student.id)}>
                         🪪 ID Card
                       </button>
@@ -340,6 +361,17 @@ export default function Students() {
         <IdCardPrintModal 
           studentId={printStudentId} 
           onClose={() => setPrintStudentId(null)} 
+        />
+      )}
+
+      {editingStudent && (
+        <EditStudentModal
+          student={editingStudent}
+          onClose={() => setEditingStudent(null)}
+          onSuccess={() => {
+            setEditingStudent(null);
+            fetchStudents();
+          }}
         />
       )}
 
