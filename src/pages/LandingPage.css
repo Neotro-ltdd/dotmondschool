@@ -1,21 +1,21 @@
 /* Variables & Base Styles */
 .lp-container {
-  --lp-primary: #0ea5e9;
-  --lp-primary-hover: #0284c7;
-  --lp-primary-light: #e0f2fe;
-  --lp-primary-text: #0369a1;
+  --lp-primary: #4A90C4;
+  --lp-primary-hover: #3a75a1;
+  --lp-primary-light: #e6f0f7;
+  --lp-primary-text: #2C4A63;
   
-  --lp-text-main: #1f2937;
-  --lp-text-muted: #4b5563;
-  --lp-text-light: #9ca3af;
+  --lp-text-main: #3A3F42;
+  --lp-text-muted: #6e767b;
+  --lp-text-light: #B2BEB5;
   
-  --lp-bg-white: #ffffff;
-  --lp-bg-light: #f9fafb;
-  --lp-bg-gray: #f3f4f6;
-  --lp-bg-dark: #1f2937;
-  --lp-bg-darker: #111827;
+  --lp-bg-white: #F7F9FA;
+  --lp-bg-light: #F7F9FA;
+  --lp-bg-gray: #e6ecef;
+  --lp-bg-dark: #2C4A63;
+  --lp-bg-darker: #1e3344;
   
-  --lp-border: #e5e7eb;
+  --lp-border: #B2BEB5;
   
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--lp-text-main);
