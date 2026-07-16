@@ -53,6 +53,7 @@ export default function ContinuousAssessment() {
   const [loadingScores, setLoadingScores] = useState(false);
   const [savingScores, setSavingScores] = useState(false);
   const [lockingScores, setLockingScores] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Compile State
   const [statusLoading, setStatusLoading] = useState(false);
@@ -192,8 +193,12 @@ export default function ContinuousAssessment() {
     }
   };
 
-  const handleLockScores = async () => {
-    if (!window.confirm("Are you sure you want to SUBMIT these scores? Existing scores will be locked from editing, but you can still add scores later for students who missed the exam.")) return;
+  const handleLockScores = () => {
+    setShowConfirmModal(true);
+  };
+
+  const confirmLockScores = async () => {
+    setShowConfirmModal(false);
     try {
       setLockingScores(true);
       
@@ -528,6 +533,61 @@ export default function ContinuousAssessment() {
           )}
         </div>
       </div>
+      {/* Custom Styled Confirm Modal */}
+      {showConfirmModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 9999, backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{
+            background: 'white', padding: '2rem', borderRadius: '12px',
+            maxWidth: '500px', width: '90%', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '12px', borderRadius: '50%' }}>
+                <span style={{ fontSize: '1.5rem' }}>ℹ️</span>
+              </div>
+              <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem' }}>Confirm Submission</h3>
+            </div>
+            
+            <p style={{ color: '#475569', lineHeight: '1.6', marginBottom: '1.5rem', fontSize: '1rem' }}>
+              Are you sure you want to <strong>submit</strong> these scores?
+              <br /><br />
+              <span style={{ color: '#059669', backgroundColor: '#d1fae5', padding: '4px 8px', borderRadius: '4px', fontSize: '0.9rem' }}>
+                Existing scores will be locked
+              </span> from editing, but you can still add scores later for students who missed the exam.
+            </p>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button 
+                onClick={() => setShowConfirmModal(false)}
+                style={{
+                  padding: '0.5rem 1.5rem', borderRadius: '6px', border: '1px solid #cbd5e1',
+                  background: 'white', color: '#475569', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+                onMouseOver={e => e.currentTarget.style.background = '#f8fafc'}
+                onMouseOut={e => e.currentTarget.style.background = 'white'}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmLockScores}
+                style={{
+                  padding: '0.5rem 1.5rem', borderRadius: '6px', border: 'none',
+                  background: '#2563eb', color: 'white', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s',
+                  boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)'
+                }}
+                onMouseOver={e => e.currentTarget.style.background = '#1d4ed8'}
+                onMouseOut={e => e.currentTarget.style.background = '#2563eb'}
+              >
+                Yes, Submit Scores
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
