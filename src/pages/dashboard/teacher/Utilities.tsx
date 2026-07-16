@@ -55,7 +55,7 @@ export default function Utilities() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `ScoreTemplate_${selectedClass.name}.csv`);
+      link.setAttribute('download', `ScoreTemplate_${selectedClass.name}.xlsx`);
       document.body.appendChild(link);
       link.click();
     } catch (error: any) {
