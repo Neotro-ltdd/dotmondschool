@@ -2,6 +2,8 @@ import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import '../finance/Finance.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface FeeTemplateListDto {
   id: string;
@@ -24,6 +26,8 @@ interface FeeTemplateDetailDto {
 }
 
 export default function ClassFees() {
+  const { showAlert } = useDialog();
+
   const [templates, setTemplates] = useState<FeeTemplateListDto[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,7 +78,7 @@ export default function ClassFees() {
       const data = await api.get(`/finance/setup/fee-templates/class/${classId}?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
       setSelectedTemplate(data);
     } catch (err: any) {
-      alert(err.message || 'Failed to load template details');
+      showAlert(err.message || 'Failed to load template details');
     } finally {
       setLoadingDetails(false);
     }

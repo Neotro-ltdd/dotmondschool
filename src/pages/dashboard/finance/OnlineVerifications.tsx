@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import './Finance.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface PendingPayment {
   id: string;
@@ -12,6 +14,8 @@ interface PendingPayment {
 }
 
 export default function OnlineVerifications() {
+  const { showAlert } = useDialog();
+
   const [pendingPayments, setPendingPayments] = useState<PendingPayment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState<PendingPayment | null>(null);
@@ -51,11 +55,11 @@ export default function OnlineVerifications() {
         remarks,
         allocatedInvoiceId: null
       });
-      alert(`Payment ${isApproved ? 'verified' : 'queried'} successfully.`);
+      showAlert(`Payment ${isApproved ? 'verified' : 'queried'} successfully.`);
       setSelectedPayment(null);
       fetchPayments();
     } catch (err: any) {
-      alert("Verification failed: " + err.message);
+      showAlert("Verification failed: " + err.message);
     } finally {
       setProcessing(false);
     }

@@ -3,6 +3,8 @@ import { api } from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './SystemSchools.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface School {
     id: number;
@@ -17,6 +19,8 @@ interface School {
 }
 
 export default function SystemSchools() {
+  const { showAlert } = useDialog();
+
     const [schools, setSchools] = useState<School[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -65,7 +69,7 @@ export default function SystemSchools() {
             setAdminEmail('');
         } catch (err: any) {
             console.error(err);
-            alert(err.message || "Failed to provision school");
+            showAlert(err.message || "Failed to provision school");
         } finally {
             setProvisioning(false);
         }

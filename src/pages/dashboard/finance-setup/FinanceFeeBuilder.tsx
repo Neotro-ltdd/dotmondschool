@@ -2,6 +2,8 @@ import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import '../finance/Finance.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface FeeTemplateItem {
   name: string;
@@ -9,6 +11,8 @@ interface FeeTemplateItem {
 }
 
 export default function FinanceFeeBuilder() {
+  const { showAlert } = useDialog();
+
   const [classes, setClasses] = useState<any[]>([]);
   
   // Form State
@@ -57,11 +61,11 @@ export default function FinanceFeeBuilder() {
   };
 
   const handleSaveFeeTemplate = async () => {
-    if (!classId) return alert('Please select a class');
+    if (!classId) return showAlert('Please select a class');
     
     // Validate items
     const validItems = feeItems.filter(i => i.name.trim() !== '' && i.amount >= 0);
-    if (validItems.length === 0) return alert('Please provide at least one valid fee item.');
+    if (validItems.length === 0) return showAlert('Please provide at least one valid fee item.');
 
     setSaving(true);
     try {
@@ -71,10 +75,10 @@ export default function FinanceFeeBuilder() {
         classId,
         items: validItems
       });
-      alert('Fee template saved successfully!');
+      showAlert('Fee template saved successfully!');
     } catch (err: any) {
       const detail = err.response?.data?.detail || err.response?.data?.message || err.message;
-      alert('Failed to save fee template:\n' + detail);
+      showAlert('Failed to save fee template:\n' + detail);
     } finally {
       setSaving(false);
     }

@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import './Login.css';
+import { useDialog } from '../../context/DialogContext';
+
 
 export default function ChangePassword() {
+  const { showAlert } = useDialog();
+
   const navigate = useNavigate();
   const { logout } = useAuth();
   
@@ -27,7 +31,7 @@ export default function ChangePassword() {
 
     try {
       await api.post('/auth/change-password', { currentPassword, newPassword });
-      alert("Password changed successfully! Please log in again.");
+      showAlert("Password changed successfully! Please log in again.");
       logout();
       navigate('/login');
     } catch (err: any) {

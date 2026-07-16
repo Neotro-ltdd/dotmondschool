@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './Management.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface TeacherItem {
   id: string;
@@ -29,6 +31,8 @@ interface SubjectItem {
 }
 
 export default function Teachers() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +88,7 @@ export default function Teachers() {
     fetchTeachers();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -98,51 +102,51 @@ export default function Teachers() {
       setShowModal(false);
       fetchTeachers();
     } catch (err: any) {
-      alert(err.message || 'Failed to onboard staff member');
+      showAlert(err.message || 'Failed to onboard staff member');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleRemove = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to remove ${name} from the system? They will lose all access.`)) return;
+    if (!await showConfirm(`Are you sure you want to remove ${name} from the system? They will lose all access.`)) return;
     try {
       await api.post(`/setup/staff/${id}/deactivate`, {});
-      alert('Staff member deactivated successfully.');
+      showAlert('Staff member deactivated successfully.');
       fetchTeachers();
     } catch (err: any) {
-      alert(err.message || 'Failed to deactivate staff member.');
+      showAlert(err.message || 'Failed to deactivate staff member.');
     }
   };
 
   const handleActivate = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to restore access for ${name}?`)) return;
+    if (!await showConfirm(`Are you sure you want to restore access for ${name}?`)) return;
     try {
       await api.post(`/setup/staff/${id}/activate`, {});
-      alert('Staff member activated successfully.');
+      showAlert('Staff member activated successfully.');
       fetchTeachers();
     } catch (err: any) {
-      alert(err.message || 'Failed to activate staff member.');
+      showAlert(err.message || 'Failed to activate staff member.');
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`)) return;
+    if (!await showConfirm(`Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`)) return;
     try {
       await api.delete(`/setup/staff/${id}`);
-      alert('Staff member permanently deleted.');
+      showAlert('Staff member permanently deleted.');
       fetchTeachers();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete staff member.');
+      showAlert(err.message || 'Failed to delete staff member.');
     }
   };
 
   const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
     if (!identityUserId) {
-        alert('This user does not have an active login account.');
+        showAlert('This user does not have an active login account.');
         return;
     }
-    if (!window.confirm(`Are you sure you want to regenerate credentials for ${name}? Their old password will be invalidated immediately.`)) return;
+    if (!await showConfirm(`Are you sure you want to regenerate credentials for ${name}? Their old password will be invalidated immediately.`)) return;
     
     try {
         setGeneratingId(identityUserId);
@@ -154,7 +158,7 @@ export default function Teachers() {
         });
         setShowCredsModal(true);
     } catch (err: any) {
-        alert(err.message || 'Failed to regenerate credentials.');
+        showAlert(err.message || 'Failed to regenerate credentials.');
     } finally {
         setGeneratingId(null);
     }

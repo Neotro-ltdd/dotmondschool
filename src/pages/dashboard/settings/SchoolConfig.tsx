@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT, ApiError } from '../../../services/api';
 import './Settings.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 export default function SchoolConfig() {
+  const { showAlert } = useDialog();
+
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -197,15 +201,15 @@ export default function SchoolConfig() {
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                   <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, setSignatureFile)} />
                   <button type="button" className="btn btn-secondary" onClick={async () => {
-                    if (!signatureFile) { alert("Please select a file first"); return; }
+                    if (!signatureFile) { showAlert("Please select a file first"); return; }
                     try {
                       const sigPayload = new FormData();
                       sigPayload.append('file', signatureFile);
                       await api.post('/setup/upload-signature', sigPayload);
-                      alert("Signature uploaded successfully.");
+                      showAlert("Signature uploaded successfully.");
                       setSignatureFile(null);
                     } catch (err: any) {
-                      alert("Failed to upload signature: " + err.message);
+                      showAlert("Failed to upload signature: " + err.message);
                     }
                   }}>
                     Upload Signature

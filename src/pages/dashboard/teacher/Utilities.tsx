@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './TeacherAcademics.css';
 import '../students/Management.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface MySubject {
   id: string;
@@ -20,6 +22,8 @@ interface MyClass {
 }
 
 export default function Utilities() {
+  const { showAlert } = useDialog();
+
   const [classes, setClasses] = useState<MyClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<MyClass | null>(null);
   
@@ -59,7 +63,7 @@ export default function Utilities() {
       document.body.appendChild(link);
       link.click();
     } catch (error: any) {
-      alert(error.message || 'Failed to download template.');
+      showAlert(error.message || 'Failed to download template.');
     }
   };
 
@@ -74,10 +78,10 @@ export default function Utilities() {
       formData.append('subjectId', selectedSubjectId);
 
       await api.post('/academics/scores/upload', formData);
-      alert('Scores uploaded successfully!');
+      showAlert('Scores uploaded successfully!');
       setScoreFile(null);
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to upload scores.');
+      showAlert(error.response?.data?.message || 'Failed to upload scores.');
     } finally {
       setUploading(false);
     }

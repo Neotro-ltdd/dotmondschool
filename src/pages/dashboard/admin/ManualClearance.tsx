@@ -1,4 +1,5 @@
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { useDialog } from '../../../context/DialogContext';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import '../students/Management.css'; 
@@ -23,6 +24,8 @@ interface ClassItem {
 }
 
 export default function ManualClearance() {
+  const { showAlert } = useDialog();
+
   const [students, setStudents] = useState<StudentItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,7 +81,7 @@ export default function ManualClearance() {
       // Refresh the list to reflect accurate status
       fetchStudents();
     } catch (err: any) {
-      alert(err.message || 'Failed to update clearance status');
+      showAlert(err.message || 'Failed to update clearance status');
     } finally {
       setToggling(null);
     }

@@ -4,6 +4,8 @@ import { api } from '../../../services/api';
 import './Management.css'; // We'll share CSS with Teachers
 import IdCardPrintModal from './IdCardPrintModal';
 import EditStudentModal from './EditStudentModal';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface StudentItem {
   id: string;
@@ -30,6 +32,8 @@ interface ClassItem {
 }
 
 export default function Students() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [students, setStudents] = useState<StudentItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,7 +98,7 @@ export default function Students() {
     fetchStudents();
   }, [filterSession, filterTerm]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -115,7 +119,7 @@ export default function Students() {
       });
       fetchStudents();
     } catch (err: any) {
-      alert(err.message || 'Failed to admit student');
+      showAlert(err.message || 'Failed to admit student');
     } finally {
       setSubmitting(false);
     }
@@ -123,10 +127,10 @@ export default function Students() {
 
   const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
     if (!identityUserId) {
-        alert('This parent does not have an active login account.');
+        showAlert('This parent does not have an active login account.');
         return;
     }
-    if (!window.confirm(`Are you sure you want to regenerate credentials for ${name}'s Parent? Their old password will be invalidated immediately.`)) return;
+    if (!await showConfirm(`Are you sure you want to regenerate credentials for ${name}'s Parent? Their old password will be invalidated immediately.`)) return;
     
     try {
         setGeneratingId(identityUserId);
@@ -138,7 +142,7 @@ export default function Students() {
         });
         setShowCredsModal(true);
     } catch (err: any) {
-        alert(err.message || 'Failed to regenerate credentials.');
+        showAlert(err.message || 'Failed to regenerate credentials.');
     } finally {
         setGeneratingId(null);
     }
@@ -154,10 +158,10 @@ export default function Students() {
     try {
       setUploading(true);
       const res = await api.post('/setup/students/upload', formData);
-      alert(res.message || 'Students uploaded successfully');
+      showAlert(res.message || 'Students uploaded successfully');
       fetchStudents();
     } catch (err: any) {
-      alert(err.message || 'Failed to upload students');
+      showAlert(err.message || 'Failed to upload students');
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -167,15 +171,15 @@ export default function Students() {
   };
 
   const handleDelete = async (studentId: string, studentName: string) => {
-    if (!window.confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
+    if (!await showConfirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
       return;
     }
     try {
       await api.delete(`/setup/students/${studentId}`);
-      alert('Student deleted successfully');
+      showAlert('Student deleted successfully');
       fetchStudents();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete student');
+      showAlert(err.message || 'Failed to delete student');
     }
   };
 

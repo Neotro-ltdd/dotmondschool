@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './TeacherAcademics.css';
 import '../students/Management.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface MySubject {
   id: string;
@@ -43,6 +45,8 @@ interface SubjectStatus {
 }
 
 export default function ContinuousAssessment() {
+  const { showAlert } = useDialog();
+
   const [classes, setClasses] = useState<MyClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<MyClass | null>(null);
   const [activeTab, setActiveTab] = useState<'ca' | 'exam' | 'compile'>('ca');
@@ -184,10 +188,10 @@ export default function ContinuousAssessment() {
         });
       });
       await Promise.all(promises);
-      alert('Scores saved successfully!');
+      showAlert('Scores saved successfully!');
       fetchScores();
     } catch (err: any) {
-      alert(err.message || 'Failed to save scores.');
+      showAlert(err.message || 'Failed to save scores.');
     } finally {
       setSavingScores(false);
     }
@@ -223,10 +227,10 @@ export default function ContinuousAssessment() {
         session: filterSession,
         term: filterTerm
       });
-      alert('Scores saved and submitted successfully!');
+      showAlert('Scores saved and submitted successfully!');
       fetchScores();
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || 'Failed to lock scores.');
+      showAlert(err.response?.data?.message || err.message || 'Failed to lock scores.');
     } finally {
       setLockingScores(false);
     }
@@ -241,11 +245,11 @@ export default function ContinuousAssessment() {
         term: filterTerm,
         classId: selectedClass.id
       });
-      alert('Results compiled successfully and sent to Admin for approval!');
+      showAlert('Results compiled successfully and sent to Admin for approval!');
       fetchClassStatus();
       window.location.href = '/dashboard/teacher/results';
     } catch (error: any) {
-      alert(error.response?.data?.message || error.message || 'Failed to compile results.');
+      showAlert(error.response?.data?.message || error.message || 'Failed to compile results.');
     } finally {
       setCompiling(false);
     }

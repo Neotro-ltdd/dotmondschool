@@ -28,8 +28,12 @@ interface TranscriptTerm {
 }
 
 import ReportCard from '../../../components/ReportCard';
+import { useDialog } from '../../../context/DialogContext';
+
 
 export default function ParentHub() {
+  const { showAlert } = useDialog();
+
   const [kids, setKids] = useState<Kid[]>([]);
   const [selectedKid, setSelectedKid] = useState<Kid | null>(null);
   const [activeTab, setActiveTab] = useState<'results' | 'attendance' | 'finance'>('results');
@@ -87,13 +91,13 @@ export default function ParentHub() {
       setReceipts(data?.receipts || []);
     } catch (error: any) {
       console.error('Failed to fetch invoices', error);
-      alert('Error loading invoices: ' + (error.response?.data?.detail || error.message));
+      showAlert('Error loading invoices: ' + (error.response?.data?.detail || error.message));
     }
   };
 
   const handleUploadProof = async (invoiceId: string) => {
     if (!proofFile) {
-      alert("Please select a file first.");
+      showAlert("Please select a file first.");
       return;
     }
     try {
@@ -103,13 +107,13 @@ export default function ParentHub() {
       formData.append('invoiceId', invoiceId);
 
       await api.post('/finance/upload-proof', formData);
-      alert('Proof of payment uploaded successfully. Awaiting verification.');
+      showAlert('Proof of payment uploaded successfully. Awaiting verification.');
       setUploadingForInvoice(null);
       setProofFile(null);
       setBankRef('');
       if (selectedKid) fetchInvoices(selectedKid.id);
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to upload proof.');
+      showAlert(error.response?.data?.message || 'Failed to upload proof.');
     }
   };
 

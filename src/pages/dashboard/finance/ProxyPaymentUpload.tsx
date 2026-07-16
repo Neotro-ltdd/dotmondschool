@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import './Finance.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface PosStudent {
   id: string;
@@ -12,6 +14,8 @@ interface PosStudent {
 }
 
 export default function ProxyPaymentUpload() {
+  const { showAlert } = useDialog();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<PosStudent[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<PosStudent | null>(null);
@@ -78,7 +82,7 @@ export default function ProxyPaymentUpload() {
   const handleProxyUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStudent || posAmountPaid <= 0 || posAmountDue <= 0 || !selectedFile) {
-      alert("Please ensure all fields are filled and a file is uploaded.");
+      showAlert("Please ensure all fields are filled and a file is uploaded.");
       return;
     }
 
@@ -120,7 +124,7 @@ export default function ProxyPaymentUpload() {
       } else {
         msg += `\n\nPart-Payment logged successfully.`;
       }
-      alert(msg);
+      showAlert(msg);
       
       setReceiptData({
         studentName: selectedStudent.name,
@@ -138,7 +142,7 @@ export default function ProxyPaymentUpload() {
       setSelectedFile(null);
       handleSearch();
     } catch (err: any) {
-      alert("Upload failed: " + err.message);
+      showAlert("Upload failed: " + err.message);
     } finally {
       setProcessing(false);
     }

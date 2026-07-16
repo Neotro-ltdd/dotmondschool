@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './SystemSchools.css'; // Reuse styles for consistency
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface SystemSettingsModel {
     globalSmsApiKey: string;
@@ -8,6 +10,8 @@ interface SystemSettingsModel {
 }
 
 export default function SystemSettings() {
+  const { showAlert } = useDialog();
+
     const [settings, setSettings] = useState<SystemSettingsModel>({
         globalSmsApiKey: '',
         globalSmsProviderUrl: ''
@@ -49,7 +53,7 @@ export default function SystemSettings() {
         try {
             const res = await api.put('/system/settings', settings);
             setSettings(res);
-            alert('Settings updated successfully!');
+            showAlert('Settings updated successfully!');
         } catch (err: any) {
             console.error(err);
             setError(err.message || 'Failed to save settings');

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import './Finance.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface PosStudent {
   id: string;
@@ -12,6 +14,8 @@ interface PosStudent {
 }
 
 export default function PointOfSale() {
+  const { showAlert } = useDialog();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<PosStudent[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<PosStudent | null>(null);
@@ -98,7 +102,7 @@ export default function PointOfSale() {
       } else {
         msg += `\n\nPart-Payment logged successfully.`;
       }
-      alert(msg);
+      showAlert(msg);
       
       // Setup receipt printing
       setReceiptData({
@@ -116,7 +120,7 @@ export default function PointOfSale() {
 
       handleSearch(); // refresh
     } catch (err: any) {
-      alert("Payment failed: " + (err.response?.data?.message || err.message));
+      showAlert("Payment failed: " + (err.response?.data?.message || err.message));
     } finally {
       setProcessing(false);
     }

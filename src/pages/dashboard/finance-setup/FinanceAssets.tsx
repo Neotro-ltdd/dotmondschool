@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import '../finance/Finance.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 export default function FinanceAssets() {
+  const { showAlert } = useDialog();
+
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [principalSigUrl, setPrincipalSigUrl] = useState<string | null>(null);
   const [accountantSigUrl, setAccountantSigUrl] = useState<string | null>(null);
@@ -40,9 +44,9 @@ export default function FinanceAssets() {
       if (assetType === 'principal-signature') setPrincipalSigUrl(res.url);
       if (assetType === 'accountant-signature') setAccountantSigUrl(res.url);
       
-      alert('Asset uploaded successfully!');
+      showAlert('Asset uploaded successfully!');
     } catch (err: any) {
-      alert('Upload failed: ' + err.message);
+      showAlert('Upload failed: ' + err.message);
     }
   };
 

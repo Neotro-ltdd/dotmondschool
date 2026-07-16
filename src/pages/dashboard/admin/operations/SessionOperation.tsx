@@ -2,35 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import { useActiveTerm } from '../../../../hooks/useActiveTerm';
 import '../SystemOperations.css';
+import { useDialog } from '../../../../context/DialogContext';
+
 
 export default function SessionOperation() {
+  const { showAlert, showConfirm } = useDialog();
+
   const { session, setSession } = useActiveTerm();
   const [promoClassId, setPromoClassId] = useState('');
   const [promoProcessing, setPromoProcessing] = useState(false);
 
   const handleGeneratePromotions = async () => {
     if (!promoClassId) {
-      alert('Please enter a Class ID to process promotions for.');
+      showAlert('Please enter a Class ID to process promotions for.');
       return;
     }
     try {
       setPromoProcessing(true);
       await api.post('/academics/promotions/generate', { session, classId: promoClassId });
-      alert('Promotion list generated and sent to Principal for approval!');
+      showAlert('Promotion list generated and sent to Principal for approval!');
     } catch (err: any) {
-      alert(err.message || 'Failed to generate promotions.');
+      showAlert(err.message || 'Failed to generate promotions.');
     } finally {
       setPromoProcessing(false);
     }
   };
 
   const handleAutoArchive = async () => {
-    if (!window.confirm('Are you sure? This will archive all graduating/withdrawn students for this session.')) return;
+    if (!await showConfirm('Are you sure? This will archive all graduating/withdrawn students for this session.')) return;
     try {
       await api.post('/academics/archiving/process', { session });
-      alert('Archiving processed successfully!');
+      showAlert('Archiving processed successfully!');
     } catch (err: any) {
-      alert(err.message || 'Failed to process archiving.');
+      showAlert(err.message || 'Failed to process archiving.');
     }
   };
 

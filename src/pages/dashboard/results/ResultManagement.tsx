@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import '../admin/SystemOperations.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface ClassItem {
   id: string;
@@ -18,6 +20,8 @@ interface SubjectStatus {
 }
 
 export default function ResultManagement() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [session, setSession] = useState('');
   const [term, setTerm] = useState('');
   const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -77,11 +81,11 @@ export default function ResultManagement() {
 
   const handleCompile = async () => {
     if (!selectedClassId) {
-      alert('Please select a class to compute results for.');
+      showAlert('Please select a class to compute results for.');
       return;
     }
     
-    if (!window.confirm('Are you sure you want to compute final results for this class? This will overwrite any currently compiled but unapproved results.')) {
+    if (!await showConfirm('Are you sure you want to compute final results for this class? This will overwrite any currently compiled but unapproved results.')) {
       return;
     }
 
@@ -92,9 +96,9 @@ export default function ResultManagement() {
         session, 
         term 
       });
-      alert('Results computed successfully and sent to Admin for approval!');
+      showAlert('Results computed successfully and sent to Admin for approval!');
     } catch (err: any) {
-      alert(err.message || 'Failed to compute results.');
+      showAlert(err.message || 'Failed to compute results.');
     } finally {
       setCompiling(false);
     }

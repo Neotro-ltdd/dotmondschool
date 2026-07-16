@@ -4,6 +4,8 @@ import { useTenant } from '../../../context/TenantContext';
 import { QRCodeSVG } from 'qrcode.react';
 import { useReactToPrint } from 'react-to-print';
 import './VendorHub.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface Student {
   id: string;
@@ -30,6 +32,8 @@ interface ClassItem {
 }
 
 export default function VendorHub() {
+  const { showAlert } = useDialog();
+
   const { schoolName, logoUrl } = useTenant();
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
@@ -66,7 +70,7 @@ export default function VendorHub() {
 
   const handleFetchStudents = async () => {
     if (!selectedClassId) {
-      alert("Please select a class first.");
+      showAlert("Please select a class first.");
       return;
     }
 
@@ -77,7 +81,7 @@ export default function VendorHub() {
       setStudents(data);
     } catch (err) {
       console.error('Failed to fetch students', err);
-      alert("Error loading students for this class.");
+      showAlert("Error loading students for this class.");
     } finally {
       setLoading(false);
     }
@@ -126,7 +130,7 @@ export default function VendorHub() {
   const handlePrintChecked = () => {
     const toPrint = students.filter(s => checkedStudentIds.has(s.id));
     if (toPrint.length === 0) {
-      alert("Please check at least one student to print.");
+      showAlert("Please check at least one student to print.");
       return;
     }
     setSelectedStudentsToPrint(toPrint);

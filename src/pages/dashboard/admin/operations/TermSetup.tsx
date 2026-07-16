@@ -2,8 +2,12 @@ import { useActiveTerm } from '../../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import '../SystemOperations.css';
+import { useDialog } from '../../../../context/DialogContext';
+
 
 export default function TermSetup() {
+  const { showAlert } = useDialog();
+
   const { session, term, setSession, setTerm } = useActiveTerm();
   const [resumptionDate, setResumptionDate] = useState('');
   const [isActive, setIsActive] = useState(true);
@@ -49,12 +53,12 @@ export default function TermSetup() {
 
   const handleSave = async () => {
     if (!resumptionDate) {
-      alert("Please select a resumption date.");
+      showAlert("Please select a resumption date.");
       return;
     }
     
     if (caWeightFirst + caWeightSecond + examWeight !== 100) {
-      alert("The sum of CA weights and Exam weight must equal exactly 100.");
+      showAlert("The sum of CA weights and Exam weight must equal exactly 100.");
       return;
     }
     
@@ -69,9 +73,9 @@ export default function TermSetup() {
         caWeightSecond,
         examWeight
       });
-      alert('Term setup saved successfully!');
+      showAlert('Term setup saved successfully!');
     } catch (err: any) {
-      alert(err.message || 'Failed to save term setup.');
+      showAlert(err.message || 'Failed to save term setup.');
     } finally {
       setSaving(false);
     }

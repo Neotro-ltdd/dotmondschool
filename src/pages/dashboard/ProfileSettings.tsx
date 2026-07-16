@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../services/api';
+import { useDialog } from '../../context/DialogContext';
+
 
 export default function ProfileSettings() {
+  const { showAlert } = useDialog();
+
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
@@ -38,10 +42,10 @@ export default function ProfileSettings() {
         avatarUrl: profile.avatarUrl,
         signatureUrl: profile.signatureUrl
       });
-      alert('Profile info updated successfully');
+      showAlert('Profile info updated successfully');
       fetchProfile();
     } catch (error) {
-      alert('Failed to update profile info');
+      showAlert('Failed to update profile info');
     }
   };
 
@@ -52,11 +56,11 @@ export default function ProfileSettings() {
       const formData = new FormData();
       formData.append('file', avatarFile);
       const res = await api.post('/profile/upload-avatar', formData);
-      alert('Avatar updated successfully');
+      showAlert('Avatar updated successfully');
       setAvatarFile(null);
       fetchProfile();
     } catch (error) {
-      alert('Failed to upload avatar');
+      showAlert('Failed to upload avatar');
     } finally {
       setAvatarUploading(false);
     }
@@ -70,11 +74,11 @@ export default function ProfileSettings() {
       formData.append('file', signatureFile);
       // We can use the existing setup/upload-signature endpoint which handles Teachers properly
       await api.post('/setup/upload-signature', formData);
-      alert('Signature uploaded successfully');
+      showAlert('Signature uploaded successfully');
       setSignatureFile(null);
       fetchProfile();
     } catch (error) {
-      alert('Failed to upload signature');
+      showAlert('Failed to upload signature');
     } finally {
       setSignatureUploading(false);
     }

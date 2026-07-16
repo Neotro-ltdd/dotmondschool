@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api, ApiError, getTenantId, getPublicTenantDetails, API_ROOT } from '../../services/api';
 import './Login.css';
+import { useDialog } from '../../context/DialogContext';
+
 
 export default function Login() {
+  const { showAlert } = useDialog();
+
   const navigate = useNavigate();
   const { login } = useAuth();
   
@@ -119,7 +123,7 @@ export default function Login() {
       if (!loginPassword) {
         setIsOtpMode(false);
         setOtp('');
-        alert("Account verified successfully! Please enter your password to log in.");
+        showAlert("Account verified successfully! Please enter your password to log in.");
         return;
       }
       

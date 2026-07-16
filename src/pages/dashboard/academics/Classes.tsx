@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api, ApiError } from '../../../services/api';
 import './Academics.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface ClassItem {
   id: string;
@@ -14,6 +16,8 @@ interface ClassItem {
 }
 
 export default function Classes() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +51,7 @@ export default function Classes() {
     fetchClasses();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -64,13 +68,13 @@ export default function Classes() {
       setIsEditing(false);
       fetchClasses();
     } catch (err: any) {
-      alert(err.message || `Failed to ${isEditing ? 'update' : 'create'} class`);
+      showAlert(err.message || `Failed to ${isEditing ? 'update' : 'create'} class`);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleEdit = (cls: ClassItem) => {
+  const handleEdit = async (cls: ClassItem) => {
     setFormData({
       id: cls.id,
       session: cls.session,
@@ -83,12 +87,12 @@ export default function Classes() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this class? This action cannot be undone.")) return;
+    if (!await showConfirm("Are you sure you want to delete this class? This action cannot be undone.")) return;
     try {
       await api.delete(`/setup/classes/${id}`);
       fetchClasses();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete class');
+      showAlert(err.message || 'Failed to delete class');
     }
   };
 

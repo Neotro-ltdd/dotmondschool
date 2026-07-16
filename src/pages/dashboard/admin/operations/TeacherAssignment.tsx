@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import '../SystemOperations.css';
+import { useDialog } from '../../../../context/DialogContext';
+
 
 interface TeacherItem {
   id: string;
@@ -23,6 +25,8 @@ interface SubjectItem {
 }
 
 export default function TeacherAssignment() {
+  const { showAlert } = useDialog();
+
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [subjects, setSubjects] = useState<SubjectItem[]>([]);
@@ -58,7 +62,7 @@ export default function TeacherAssignment() {
 
   const handleManageClass = async (action: 'Assign' | 'Unassign') => {
     if (!classTeacherId || !classId) {
-      alert('Please select both a class and a teacher.');
+      showAlert('Please select both a class and a teacher.');
       return;
     }
     
@@ -70,13 +74,13 @@ export default function TeacherAssignment() {
         targetId: classId,
         action: action
       });
-      alert(res.message || `Successfully ${action.toLowerCase()}ed class.`);
+      showAlert(res.message || `Successfully ${action.toLowerCase()}ed class.`);
       if (action === 'Assign') {
         setClassTeacherId('');
         setClassId('');
       }
     } catch (err: any) {
-      alert(err.message || `Failed to ${action.toLowerCase()} class.`);
+      showAlert(err.message || `Failed to ${action.toLowerCase()} class.`);
     } finally {
       setAssigningClass(false);
     }
@@ -84,7 +88,7 @@ export default function TeacherAssignment() {
 
   const handleManageSubject = async (action: 'Assign' | 'Unassign') => {
     if (!subjectTeacherId || !subjectId) {
-      alert('Please select both a subject and a teacher.');
+      showAlert('Please select both a subject and a teacher.');
       return;
     }
     
@@ -96,13 +100,13 @@ export default function TeacherAssignment() {
         targetId: subjectId,
         action: action
       });
-      alert(res.message || `Successfully ${action.toLowerCase()}ed subject.`);
+      showAlert(res.message || `Successfully ${action.toLowerCase()}ed subject.`);
       if (action === 'Assign') {
         setSubjectTeacherId('');
         setSubjectId('');
       }
     } catch (err: any) {
-      alert(err.message || `Failed to ${action.toLowerCase()} subject.`);
+      showAlert(err.message || `Failed to ${action.toLowerCase()} subject.`);
     } finally {
       setAssigningSubject(false);
     }

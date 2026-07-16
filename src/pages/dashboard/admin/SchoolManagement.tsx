@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../../../services/api';
 import './SchoolManagement.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface SchoolDetail {
     id: number;
@@ -16,6 +18,8 @@ interface SchoolDetail {
 }
 
 export default function SchoolManagement() {
+  const { showAlert, showConfirm } = useDialog();
+
     const { id } = useParams<{ id: string }>(); // This will be the tenantId from the route
     const [school, setSchool] = useState<SchoolDetail | null>(null);
     const [loading, setLoading] = useState(true);
@@ -37,7 +41,7 @@ export default function SchoolManagement() {
             setIsSmsEnabled(res.isSmsEnabled ?? true);
         } catch (err) {
             console.error(err);
-            alert("Failed to load school details");
+            showAlert("Failed to load school details");
         } finally {
             setLoading(false);
         }
@@ -50,7 +54,7 @@ export default function SchoolManagement() {
             fetchSchool();
         } catch (err) {
             console.error(err);
-            alert("Failed to toggle status");
+            showAlert("Failed to toggle status");
         }
     };
 
@@ -63,11 +67,11 @@ export default function SchoolManagement() {
                 customSenderName,
                 isSmsEnabled
             });
-            alert("Notification settings saved successfully.");
+            showAlert("Notification settings saved successfully.");
             fetchSchool();
         } catch (err: any) {
             console.error(err);
-            alert(err.message || "Failed to update SMS config");
+            showAlert(err.message || "Failed to update SMS config");
         } finally {
             setSavingSms(false);
         }
@@ -77,28 +81,28 @@ export default function SchoolManagement() {
         if (!school) return;
         try {
             await api.post(`/system/schemas/${school.tenantId}/backup`, {});
-            alert(`Backup queued successfully for ${school.tenantId}.`);
+            showAlert(`Backup queued successfully for ${school.tenantId}.`);
         } catch (err) {
             console.error(err);
-            alert("Failed to queue backup");
+            showAlert("Failed to queue backup");
         }
     };
 
     const handleRestore = async () => {
         if (!school) return;
-        if (!window.confirm(`Are you sure you want to restore ${school.tenantId} from backup? This will overwrite active data.`)) return;
+        if (!await showConfirm(`Are you sure you want to restore ${school.tenantId} from backup? This will overwrite active data.`)) return;
         try {
             await api.post(`/system/schemas/${school.tenantId}/restore`, {});
-            alert(`Restore queued successfully for ${school.tenantId}.`);
+            showAlert(`Restore queued successfully for ${school.tenantId}.`);
         } catch (err) {
             console.error(err);
-            alert("Failed to queue restore");
+            showAlert("Failed to queue restore");
         }
     };
 
     const handleWipe = async () => {
         if (!school) return;
-        const confirmWipe = window.confirm(
+        const confirmWipe = await showConfirm(
             `⚠️ DANGER: Are you sure you want to wipe all active data for ${school.tenantId}? ` +
             `This is for testing purposes. Make sure you have a backup!`
         );
@@ -106,11 +110,11 @@ export default function SchoolManagement() {
 
         try {
             await api.post(`/system/schemas/${school.tenantId}/wipe-data`, {});
-            alert(`Data wiped successfully for ${school.tenantId}. You can now test the restore!`);
+            showAlert(`Data wiped successfully for ${school.tenantId}. You can now test the restore!`);
             fetchSchool();
         } catch (err) {
             console.error(err);
-            alert("Failed to wipe data");
+            showAlert("Failed to wipe data");
         }
     };
 

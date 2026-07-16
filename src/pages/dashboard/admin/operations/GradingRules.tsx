@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { api } from '../../../../services/api';
 import '../SystemOperations.css';
+import { useDialog } from '../../../../context/DialogContext';
+
 
 interface GradingRule {
   minScore: number;
@@ -10,6 +12,8 @@ interface GradingRule {
 }
 
 export default function GradingRules() {
+  const { showAlert } = useDialog();
+
   const [gradingRules, setGradingRules] = useState<GradingRule[]>([
     { minScore: 70, maxScore: 100, grade: 'A', remark: 'Excellent' },
     { minScore: 60, maxScore: 69.99, grade: 'B', remark: 'Good' },
@@ -43,9 +47,9 @@ export default function GradingRules() {
         remark: r.remark
       }));
       await api.post('/setup/grading-rules', { rules: rulesDto });
-      alert('Grading Rules saved successfully!');
+      showAlert('Grading Rules saved successfully!');
     } catch (err: any) {
-      alert(err.message || 'Failed to save Grading Rules.');
+      showAlert(err.message || 'Failed to save Grading Rules.');
     } finally {
       setSavingRules(false);
     }

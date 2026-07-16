@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import '../SystemOperations.css';
+import { useDialog } from '../../../../context/DialogContext';
+
 
 interface TeacherItem {
   id: string;
@@ -26,6 +28,8 @@ interface ClassAllocationItem {
 }
 
 export default function SubjectAllocations() {
+  const { showAlert } = useDialog();
+
   const [allocations, setAllocations] = useState<ClassAllocationItem[]>([]);
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +97,7 @@ export default function SubjectAllocations() {
       setShowModal(false);
       fetchData(); // Refresh data
     } catch (err: any) {
-      alert(err.message || 'Failed to assign subject teacher');
+      showAlert(err.message || 'Failed to assign subject teacher');
     } finally {
       setSubmitting(false);
     }

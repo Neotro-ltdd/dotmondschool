@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api, ApiError } from '../../../services/api';
 import './Academics.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface SubjectItem {
   id: string;
@@ -21,6 +23,8 @@ interface ClassItem {
 }
 
 export default function Subjects() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [subjects, setSubjects] = useState<SubjectItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +77,7 @@ export default function Subjects() {
     fetchSubjects();
   }, [filterLevel]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
@@ -101,13 +105,13 @@ export default function Subjects() {
       setFormData({ id: '', name: '', level: formData.level, isParent: false, parentSubjectId: '', departmentTrack: 'General' });
       fetchSubjects();
     } catch (err: any) {
-      alert(err.message || `Failed to ${isEditing ? 'update' : 'create'} subject`);
+      showAlert(err.message || `Failed to ${isEditing ? 'update' : 'create'} subject`);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleEditClick = (subject: SubjectItem) => {
+  const handleEditClick = async (subject: SubjectItem) => {
     setFormData({
       id: subject.id,
       name: subject.name,
@@ -121,13 +125,13 @@ export default function Subjects() {
   };
 
   const handleDeleteClick = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this subject? This cannot be undone if there are no scores attached.")) return;
+    if (!await showConfirm("Are you sure you want to delete this subject? This cannot be undone if there are no scores attached.")) return;
     try {
       setSubmitting(true);
       await api.delete(`/academics/subjects/${id}`);
       fetchSubjects();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete subject');
+      showAlert(err.message || 'Failed to delete subject');
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './Approvals.css';
+import { useDialog } from '../../../context/DialogContext';
+
 
 interface ResultBatch {
   id: string;
@@ -40,6 +42,8 @@ interface PendingSignature {
 }
 
 export default function Approvals() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [activeTab, setActiveTab] = useState<'results' | 'promotions' | 'history'>('results');
   const [resultBatches, setResultBatches] = useState<ResultBatch[]>([]);
   const [promotionBatches, setPromotionBatches] = useState<PromotionBatch[]>([]);
@@ -76,7 +80,7 @@ export default function Approvals() {
   }, []);
 
   const handleApproveResult = async (batchId: string) => {
-    if (!window.confirm("Are you sure you want to approve this result batch? This action is irreversible.")) return;
+    if (!await showConfirm("Are you sure you want to approve this result batch? This action is irreversible.")) return;
     try {
       setProcessingId(batchId);
       // First save any edited remarks
@@ -89,11 +93,11 @@ export default function Approvals() {
       }
       
       await api.post(`/academics/results/batches/${batchId}/approve`, {});
-      alert("Result batch approved successfully.");
+      showAlert("Result batch approved successfully.");
       setSelectedBatch(null);
       fetchData();
     } catch (err: any) {
-      alert(err.message || "Approval failed.");
+      showAlert(err.message || "Approval failed.");
     } finally {
       setProcessingId(null);
     }
@@ -113,7 +117,7 @@ export default function Approvals() {
       setEditingRemarks(initialRemarks);
     } catch (err) {
       console.error(err);
-      alert("Failed to load results for review.");
+      showAlert("Failed to load results for review.");
       setSelectedBatch(null);
     } finally {
       setLoadingResults(false);
@@ -121,14 +125,14 @@ export default function Approvals() {
   };
 
   const handleApprovePromotion = async (batchId: string) => {
-    if (!window.confirm("Are you sure you want to approve this promotion batch? This action is irreversible.")) return;
+    if (!await showConfirm("Are you sure you want to approve this promotion batch? This action is irreversible.")) return;
     try {
       setProcessingId(batchId);
       await api.post('/academics/promotion/approve', { batchId });
-      alert("Promotion batch approved successfully.");
+      showAlert("Promotion batch approved successfully.");
       fetchData();
     } catch (err: any) {
-      alert(err.message || "Approval failed.");
+      showAlert(err.message || "Approval failed.");
     } finally {
       setProcessingId(null);
     }

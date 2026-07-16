@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import '../SystemOperations.css';
+import { useDialog } from '../../../../context/DialogContext';
+
 
 interface TeacherItem {
   id: string;
@@ -10,6 +12,8 @@ interface TeacherItem {
 }
 
 export default function RoleManagement() {
+  const { showAlert, showConfirm } = useDialog();
+
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
   const [roleEmail, setRoleEmail] = useState('');
   const [selectedRole, setSelectedRole] = useState('Admin');
@@ -30,10 +34,10 @@ export default function RoleManagement() {
 
   const handleManageRole = async (action: 'Assign' | 'Unassign') => {
     if (!roleEmail) {
-      alert('Please select a teacher.');
+      showAlert('Please select a teacher.');
       return;
     }
-    if (!window.confirm(`Are you sure you want to ${action.toLowerCase()} the ${selectedRole} role for ${roleEmail}?`)) return;
+    if (!await showConfirm(`Are you sure you want to ${action.toLowerCase()} the ${selectedRole} role for ${roleEmail}?`)) return;
     
     try {
       setManagingRole(true);
@@ -42,10 +46,10 @@ export default function RoleManagement() {
         roleName: selectedRole,
         action: action
       });
-      alert(res.message || `Successfully ${action.toLowerCase()}ed role.`);
+      showAlert(res.message || `Successfully ${action.toLowerCase()}ed role.`);
       setRoleEmail(''); // Clear email on success
     } catch (err: any) {
-      alert(err.message || `Failed to ${action.toLowerCase()} role.`);
+      showAlert(err.message || `Failed to ${action.toLowerCase()} role.`);
     } finally {
       setManagingRole(false);
     }
