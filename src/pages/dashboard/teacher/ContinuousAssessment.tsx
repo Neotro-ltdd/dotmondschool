@@ -193,7 +193,7 @@ export default function ContinuousAssessment() {
   };
 
   const handleLockScores = async () => {
-    if (!window.confirm("Are you sure you want to SUBMIT these scores? You will not be able to edit them afterward.")) return;
+    if (!window.confirm("Are you sure you want to SUBMIT these scores? Existing scores will be locked from editing, but you can still add scores later for students who missed the exam.")) return;
     try {
       setLockingScores(true);
       
