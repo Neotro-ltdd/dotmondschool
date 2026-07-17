@@ -211,7 +211,148 @@ export default function Login() {
         
         {error && <div className="alert-error">{error}</div>}
 
-        {!isOtpMode ? (
+        {isForgotPasswordMode ? (
+          <form className="login-form" onSubmit={handleForgotPasswordSubmit}>
+            <div className="form-group">
+              <label htmlFor="schoolCodeForgot">School Code</label>
+              <input
+                type="text"
+                id="schoolCodeForgot"
+                value={schoolCode}
+                onChange={(e) => setSchoolCode(e.target.value)}
+                placeholder="e.g. myschool"
+                required
+                disabled={forgotPasswordStep === 2}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="emailForgot">Email Address</label>
+              <input
+                type="email"
+                id="emailForgot"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@school.edu"
+                required
+                disabled={forgotPasswordStep === 2}
+              />
+            </div>
+            
+            {forgotPasswordStep === 2 && (
+              <>
+                <div className="form-group">
+                  <label htmlFor="resetOtp">6-Digit Reset Code</label>
+                  <input 
+                    type="text" 
+                    id="resetOtp" 
+                    placeholder="123456" 
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required 
+                    className="otp-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="resetNewPassword">New Password</label>
+                  <input
+                    type="password"
+                    id="resetNewPassword"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    required
+                    disabled={otp.length !== 6}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="resetConfirmPassword">Confirm New Password</label>
+                  <input
+                    type="password"
+                    id="resetConfirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    required
+                    disabled={otp.length !== 6}
+                  />
+                </div>
+              </>
+            )}
+            
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+                {loading ? "Processing..." : (forgotPasswordStep === 1 ? "Send Reset Code" : "Reset Password")}
+              </button>
+            </div>
+            <div className="mt-3 text-center">
+              <button 
+                type="button" 
+                className="btn btn-outline btn-full" 
+                onClick={() => {
+                  setIsForgotPasswordMode(false);
+                  setForgotPasswordStep(1);
+                  setOtp('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+              >
+                Back to Login
+              </button>
+            </div>
+          </form>
+        ) : isOtpMode ? (
+          <form className="login-form" onSubmit={handleOtpSubmit}>
+            <div className="form-group">
+              <label htmlFor="otp">One-Time Password (OTP)</label>
+              <input 
+                type="text" 
+                id="otp" 
+                placeholder="123456" 
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required 
+                className="otp-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="newPassword">New Permanent Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                required
+              />
+            </div>
+            
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+                {loading ? "Verifying..." : "Verify & Login"}
+              </button>
+            </div>
+            <div className="mt-3 text-center">
+              <button type="button" className="btn btn-outline btn-full" onClick={() => setIsOtpMode(false)}>
+                Back to Login
+              </button>
+            </div>
+          </form>
+        ) : (
           <form onSubmit={handleLoginSubmit} className="login-form">
             <div className="form-group">
               <label htmlFor="schoolCode">School Code</label>
@@ -260,145 +401,6 @@ export default function Login() {
             <div className="form-actions">
               <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
-              </button>
-            </div>
-          </form>
-        ) : isForgotPasswordMode ? (
-          <form className="login-form" onSubmit={handleForgotPasswordSubmit}>
-            <div className="form-group">
-              <label htmlFor="schoolCode">School Code</label>
-              <input
-                type="text"
-                id="schoolCodeForgot"
-                value={schoolCode}
-                onChange={(e) => setSchoolCode(e.target.value)}
-                placeholder="e.g. myschool"
-                required
-                disabled={forgotPasswordStep === 2}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="emailForgot">Email Address</label>
-              <input
-                type="email"
-                id="emailForgot"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@school.edu"
-                required
-                disabled={forgotPasswordStep === 2}
-              />
-            </div>
-            
-            {forgotPasswordStep === 2 && (
-              <>
-                <div className="form-group">
-                  <label htmlFor="resetOtp">6-Digit Reset Code</label>
-                  <input 
-                    type="text" 
-                    id="resetOtp" 
-                    placeholder="123456" 
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    required 
-                    className="otp-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="resetNewPassword">New Password</label>
-                  <input
-                    type="password"
-                    id="resetNewPassword"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Enter new password"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="resetConfirmPassword">Confirm New Password</label>
-                  <input
-                    type="password"
-                    id="resetConfirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm new password"
-                    required
-                  />
-                </div>
-              </>
-            )}
-            
-            <div className="form-actions">
-              <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                {loading ? "Processing..." : (forgotPasswordStep === 1 ? "Send Reset Code" : "Reset Password")}
-              </button>
-            </div>
-            <div className="mt-3 text-center">
-              <button 
-                type="button" 
-                className="btn btn-outline btn-full" 
-                onClick={() => {
-                  setIsForgotPasswordMode(false);
-                  setForgotPasswordStep(1);
-                  setOtp('');
-                  setNewPassword('');
-                  setConfirmPassword('');
-                }}
-              >
-                Back to Login
-              </button>
-            </div>
-          </form>
-        ) : (
-          <form className="login-form" onSubmit={handleOtpSubmit}>
-            <div className="form-group">
-              <label htmlFor="otp">One-Time Password (OTP)</label>
-              <input 
-                type="text" 
-                id="otp" 
-                placeholder="123456" 
-                maxLength={6}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required 
-                className="otp-input"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="newPassword">New Permanent Password</label>
-              <input
-                type="password"
-                id="newPassword"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm New Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-                required
-              />
-            </div>
-            
-            <div className="form-actions">
-              <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                {loading ? "Verifying..." : "Verify & Login"}
-              </button>
-            </div>
-            <div className="mt-3 text-center">
-              <button type="button" className="btn btn-outline btn-full" onClick={() => setIsOtpMode(false)}>
-                Back to Login
               </button>
             </div>
           </form>
