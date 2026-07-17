@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { TenantProvider } from './context/TenantContext';
+import { DialogProvider } from './context/DialogContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/auth/Login';
 import ChangePassword from './pages/auth/ChangePassword';
@@ -56,6 +57,7 @@ function App() {
   return (
     <TenantProvider>
       <AuthProvider>
+        <DialogProvider>
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -125,7 +127,8 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+        </DialogProvider>
+      </AuthProvider>
     </TenantProvider>
   );
 }
