@@ -21,6 +21,8 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState('');
   
   const [isOtpMode, setIsOtpMode] = useState(false);
+  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState<1 | 2>(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -141,6 +143,47 @@ export default function Login() {
     }
   };
 
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    if (!schoolCode) {
+        setError("Please enter your School Code.");
+        setLoading(false);
+        return;
+    }
+
+    localStorage.setItem('srms_tenantId', schoolCode.toLowerCase().trim());
+
+    try {
+      if (forgotPasswordStep === 1) {
+        // Request OTP
+        await api.post('/auth/forgot-password', { email });
+        setForgotPasswordStep(2);
+        showAlert("A 6-digit reset code has been sent to your email.");
+      } else {
+        // Reset Password
+        if (newPassword !== confirmPassword) {
+          setError("Passwords do not match.");
+          setLoading(false);
+          return;
+        }
+        await api.post('/auth/reset-password', { email, token: otp, newPassword });
+        setIsForgotPasswordMode(false);
+        setForgotPasswordStep(1);
+        setOtp('');
+        setNewPassword('');
+        setConfirmPassword('');
+        showAlert("Password reset successfully! You can now log in.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to process request.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="login-panel glass-panel">
@@ -156,7 +199,14 @@ export default function Login() {
             <div className="school-logo-placeholder">{schoolName === "Neotro SMS" ? "NS" : schoolName.substring(0, 2).toUpperCase()}</div>
           )}
           <h1>Welcome to {schoolName}</h1>
-          <p>{isOtpMode ? 'Enter the OTP sent to your email to verify your account.' : 'Sign in to access your portal'}</p>
+          <p>
+            {isOtpMode 
+              ? 'Enter the OTP sent to your email to verify your account.' 
+              : isForgotPasswordMode
+                ? (forgotPasswordStep === 1 ? 'Enter your email to receive a password reset code.' : 'Enter the 6-digit code and your new password.')
+                : 'Sign in to access your portal'
+            }
+          </p>
         </div>
         
         {error && <div className="alert-error">{error}</div>}
@@ -195,11 +245,109 @@ export default function Login() {
                 placeholder="••••••••"
                 required
               />
+              <div style={{ textAlign: 'right', marginTop: '4px' }}>
+                <button 
+                  type="button" 
+                  className="btn-link" 
+                  style={{ background: 'none', border: 'none', color: '#0F1F5C', fontSize: '12px', cursor: 'pointer', padding: 0, fontWeight: 500 }}
+                  onClick={() => setIsForgotPasswordMode(true)}
+                >
+                  Forgot Password?
+                </button>
+              </div>
             </div>
             
             <div className="form-actions">
               <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
+              </button>
+            </div>
+          </form>
+        ) : isForgotPasswordMode ? (
+          <form className="login-form" onSubmit={handleForgotPasswordSubmit}>
+            <div className="form-group">
+              <label htmlFor="schoolCode">School Code</label>
+              <input
+                type="text"
+                id="schoolCodeForgot"
+                value={schoolCode}
+                onChange={(e) => setSchoolCode(e.target.value)}
+                placeholder="e.g. myschool"
+                required
+                disabled={forgotPasswordStep === 2}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="emailForgot">Email Address</label>
+              <input
+                type="email"
+                id="emailForgot"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@school.edu"
+                required
+                disabled={forgotPasswordStep === 2}
+              />
+            </div>
+            
+            {forgotPasswordStep === 2 && (
+              <>
+                <div className="form-group">
+                  <label htmlFor="resetOtp">6-Digit Reset Code</label>
+                  <input 
+                    type="text" 
+                    id="resetOtp" 
+                    placeholder="123456" 
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required 
+                    className="otp-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="resetNewPassword">New Password</label>
+                  <input
+                    type="password"
+                    id="resetNewPassword"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="resetConfirmPassword">Confirm New Password</label>
+                  <input
+                    type="password"
+                    id="resetConfirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    required
+                  />
+                </div>
+              </>
+            )}
+            
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+                {loading ? "Processing..." : (forgotPasswordStep === 1 ? "Send Reset Code" : "Reset Password")}
+              </button>
+            </div>
+            <div className="mt-3 text-center">
+              <button 
+                type="button" 
+                className="btn btn-outline btn-full" 
+                onClick={() => {
+                  setIsForgotPasswordMode(false);
+                  setForgotPasswordStep(1);
+                  setOtp('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+              >
+                Back to Login
               </button>
             </div>
           </form>
@@ -256,7 +404,7 @@ export default function Login() {
           </form>
         )}
 
-        {!isOtpMode && (
+        {!isOtpMode && !isForgotPasswordMode && (
           <div className="login-footer">
             <button className="btn btn-outline btn-full mt-3" onClick={() => navigate('/')}>
               Back to Home
