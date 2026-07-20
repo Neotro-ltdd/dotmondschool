@@ -104,6 +104,25 @@ export default function ResultManagement() {
     }
   };
 
+  const handleUnlockSubject = async (subjectId: string, subjectName: string) => {
+    if (!await showConfirm(`Are you sure you want to unlock ${subjectName} scores? The teacher will be able to modify them again.`)) {
+      return;
+    }
+    
+    try {
+      await api.post('/academics/scores/unlock-batch', {
+        classId: selectedClassId,
+        subjectId,
+        session,
+        term
+      });
+      showAlert(`${subjectName} scores have been unlocked successfully.`);
+      fetchClassStatus();
+    } catch (err: any) {
+      showAlert(err.message || `Failed to unlock ${subjectName} scores.`);
+    }
+  };
+
   return (
     <div className="operations-page">
       <div className="page-header">
@@ -181,9 +200,22 @@ export default function ResultManagement() {
                     backgroundColor: sub.isSubmitted ? 'rgba(16, 185, 129, 0.05)' : '#fff',
                     color: sub.isSubmitted ? 'inherit' : '#333'
                   }}>
-                    <div style={{ fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       {sub.subjectName}
-                      <span>{sub.isSubmitted ? '✅' : '⏳'}</span>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <span>{sub.isSubmitted ? '✅' : '⏳'}</span>
+                        {sub.isSubmitted && (
+                          <button 
+                            onClick={() => handleUnlockSubject(sub.subjectId, sub.subjectName)}
+                            title="Unlock scores for modification"
+                            style={{ 
+                              background: 'none', border: 'none', cursor: 'pointer', 
+                              fontSize: '1.1rem', padding: '0 4px' 
+                            }}>
+                            🔓
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="text-sm text-muted" style={{ marginTop: '0.25rem' }}>
                       {sub.scoresEntered} / {sub.totalStudents} Scores
