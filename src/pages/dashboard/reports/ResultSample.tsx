@@ -110,8 +110,8 @@ const ResultSample: React.FC = () => {
           
           <div className="performance-box custom-box">
             <h4>PERFORMANCE SUMMARY</h4>
-            <div className="att-row"><span>Grand Total:</span> <span className="att-val">{dummyResult.grandTotal}</span></div>
-            <div className="att-row"><span>Average:</span> <span className="att-val">{dummyResult.average.toFixed(1)}%</span></div>
+            <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(dummyResult.grandTotal)}</span></div>
+            <div className="att-row"><span>Average:</span> <span className="att-val">{Math.ceil(dummyResult.average)}%</span></div>
           </div>
         </div>
 

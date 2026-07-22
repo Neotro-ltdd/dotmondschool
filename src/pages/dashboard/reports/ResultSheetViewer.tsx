@@ -149,8 +149,8 @@ const ResultSheetViewer: React.FC = () => {
           
           <div className="performance-box custom-box">
             <h4>PERFORMANCE SUMMARY</h4>
-            <div className="att-row"><span>Grand Total:</span> <span className="att-val">{result.grandTotal}</span></div>
-            <div className="att-row"><span>Average:</span> <span className="att-val">{result.average.toFixed(1)}%</span></div>
+            <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(result.grandTotal)}</span></div>
+            <div className="att-row"><span>Average:</span> <span className="att-val">{Math.ceil(result.average)}%</span></div>
           </div>
         </div>
 
