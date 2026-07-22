@@ -168,7 +168,8 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
             <div className="performance-box custom-box">
               <h4>PERFORMANCE SUMMARY</h4>
               <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(data.grandTotal)}</span></div>
-              <div className="att-row"><span>Average:</span> <span className="att-val">{Math.ceil(data.average)}%</span></div>
+              <div className="att-row"><span>Average:</span> <span className="att-val">{data.average.toFixed(1)}%</span></div>
+              <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(data.average)}%</span></div>
             </div>
           </div>
 
