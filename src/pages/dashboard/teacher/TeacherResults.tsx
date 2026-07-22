@@ -99,7 +99,7 @@ export default function TeacherResults() {
               </tr>
             </thead>
             <tbody>
-              {data.results.map(r => (
+              {[...data.results].sort((a, b) => a.studentName.localeCompare(b.studentName)).map(r => (
                 <tr key={r.id}>
                   <td>
                     <strong>{r.studentName}</strong>

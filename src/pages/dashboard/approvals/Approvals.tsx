@@ -315,7 +315,7 @@ export default function Approvals() {
                     </tr>
                   </thead>
                   <tbody>
-                    {batchResults.map(r => (
+                    {[...batchResults].sort((a, b) => a.studentName.localeCompare(b.studentName)).map(r => (
                       <tr key={r.id} className="student-row">
                         <td>
                           <strong>{r.studentName}</strong>
