@@ -175,7 +175,7 @@ export default function ContinuousAssessment() {
   const handleSaveScores = async () => {
     try {
       setSavingScores(true);
-      const promises = scores.map(s => {
+      const promises = scores.filter(s => !s.isSubmitted).map(s => {
         // Only send if not completely null
         const isCompletelyNull = s.exam === null && (!s.caData || (s.caData["First Test"] === null && s.caData["Second Test"] === null));
         return api.post('/academics/scores', {
@@ -207,7 +207,7 @@ export default function ContinuousAssessment() {
       setLockingScores(true);
       
       // Auto-save scores before locking to ensure no data is lost
-      const savePromises = scores.map(s => {
+      const savePromises = scores.filter(s => !s.isSubmitted).map(s => {
         const isCompletelyNull = s.exam === null && (!s.caData || (s.caData["First Test"] === null && s.caData["Second Test"] === null));
         return api.post('/academics/scores', {
           studentId: s.studentId,
