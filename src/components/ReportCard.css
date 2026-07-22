@@ -178,3 +178,6 @@
   justify-content: center;
   gap: 10px;
 }
+
+.signature-area { width: 200px; text-align: center; min-height: 80px; display: flex; align-items: flex-end; justify-content: center; }
+.signature-area img { max-height: 80px; max-width: 100%; object-fit: contain; }

@@ -215,17 +215,18 @@
 }
 
 .signature-area {
-  width: 150px;
+  width: 200px;
   text-align: center;
-  height: 40px;
+  min-height: 80px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
 
 .signature-area img {
-  max-height: 40px;
+  max-height: 80px;
   max-width: 100%;
+  object-fit: contain;
 }
 
 .footer-section {
