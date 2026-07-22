@@ -113,6 +113,7 @@ export default function Classes() {
     'Junior Secondary': 2,
     'Upper Primary': 3,
     'Lower Primary': 4,
+    'Middle Primary': 5,
     'Primary': 5,
     'Nursery 2': 6,
     'Nursery 1': 7,
@@ -132,7 +133,7 @@ export default function Classes() {
     const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
     
     if (numA !== numB) {
-      if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Lower Primary', 'Primary', 'Nursery 2', 'Nursery 1', 'Nursery'].includes(a.level)) {
+      if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Middle Primary', 'Lower Primary', 'Primary', 'Nursery 2', 'Nursery 1', 'Nursery'].includes(a.level)) {
         return numB - numA; // Descending
       }
       return numA - numB; // Ascending
@@ -215,6 +216,7 @@ export default function Classes() {
                   <option value="Junior Secondary" style={{ color: '#000' }}>Junior Secondary</option>
                   <option value="Upper Primary" style={{ color: '#000' }}>Upper Primary</option>
                   <option value="Lower Primary" style={{ color: '#000' }}>Lower Primary</option>
+                  <option value="Middle Primary" style={{ color: '#000' }}>Middle Primary</option>
                   <option value="Nursery 2" style={{ color: '#000' }}>Nursery 2</option>
                   <option value="Nursery 1" style={{ color: '#000' }}>Nursery 1</option>
                   <option value="Kindergarten" style={{ color: '#000' }}>Kindergarten</option>
