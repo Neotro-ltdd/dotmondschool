@@ -92,7 +92,7 @@ export default function ResultManagement() {
         const weightA = levelWeights[a.level] || 99;
         const weightB = levelWeights[b.level] || 99;
         if (weightA !== weightB) return weightA - weightB;
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
       });
 
       setClasses(sortedClasses);
