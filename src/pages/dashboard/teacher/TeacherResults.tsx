@@ -1,6 +1,7 @@
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
+import { useDialog } from '../../../context/DialogContext';
 import '../students/Management.css'; 
 
 interface StudentResultItem {
@@ -24,6 +25,7 @@ export default function TeacherResults() {
   const [data, setData] = useState<BatchResultResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showConfirm, showAlert } = useDialog();
 
   // Filters
   const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
@@ -50,15 +52,19 @@ export default function TeacherResults() {
 
   const handleReset = async () => {
     if (!data?.batchId) return;
-    if (!window.confirm("Are you sure you want to reset and delete this compilation? This will return the class to a pre-compiled state.")) return;
+    
+    const confirmed = await showConfirm(
+      "Are you sure you want to reset and delete this compilation? This will return the class to a pre-compiled state."
+    );
+    if (!confirmed) return;
 
     try {
       setLoading(true);
       await api.delete(`/academics/results/reset/${data.batchId}`);
-      alert("Results have been successfully reset.");
+      await showAlert("Results have been successfully reset.", { type: 'success' });
       fetchResults();
     } catch (err: any) {
-      alert(err.message || 'Failed to reset results.');
+      await showAlert(err.message || 'Failed to reset results.', { type: 'danger' });
       setLoading(false);
     }
   };
