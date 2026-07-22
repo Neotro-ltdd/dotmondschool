@@ -18,6 +18,7 @@ const ResultSample: React.FC = () => {
     parentName: 'Mr & Mrs. Uhama',
     dateProcessed: '07/22/2026',
     positionInClass: '15',
+    averageGrade: 'C',
     grandTotal: 374,
     average: 62.3,
     teacherComment: 'A good performance, keep it up.',
@@ -81,9 +82,15 @@ const ResultSample: React.FC = () => {
           <thead>
             <tr>
               <th>SUBJECTS</th>
-              <th>Total CA<br/>(40)</th>
-              <th>Exam<br/>(60)</th>
-              <th>Total<br/>(100)</th>
+              {isSecondary ? (
+                <>
+                  <th>Total CA<br/>(40)</th>
+                  <th>Exam<br/>(60)</th>
+                  <th>Total<br/>(100)</th>
+                </>
+              ) : (
+                <th>Mark<br/>(100)</th>
+              )}
               <th>Grade</th>
               <th>Remark</th>
             </tr>
@@ -92,9 +99,15 @@ const ResultSample: React.FC = () => {
             {dummyResult.subjects.map((score, index) => (
               <tr key={index}>
                 <td className="subject-name">{score.subjectName}</td>
-                <td>{Math.ceil(score.testScore)}</td>
-                <td>{Math.ceil(score.examScore)}</td>
-                <td>{Math.ceil(score.totalScore)}</td>
+                {isSecondary ? (
+                  <>
+                    <td>{Math.ceil(score.testScore)}</td>
+                    <td>{Math.ceil(score.examScore)}</td>
+                    <td>{Math.ceil(score.totalScore)}</td>
+                  </>
+                ) : (
+                  <td>{Math.ceil(score.totalScore)}</td>
+                )}
                 <td>{score.grade}</td>
                 <td>{score.remark}</td>
               </tr>
@@ -115,7 +128,11 @@ const ResultSample: React.FC = () => {
             <h4>PERFORMANCE SUMMARY</h4>
             <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(dummyResult.grandTotal)}</span></div>
             <div className="att-row"><span>Average:</span> <span className="att-val">{dummyResult.average.toFixed(1)}%</span></div>
-            <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(dummyResult.average)}%</span></div>
+            {isSecondary ? (
+              <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(dummyResult.average)}%</span></div>
+            ) : (
+              <div className="att-row"><span>Grade/Position:</span> <span className="att-val">Grade {dummyResult.averageGrade}</span></div>
+            )}
           </div>
         </div>
 
