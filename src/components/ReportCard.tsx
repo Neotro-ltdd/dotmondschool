@@ -146,9 +146,9 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
               {data.subjects.map((score, index) => (
                 <tr key={index}>
                   <td className="subject-name">{score.subjectName}</td>
-                  <td>{Math.round(score.testScore)}</td>
-                  <td>{Math.round(score.examScore)}</td>
-                  <td>{Math.round(score.totalScore)}</td>
+                  <td>{Math.ceil(score.testScore)}</td>
+                  <td>{Math.ceil(score.examScore)}</td>
+                  <td>{Math.ceil(score.totalScore)}</td>
                   <td>{score.grade}</td>
                   <td>{score.remark}</td>
                 </tr>
@@ -160,9 +160,9 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
           <div className="summary-grid">
             <div className="attendance-box custom-box">
               <h4>ATTENDANCE</h4>
-              <div className="att-row"><span>Days School Opened:</span> <span className="att-val">{data.daysSchoolOpened}</span></div>
+              <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
               <div className="att-row"><span>Days Present:</span> <span className="att-val">{data.daysStudentPresent}</span></div>
-              <div className="att-row"><span>Days Absent:</span> <span className="att-val">{data.daysSchoolOpened - data.daysStudentPresent}</span></div>
+              <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - data.daysStudentPresent}</span></div>
             </div>
             
             <div className="psychomotor-box custom-box">

@@ -128,9 +128,9 @@ const ResultSheetViewer: React.FC = () => {
             {result.subjects.map((score, index) => (
               <tr key={index}>
                 <td className="subject-name">{score.subjectName}</td>
-                <td>{Math.round(score.testScore)}</td>
-                <td>{Math.round(score.examScore)}</td>
-                <td>{Math.round(score.totalScore)}</td>
+                <td>{Math.ceil(score.testScore)}</td>
+                <td>{Math.ceil(score.examScore)}</td>
+                <td>{Math.ceil(score.totalScore)}</td>
                 <td>{score.grade}</td>
                 <td>{score.remark}</td>
               </tr>
@@ -142,7 +142,7 @@ const ResultSheetViewer: React.FC = () => {
         <div className="summary-grid">
           <div className="attendance-box custom-box">
             <h4>ATTENDANCE</h4>
-            <div className="att-row"><span>Days School Opened:</span> <span className="att-val">120</span></div>
+            <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
             <div className="att-row"><span>Days Present:</span> <span className="att-val">118</span></div>
             <div className="att-row"><span>Days Absent:</span> <span className="att-val">2</span></div>
           </div>
