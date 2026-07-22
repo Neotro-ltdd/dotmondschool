@@ -19,6 +19,7 @@ interface ReportCardData {
   dateOfResult: string;
   grandTotal: number;
   average: number;
+  averageGrade?: string;
   percentage: string;
   teacherComment: string;
   principalComment: string;
