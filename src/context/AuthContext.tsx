@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const lastName = decoded['last_name'] || '';
                 
                 if (firstName || lastName) {
-                    setUserName(`${firstName} ${lastName}`.trim());
+                    setUserName(`${lastName} ${firstName}`.trim());
                 } else if (email) {
                     const namePart = email.split('@')[0];
                     setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1));

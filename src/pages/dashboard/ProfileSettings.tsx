@@ -113,12 +113,12 @@ export default function ProfileSettings() {
 
           <div className="form-group" style={{ display: 'flex', gap: '1rem' }}>
             <div style={{ flex: 1 }}>
-              <label className="form-label">First Name</label>
-              <input type="text" className="form-control" value={firstName} onChange={e => setFirstName(e.target.value)} />
-            </div>
-            <div style={{ flex: 1 }}>
               <label className="form-label">Last Name</label>
               <input type="text" className="form-control" value={lastName} onChange={e => setLastName(e.target.value)} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label className="form-label">First Name</label>
+              <input type="text" className="form-control" value={firstName} onChange={e => setFirstName(e.target.value)} />
             </div>
           </div>
 
