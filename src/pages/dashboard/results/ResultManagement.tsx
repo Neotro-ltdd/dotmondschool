@@ -73,7 +73,29 @@ export default function ResultManagement() {
   const fetchClasses = async () => {
     try {
       const data = await api.get('/setup/classes');
-      setClasses(data);
+      
+      // Sort classes chronologically by level, then by name
+      const levelWeights: Record<string, number> = {
+        'Nursery': 1,
+        'Nursery 1': 2,
+        'Nursery 2': 3,
+        'Kindergarten': 4,
+        'Lower Primary': 5,
+        'Primary': 6,
+        'Middle Primary': 7,
+        'Upper Primary': 8,
+        'Junior Secondary': 9,
+        'Senior Secondary': 10
+      };
+
+      const sortedClasses = (data as ClassItem[]).sort((a, b) => {
+        const weightA = levelWeights[a.level] || 99;
+        const weightB = levelWeights[b.level] || 99;
+        if (weightA !== weightB) return weightA - weightB;
+        return a.name.localeCompare(b.name);
+      });
+
+      setClasses(sortedClasses);
     } catch (err) {
       console.error('Failed to load classes', err);
     }
