@@ -67,6 +67,8 @@ const ResultSheetViewer: React.FC = () => {
   if (loading) return <div>Loading result sheet...</div>;
   if (!result) return <div>Result not found.</div>;
 
+  const isSecondary = result.className?.includes('JSS') || result.className?.includes('SS');
+
   return (
     <div className="result-sheet-container">
       <div className="no-print actions-bar">
@@ -108,7 +110,7 @@ const ResultSheetViewer: React.FC = () => {
           <div className="bio-item"><strong>Parent:</strong> {result.parentName}</div>
           <div className="bio-item"><strong>Term:</strong> {result.term}</div>
           <div className="bio-item"><strong>Session:</strong> {result.session}</div>
-          <div className="bio-item"><strong>Position:</strong> {result.positionInClass}</div>
+          {!isSecondary && <div className="bio-item"><strong>Position:</strong> {result.positionInClass}</div>}
           <div className="bio-item"><strong>Date Processed:</strong> {result.dateProcessed}</div>
         </div>
 

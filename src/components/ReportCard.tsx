@@ -84,6 +84,8 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
     return `${API_ROOT}${url}`;
   };
 
+  const isSecondary = data.className?.includes('JSS') || data.className?.includes('SS');
+
   return (
     <div style={{ background: 'rgba(0,0,0,0.8)', position: 'fixed', inset: 0, zIndex: 9999, overflowY: 'auto', padding: '20px' }}>
       <div className="result-sheet-container" style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}>
@@ -126,7 +128,7 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
             <div className="bio-item"><strong>Parent:</strong> {data.parentName}</div>
             <div className="bio-item"><strong>Term:</strong> {data.term}</div>
             <div className="bio-item"><strong>Session:</strong> {data.session}</div>
-            <div className="bio-item"><strong>Position:</strong> {data.positionInClass}</div>
+            {!isSecondary && <div className="bio-item"><strong>Position:</strong> {data.positionInClass}</div>}
             <div className="bio-item"><strong>Date Processed:</strong> {data.dateProcessed}</div>
           </div>
 
