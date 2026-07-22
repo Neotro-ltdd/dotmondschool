@@ -139,7 +139,7 @@ export default function ProfileSettings() {
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
               <img 
-                src={`${API_ROOT}${profile.avatarUrl}`} 
+                src={profile.avatarUrl?.startsWith('http') ? profile.avatarUrl : `${API_ROOT}${profile.avatarUrl}`} 
                 alt="Avatar" 
                 style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', background: '#333' }} 
               />
@@ -168,7 +168,7 @@ export default function ProfileSettings() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
               <div style={{ width: '150px', height: '80px', background: '#fff', border: '1px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {profile.signatureUrl ? (
-                  <img src={`${API_ROOT}${profile.signatureUrl}`} alt="Signature" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                  <img src={profile.signatureUrl?.startsWith('http') ? profile.signatureUrl : `${API_ROOT}${profile.signatureUrl}`} alt="Signature" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                 ) : (
                   <span style={{ color: '#999' }}>No Signature</span>
                 )}
