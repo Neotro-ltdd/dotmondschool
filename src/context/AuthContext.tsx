@@ -8,6 +8,7 @@ interface AuthContextType {
     setActiveRole: (role: string) => void;
     userName: string;
     userEmail: string | null;
+    userAvatar: string | null;
     requiresPasswordChange: boolean;
     login: (token: string) => void;
     logout: () => void;
@@ -35,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [availableRoles, setAvailableRoles] = useState<string[]>([]);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userName, setUserName] = useState<string>('User');
+    const [userAvatar, setUserAvatar] = useState<string | null>(null);
     const [requiresPasswordChange, setRequiresPasswordChange] = useState<boolean>(false);
 
     useEffect(() => {
@@ -66,10 +68,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const email = decoded['email'] || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
                 if (email) {
                     setUserEmail(email);
-                    // Extract name from email (e.g. admin@vsa.local -> Admin)
+                }
+                
+                const firstName = decoded['first_name'] || '';
+                const lastName = decoded['last_name'] || '';
+                
+                if (firstName || lastName) {
+                    setUserName(`${firstName} ${lastName}`.trim());
+                } else if (email) {
                     const namePart = email.split('@')[0];
                     setUserName(namePart.charAt(0).toUpperCase() + namePart.slice(1));
                 }
+                
+                const avatar = decoded['avatar_url'] || null;
+                setUserAvatar(avatar);
 
                 if (decoded['requires_password_change'] === 'true') {
                     setRequiresPasswordChange(true);
@@ -84,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setAvailableRoles([]);
             setUserEmail(null);
             setUserName('User');
+            setUserAvatar(null);
             setRequiresPasswordChange(false);
         }
     }, [token]);
@@ -104,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, availableRoles, setActiveRole, userName, userEmail, requiresPasswordChange, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, availableRoles, setActiveRole, userName, userEmail, userAvatar, requiresPasswordChange, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

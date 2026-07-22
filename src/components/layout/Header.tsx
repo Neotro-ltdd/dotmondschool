@@ -1,15 +1,18 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { API_ROOT } from '../../services/api';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
-  const { userName, userRole } = useAuth();
+  const { userName, userRole, userAvatar } = useAuth();
   
   // Format role for display: e.g. "Principal" -> "Super Admin" (optional) or just use the exact role
   const displayRole = userRole === 'Principal' ? 'Super Admin' : userRole || 'User';
   // Get initial for avatar
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
+
+  const avatarUrl = userAvatar && userAvatar !== '/images/default-avatar.png' ? userAvatar : null;
 
   return (
     <header className="top-header glass-panel">
@@ -31,7 +34,11 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         
         <Link to="/dashboard/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div className="user-profile" style={{ cursor: 'pointer' }}>
-            <div className="avatar">{initial}</div>
+            {avatarUrl ? (
+              <img src={avatarUrl.startsWith('http') ? avatarUrl : `${API_ROOT}${avatarUrl}`} alt="Profile" className="avatar" style={{ objectFit: 'cover' }} />
+            ) : (
+              <div className="avatar">{initial}</div>
+            )}
             <div className="user-info">
               <span className="user-name">{userName}</span>
               <span className="user-role">{displayRole}</span>

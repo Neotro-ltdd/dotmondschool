@@ -11,6 +11,8 @@ export default function ProfileSettings() {
   
   // Edit states
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   
   // Files
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -28,6 +30,8 @@ export default function ProfileSettings() {
       const data = await api.get('/profile');
       setProfile(data);
       setPhoneNumber(data.phoneNumber || '');
+      setFirstName(data.firstName || '');
+      setLastName(data.lastName || '');
     } catch (error) {
       console.error('Failed to load profile', error);
     } finally {
@@ -39,6 +43,8 @@ export default function ProfileSettings() {
     try {
       await api.put('/profile', {
         phoneNumber,
+        firstName,
+        lastName,
         avatarUrl: profile.avatarUrl,
         signatureUrl: profile.signatureUrl
       });
@@ -107,12 +113,12 @@ export default function ProfileSettings() {
 
           <div className="form-group" style={{ display: 'flex', gap: '1rem' }}>
             <div style={{ flex: 1 }}>
-              <label className="form-label">First Name (Locked)</label>
-              <input type="text" className="form-control" value={profile.firstName || ''} readOnly disabled style={{ opacity: 0.7 }} />
+              <label className="form-label">First Name</label>
+              <input type="text" className="form-control" value={firstName} onChange={e => setFirstName(e.target.value)} />
             </div>
             <div style={{ flex: 1 }}>
-              <label className="form-label">Last Name (Locked)</label>
-              <input type="text" className="form-control" value={profile.lastName || ''} readOnly disabled style={{ opacity: 0.7 }} />
+              <label className="form-label">Last Name</label>
+              <input type="text" className="form-control" value={lastName} onChange={e => setLastName(e.target.value)} />
             </div>
           </div>
 
