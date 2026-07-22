@@ -24,6 +24,7 @@ import FinanceFeeBuilder from './pages/dashboard/finance-setup/FinanceFeeBuilder
 import ClassFees from './pages/dashboard/finance-setup/ClassFees';
 import Reports from './pages/dashboard/reports/Reports';
 import ResultSheetViewer from './pages/dashboard/reports/ResultSheetViewer';
+import ResultSample from './pages/dashboard/reports/ResultSample';
 import ResultManagement from './pages/dashboard/results/ResultManagement';
 import RoleManagement from './pages/dashboard/admin/operations/RoleManagement';
 import SubjectAllocations from './pages/dashboard/admin/operations/SubjectAllocations';
@@ -78,6 +79,7 @@ function App() {
             <Route path="settings/school" element={<SchoolConfig />} />
             <Route path="classes" element={<Classes />} />
             <Route path="subjects" element={<Subjects />} />
+            <Route path="test-result-sample" element={<ResultSample />} />
             <Route path="teachers" element={<Teachers />} />
             <Route path="students" element={<Students />} />
             <Route path="approvals" element={<Approvals />} />
