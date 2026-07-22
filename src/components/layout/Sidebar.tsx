@@ -14,6 +14,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const [isFinanceOpen, setIsFinanceOpen] = React.useState(false);
   const [isFinanceSetupOpen, setIsFinanceSetupOpen] = React.useState(false);
   const [isStaffOpen, setIsStaffOpen] = React.useState(false);
+  const [isResultMgmtOpen, setIsResultMgmtOpen] = React.useState(false);
 
   const handleLogout = () => {
     logout();
@@ -168,10 +169,26 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {userRole !== 'Accountant' && userRole !== 'Parent' && userRole !== 'Teacher' && userRole !== 'SubjectTeacher' && (
-                  <NavLink to="/dashboard/operations/result-management" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <span className="nav-icon">📊</span>
-                    Result Management
-                  </NavLink>
+                  <div className="nav-group">
+                    <button 
+                      className={`nav-item dropdown-toggle ${isResultMgmtOpen ? 'open' : ''}`} 
+                      onClick={() => setIsResultMgmtOpen(!isResultMgmtOpen)}
+                    >
+                      <span className="nav-icon">📊</span>
+                      Result Management
+                      <span className="chevron" style={{ marginLeft: 'auto', transition: 'transform 0.3s', transform: isResultMgmtOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+                    </button>
+                    {isResultMgmtOpen && (
+                      <div className="submenu" style={{ paddingLeft: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+                        <NavLink to="/dashboard/operations/result-management" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
+                          Compute Result
+                        </NavLink>
+                        <NavLink to="/dashboard/operations/review-results" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
+                          Review Result
+                        </NavLink>
+                      </div>
+                    )}
+                  </div>
                 )}
                 
                 {(userRole === 'Accountant' || userRole === 'Superadmin') && (

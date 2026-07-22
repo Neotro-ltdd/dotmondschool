@@ -26,6 +26,7 @@ import Reports from './pages/dashboard/reports/Reports';
 import ResultSheetViewer from './pages/dashboard/reports/ResultSheetViewer';
 import ResultSample from './pages/dashboard/reports/ResultSample';
 import ResultManagement from './pages/dashboard/results/ResultManagement';
+import AdminReviewResults from './pages/dashboard/results/AdminReviewResults';
 import RoleManagement from './pages/dashboard/admin/operations/RoleManagement';
 import SubjectAllocations from './pages/dashboard/admin/operations/SubjectAllocations';
 import ClassAllocations from './pages/dashboard/admin/operations/ClassAllocations';
@@ -109,6 +110,7 @@ function App() {
               <Route path="gate-scanner" element={<GateScanner />} />
               <Route path="gate-logs" element={<GateAttendanceLog />} />
               <Route path="result-management" element={<ResultManagement />} />
+              <Route path="review-results" element={<AdminReviewResults />} />
               <Route path="manual-clearance" element={<ManualClearance />} />
             </Route>
             <Route path="allocations">
