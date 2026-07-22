@@ -146,9 +146,9 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
               {data.subjects.map((score, index) => (
                 <tr key={index}>
                   <td className="subject-name">{score.subjectName}</td>
-                  <td>{score.testScore}</td>
-                  <td>{score.examScore}</td>
-                  <td>{score.totalScore}</td>
+                  <td>{Math.round(score.testScore)}</td>
+                  <td>{Math.round(score.examScore)}</td>
+                  <td>{Math.round(score.totalScore)}</td>
                   <td>{score.grade}</td>
                   <td>{score.remark}</td>
                 </tr>

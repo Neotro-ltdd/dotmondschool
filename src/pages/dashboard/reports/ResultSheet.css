@@ -238,6 +238,10 @@
 
 /* Print Styles */
 @media print {
+  @page {
+    margin: 0; /* Remove default browser headers and footers */
+  }
+
   /* Make only the result sheet and its children visible */
   .result-sheet-container, .result-sheet-container * {
     visibility: visible !important;
@@ -263,7 +267,7 @@
     box-shadow: none !important;
     max-width: none !important;
     width: 100% !important;
-    padding: 0 !important;
+    padding: 15mm !important;
     margin: 0 !important;
     border-radius: 0 !important;
   }
