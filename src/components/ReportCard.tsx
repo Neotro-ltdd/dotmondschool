@@ -165,13 +165,6 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
               <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - data.daysStudentPresent}</span></div>
             </div>
             
-            <div className="psychomotor-box custom-box">
-              <h4>PSYCHOMOTOR SKILLS</h4>
-              <div className="att-row"><span>Punctuality:</span> <span className="att-val">A</span></div>
-              <div className="att-row"><span>Neatness:</span> <span className="att-val">A</span></div>
-              <div className="att-row"><span>Politeness:</span> <span className="att-val">B</span></div>
-            </div>
-
             <div className="performance-box custom-box">
               <h4>PERFORMANCE SUMMARY</h4>
               <div className="att-row"><span>Grand Total:</span> <span className="att-val">{data.grandTotal}</span></div>
