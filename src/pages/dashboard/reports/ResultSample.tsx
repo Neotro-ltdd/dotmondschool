@@ -73,7 +73,6 @@ const ResultSample: React.FC = () => {
           <div className="bio-item"><strong>Parent:</strong> {dummyResult.parentName}</div>
           <div className="bio-item"><strong>Term:</strong> {dummyResult.term}</div>
           <div className="bio-item"><strong>Session:</strong> {dummyResult.session}</div>
-          {!isSecondary && <div className="bio-item"><strong>Position:</strong> {dummyResult.positionInClass}</div>}
           <div className="bio-item"><strong>Date Processed:</strong> {dummyResult.dateProcessed}</div>
         </div>
 

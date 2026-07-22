@@ -129,7 +129,6 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
             <div className="bio-item"><strong>Parent:</strong> {data.parentName}</div>
             <div className="bio-item"><strong>Term:</strong> {data.term}</div>
             <div className="bio-item"><strong>Session:</strong> {data.session}</div>
-            {!isSecondary && <div className="bio-item"><strong>Position:</strong> {data.positionInClass}</div>}
             <div className="bio-item"><strong>Date Processed:</strong> {data.dateProcessed}</div>
           </div>
 

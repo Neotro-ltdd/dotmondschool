@@ -112,7 +112,6 @@ const ResultSheetViewer: React.FC = () => {
           <div className="bio-item"><strong>Parent:</strong> {result.parentName}</div>
           <div className="bio-item"><strong>Term:</strong> {result.term}</div>
           <div className="bio-item"><strong>Session:</strong> {result.session}</div>
-          {!isSecondary && <div className="bio-item"><strong>Position:</strong> {result.positionInClass}</div>}
           <div className="bio-item"><strong>Date Processed:</strong> {result.dateProcessed}</div>
         </div>
 
