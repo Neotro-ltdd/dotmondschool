@@ -11,7 +11,7 @@ const ResultSample: React.FC = () => {
     schoolMotto: 'Steady Progress, Brighter Future',
     studentName: 'Uhama, Oluebube',
     registrationNumber: 'DOTJSS1-030',
-    className: 'JSS 1',
+    className: 'NURSERY 1',
     session: '2025/2026',
     term: 'First Term',
     daysStudentPresent: 118,
