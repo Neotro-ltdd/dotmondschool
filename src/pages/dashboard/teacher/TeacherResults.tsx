@@ -48,17 +48,37 @@ export default function TeacherResults() {
     }
   };
 
+  const handleReset = async () => {
+    if (!data?.batchId) return;
+    if (!window.confirm("Are you sure you want to reset and delete this compilation? This will return the class to a pre-compiled state.")) return;
+
+    try {
+      setLoading(true);
+      await api.delete(`/academics/results/reset/${data.batchId}`);
+      alert("Results have been successfully reset.");
+      fetchResults();
+    } catch (err: any) {
+      alert(err.message || 'Failed to reset results.');
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchResults();
   }, [filterSession, filterTerm]);
 
   return (
     <div className="management-page">
-      <div className="page-header">
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 className="page-title">Review Class Results</h1>
           <p className="page-subtitle">View and preview the compiled results for your assigned class.</p>
         </div>
+        {data?.batchId && (
+          <button className="btn btn-danger" onClick={handleReset} disabled={loading} style={{ backgroundColor: '#dc3545', color: 'white' }}>
+            Reset Compilation
+          </button>
+        )}
       </div>
 
       <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
