@@ -13,7 +13,8 @@ const ResultSample: React.FC = () => {
     registrationNumber: 'DOTJSS1-030',
     className: 'JSS 1',
     session: '2025/2026',
-    term: 'Third Term',
+    term: 'First Term',
+    daysStudentPresent: 118,
     parentName: 'Mr & Mrs. Uhama',
     dateProcessed: '07/22/2026',
     positionInClass: '15',
@@ -106,8 +107,8 @@ const ResultSample: React.FC = () => {
           <div className="attendance-box custom-box">
             <h4>ATTENDANCE</h4>
             <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
-            <div className="att-row"><span>Days Present:</span> <span className="att-val">118</span></div>
-            <div className="att-row"><span>Days Absent:</span> <span className="att-val">2</span></div>
+            <div className="att-row"><span>Days Present:</span> <span className="att-val">{dummyResult.daysStudentPresent}</span></div>
+            <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - dummyResult.daysStudentPresent}</span></div>
           </div>
           
           <div className="performance-box custom-box">
