@@ -39,6 +39,9 @@ export default function Teachers() {
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editStaffId, setEditStaffId] = useState<string | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     surname: '',
     firstName: '',
@@ -96,16 +99,67 @@ export default function Teachers() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post('/setup/staff', {
-        ...formData
-      });
+      
+      if (isEditing && editStaffId) {
+        const data = new FormData();
+        data.append('surname', formData.surname);
+        data.append('firstName', formData.firstName);
+        if (formData.otherNames) data.append('otherNames', formData.otherNames);
+        data.append('phoneNumber', formData.phoneNumber);
+        data.append('email', formData.email);
+        data.append('designation', formData.designation);
+        data.append('role', formData.role);
+        
+        if (signatureFile) {
+          data.append('signature', signatureFile);
+        }
+
+        await api.put(`/setup/staff/${editStaffId}`, data);
+        showAlert('Staff member updated successfully.');
+      } else {
+        await api.post('/setup/staff', { ...formData });
+        showAlert('Staff member onboarded successfully.');
+      }
+      
       setShowModal(false);
       fetchTeachers();
     } catch (err: any) {
-      showAlert(err.message || 'Failed to onboard staff member');
+      showAlert(err.message || 'Failed to save staff member');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditClick = (teacher: TeacherItem) => {
+    setFormData({
+      surname: teacher.surname || '',
+      firstName: teacher.firstName || '',
+      otherNames: teacher.otherNames || '',
+      phoneNumber: teacher.phoneNumber || '',
+      email: teacher.email || '',
+      designation: '', // Provide a fallback as designation isn't in TeacherItem by default
+      role: teacher.role || 'Teacher'
+    });
+    setSignatureFile(null);
+    setEditStaffId(teacher.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  const handleAddNewClick = () => {
+    setFormData({
+      surname: '',
+      firstName: '',
+      otherNames: '',
+      phoneNumber: '',
+      email: '',
+      designation: '',
+      role: 'Teacher'
+    });
+    setSignatureFile(null);
+    setEditStaffId(null);
+    setIsEditing(false);
+    setShowModal(true);
   };
 
   const handleRemove = async (id: string, name: string) => {
@@ -171,7 +225,7 @@ export default function Teachers() {
           <h1 className="page-title">Staff Management</h1>
           <p className="page-subtitle">Onboard and manage staff members</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={handleAddNewClick}>
           <span className="icon">➕</span> Add Staff
         </button>
       </div>
@@ -249,6 +303,14 @@ export default function Teachers() {
                       >
                         {generatingId === teacher.identityUserId ? 'Generating...' : 'Credentials'}
                       </button>
+                      <button 
+                        className="btn btn-secondary" 
+                        title="Edit staff details"
+                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#6366f1', color: 'white', border: 'none' }}
+                        onClick={() => handleEditClick(teacher)}
+                      >
+                        Edit
+                      </button>
                       {teacher.isActive ? (
                         <button 
                           className="btn btn-secondary" 
@@ -288,7 +350,7 @@ export default function Teachers() {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content glass-panel large-modal">
-            <h2>Add New Staff</h2>
+            <h2>{isEditing ? 'Edit Staff Details' : 'Add New Staff'}</h2>
             <form onSubmit={handleCreate} className="modal-form">
               <div className="form-grid">
                 <div className="form-group">
@@ -333,12 +395,26 @@ export default function Teachers() {
                     <option value="Staff">Staff</option>
                   </select>
                 </div>
+                
+                {isEditing && (
+                  <div className="form-group full-width section-divider" style={{ marginTop: '1rem' }}>
+                    <h3>Upload Signature (Optional)</h3>
+                    <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>If you upload a signature here, it will automatically override their current signature.</p>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
+                      className="form-control"
+                      style={{ padding: '0.5rem', border: '1px dashed #ccc', width: '100%' }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? 'Onboarding...' : 'Onboard Staff'}
+                  {submitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Onboard Staff'}
                 </button>
               </div>
             </form>
