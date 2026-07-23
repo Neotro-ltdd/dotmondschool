@@ -140,7 +140,12 @@ export default function ContinuousAssessment() {
       const value = valueStr === '' ? null : parseFloat(valueStr);
       
       if (field === 'exam') {
-        const maxExam = termSetup?.examWeight ?? 60;
+        const isNurseryPrimary = selectedClass && (
+          selectedClass.level.toLowerCase().includes('nursery') ||
+          selectedClass.level.toLowerCase().includes('kindergarten') ||
+          selectedClass.level.toLowerCase().includes('primary')
+        );
+        const maxExam = isNurseryPrimary ? 100 : (termSetup?.examWeight ?? 60);
         newScore.exam = value !== null && value > maxExam ? maxExam : value;
       } else {
         const prevCaData = newScore.caData || { "First Test": null, "Second Test": null };
@@ -321,11 +326,30 @@ export default function ContinuousAssessment() {
             </div>
           ) : (
             <>
-              <div className="tabs-container">
-                <button className={`tab-btn ${activeTab === 'ca' ? 'active' : ''}`} onClick={() => setActiveTab('ca')}>CA Scores</button>
-                <button className={`tab-btn ${activeTab === 'exam' ? 'active' : ''}`} onClick={() => setActiveTab('exam')}>Exam Scores</button>
-                <button className={`tab-btn ${activeTab === 'compile' ? 'active' : ''}`} onClick={() => setActiveTab('compile')}>Review & Compute</button>
-              </div>
+              {(() => {
+                const isNurseryPrimary = selectedClass && (
+                  selectedClass.level.toLowerCase().includes('nursery') ||
+                  selectedClass.level.toLowerCase().includes('kindergarten') ||
+                  selectedClass.level.toLowerCase().includes('primary')
+                );
+                
+                // Force activeTab to 'exam' if it was 'ca' but we are on a primary class
+                if (isNurseryPrimary && activeTab === 'ca') {
+                  setTimeout(() => setActiveTab('exam'), 0);
+                }
+
+                return (
+                  <div className="tabs-container">
+                    {!isNurseryPrimary && (
+                      <button className={`tab-btn ${activeTab === 'ca' ? 'active' : ''}`} onClick={() => setActiveTab('ca')}>CA Scores</button>
+                    )}
+                    <button className={`tab-btn ${activeTab === 'exam' ? 'active' : ''}`} onClick={() => setActiveTab('exam')}>
+                      {isNurseryPrimary ? 'Exam / Total Scores' : 'Exam Scores'}
+                    </button>
+                    <button className={`tab-btn ${activeTab === 'compile' ? 'active' : ''}`} onClick={() => setActiveTab('compile')}>Review & Compute</button>
+                  </div>
+                );
+              })()}
 
               {/* CA SCORES TAB */}
               {activeTab === 'ca' && (
@@ -433,7 +457,18 @@ export default function ContinuousAssessment() {
                           <tr>
                             <th>Student</th>
                             <th style={{ width: '80px', textAlign: 'center' }}>Total CA</th>
-                            <th style={{ width: '150px' }}>Exam Score ({termSetup?.examWeight ?? 60})</th>
+                            {(() => {
+                              const isNurseryPrimary = selectedClass && (
+                                selectedClass.level.toLowerCase().includes('nursery') ||
+                                selectedClass.level.toLowerCase().includes('kindergarten') ||
+                                selectedClass.level.toLowerCase().includes('primary')
+                              );
+                              return (
+                                <th style={{ width: '150px' }}>
+                                  {isNurseryPrimary ? 'Total Score (100)' : `Exam Score (${termSetup?.examWeight ?? 60})`}
+                                </th>
+                              );
+                            })()}
                             <th style={{ width: '100px', textAlign: 'center' }}>Total Score</th>
                           </tr>
                         </thead>
@@ -449,15 +484,24 @@ export default function ContinuousAssessment() {
                                 </td>
                                 <td style={{ textAlign: 'center' }}>{score.caTotal} / {(termSetup?.caWeightFirst ?? 20) + (termSetup?.caWeightSecond ?? 20)}</td>
                                 <td>
-                                  <input 
-                                    type="number" 
-                                    className="form-control" 
-                                    style={{ width: '100%', padding: '0.3rem' }}
-                                    min="0" max={termSetup?.examWeight ?? 60} 
-                                    value={score.exam ?? ''}
-                                    disabled={isLocked}
-                                    onChange={e => handleScoreChange(score.studentId, 'exam', e.target.value)} 
-                                  />
+                                  {(() => {
+                                    const isNurseryPrimary = selectedClass && (
+                                      selectedClass.level.toLowerCase().includes('nursery') ||
+                                      selectedClass.level.toLowerCase().includes('kindergarten') ||
+                                      selectedClass.level.toLowerCase().includes('primary')
+                                    );
+                                    return (
+                                      <input 
+                                        type="number" 
+                                        className="form-control" 
+                                        style={{ width: '100%', padding: '0.3rem' }}
+                                        min="0" max={isNurseryPrimary ? 100 : (termSetup?.examWeight ?? 60)} 
+                                        value={score.exam ?? ''}
+                                        disabled={isLocked}
+                                        onChange={e => handleScoreChange(score.studentId, 'exam', e.target.value)} 
+                                      />
+                                    );
+                                  })()}
                                 </td>
                                 <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
                                   {score.total} / 100
