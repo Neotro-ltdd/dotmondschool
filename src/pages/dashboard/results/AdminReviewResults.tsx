@@ -43,7 +43,7 @@ export default function AdminReviewResults() {
 
   const fetchClasses = async () => {
     try {
-      const res = await api.get('/academics/classes');
+      const res = await api.get('/setup/classes');
       setClasses(res);
       if (res && res.length > 0) {
         setSelectedClassId(res[0].id);
