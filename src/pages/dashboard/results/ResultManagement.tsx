@@ -147,14 +147,27 @@ export default function ResultManagement() {
     }
   };
 
-  const handleDownloadBroadsheet = () => {
+  const handleDownloadBroadsheet = async () => {
     if (!selectedClassId) {
       showAlert('Please select a class first.');
       return;
     }
-    // Using exported API_ROOT to support Vite and tenant headers
-    const tenantId = getTenantId();
-    window.open(`${API_ROOT}/api/academics/scores/broadsheet/template?classId=${selectedClassId}&tenant=${tenantId}`);
+    
+    try {
+      showAlert('Generating broadsheet... Please wait.');
+      const blob = await api.download(`/academics/scores/broadsheet/template?classId=${selectedClassId}`);
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Broadsheet.xlsx`); // Name will be overridden by browser if Content-Disposition is set, or defaults to this
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      showAlert(err.message || 'Failed to download broadsheet.');
+    }
   };
 
   const handleUploadBroadsheet = async (event: React.ChangeEvent<HTMLInputElement>) => {
