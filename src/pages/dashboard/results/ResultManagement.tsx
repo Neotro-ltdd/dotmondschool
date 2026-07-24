@@ -27,6 +27,8 @@ export default function ResultManagement() {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [compiling, setCompiling] = useState(false);
+  const [uploadingBroadsheet, setUploadingBroadsheet] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   const [statusLoading, setStatusLoading] = useState(false);
   const [classStatus, setClassStatus] = useState<{ allSubmitted: boolean, subjects: SubjectStatus[] } | null>(null);
@@ -145,6 +147,45 @@ export default function ResultManagement() {
     }
   };
 
+  const handleDownloadBroadsheet = () => {
+    if (!selectedClassId) {
+      showAlert('Please select a class first.');
+      return;
+    }
+    // Using api object base URL or defaulting to relative path
+    const apiUrl = process.env.REACT_APP_API_URL || 'https://dotmondsch.runasp.net';
+    window.open(`${apiUrl}/api/academics/scores/broadsheet/template?classId=${selectedClassId}`);
+  };
+
+  const handleUploadBroadsheet = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !selectedClassId) return;
+
+    try {
+      setUploadingBroadsheet(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('classId', selectedClassId);
+
+      // using the base api client which supports multipart
+      const response = await api.post('/academics/scores/broadsheet/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      showAlert(response.message || 'Broadsheet uploaded successfully!');
+      fetchClassStatus(); // Refresh the grid
+    } catch (err: any) {
+      showAlert(err.message || 'Failed to upload broadsheet.');
+    } finally {
+      setUploadingBroadsheet(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div className="operations-page">
       <div className="page-header">
@@ -253,6 +294,44 @@ export default function ResultManagement() {
               )}
             </div>
           )}
+        </div>
+
+        <div className="operations-card glass-panel" style={{ marginTop: '1.5rem' }}>
+          <h2>Class Broadsheet Utilities</h2>
+          <p>
+            Download a master Excel sheet for a class to fill out scores for all subjects at once, 
+            then upload it. This is highly recommended for Nursery and Primary classes where a 
+            single teacher handles all subjects.
+          </p>
+          <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+             <button 
+                className="btn btn-secondary" 
+                onClick={handleDownloadBroadsheet}
+                disabled={!selectedClassId}
+             >
+                Download Broadsheet
+             </button>
+             
+             <div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  accept=".xlsx, .xls"
+                  style={{ display: 'none' }}
+                  onChange={handleUploadBroadsheet}
+                />
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={!selectedClassId || uploadingBroadsheet}
+                >
+                  {uploadingBroadsheet ? 'Uploading...' : 'Upload Broadsheet'}
+                </button>
+             </div>
+          </div>
+          <small className="text-muted" style={{ display: 'block', marginTop: '0.5rem' }}>
+            Requires a Class to be selected in the Compute section above.
+          </small>
         </div>
       </div>
     </div>
