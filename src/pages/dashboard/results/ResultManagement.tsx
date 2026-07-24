@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../../services/api';
+import { api, API_ROOT, getTenantId } from '../../../services/api';
 import '../admin/SystemOperations.css';
 import { useDialog } from '../../../context/DialogContext';
 
@@ -152,9 +152,9 @@ export default function ResultManagement() {
       showAlert('Please select a class first.');
       return;
     }
-    // Using api object base URL or defaulting to relative path
-    const apiUrl = process.env.REACT_APP_API_URL || 'https://dotmondsch.runasp.net';
-    window.open(`${apiUrl}/api/academics/scores/broadsheet/template?classId=${selectedClassId}`);
+    // Using exported API_ROOT to support Vite and tenant headers
+    const tenantId = getTenantId();
+    window.open(`${API_ROOT}/api/academics/scores/broadsheet/template?classId=${selectedClassId}&tenant=${tenantId}`);
   };
 
   const handleUploadBroadsheet = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,12 +167,8 @@ export default function ResultManagement() {
       formData.append('file', file);
       formData.append('classId', selectedClassId);
 
-      // using the base api client which supports multipart
-      const response = await api.post('/academics/scores/broadsheet/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // using the base api client which supports multipart natively
+      const response = await api.post('/academics/scores/broadsheet/upload', formData);
 
       showAlert(response.message || 'Broadsheet uploaded successfully!');
       fetchClassStatus(); // Refresh the grid
