@@ -305,43 +305,53 @@ export default function ResultManagement() {
           )}
         </div>
 
-        <div className="operations-card glass-panel" style={{ marginTop: '1.5rem' }}>
-          <h2>Class Broadsheet Utilities</h2>
-          <p>
-            Download a master Excel sheet for a class to fill out scores for all subjects at once, 
-            then upload it. This is highly recommended for Nursery and Primary classes where a 
-            single teacher handles all subjects.
-          </p>
-          <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-             <button 
-                className="btn btn-secondary" 
-                onClick={handleDownloadBroadsheet}
-                disabled={!selectedClassId}
-             >
-                Download Broadsheet
-             </button>
-             
-             <div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef}
-                  accept=".xlsx, .xls"
-                  style={{ display: 'none' }}
-                  onChange={handleUploadBroadsheet}
-                />
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={!selectedClassId || uploadingBroadsheet}
-                >
-                  {uploadingBroadsheet ? 'Uploading...' : 'Upload Broadsheet'}
-                </button>
-             </div>
-          </div>
-          <small className="text-muted" style={{ display: 'block', marginTop: '0.5rem' }}>
-            Requires a Class to be selected in the Compute section above.
-          </small>
-        </div>
+        {(() => {
+          const selectedClass = classes.find(c => c.id === selectedClassId);
+          if (!selectedClass) return null;
+          
+          const isPrimaryOrNursery = ['Primary', 'Nursery', 'Lower Primary', 'Middle Primary', 'Upper Primary', 'Nursery 1', 'Nursery 2', 'Kindergarten'].includes(selectedClass.level) || 
+                                     selectedClass.level.toLowerCase().includes('primary') || 
+                                     selectedClass.level.toLowerCase().includes('nursery');
+
+          if (!isPrimaryOrNursery) return null;
+
+          return (
+            <div className="operations-card glass-panel" style={{ marginTop: '1.5rem' }}>
+              <h2>Class Broadsheet Utilities</h2>
+              <p>
+                Download a master Excel sheet for a class to fill out scores for all subjects at once, 
+                then upload it. This is highly recommended for Nursery and Primary classes where a 
+                single teacher handles all subjects.
+              </p>
+              <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                 <button 
+                    className="btn btn-secondary" 
+                    onClick={handleDownloadBroadsheet}
+                    disabled={!selectedClassId}
+                 >
+                    Download Broadsheet
+                 </button>
+                 
+                 <div>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      accept=".xlsx, .xls"
+                      style={{ display: 'none' }}
+                      onChange={handleUploadBroadsheet}
+                    />
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={!selectedClassId || uploadingBroadsheet}
+                    >
+                      {uploadingBroadsheet ? 'Uploading...' : 'Upload Broadsheet'}
+                    </button>
+                 </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
