@@ -147,6 +147,25 @@ export default function ResultManagement() {
     }
   };
 
+  const handleLockSubject = async (subjectId: string, subjectName: string) => {
+    if (!await showConfirm(`Are you sure you want to submit and lock ${subjectName} scores on behalf of the teacher?`)) {
+      return;
+    }
+    
+    try {
+      await api.post('/academics/scores/submit-batch', {
+        classId: selectedClassId,
+        subjectId,
+        session,
+        term
+      });
+      showAlert(`${subjectName} scores have been submitted successfully.`);
+      fetchClassStatus();
+    } catch (err: any) {
+      showAlert(err.message || `Failed to submit ${subjectName} scores.`);
+    }
+  };
+
   const handleDownloadBroadsheet = async () => {
     if (!selectedClassId) {
       showAlert('Please select a class first.');
@@ -276,7 +295,7 @@ export default function ResultManagement() {
                       {sub.subjectName}
                       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         <span>{sub.isSubmitted ? '✅' : '⏳'}</span>
-                        {sub.isSubmitted && (
+                        {sub.isSubmitted ? (
                           <button 
                             onClick={() => handleUnlockSubject(sub.subjectId, sub.subjectName)}
                             title="Unlock scores for modification"
@@ -285,6 +304,16 @@ export default function ResultManagement() {
                               fontSize: '1.1rem', padding: '0 4px' 
                             }}>
                             🔓
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => handleLockSubject(sub.subjectId, sub.subjectName)}
+                            title="Submit and lock scores on behalf of teacher"
+                            style={{ 
+                              background: 'none', border: 'none', cursor: 'pointer', 
+                              fontSize: '1.1rem', padding: '0 4px' 
+                            }}>
+                            🔒
                           </button>
                         )}
                       </div>
