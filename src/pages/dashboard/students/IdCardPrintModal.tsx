@@ -119,92 +119,78 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           
           {/* FRONT */}
           <div className="id-card-wrapper">
-            <div className="id-card vertical-card">
-              <div className="card-header-dark">
-                <div className="header-content">
-                  {schoolProfile?.logoUrl ? (
-                    <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" className="card-logo" />
-                  ) : (
-                    <div className="card-logo-placeholder"></div>
-                  )}
-                  <div className="header-text">
-                    <div className="school-title">{schoolProfile?.schoolName?.toUpperCase() || ''}</div>
-                    <div className="school-subtitle">{schoolProfile?.address || 'Lekki, Lagos, Nigeria'}</div>
-                    <div className="school-motto">"EXCELLENCE & GROWTH"</div>
-                  </div>
+            <div className="id-card front-card">
+              <div className="front-header">
+                {schoolProfile?.logoUrl ? (
+                  <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" className="front-logo" />
+                ) : (
+                  <div className="front-logo-placeholder"></div>
+                )}
+                <div className="front-header-text">
+                  <div className="front-school-title">{schoolProfile?.schoolName?.toUpperCase() || ''}</div>
+                  <div className="front-school-subtitle">{schoolProfile?.address || 'Lekki, Lagos, Nigeria'}</div>
                 </div>
               </div>
               
-              <div className="card-body">
-                <div className="student-badge-label">
-                  <span>STUDENT ID</span>
-                </div>
-                
-                <div className="photo-container">
+              <div className="front-body">
+                <div className="portrait-frame">
                   {idCardData.passportUrl ? (
                     <img src={getFullUrl(idCardData.passportUrl)} alt="Student" className="student-photo" />
                   ) : (
-                    <div className="student-photo placeholder" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>NO PHOTO</div>
+                    <div className="student-photo placeholder">NO PHOTO</div>
                   )}
-                </div>
-                
-                <div className="student-name">
-                  {idCardData.fullName.toUpperCase()}
-                </div>
-                
-                <div className="student-details-grid">
-                  <div className="detail-label">ADMISSION</div>
-                  <div className="detail-value">{idCardData.registrationNumber}</div>
-                  
-                  <div className="detail-label">SECTION</div>
-                  <div className="detail-value">{idCardData.section}</div>
                 </div>
               </div>
               
-              <div className="card-footer-dark">
-                <div className="footer-left">VALID</div>
-                <div className="footer-right">{idCardData.validPeriod}</div>
+              <div className="front-angled-block">
+                <div className="student-name">{idCardData.fullName.toUpperCase()}</div>
+                <div className="student-details-grid">
+                  <div className="detail-label">ADMISSION NO:</div>
+                  <div className="detail-value">{idCardData.registrationNumber}</div>
+                  <div className="detail-label">SECTION:</div>
+                  <div className="detail-value">{idCardData.section}</div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* BACK */}
           <div className="id-card-wrapper">
-            <div className="id-card vertical-card">
-              <div className="card-header-dark center-text">
+            <div className="id-card back-card">
+              <div className="back-header">
                 <div className="back-title">ATTENDANCE SYSTEM</div>
-                <div className="back-subtitle">{schoolProfile?.schoolName} · {schoolProfile?.address?.split(',')[0] || 'Lekki'}</div>
               </div>
               
-              <div className="card-body back-body">
-                <div className="back-heading">
-                  {schoolProfile?.schoolName?.toUpperCase() || ''}
-                </div>
-                
-                <div className="qr-container" style={{ padding: '2px', marginBottom: '4px' }}>
+              <div className="back-body">
+                <div className="qr-container-large">
                   <img
-                    style={{ width: '90px', height: '90px', display: 'block' }}
                     src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
                     alt="Student QR Code"
                   />
                 </div>
                 
-                <div className="scan-instruction">SCAN TO CLOCK IN</div>
+                <div className="scan-instruction-large">SCAN TO CLOCK IN</div>
                 
                 <div className="encoded-id-pill">
-                  ENCODED ID: {idCardData.registrationNumber}
+                  {idCardData.registrationNumber}
                 </div>
                 
-                <div className="disclaimer-text">
-                  This card is the property of {schoolProfile?.schoolName}.<br/>
+                <div className="back-divider-line"></div>
+                
+                <div className="instruction-text">
+                  This card is the property of <strong>{schoolProfile?.schoolName}</strong>.<br/>
                   If found, please return to the school office.<br/>
                   Unauthorised use is strictly prohibited.
                 </div>
+                
+                <div className="signature-section">
+                  <div className="signature-line"></div>
+                  <div className="signature-label">Authorised Signature</div>
+                </div>
               </div>
               
-              <div className="card-footer-dark center-text back-footer">
-                <span className="powered-by">Powered by</span>
-                <span className="rms-badge">Neotro Attendance System</span>
+              <div className="back-footer">
+                <div className="validity">VALID: {idCardData.validPeriod}</div>
               </div>
             </div>
           </div>

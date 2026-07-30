@@ -215,23 +215,23 @@
 }
 
 .signature-area {
-  width: 250px;
-  height: 50px;
+  width: 150px;
+  height: 35px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .signature-area img {
-  max-height: 50px;
-  max-width: 150px;
+  max-height: 35px;
+  max-width: 120px;
   object-fit: contain;
-  object-position: left center;
+  object-position: right center;
 }
 
 .footer-section {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 5px;
   font-size: 14px;
   color: #0b2e59;
   font-weight: bold;
@@ -268,7 +268,7 @@
     box-shadow: none !important;
     max-width: none !important;
     width: 100% !important;
-    padding: 10mm !important;
+    padding: 5mm !important;
     margin: 0 !important;
     border-radius: 0 !important;
   }

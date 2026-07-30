@@ -168,6 +168,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </NavLink>
                 )}
 
+                {(userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'Principal') && (
+                  <NavLink to="/dashboard/operations/promotions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <span className="nav-icon">🎓</span>
+                    Student Promotions
+                  </NavLink>
+                )}
+
                 {userRole !== 'Accountant' && userRole !== 'Parent' && userRole !== 'Teacher' && userRole !== 'SubjectTeacher' && (
                   <div className="nav-group">
                     <button 

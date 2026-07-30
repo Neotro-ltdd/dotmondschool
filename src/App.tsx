@@ -44,6 +44,7 @@ import SystemOverview from './pages/dashboard/admin/SystemOverview';
 import SystemSchools from './pages/dashboard/admin/SystemSchools';
 import SchoolManagement from './pages/dashboard/admin/SchoolManagement';
 import SystemSettings from './pages/dashboard/admin/SystemSettings';
+import PromotionManagement from './pages/dashboard/operations/PromotionManagement';
 
 import MyClass from './pages/dashboard/teacher/MyClass';
 import ContinuousAssessment from './pages/dashboard/teacher/ContinuousAssessment';
@@ -112,6 +113,7 @@ function App() {
               <Route path="result-management" element={<ResultManagement />} />
               <Route path="review-results" element={<AdminReviewResults />} />
               <Route path="manual-clearance" element={<ManualClearance />} />
+              <Route path="promotions" element={<PromotionManagement />} />
             </Route>
             <Route path="allocations">
               <Route path="class-allocations" element={<ClassAllocations />} />
