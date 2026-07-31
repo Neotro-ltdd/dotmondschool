@@ -413,11 +413,11 @@ export default function Teachers() {
 
         <div className="desk-footer">
           <span>Showing <strong>{filteredTeachers.length}</strong> of <strong>{teachers.length}</strong> registered staff members</span>
-          <span>EasyWorka Enterprise Security Enabled</span>
+          <span>Dotmond School System</span>
         </div>
       </div>
 
-      {/* EasyWorka v2 Slide Show & Slide-Over Panel Architecture */}
+      {/* Dotmond School System Slide Show & Slide-Over Panel Architecture */}
       <SlideOver
         isOpen={showModal}
         onClose={() => !submitting && setShowModal(false)}
