@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../services/api';
 import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
@@ -19,25 +20,17 @@ interface TeacherItem {
   avatarUrl: string;
 }
 
-interface ClassItem {
-  id: string;
-  level: string;
-  name: string;
-  section: string;
-}
-
-interface SubjectItem {
-  id: string;
-  name: string;
-  className: string;
-}
-
 export default function Teachers() {
   const { showAlert, showConfirm } = useDialog();
+  const queryClient = useQueryClient();
 
-  const [teachers, setTeachers] = useState<TeacherItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // TanStack Query for Server State (Vatebra Enterprise Standard 5.4)
+  const { data: teachers = [], isLoading: loading, error: queryError } = useQuery<TeacherItem[]>({
+    queryKey: ['staffList'],
+    queryFn: async () => await api.get('/setup/staff'),
+  });
+
+  const error = queryError ? ((queryError as any).message || 'Failed to load staff.') : null;
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -54,82 +47,55 @@ export default function Teachers() {
     designation: '',
     role: 'Teacher'
   });
-  const [submitting, setSubmitting] = useState(false);
 
   // Credentials Modal State
   const [showCredsModal, setShowCredsModal] = useState(false);
   const [credsData, setCredsData] = useState<{username: string, password: string, emailQueued: boolean} | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
 
-  // Form dependencies
-  const [classes, setClasses] = useState<ClassItem[]>([]);
-  const [subjects, setSubjects] = useState<SubjectItem[]>([]);
-
-
-  const fetchTeachers = async () => {
-    try {
-      setLoading(true);
-      const data = await api.get('/setup/staff');
-      setTeachers(data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load staff.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDependencies = async () => {
-    try {
-      const classData = await api.get('/setup/classes');
-      setClasses(classData);
-      const subjectData = await api.get('/academics/subjects');
-      setSubjects(subjectData);
-    } catch (err) {
-      console.error("Failed to load classes or subjects");
-    }
-  };
-
-  useEffect(() => {
-    fetchTeachers();
-  }, []);
-
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setSubmitting(true);
-      
-      if (isEditing && editStaffId) {
-        const data = new FormData();
-        data.append('surname', formData.surname);
-        data.append('firstName', formData.firstName);
-        if (formData.otherNames) data.append('otherNames', formData.otherNames);
-        data.append('phoneNumber', formData.phoneNumber);
-        data.append('email', formData.email);
-        data.append('designation', formData.designation);
-        data.append('role', formData.role);
-        
-        if (signatureFile) {
-          data.append('signature', signatureFile);
-        }
-
-        await api.put(`/setup/staff/${editStaffId}`, data);
-        showAlert('Staff member updated successfully.');
+  // TanStack Mutations
+  const saveStaffMutation = useMutation({
+    mutationFn: async (payload: { isEdit: boolean; id?: string; data: FormData | Record<string, any> }) => {
+      if (payload.isEdit && payload.id) {
+        return await api.put(`/setup/staff/${payload.id}`, payload.data);
       } else {
-        await api.post('/setup/staff', { ...formData });
-        showAlert('Staff member onboarded successfully.');
+        return await api.post('/setup/staff', payload.data);
       }
-      
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['staffList'] });
+      showAlert(variables.isEdit ? 'Staff member updated successfully.' : 'Staff member onboarded successfully.');
       setShowModal(false);
-      fetchTeachers();
-    } catch (err: any) {
+    },
+    onError: (err: any) => {
       showAlert(err.message || 'Failed to save staff member');
-    } finally {
-      setSubmitting(false);
+    }
+  });
+
+  const submitting = saveStaffMutation.isPending;
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isEditing && editStaffId) {
+      const data = new FormData();
+      data.append('surname', formData.surname);
+      data.append('firstName', formData.firstName);
+      if (formData.otherNames) data.append('otherNames', formData.otherNames);
+      data.append('phoneNumber', formData.phoneNumber);
+      data.append('email', formData.email);
+      data.append('designation', formData.designation);
+      data.append('role', formData.role);
+      
+      if (signatureFile) {
+        data.append('signature', signatureFile);
+      }
+      saveStaffMutation.mutate({ isEdit: true, id: editStaffId, data });
+    } else {
+      saveStaffMutation.mutate({ isEdit: false, data: { ...formData } });
     }
   };
 
@@ -183,38 +149,62 @@ export default function Teachers() {
     }
   };
 
+  const deactivateMutation = useMutation({
+    mutationFn: async (id: string) => await api.post(`/setup/staff/${id}/deactivate`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staffList'] });
+      showAlert('Staff member deactivated successfully.');
+    },
+    onError: (err: any) => showAlert(err.message || 'Failed to deactivate staff member.')
+  });
+
   const handleRemove = async (id: string, name: string) => {
     if (!await showConfirm(`Are you sure you want to remove ${name} from the system? They will lose all access.`)) return;
-    try {
-      await api.post(`/setup/staff/${id}/deactivate`, {});
-      showAlert('Staff member deactivated successfully.');
-      fetchTeachers();
-    } catch (err: any) {
-      showAlert(err.message || 'Failed to deactivate staff member.');
-    }
+    deactivateMutation.mutate(id);
   };
+
+  const activateMutation = useMutation({
+    mutationFn: async (id: string) => await api.post(`/setup/staff/${id}/activate`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staffList'] });
+      showAlert('Staff member activated successfully.');
+    },
+    onError: (err: any) => showAlert(err.message || 'Failed to activate staff member.')
+  });
 
   const handleActivate = async (id: string, name: string) => {
     if (!await showConfirm(`Are you sure you want to restore access for ${name}?`)) return;
-    try {
-      await api.post(`/setup/staff/${id}/activate`, {});
-      showAlert('Staff member activated successfully.');
-      fetchTeachers();
-    } catch (err: any) {
-      showAlert(err.message || 'Failed to activate staff member.');
-    }
+    activateMutation.mutate(id);
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => await api.delete(`/setup/staff/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staffList'] });
+      showAlert('Staff member permanently deleted.');
+    },
+    onError: (err: any) => showAlert(err.message || 'Failed to delete staff member.')
+  });
 
   const handleDelete = async (id: string, name: string) => {
     if (!await showConfirm(`Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`)) return;
-    try {
-      await api.delete(`/setup/staff/${id}`);
-      showAlert('Staff member permanently deleted.');
-      fetchTeachers();
-    } catch (err: any) {
-      showAlert(err.message || 'Failed to delete staff member.');
-    }
+    deleteMutation.mutate(id);
   };
+
+  const regenerateCredsMutation = useMutation({
+    mutationFn: async (identityUserId: string) => await api.post('/user-management/regenerate-credentials', { userId: identityUserId }),
+    onMutate: (identityUserId) => setGeneratingId(identityUserId),
+    onSuccess: (response) => {
+      setCredsData({
+        username: response.username,
+        password: response.password,
+        emailQueued: response.emailQueued
+      });
+      setShowCredsModal(true);
+    },
+    onError: (err: any) => showAlert(err.message || 'Failed to regenerate credentials.'),
+    onSettled: () => setGeneratingId(null)
+  });
 
   const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
     if (!identityUserId) {
@@ -222,21 +212,7 @@ export default function Teachers() {
         return;
     }
     if (!await showConfirm(`Are you sure you want to regenerate credentials for ${name}? Their old password will be invalidated immediately.`)) return;
-    
-    try {
-        setGeneratingId(identityUserId);
-        const response = await api.post('/user-management/regenerate-credentials', { userId: identityUserId });
-        setCredsData({
-            username: response.username,
-            password: response.password,
-            emailQueued: response.emailQueued
-        });
-        setShowCredsModal(true);
-    } catch (err: any) {
-        showAlert(err.message || 'Failed to regenerate credentials.');
-    } finally {
-        setGeneratingId(null);
-    }
+    regenerateCredsMutation.mutate(identityUserId);
   };
 
   return (
