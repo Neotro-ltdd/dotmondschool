@@ -29,7 +29,7 @@
 
 /* ---------- LEFT: brand panel, dark, logo in motion ---------- */
 .login-container .panel-brand {
-  flex: 1;
+  flex: 0 0 60%;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -82,7 +82,7 @@
 
 /* ---------- RIGHT: form panel - form nested inside a curved frame ---------- */
 .login-container .panel-form {
-  flex: 0 0 46%;
+  flex: 0 0 40%;
   max-width: 600px;
   min-width: 400px;
   position: relative;
