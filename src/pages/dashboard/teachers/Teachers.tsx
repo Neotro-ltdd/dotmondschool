@@ -4,7 +4,7 @@ import { api } from '../../../services/api';
 import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
-import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft } from 'lucide-react';
+import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users } from 'lucide-react';
 
 
 interface TeacherItem {
@@ -31,6 +31,21 @@ export default function Teachers() {
   });
 
   const error = queryError ? ((queryError as any).message || 'Failed to load staff.') : null;
+
+  // Search and Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
+  const filteredTeachers = teachers.filter(teacher => {
+    const fullName = `${teacher.surname || ''} ${teacher.firstName || ''} ${teacher.otherNames || ''}`.toLowerCase();
+    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || 
+                          (teacher.email && teacher.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                          (teacher.phoneNumber && teacher.phoneNumber.includes(searchTerm));
+    const matchesRole = roleFilter === 'ALL' || (teacher.role && teacher.role.toLowerCase() === roleFilter.toLowerCase());
+    const matchesStatus = statusFilter === 'ALL' || (statusFilter === 'ACTIVE' ? teacher.isActive : !teacher.isActive);
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -220,128 +235,186 @@ export default function Teachers() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Staff Management</h1>
-          <p className="page-subtitle">Onboard and manage staff members</p>
+          <p className="page-subtitle">Onboard and manage staff members across academic departments</p>
         </div>
-        <button className="btn btn-primary" onClick={handleAddNewClick}>
-          <span className="icon">➕</span> Add Staff
+        <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleAddNewClick}>
+          <Users size={18} />
+          <span>Add Staff</span>
         </button>
       </div>
 
       {error && <div className="alert-error">{error}</div>}
 
-      <div className="table-container glass-panel">
-        {loading ? (
-          <p className="loading-text">Loading staff...</p>
-        ) : teachers.length === 0 ? (
-          <p className="empty-text">No staff onboarded yet.</p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Staff Member</th>
-                <th>Contact</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map(teacher => (
-                <tr key={teacher.id}>
-                  <td>
-                    <div className="user-info">
-                      {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' ? (
-                        <img 
-                          src={teacher.avatarUrl} 
-                          alt="Avatar" 
-                          className="avatar-small" 
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=000080&color=fff&rounded=true&bold=true`;
-                          }}
-                        />
-                      ) : (
-                        <img 
-                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=000080&color=fff&rounded=true&bold=true`}
-                          alt="Avatar" 
-                          className="avatar-small" 
-                        />
-                      )}
-                      <div>
-                        <strong>{teacher.surname} {teacher.firstName}</strong>
-                        <div className="text-muted text-sm">{teacher.otherNames}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div>{teacher.email}</div>
-                    <div className="text-muted text-sm">{teacher.phoneNumber}</div>
-                  </td>
-                  <td>
-                    <span className={`badge ${teacher.role === 'Teacher' ? 'badge-primary' : 'badge-info'}`}>
-                      {teacher.role}
-                    </span>
-                  </td>
-                  <td>
-                    {teacher.isActive ? (
-                      <span className="badge badge-success">Active</span>
-                    ) : (
-                      <span className="badge badge-warning">Inactive</span>
-                    )}
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <button 
-                        className="btn btn-secondary" 
-                        title="Regenerate Credentials"
-                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#3b82f6', color: 'white', border: 'none' }}
-                        onClick={() => handleRegenerateCredentials(teacher.identityUserId!, `${teacher.surname} ${teacher.firstName}`)}
-                        disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
-                      >
-                        {generatingId === teacher.identityUserId ? 'Generating...' : 'Credentials'}
-                      </button>
-                      <button 
-                        className="btn btn-secondary" 
-                        title="Edit staff details"
-                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#6366f1', color: 'white', border: 'none' }}
-                        onClick={() => handleEditClick(teacher)}
-                      >
-                        Edit
-                      </button>
-                      {teacher.isActive ? (
-                        <button 
-                          className="btn btn-secondary" 
-                          title="Temporarily deactivate this staff member"
-                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#f59e0b', color: 'white', border: 'none' }}
-                          onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
-                        >
-                          Deactivate
-                        </button>
-                      ) : (
-                        <button 
-                          className="btn btn-secondary" 
-                          title="Restore access for this staff member"
-                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#10b981', color: 'white', border: 'none' }}
-                          onClick={() => handleActivate(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
-                        >
-                          Activate
-                        </button>
-                      )}
-                      <button 
-                        className="btn btn-secondary" 
-                        title="Permanently delete this staff member"
-                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', backgroundColor: '#ef4444', color: 'white', border: 'none' }}
-                        onClick={() => handleDelete(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+      <div className="management-desk">
+        <div className="desk-toolbar">
+          <div className="search-box">
+            <Search size={16} />
+            <input 
+              type="text" 
+              placeholder="Search staff by name, email or phone..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+          <div className="filter-controls">
+            <select 
+              value={roleFilter} 
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="ALL">All Roles</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Accountant">Accountant</option>
+              <option value="Principal">Principal</option>
+              <option value="Admin">Admin</option>
+              <option value="Staff">Staff</option>
+            </select>
+
+            <select 
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="ALL">All Status</option>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="table-container">
+          {loading ? (
+            <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B', fontWeight: 500 }}>Loading staff roster...</div>
+          ) : filteredTeachers.length === 0 ? (
+            <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+              {teachers.length === 0 ? 'No staff members onboarded yet.' : 'No staff members match your active search and filters.'}
+            </div>
+          ) : (
+            <table className="executive-table">
+              <thead>
+                <tr>
+                  <th>Staff Member</th>
+                  <th>Contact Information</th>
+                  <th>Designated Role</th>
+                  <th>Account Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {filteredTeachers.map(teacher => (
+                  <tr key={teacher.id}>
+                    <td>
+                      <div className="staff-profile-cell">
+                        {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' ? (
+                          <img 
+                            src={teacher.avatarUrl} 
+                            alt="Avatar" 
+                            className="staff-avatar" 
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=0F172A&color=fff&rounded=true&bold=true`;
+                            }}
+                          />
+                        ) : (
+                          <img 
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=0F172A&color=fff&rounded=true&bold=true`}
+                            alt="Avatar" 
+                            className="staff-avatar" 
+                          />
+                        )}
+                        <div className="staff-names">
+                          <span className="staff-primary-name">{teacher.surname} {teacher.firstName}</span>
+                          <span className="staff-secondary-name">{teacher.otherNames || 'Staff Member'}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="contact-cell">
+                        <div className="contact-row">
+                          <Mail size={13} color="#64748B" />
+                          <span>{teacher.email || 'No email specified'}</span>
+                        </div>
+                        <div className="contact-row phone-row">
+                          <Phone size={13} />
+                          <span>{teacher.phoneNumber || 'No phone recorded'}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}>
+                        {teacher.role || 'Staff'}
+                      </span>
+                    </td>
+                    <td>
+                      {teacher.isActive ? (
+                        <span className="status-pill status-active">
+                          <span className="status-dot"></span>
+                          <span>Active</span>
+                        </span>
+                      ) : (
+                        <span className="status-pill status-inactive">
+                          <span className="status-dot-inactive"></span>
+                          <span>Inactive</span>
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="actions-group">
+                        <button 
+                          className="action-btn action-btn-blue" 
+                          title="Regenerate credentials & trigger email notification"
+                          onClick={() => handleRegenerateCredentials(teacher.identityUserId!, `${teacher.surname} ${teacher.firstName}`)}
+                          disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                        >
+                          <Key size={13} />
+                          <span>{generatingId === teacher.identityUserId ? 'Generating...' : 'Credentials'}</span>
+                        </button>
+                        <button 
+                          className="action-btn action-btn-neutral" 
+                          title="Edit staff clearance & role details"
+                          onClick={() => handleEditClick(teacher)}
+                        >
+                          <Edit2 size={13} />
+                          <span>Edit</span>
+                        </button>
+                        {teacher.isActive ? (
+                          <button 
+                            className="action-icon-btn action-icon-amber" 
+                            title="Temporarily suspend access"
+                            onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                          >
+                            <Power size={15} />
+                          </button>
+                        ) : (
+                          <button 
+                            className="action-icon-btn action-icon-green" 
+                            title="Restore staff system access"
+                            onClick={() => handleActivate(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                          >
+                            <Power size={15} />
+                          </button>
+                        )}
+                        <button 
+                          className="action-icon-btn action-icon-red" 
+                          title="Permanently delete staff record"
+                          onClick={() => handleDelete(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div className="desk-footer">
+          <span>Showing <strong>{filteredTeachers.length}</strong> of <strong>{teachers.length}</strong> registered staff members</span>
+          <span>EasyWorka Enterprise Security Enabled</span>
+        </div>
       </div>
 
       {/* EasyWorka v2 Slide Show & Slide-Over Panel Architecture */}
