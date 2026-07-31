@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 import './SlideOver.css';
 
@@ -61,7 +62,7 @@ export const SlideOver: React.FC<SlideOverProps> = ({
     }
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div 
       className={`slideover-overlay ${isOpen ? 'open' : ''}`} 
       onClick={handleOverlayClick}
@@ -94,7 +95,8 @@ export const SlideOver: React.FC<SlideOverProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
