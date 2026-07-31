@@ -12,6 +12,7 @@ import {
   Search,
   Filter
 } from 'lucide-react';
+import '../students/Management.css';
 
 interface ClassItem {
   id: string;
@@ -182,307 +183,258 @@ export default function PromotionManagement() {
   );
 
   return (
-    <div className="container-fluid p-4" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+    <div className="management-page">
       
       {/* Page Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="page-header">
         <div>
-          <h2 className="fw-bold mb-1" style={{ color: '#0f172a' }}>
-            <GraduationCap className="me-2 text-primary" size={28} />
+          <h1 className="page-title">
+            <GraduationCap className="me-2" size={28} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
             Student Promotion Management
-          </h2>
-          <p className="text-muted mb-0">Generate lists, review recommendations, and execute year-end promotions.</p>
+          </h1>
+          <p className="page-subtitle">Generate lists, review recommendations, and execute year-end promotions.</p>
+        </div>
+        <div className="header-actions">
+          {report && report.status !== 'Approved' && (
+            <button 
+              className="btn btn-success" 
+              onClick={handleApprove} 
+              disabled={approveBatchMutation.isPending}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#10b981', color: 'white', border: 'none' }}
+            >
+              {approveBatchMutation.isPending ? 'Processing...' : <><CheckCircle size={20} /> Approve & Execute</>}
+            </button>
+          )}
+          {report && report.status === 'Approved' && (
+            <span className="badge badge-success" style={{ backgroundColor: '#10b981', padding: '10px 15px', fontSize: '14px' }}>
+              <CheckCircle size={18} style={{ verticalAlign: 'middle', marginRight: '5px' }} /> Approved
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Generation Configuration Card */}
-      <div className="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
-        <div className="card-header bg-white border-bottom p-4">
-          <h5 className="mb-0 fw-semibold text-dark d-flex align-items-center">
-            <Filter className="me-2 text-secondary" size={20} />
-            Configure Promotion Batch
-          </h5>
+      {/* Generation Configuration Card (Using Filter Bar styling) */}
+      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: '20px' }}>
+        <div style={{ flex: 1, minWidth: '150px' }}>
+          <label>Current Class *</label>
+          <select 
+            className="filter-select" 
+            value={selectedClassId} 
+            onChange={e => setSelectedClassId(e.target.value)} 
+            required
+          >
+            <option value="">Select Class...</option>
+            {!classesLoading && classes.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
-        <div className="card-body p-4 bg-white">
-          <form onSubmit={handleGenerateList}>
-            <div className="row g-4 align-items-end">
-              <div className="col-12 col-md-3">
-                <label className="form-label fw-medium text-secondary small mb-2">CURRENT CLASS *</label>
-                <select 
-                  className="form-select form-select-lg rounded-3 shadow-none border-light bg-light" 
-                  value={selectedClassId} 
-                  onChange={e => setSelectedClassId(e.target.value)} 
-                  required
-                >
-                  <option value="">Select Class...</option>
-                  {!classesLoading && classes.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="col-12 col-md-3">
-                <label className="form-label fw-medium text-secondary small mb-2">NEXT SESSION *</label>
-                <input 
-                  type="text" 
-                  className="form-control form-control-lg rounded-3 shadow-none border-light bg-light" 
-                  placeholder="e.g. 2026/2027" 
-                  value={nextSession} 
-                  onChange={e => setNextSession(e.target.value)} 
-                  required 
-                />
-              </div>
+        
+        <div style={{ flex: 1, minWidth: '150px' }}>
+          <label>Next Session *</label>
+          <input 
+            type="text" 
+            className="filter-select" 
+            placeholder="e.g. 2026/2027" 
+            value={nextSession} 
+            onChange={e => setNextSession(e.target.value)} 
+            required 
+          />
+        </div>
 
-              <div className="col-12 col-md-3">
-                <label className="form-label fw-medium text-secondary small mb-2">TARGET CLASS</label>
-                <select 
-                  className="form-select form-select-lg rounded-3 shadow-none border-light bg-light" 
-                  value={targetClassId} 
-                  onChange={e => setTargetClassId(e.target.value)}
-                >
-                  <option value="">-- Graduating (Leave Empty) --</option>
-                  {!classesLoading && classes.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
+        <div style={{ flex: 1, minWidth: '150px' }}>
+          <label>Target Class</label>
+          <select 
+            className="filter-select" 
+            value={targetClassId} 
+            onChange={e => setTargetClassId(e.target.value)}
+          >
+            <option value="">-- Graduating (Leave Empty) --</option>
+            {!classesLoading && classes.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
 
-              <div className="col-12 col-md-1">
-                <label className="form-label fw-medium text-secondary small mb-2">MIN SCORE</label>
-                <input 
-                  type="number" 
-                  className="form-control form-control-lg rounded-3 shadow-none border-light bg-light text-center" 
-                  value={minScore} 
-                  onChange={e => setMinScore(Number(e.target.value))} 
-                  min="0" 
-                  max="100" 
-                  required 
-                />
-              </div>
+        <div style={{ flex: '0 0 100px' }}>
+          <label>Min Score</label>
+          <input 
+            type="number" 
+            className="filter-select" 
+            value={minScore} 
+            onChange={e => setMinScore(Number(e.target.value))} 
+            min="0" 
+            max="100" 
+            required 
+          />
+        </div>
 
-              <div className="col-12 col-md-2">
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-lg w-100 rounded-3 shadow-sm d-flex align-items-center justify-content-center" 
-                  disabled={generateBatchMutation.isPending}
-                >
-                  {generateBatchMutation.isPending ? (
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  ) : (
-                    <ArrowRightCircle className="me-2" size={20} />
-                  )}
-                  Generate List
-                </button>
-              </div>
-            </div>
-          </form>
+        <div style={{ flex: '0 0 auto' }}>
+          <button 
+            type="button" 
+            className="btn btn-primary" 
+            onClick={handleGenerateList}
+            disabled={generateBatchMutation.isPending}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '42px' }}
+          >
+            {generateBatchMutation.isPending ? 'Generating...' : <><ArrowRightCircle size={18} /> Generate List</>}
+          </button>
         </div>
       </div>
 
       {/* Loading States */}
       {(reportLoading || isRefetching) && (
-        <div className="d-flex justify-content-center py-5">
-          <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
-            <span className="visually-hidden">Loading...</span>
-          </div>
+        <div className="table-container glass-panel" style={{ textAlign: 'center', padding: '40px' }}>
+          <p className="loading-text">Loading promotion data...</p>
         </div>
       )}
 
       {/* Report View */}
       {report && !(reportLoading || isRefetching) && (
-        <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 slide-in">
+        <div className="slide-in">
           
-          <div className="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-              <h4 className="mb-1 fw-bold text-dark d-flex align-items-center">
-                <FileText className="me-2 text-primary" size={24} />
-                Promotion Review
-              </h4>
-              <p className="text-muted mb-0 small">
-                {report.class} ➡️ {report.nextClass || "Graduating"} ({report.session})
-              </p>
-            </div>
-            
-            <div className="d-flex align-items-center gap-3">
-              <div className="input-group">
-                <span className="input-group-text bg-light border-0"><Search size={18} className="text-muted"/></span>
-                <input 
-                  type="text" 
-                  className="form-control bg-light border-0 shadow-none" 
-                  placeholder="Search student..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-
-              {report.status !== 'Approved' ? (
-                <button 
-                  className="btn btn-success d-flex align-items-center rounded-3 px-4 shadow-sm" 
-                  onClick={handleApprove} 
-                  disabled={approveBatchMutation.isPending}
-                >
-                  {approveBatchMutation.isPending ? (
-                    <span className="spinner-border spinner-border-sm me-2" />
-                  ) : (
-                    <CheckCircle className="me-2" size={20} />
-                  )}
-                  Approve & Execute
-                </button>
-              ) : (
-                <span className="badge bg-success-subtle text-success border border-success-subtle px-4 py-2 rounded-pill fs-6 d-flex align-items-center">
-                  <CheckCircle className="me-2" size={18} /> Approved
-                </span>
-              )}
-            </div>
-          </div>
-          
-          <div className="card-body p-4 bg-light">
-            
-            {/* Metric Cards */}
-            <div className="row g-3 mb-4">
-              {[
-                { label: 'Total Students', value: report.summary.totalStudents, color: 'primary', icon: Users },
-                { label: 'Promotable', value: report.summary.promotableCount, color: 'success', icon: CheckCircle },
-                { label: 'Held Back', value: report.summary.heldBackCount, color: 'danger', icon: AlertTriangle },
-                { label: 'Graduating', value: report.summary.graduatingCount, color: 'info', icon: GraduationCap },
-                { label: 'Overrides', value: report.summary.overridesCount, color: 'warning', icon: FileText },
-              ].map((metric, idx) => {
-                const Icon = metric.icon;
-                return (
-                  <div className="col" key={idx}>
-                    <div className="card border-0 shadow-sm rounded-3 h-100">
-                      <div className="card-body text-center p-3">
-                        <Icon className={`text-${metric.color} mb-2`} size={24} />
-                        <h3 className={`fw-bold text-${metric.color} mb-0`}>{metric.value}</h3>
-                        <span className="text-muted small fw-medium text-uppercase">{metric.label}</span>
-                      </div>
-                    </div>
+          <div className="table-container glass-panel" style={{ marginBottom: '20px', padding: '20px' }}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
+                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ padding: '15px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #3b82f6', minWidth: '140px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#3b82f6' }}>{report.summary.totalStudents}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Total Students</div>
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{ padding: '15px', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', borderLeft: '4px solid #10b981', minWidth: '140px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{report.summary.promotableCount}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Promotable</div>
+                  </div>
+                  <div style={{ padding: '15px', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', borderLeft: '4px solid #ef4444', minWidth: '140px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>{report.summary.heldBackCount}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Held Back</div>
+                  </div>
+                  <div style={{ padding: '15px', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderRadius: '8px', borderLeft: '4px solid #f59e0b', minWidth: '140px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>{report.summary.graduatingCount}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Graduating</div>
+                  </div>
+                  <div style={{ padding: '15px', backgroundColor: 'rgba(139, 92, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #8b5cf6', minWidth: '140px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#8b5cf6' }}>{report.summary.overridesCount}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Overrides</div>
+                  </div>
+                </div>
 
-            {/* Data Table */}
-            <div className="bg-white rounded-3 shadow-sm border overflow-hidden">
-              <div className="table-responsive">
-                <table className="table table-hover align-middle mb-0">
-                  <thead className="table-light">
-                    <tr>
-                      <th className="px-4 py-3 text-secondary small fw-semibold">S/N</th>
-                      <th className="px-4 py-3 text-secondary small fw-semibold">STUDENT</th>
-                      <th className="px-4 py-3 text-secondary small fw-semibold">ANNUAL AVG</th>
-                      <th className="px-4 py-3 text-secondary small fw-semibold">SYSTEM REC.</th>
-                      <th className="px-4 py-3 text-secondary small fw-semibold">FINAL DECISION</th>
-                      {report.status !== 'Approved' && <th className="px-4 py-3 text-secondary small fw-semibold text-end">ACTION</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredRecords?.map((rec, idx) => (
-                      <tr key={rec.recommendationId}>
-                        <td className="px-4 text-muted">{idx + 1}</td>
-                        <td className="px-4">
-                          <div className="fw-semibold text-dark">{rec.studentName}</div>
-                          <div className="text-muted small">{rec.registrationNumber}</div>
-                        </td>
-                        <td className="px-4">
-                          <span className={`badge ${rec.annualAverage >= minScore ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'} rounded-pill`}>
-                            {rec.annualAverage.toFixed(2)}%
-                          </span>
-                        </td>
-                        <td className="px-4">
-                          <span className="text-muted">{rec.systemRecommendation}</span>
-                        </td>
-                        <td className="px-4">
-                          <div className="d-flex align-items-center gap-2">
-                            <span className="fw-bold">{rec.finalDecision}</span>
-                            {rec.hasOverride && (
-                              <span 
-                                className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill" 
-                                title={`Overridden by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`}
-                                style={{ cursor: 'help' }}
-                              >
-                                Overridden
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        {report.status !== 'Approved' && (
-                          <td className="px-4 text-end">
-                            <button 
-                              className="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm"
-                              onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                <div style={{ minWidth: '250px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-light)', marginBottom: '5px' }}>Search Student</label>
+                  <input 
+                    type="text" 
+                    className="filter-select" 
+                    placeholder="Name or Registration No..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+             </div>
+          </div>
+
+          {/* Data Table */}
+          <div className="table-container glass-panel">
+            {filteredRecords?.length === 0 ? (
+              <p className="empty-text">No students found matching your search.</p>
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>S/N</th>
+                    <th>Student</th>
+                    <th>Annual Avg</th>
+                    <th>System Rec.</th>
+                    <th>Final Decision</th>
+                    {report.status !== 'Approved' && <th>Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRecords?.map((rec, idx) => (
+                    <tr key={rec.recommendationId}>
+                      <td>{idx + 1}</td>
+                      <td>
+                        <strong>{rec.studentName}</strong>
+                        <div className="text-muted text-sm">{rec.registrationNumber}</div>
+                      </td>
+                      <td>
+                        <span className={`badge ${rec.annualAverage >= minScore ? 'badge-success' : 'badge-danger'}`} style={{ backgroundColor: rec.annualAverage >= minScore ? '#10b981' : '#ef4444', color: 'white' }}>
+                          {rec.annualAverage.toFixed(2)}%
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-muted">{rec.systemRecommendation}</span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <strong>{rec.finalDecision}</strong>
+                          {rec.hasOverride && (
+                            <span 
+                              className="badge badge-warning" 
+                              title={`Overridden by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`}
+                              style={{ cursor: 'help', backgroundColor: '#f59e0b', color: 'white' }}
                             >
-                              Override
-                            </button>
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                    {filteredRecords?.length === 0 && (
-                      <tr>
-                        <td colSpan={6} className="text-center py-5 text-muted">
-                          No students found matching your search.
+                              Overridden
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      {report.status !== 'Approved' && (
+                        <td>
+                          <button 
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                          >
+                            Override
+                          </button>
                         </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       )}
 
       {/* Override Modal */}
       {showOverrideModal && (
-        <div className="modal-backdrop-custom d-flex align-items-center justify-content-center" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 23, 42, 0.6)', zIndex: 1050, backdropFilter: 'blur(4px)' }}>
-          <div className="card border-0 shadow-lg rounded-4 w-100 animate-zoom-in" style={{ maxWidth: '500px' }}>
-            <div className="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center rounded-top-4">
-              <h5 className="m-0 fw-bold d-flex align-items-center">
-                <AlertTriangle className="text-warning me-2" size={24} />
-                Manual Decision Override
-              </h5>
-              <button className="btn btn-light rounded-circle p-2 d-flex align-items-center justify-content-center" onClick={() => setShowOverrideModal(false)}>
-                <X size={20} className="text-muted" />
-              </button>
-            </div>
-            <div className="card-body p-4">
-              <form onSubmit={handleOverrideSubmit}>
-                <div className="mb-4">
-                  <label className="form-label fw-semibold text-secondary small">NEW DECISION</label>
-                  <select 
-                    className="form-select form-select-lg bg-light border-0 shadow-none rounded-3" 
-                    value={overrideDecision} 
-                    onChange={e => setOverrideDecision(e.target.value)} 
-                    required
-                  >
-                    <option value="Promotable">Promotable</option>
-                    <option value="Held Back">Held Back</option>
-                    <option value="Withdrawn">Withdrawn</option>
-                    <option value="Graduating">Graduating</option>
-                  </select>
-                </div>
-                <div className="mb-4">
-                  <label className="form-label fw-semibold text-secondary small">REASON FOR OVERRIDE *</label>
-                  <textarea 
-                    className="form-control bg-light border-0 shadow-none rounded-3 p-3" 
-                    rows={4} 
-                    value={overrideReason} 
-                    onChange={e => setOverrideReason(e.target.value)} 
-                    placeholder="Enter explicit reason for changing the system's recommendation..."
-                    required
-                  ></textarea>
-                </div>
-                <div className="d-flex justify-content-end gap-3 mt-2">
-                  <button type="button" className="btn btn-light px-4 py-2 rounded-3 fw-medium" onClick={() => setShowOverrideModal(false)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary px-4 py-2 rounded-3 shadow-sm fw-medium d-flex align-items-center" disabled={overrideMutation.isPending}>
-                    {overrideMutation.isPending ? <span className="spinner-border spinner-border-sm me-2"/> : <CheckCircle className="me-2" size={18} />}
-                    Save Override
-                  </button>
-                </div>
-              </form>
-            </div>
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel">
+            <h2>Manual Decision Override</h2>
+            <form onSubmit={handleOverrideSubmit} className="modal-form">
+              <div className="form-group full-width">
+                <label>New Decision</label>
+                <select 
+                  name="overrideDecision" 
+                  value={overrideDecision} 
+                  onChange={e => setOverrideDecision(e.target.value)} 
+                  required
+                >
+                  <option value="Promotable">Promotable</option>
+                  <option value="Held Back">Held Back</option>
+                  <option value="Withdrawn">Withdrawn</option>
+                  <option value="Graduating">Graduating</option>
+                </select>
+              </div>
+              <div className="form-group full-width">
+                <label>Reason for Override *</label>
+                <textarea 
+                  rows={4} 
+                  value={overrideReason} 
+                  onChange={e => setOverrideReason(e.target.value)} 
+                  placeholder="Enter explicit reason for changing the system's recommendation..."
+                  required
+                  style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--color-border)', borderRadius: '4px', backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)' }}
+                ></textarea>
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowOverrideModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={overrideMutation.isPending} style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
+                  {overrideMutation.isPending ? 'Saving...' : 'Save Override'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -491,16 +443,9 @@ export default function PromotionManagement() {
         .slide-in {
           animation: slideIn 0.3s ease-out forwards;
         }
-        .animate-zoom-in {
-          animation: zoomIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
         @keyframes slideIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes zoomIn {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
