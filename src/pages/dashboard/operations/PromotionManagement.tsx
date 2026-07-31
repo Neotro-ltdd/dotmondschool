@@ -95,7 +95,7 @@ export default function PromotionManagement() {
   // 3. Generate Batch Mutation
   const generateBatchMutation = useMutation({
     mutationFn: async (payload: any) => {
-      return await api.post('/academics/promotion/batch', payload);
+      return await api.post('/academics/promotion/generate', payload);
     },
     onSuccess: (data) => {
       if (data.batchId) {
@@ -143,8 +143,8 @@ export default function PromotionManagement() {
     }
     generateBatchMutation.mutate({
       classId: selectedClassId,
-      targetClassId: targetClassId || null,
-      nextSession: nextSession,
+      nextClassId: targetClassId || null,
+      session: nextSession,
       minimumPromotionScore: minScore
     });
   };
