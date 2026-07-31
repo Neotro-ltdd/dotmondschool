@@ -1,0 +1,140 @@
+.slideover-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.slideover-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.slideover-container {
+  background-color: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 35px -5px rgba(0, 0, 0, 0.2), -4px 0 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  max-width: 100vw;
+  width: 560px; /* Default md */
+  position: relative;
+}
+
+.slideover-overlay.open .slideover-container {
+  transform: translateX(0);
+}
+
+/* Width Variants */
+.slideover-sm { width: 420px; }
+.slideover-md { width: 560px; }
+.slideover-lg { width: 720px; }
+.slideover-xl { width: 900px; }
+
+@media (max-width: 640px) {
+  .slideover-sm,
+  .slideover-md,
+  .slideover-lg,
+  .slideover-xl {
+    width: 100vw;
+  }
+}
+
+/* Header */
+.slideover-header {
+  padding: 24px;
+  border-bottom: 1px solid #E3E7EF;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: #FAFCFE;
+}
+
+.slideover-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slideover-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #10203F;
+  letter-spacing: -0.015em;
+  font-family: 'Inter', sans-serif;
+}
+
+.slideover-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #5B6B85;
+  line-height: 1.4;
+}
+
+.slideover-close-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #5B6B85;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.slideover-close-btn:hover {
+  background-color: #E3E7EF;
+  color: #10203F;
+}
+
+.slideover-close-btn:focus-visible {
+  outline: 2px solid #16407D;
+}
+
+/* Body / Content Area */
+.slideover-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  color: #334155;
+  font-size: 0.925rem;
+}
+
+/* Custom internal scrollbar for enterprise feel */
+.slideover-body::-webkit-scrollbar {
+  width: 6px;
+}
+.slideover-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.slideover-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.slideover-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Footer Area for form buttons */
+.slideover-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #E3E7EF;
+  background-color: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}

@@ -4,6 +4,7 @@ import { useTenant } from '../../context/TenantContext';
 import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
 import { Calendar, Users, GraduationCap, LayoutDashboard, AlertCircle, CheckCircle, FileText, Activity, MapPin } from 'lucide-react';
+import SlideOver from '../../components/ui/SlideOver';
 import './Dashboard.css';
 
 // Mock Data for Charts
@@ -37,6 +38,7 @@ const StatCard = ({ label, value, icon: Icon, iconBg, iconColor, trend, trendTex
 export default function Overview() {
   const { userRole, userName } = useAuth();
   const { schoolName } = useTenant();
+  const [showActivityLog, setShowActivityLog] = React.useState(false);
   
   const [accountantData, setAccountantData] = React.useState<any>(null);
   const [teacherData, setTeacherData] = React.useState<any>(null);
@@ -152,8 +154,12 @@ export default function Overview() {
                 <CheckCircle size={18} /> Manual Clearance
               </Link>
             )}
-            <button className="banner-btn banner-btn-outline">
-              <Activity size={18} /> Activity Log
+            <button 
+              type="button"
+              className="banner-btn banner-btn-outline" 
+              onClick={() => setShowActivityLog(true)}
+            >
+              <Activity size={18} /> Activity Log (SlideOver Demo)
             </button>
           </div>
         </div>
@@ -621,6 +627,46 @@ export default function Overview() {
           />
         </div>
       )}
+
+      {/* Demonstration of the sleek SlideOver UX for forms & details */}
+      <SlideOver
+        isOpen={showActivityLog}
+        onClose={() => setShowActivityLog(false)}
+        title="Recent System Activity Log"
+        subtitle="Live audit tracking of administrative actions across the portal."
+        width="md"
+        footer={
+          <button 
+            type="button" 
+            onClick={() => setShowActivityLog(false)} 
+            className="banner-btn" 
+            style={{ background: '#10203F', color: '#fff', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Close Panel
+          </button>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {[
+            { title: "Student Record Created", desc: "Adefolarin Bakare was newly enrolled into JSS 2 Silver.", time: "10 minutes ago", status: "Success", color: "#10b981" },
+            { title: "Fee Clearance Verified", desc: "Manual clearance approved for student NGN 150,000 tuition via Bank Transfer.", time: "2 hours ago", status: "Verified", color: "#38bdf8" },
+            { title: "Report Card Template Updated", desc: "Termly Grading Criteria adjusted to standard 40/60 distribution.", time: "Yesterday at 4:15 PM", status: "Updated", color: "#818cf8" },
+            { title: "System Login Recorded", desc: `Successful administrative sign-in by ${userName || 'Super Admin'} from standard IP.`, time: "Yesterday at 9:00 AM", status: "Security", color: "#f59e0b" },
+            { title: "Bulk SMS Broadcast", desc: "Mid-term resumption notification sent to 269 parents.", time: "3 days ago", status: "Broadcast", color: "#10203F" }
+          ].map((item, i) => (
+            <div key={i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E3E7EF', backgroundColor: '#FAFCFE', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ color: '#10203F', fontSize: '1rem' }}>{item.title}</strong>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: item.color, background: `${item.color}15`, padding: '4px 8px', borderRadius: '6px' }}>
+                  {item.status}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.875rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>{item.time}</span>
+            </div>
+          ))}
+        </div>
+      </SlideOver>
 
     </div>
   );
