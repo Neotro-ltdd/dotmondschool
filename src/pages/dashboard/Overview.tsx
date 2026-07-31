@@ -3,29 +3,39 @@ import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { Link } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
+import { Calendar, Users, GraduationCap, LayoutDashboard, AlertCircle, CheckCircle, FileText, Activity, MapPin } from 'lucide-react';
 import './Dashboard.css';
 
 // Mock Data for Charts
-const attendanceData = [
-  { name: 'Week 1', attendance: 88 },
-  { name: 'Week 2', attendance: 90 },
-  { name: 'Week 3', attendance: 92 },
-  { name: 'Week 4', attendance: 94.2 },
-];
-
-const feeData = [
-  { name: 'Collected', value: 82 },
-  { name: 'Pending', value: 18 },
-];
 const feeColors = ['#10b981', '#f43f5e'];
 const COLORS = ['#38bdf8', '#818cf8', '#c084fc', '#e879f9', '#2dd4bf', '#fbbf24', '#f87171'];
 
-const populationData = [
-  { name: 'Population', Students: 1248, Teachers: 84 },
-];
+const StatCard = ({ label, value, icon: Icon, iconBg, iconColor, trend, trendText }: any) => (
+  <div className="stat-card">
+    <div className="stat-header">
+      <p className="stat-label">{label}</p>
+      <div className="stat-icon-square" style={{ background: iconBg, color: iconColor }}>
+        <Icon size={20} />
+      </div>
+    </div>
+    <div className="stat-value-container">
+      <h3 className="stat-value">{value}</h3>
+    </div>
+    {(trend !== undefined || trendText) && (
+      <div className="stat-trend-container">
+        {trend !== undefined && (
+          <span className={`trend-pill ${trend > 0 ? 'positive' : trend < 0 ? 'negative' : 'neutral'}`}>
+            {trend > 0 ? '+' : ''}{trend}%
+          </span>
+        )}
+        {trendText && <span className="trend-text">{trendText}</span>}
+      </div>
+    )}
+  </div>
+);
 
 export default function Overview() {
-  const { userRole } = useAuth();
+  const { userRole, userName } = useAuth();
   const { schoolName } = useTenant();
   
   const [accountantData, setAccountantData] = React.useState<any>(null);
@@ -113,12 +123,40 @@ export default function Overview() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount || 0);
   };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  const todayDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   
   return (
     <div className="overview-page">
-      <div className="dashboard-header-text">
-        <h1 className="page-title">Overview</h1>
-        <p className="page-subtitle">Welcome back! Here's what's happening at {schoolName}.</p>
+      {/* Dashboard Banner */}
+      <div className="dashboard-banner">
+        <div className="banner-date-pill">
+          <Calendar size={14} />
+          {todayDate}
+        </div>
+        <div className="banner-content">
+          <div className="banner-text">
+            <h2>{getGreeting()}, {userName} 👋</h2>
+            <p>Welcome to the {schoolName} Operations Portal. Manage students, track metrics, and review activities.</p>
+          </div>
+          <div className="banner-actions">
+            {userRole === 'Accountant' && (
+              <Link to="/dashboard/operations/manual-clearance" className="banner-btn banner-btn-primary">
+                <CheckCircle size={18} /> Manual Clearance
+              </Link>
+            )}
+            <button className="banner-btn banner-btn-outline">
+              <Activity size={18} /> Activity Log
+            </button>
+          </div>
+        </div>
       </div>
 
       {userRole === 'Principal' ? (
@@ -126,41 +164,35 @@ export default function Overview() {
           {loading ? <p>Loading your dashboard...</p> : principalData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div className="stats-grid">
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🎓</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Student Population</p>
-                    <h3 className="stat-value">{principalData.metrics.totalStudents}</h3>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>👩‍🏫</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Teaching Staff</p>
-                    <h3 className="stat-value">{principalData.metrics.totalTeachers}</h3>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>✅</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Average Attendance (Today)</p>
-                    <h3 className="stat-value">{principalData.metrics.averageAttendance}%</h3>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>⏳</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Pending Approvals</p>
-                    <h3 className="stat-value">{principalData.metrics.pendingApprovals}</h3>
-                  </div>
-                </div>
+                <StatCard 
+                  label="Total Students" 
+                  value={principalData.metrics.totalStudents} 
+                  icon={GraduationCap} 
+                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                />
+                <StatCard 
+                  label="Teaching Staff" 
+                  value={principalData.metrics.totalTeachers} 
+                  icon={Users} 
+                  iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
+                />
+                <StatCard 
+                  label="Avg Attendance" 
+                  value={`${principalData.metrics.averageAttendance}%`} 
+                  icon={CheckCircle} 
+                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
+                  trendText="Today"
+                />
+                <StatCard 
+                  label="Pending Approvals" 
+                  value={principalData.metrics.pendingApprovals} 
+                  icon={AlertCircle} 
+                  iconBg="rgba(239, 68, 68, 0.1)" iconColor="#ef4444" 
+                />
               </div>
 
               <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                <div className="chart-card glass-panel">
+                <div className="chart-card">
                   <h3>Attendance Trend (Last 7 Days)</h3>
                   <div style={{ height: 250, marginTop: '20px' }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -175,7 +207,7 @@ export default function Overview() {
                   </div>
                 </div>
 
-                <div className="chart-card glass-panel">
+                <div className="chart-card">
                   <h3>Fee Collection Status</h3>
                   <div style={{ height: 250, marginTop: '20px' }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -209,11 +241,11 @@ export default function Overview() {
                   {principalData.topStudentsPerClass && principalData.topStudentsPerClass.length > 0 ? (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
                       {principalData.topStudentsPerClass.map((cls: any, idx: number) => (
-                        <div key={idx} style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+                        <div key={idx} style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #e2e8f0', padding: '1rem', borderRadius: '8px' }}>
                           <h4 style={{ marginBottom: '0.5rem', color: '#38bdf8' }}>{cls.className}</h4>
                           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                             {cls.students.map((student: any, sIdx: number) => (
-                              <li key={sIdx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                              <li key={sIdx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                 <span>{student.position}. {student.studentName}</span>
                                 <span style={{ fontWeight: 'bold' }}>{student.averageScore.toFixed(1)}%</span>
                               </li>
@@ -230,50 +262,39 @@ export default function Overview() {
         </div>
       ) : userRole === 'Accountant' ? (
         <div className="analytics-section">
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-            <Link to="/dashboard/operations/manual-clearance" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ef4444' }}>
-              <span>✅</span> Manual Student Clearance
-            </Link>
-          </div>
           {loading ? <p>Loading your dashboard...</p> : accountantData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div className="stats-grid">
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>💰</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Collected</p>
-                    <h3 className="stat-value">{accountantData ? formatCurrency(accountantData.totalCollected) : '---'}</h3>
-                  </div>
-                </div>
-                
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>⏳</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Unpaid</p>
-                    <h3 className="stat-value">{accountantData ? formatCurrency(accountantData.totalUnpaid) : '---'}</h3>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>⚠️</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Highest Unpaid Class</p>
-                    <h3 className="stat-value">{accountantData?.highestUnpaidClass?.name || '---'}</h3>
-                    <p className="stat-trend negative">{accountantData?.highestUnpaidClass?.percentage || 0}% unpaid</p>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🔍</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Pending Verifications</p>
-                    <h3 className="stat-value">{accountantData?.pendingVerifications || 0}</h3>
-                  </div>
-                </div>
+                <StatCard 
+                  label="Total Collected" 
+                  value={accountantData ? formatCurrency(accountantData.totalCollected) : '---'} 
+                  icon={CheckCircle} 
+                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
+                />
+                <StatCard 
+                  label="Total Unpaid" 
+                  value={accountantData ? formatCurrency(accountantData.totalUnpaid) : '---'} 
+                  icon={AlertCircle} 
+                  iconBg="rgba(239, 68, 68, 0.1)" iconColor="#ef4444" 
+                />
+                <StatCard 
+                  label="Highest Unpaid Class" 
+                  value={accountantData?.highestUnpaidClass?.name || '---'} 
+                  icon={Users} 
+                  iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b"
+                  trendText={`${accountantData?.highestUnpaidClass?.percentage || 0}% unpaid`}
+                  trend={-1} 
+                />
+                <StatCard 
+                  label="Pending Verifications" 
+                  value={accountantData?.pendingVerifications || 0} 
+                  icon={FileText} 
+                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                />
               </div>
 
               <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                <div className="chart-card glass-panel">
+                <div className="chart-card">
                   <h3>Fee Payment Metrics</h3>
                   {accountantData?.feePaymentMetrics && accountantData.feePaymentMetrics.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -290,7 +311,7 @@ export default function Overview() {
                   ) : <p>No data available</p>}
                 </div>
 
-                <div className="chart-card glass-panel">
+                <div className="chart-card">
                   <h3>Revenue by Payment Method</h3>
                   {accountantData?.revenueByMethod && accountantData.revenueByMethod.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -308,7 +329,7 @@ export default function Overview() {
                 </div>
               </div>
 
-              <div className="chart-card glass-panel" style={{ width: '100%' }}>
+              <div className="chart-card" style={{ width: '100%' }}>
                 <h3>Fees Collected vs Pending by Class</h3>
                 {accountantData?.feesPaidByClass && accountantData.feesPaidByClass.length > 0 ? (
                   <ResponsiveContainer width="100%" height={350}>
@@ -334,53 +355,48 @@ export default function Overview() {
               {/* Unified Teacher Section */}
               {(teacherData.isClassTeacher || teacherData.isSubjectTeacher) && (
                 <div className="unified-teacher-section">
-                  <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem', color: '#f8fafc' }}>
+                  <h2 style={{ fontSize: '1.2rem', margin: '0 0 1rem 0', color: '#0f172a' }}>
                     Teacher Overview {teacherData.isClassTeacher ? `(Form: ${teacherData.classTeacherMetrics.className})` : ''}
                   </h2>
                   <div className="stats-grid">
                     {teacherData.isClassTeacher && (
                       <>
-                        <div className="stat-card glass-panel">
-                          <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🎓</div>
-                          <div className="stat-content">
-                            <p className="stat-label">Form Class Students</p>
-                            <h3 className="stat-value">{teacherData.classTeacherMetrics.totalStudents}</h3>
-                          </div>
-                        </div>
-                        <div className="stat-card glass-panel">
-                          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>📊</div>
-                          <div className="stat-content">
-                            <p className="stat-label">Form Attendance</p>
-                            <h3 className="stat-value">{teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%</h3>
-                            <p className="stat-trend">Present: {teacherData.classTeacherMetrics.attendanceToday.present}</p>
-                          </div>
-                        </div>
-                        <div className="stat-card glass-panel">
-                          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>📝</div>
-                          <div className="stat-content">
-                            <p className="stat-label">Pending Remarks</p>
-                            <h3 className="stat-value">{teacherData.classTeacherMetrics.pendingRemarks}</h3>
-                          </div>
-                        </div>
+                        <StatCard 
+                          label="Form Class Students" 
+                          value={teacherData.classTeacherMetrics.totalStudents} 
+                          icon={Users} 
+                          iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                        />
+                        <StatCard 
+                          label="Form Attendance" 
+                          value={`${teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%`} 
+                          icon={CheckCircle} 
+                          iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
+                          trendText={`Present: ${teacherData.classTeacherMetrics.attendanceToday.present}`}
+                        />
+                        <StatCard 
+                          label="Pending Remarks" 
+                          value={teacherData.classTeacherMetrics.pendingRemarks} 
+                          icon={FileText} 
+                          iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b" 
+                        />
                       </>
                     )}
 
                     {teacherData.isSubjectTeacher && (
                       <>
-                        <div className="stat-card glass-panel">
-                          <div className="stat-icon" style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>📚</div>
-                          <div className="stat-content">
-                            <p className="stat-label">Subject Allocations</p>
-                            <h3 className="stat-value">{teacherData.subjectTeacherMetrics.totalAllocations}</h3>
-                          </div>
-                        </div>
-                        <div className="stat-card glass-panel">
-                          <div className="stat-icon" style={{ background: 'rgba(236, 72, 153, 0.1)', color: '#ec4899' }}>👥</div>
-                          <div className="stat-content">
-                            <p className="stat-label">Total Students Taught</p>
-                            <h3 className="stat-value">{teacherData.subjectTeacherMetrics.totalStudents}</h3>
-                          </div>
-                        </div>
+                        <StatCard 
+                          label="Subject Allocations" 
+                          value={teacherData.subjectTeacherMetrics.totalAllocations} 
+                          icon={GraduationCap} 
+                          iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
+                        />
+                        <StatCard 
+                          label="Students Taught" 
+                          value={teacherData.subjectTeacherMetrics.totalStudents} 
+                          icon={Users} 
+                          iconBg="rgba(236, 72, 153, 0.1)" iconColor="#ec4899" 
+                        />
                       </>
                     )}
                   </div>
@@ -388,7 +404,7 @@ export default function Overview() {
                   {/* Detailed Widgets */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
                     {teacherData.isClassTeacher && teacherData.classTeacherMetrics.topStudents && teacherData.classTeacherMetrics.topStudents.length > 0 && (
-                      <div className="widget-card glass-panel">
+                      <div className="widget-card glass-panel" style={{ background: 'white' }}>
                         <div className="widget-header">
                           <h3>Top 5 Students (Latest Results)</h3>
                         </div>
@@ -416,15 +432,15 @@ export default function Overview() {
                     )}
 
                     {teacherData.isSubjectTeacher && (
-                      <div className="widget-card glass-panel">
+                      <div className="widget-card glass-panel" style={{ background: 'white' }}>
                         <div className="widget-header">
-                          <h3>Your Subjects & Classes</h3>
+                          <h3>Your Subjects &amp; Classes</h3>
                         </div>
                         <div className="widget-body">
                           <ul className="activity-list">
                             {teacherData.subjectTeacherMetrics.allocations.map((a: any, idx: number) => (
                               <li className="activity-item" key={idx}>
-                                <div className="activity-icon" style={{ fontSize: '1.2rem' }}>📌</div>
+                                <div className="activity-icon"><MapPin size={18} /></div>
                                 <div className="activity-details">
                                   <p><strong>{a.subjectName}</strong> in <strong>{a.className}</strong></p>
                                 </div>
@@ -440,9 +456,9 @@ export default function Overview() {
 
               {/* Fallback if no assignments */}
               {!teacherData.isClassTeacher && !teacherData.isSubjectTeacher && (
-                <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', marginTop: '1rem' }}>
+                <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '3rem', textAlign: 'center', marginTop: '1rem' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎓</div>
-                  <h3>Welcome, {teacherData.teacherName || 'Teacher'}</h3>
+                  <h3 style={{ margin: 0, color: '#0f172a' }}>Welcome, {teacherData.teacherName || 'Teacher'}</h3>
                   <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>You are not currently assigned as a Class Teacher or Subject Teacher to any active classes.</p>
                 </div>
               )}
@@ -455,41 +471,34 @@ export default function Overview() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               
               <div className="stats-grid">
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🎓</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Active Students</p>
-                    <h3 className="stat-value">{adminData.metrics.totalStudents}</h3>
-                  </div>
-                </div>
-                
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>👥</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Staff</p>
-                    <h3 className="stat-value">{adminData.metrics.totalStaff}</h3>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>🏫</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Classes & Subjects</p>
-                    <h3 className="stat-value">{adminData.metrics.totalClasses} / {adminData.metrics.totalSubjects}</h3>
-                  </div>
-                </div>
-
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>📅</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Current Term Status</p>
-                    <h3 className="stat-value" style={{ fontSize: '1rem', marginTop: '0.5rem' }}>{adminData.metrics.currentTermStatus}</h3>
-                  </div>
-                </div>
+                <StatCard 
+                  label="Total Active Students" 
+                  value={adminData.metrics.totalStudents} 
+                  icon={GraduationCap} 
+                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                />
+                <StatCard 
+                  label="Total Staff" 
+                  value={adminData.metrics.totalStaff} 
+                  icon={Users} 
+                  iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
+                />
+                <StatCard 
+                  label="Classes & Subjects" 
+                  value={`${adminData.metrics.totalClasses} / ${adminData.metrics.totalSubjects}`} 
+                  icon={LayoutDashboard} 
+                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
+                />
+                <StatCard 
+                  label="Current Term Status" 
+                  value={adminData.metrics.currentTermStatus} 
+                  icon={Calendar} 
+                  iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b" 
+                />
               </div>
 
-              <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '2rem' }}>
-                <div className="chart-card glass-panel">
+              <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+                <div className="chart-card">
                   <h3>System Users Breakdown</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
@@ -509,7 +518,7 @@ export default function Overview() {
                   </ResponsiveContainer>
                 </div>
 
-                <div className="chart-card glass-panel">
+                <div className="chart-card">
                   <h3>Academic Infrastructure</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart 
@@ -536,33 +545,28 @@ export default function Overview() {
           {loading ? <p>Loading your dashboard...</p> : vendorData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div className="stats-grid">
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>👥</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Total Students</p>
-                    <h3 className="stat-value">{vendorData.totalStudents}</h3>
-                  </div>
-                </div>
-                
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>🖨️</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Printed ID Cards</p>
-                    <h3 className="stat-value">{vendorData.printedCards}</h3>
-                  </div>
-                </div>
-                
-                <div className="stat-card glass-panel">
-                  <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>⏳</div>
-                  <div className="stat-content">
-                    <p className="stat-label">Pending Cards</p>
-                    <h3 className="stat-value">{vendorData.pendingCards}</h3>
-                  </div>
-                </div>
+                <StatCard 
+                  label="Total Students" 
+                  value={vendorData.totalStudents} 
+                  icon={Users} 
+                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                />
+                <StatCard 
+                  label="Printed ID Cards" 
+                  value={vendorData.printedCards} 
+                  icon={CheckCircle} 
+                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
+                />
+                <StatCard 
+                  label="Pending Cards" 
+                  value={vendorData.pendingCards} 
+                  icon={AlertCircle} 
+                  iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b" 
+                />
               </div>
 
               <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                <div className="chart-card glass-panel">
+                <div className="chart-card">
                   <h3>ID Card Printing Status</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
@@ -587,41 +591,34 @@ export default function Overview() {
         </div>
       ) : (
         <div className="stats-grid">
-          <div className="stat-card glass-panel">
-            <div className="stat-icon" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>🎓</div>
-            <div className="stat-content">
-              <p className="stat-label">Total Students</p>
-              <h3 className="stat-value">1,248</h3>
-              <p className="stat-trend positive">↑ 12% from last month</p>
-            </div>
-          </div>
-          
-          <div className="stat-card glass-panel">
-            <div className="stat-icon" style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>👨‍🏫</div>
-            <div className="stat-content">
-              <p className="stat-label">Active Teachers</p>
-              <h3 className="stat-value">84</h3>
-              <p className="stat-trend positive">↑ 2 new this term</p>
-            </div>
-          </div>
-          
-          <div className="stat-card glass-panel">
-            <div className="stat-icon" style={{ background: 'rgba(234, 179, 8, 0.1)', color: '#eab308' }}>🏫</div>
-            <div className="stat-content">
-              <p className="stat-label">Total Classes</p>
-              <h3 className="stat-value">42</h3>
-              <p className="stat-trend neutral">No changes</p>
-            </div>
-          </div>
-
-          <div className="stat-card glass-panel">
-            <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>📉</div>
-            <div className="stat-content">
-              <p className="stat-label">Average Attendance</p>
-              <h3 className="stat-value">94.2%</h3>
-              <p className="stat-trend negative">↓ 1.5% from last week</p>
-            </div>
-          </div>
+          <StatCard 
+            label="Total Students" 
+            value="1,248" 
+            icon={GraduationCap} 
+            iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+            trend={12} trendText="from last month"
+          />
+          <StatCard 
+            label="Active Teachers" 
+            value="84" 
+            icon={Users} 
+            iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
+            trend={2} trendText="new this term"
+          />
+          <StatCard 
+            label="Total Classes" 
+            value="42" 
+            icon={LayoutDashboard} 
+            iconBg="rgba(234, 179, 8, 0.1)" iconColor="#eab308" 
+            trend={0} trendText="No changes"
+          />
+          <StatCard 
+            label="Average Attendance" 
+            value="94.2%" 
+            icon={Activity} 
+            iconBg="rgba(239, 68, 68, 0.1)" iconColor="#ef4444" 
+            trend={-1.5} trendText="from last week"
+          />
         </div>
       )}
 
