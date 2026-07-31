@@ -1,5 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { api } from '../../../services/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { 
+  GraduationCap, 
+  Users, 
+  ArrowRightCircle, 
+  CheckCircle, 
+  AlertTriangle, 
+  FileText,
+  X,
+  Search,
+  Filter
+} from 'lucide-react';
 
 interface ClassItem {
   id: string;
@@ -40,94 +52,106 @@ interface ReportData {
 }
 
 export default function PromotionManagement() {
-  const [classes, setClasses] = useState<ClassItem[]>([]);
+  const queryClient = useQueryClient();
+  const year = new Date().getFullYear();
+  
+  // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [targetClassId, setTargetClassId] = useState('');
-  const [nextSession, setNextSession] = useState('');
+  const [nextSession, setNextSession] = useState(`${year}/${year + 1}`);
   const [minScore, setMinScore] = useState<number>(50);
-  
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  
   const [batchId, setBatchId] = useState<string | null>(null);
-  const [report, setReport] = useState<ReportData | null>(null);
 
-  // Override Modal state
+  // Override Modal State
   const [showOverrideModal, setShowOverrideModal] = useState(false);
   const [overrideRecId, setOverrideRecId] = useState('');
   const [overrideDecision, setOverrideDecision] = useState('Promotable');
   const [overrideReason, setOverrideReason] = useState('');
-  const [overrideLoading, setOverrideLoading] = useState(false);
+  
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchClasses();
-    // Default next session based on current year
-    const year = new Date().getFullYear();
-    setNextSession(`${year}/${year + 1}`);
-  }, []);
-
-  const fetchClasses = async () => {
-    try {
-      const data = await api.get('/setup/classes');
-      setClasses(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to load classes.");
+  // 1. Fetch Classes using React Query
+  const { data: classes = [], isLoading: classesLoading } = useQuery<ClassItem[]>({
+    queryKey: ['classes'],
+    queryFn: async () => {
+      const res = await api.get('/setup/classes');
+      return res;
     }
-  };
+  });
 
-  const fetchReport = async (id: string) => {
-    try {
-      setLoading(true);
-      const data = await api.get(`/reports/academics/promotions/${id}`);
-      setReport(data);
-      setBatchId(id);
-    } catch (err: any) {
-      setError(err.message || "Failed to load report.");
-    } finally {
-      setLoading(false);
+  // 2. Fetch Report using React Query
+  const { data: report, isLoading: reportLoading, isRefetching } = useQuery<ReportData>({
+    queryKey: ['promotionReport', batchId],
+    queryFn: async () => {
+      if (!batchId) return null;
+      const res = await api.get(`/reports/academics/promotions/${batchId}`);
+      return res;
+    },
+    enabled: !!batchId,
+  });
+
+  // 3. Generate Batch Mutation
+  const generateBatchMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      return await api.post('/academics/promotion/batch', payload);
+    },
+    onSuccess: (data) => {
+      if (data.batchId) {
+        setBatchId(data.batchId);
+      }
+    },
+    onError: (err: any) => {
+      alert(err.message || "Failed to generate promotion list.");
     }
-  };
+  });
 
-  const handleGenerateList = async (e: React.FormEvent) => {
+  // 4. Approve Batch Mutation
+  const approveBatchMutation = useMutation({
+    mutationFn: async () => {
+      return await api.post('/academics/promotion/approve', { batchId });
+    },
+    onSuccess: () => {
+      alert("Promotions executed successfully!");
+      queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
+    },
+    onError: (err: any) => {
+      alert(err.message || "Failed to approve promotions.");
+    }
+  });
+
+  // 5. Override Mutation
+  const overrideMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      return await api.post('/academics/promotion/override', payload);
+    },
+    onSuccess: () => {
+      setShowOverrideModal(false);
+      queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
+    },
+    onError: (err: any) => {
+      alert(err.message || "Failed to override.");
+    }
+  });
+
+  const handleGenerateList = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedClassId || !nextSession) {
       alert("Please select a class and specify the next session.");
       return;
     }
-    try {
-      setLoading(true);
-      setError(null);
-      setReport(null);
-      
-      const payload = {
-        classId: selectedClassId,
-        targetClassId: targetClassId || null, // null implies graduation if not selected
-        nextSession: nextSession,
-        minimumPromotionScore: minScore
-      };
-      
-      const res = await api.post('/academics/promotion/batch', payload);
-      if (res.batchId) {
-        await fetchReport(res.batchId);
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to generate promotion list.");
-      setLoading(false);
-    }
+    generateBatchMutation.mutate({
+      classId: selectedClassId,
+      targetClassId: targetClassId || null,
+      nextSession: nextSession,
+      minimumPromotionScore: minScore
+    });
   };
 
-  const handleApprove = async () => {
+  const handleApprove = () => {
     if (!batchId) return;
-    if (!window.confirm("Are you sure you want to approve and execute these promotions? This action is permanent and will move students to their new classes.")) return;
-    
-    try {
-      setLoading(true);
-      await api.post('/academics/promotion/approve', { batchId });
-      alert("Promotions executed successfully!");
-      await fetchReport(batchId);
-    } catch (err: any) {
-      setError(err.message || "Failed to approve promotions.");
-      setLoading(false);
+    if (window.confirm("Are you sure you want to approve and execute these promotions? This action is permanent and will move students to their new classes.")) {
+      approveBatchMutation.mutate();
     }
   };
 
@@ -138,225 +162,323 @@ export default function PromotionManagement() {
     setShowOverrideModal(true);
   };
 
-  const handleOverrideSubmit = async (e: React.FormEvent) => {
+  const handleOverrideSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!overrideReason.trim()) {
       alert("Please provide a reason for this override.");
       return;
     }
-    try {
-      setOverrideLoading(true);
-      await api.post('/academics/promotion/override', {
-        recommendationId: overrideRecId,
-        newDecision: overrideDecision,
-        reasonNote: overrideReason
-      });
-      setShowOverrideModal(false);
-      if (batchId) {
-        await fetchReport(batchId);
-      }
-    } catch (err: any) {
-      alert(err.message || "Failed to override.");
-    } finally {
-      setOverrideLoading(false);
-    }
+    overrideMutation.mutate({
+      recommendationId: overrideRecId,
+      newDecision: overrideDecision,
+      reasonNote: overrideReason
+    });
   };
 
+  // Filter records based on search query
+  const filteredRecords = report?.records.filter(r => 
+    r.studentName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    r.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="operations-page">
-      <div className="page-header">
-        <h1>Student Promotion Management</h1>
-        <p>Generate promotion lists, review system recommendations, apply manual overrides, and execute end-of-year promotions.</p>
+    <div className="container-fluid p-4" style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      
+      {/* Page Header */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 className="fw-bold mb-1" style={{ color: '#0f172a' }}>
+            <GraduationCap className="me-2 text-primary" size={28} />
+            Student Promotion Management
+          </h2>
+          <p className="text-muted mb-0">Generate lists, review recommendations, and execute year-end promotions.</p>
+        </div>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <h3>Generate Promotion Batch</h3>
+      {/* Generation Configuration Card */}
+      <div className="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+        <div className="card-header bg-white border-bottom p-4">
+          <h5 className="mb-0 fw-semibold text-dark d-flex align-items-center">
+            <Filter className="me-2 text-secondary" size={20} />
+            Configure Promotion Batch
+          </h5>
         </div>
-        <div className="card-body">
-          <form onSubmit={handleGenerateList} className="row g-3 align-items-end">
-            <div className="col-md-3">
-              <label className="form-label">Current Class</label>
-              <select className="form-select" value={selectedClassId} onChange={e => setSelectedClassId(e.target.value)} required>
-                <option value="">Select Class...</option>
-                {classes.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="col-md-3">
-              <label className="form-label">Next Session</label>
-              <input type="text" className="form-control" placeholder="e.g. 2026/2027" value={nextSession} onChange={e => setNextSession(e.target.value)} required />
-            </div>
+        <div className="card-body p-4 bg-white">
+          <form onSubmit={handleGenerateList}>
+            <div className="row g-4 align-items-end">
+              <div className="col-12 col-md-3">
+                <label className="form-label fw-medium text-secondary small mb-2">CURRENT CLASS *</label>
+                <select 
+                  className="form-select form-select-lg rounded-3 shadow-none border-light bg-light" 
+                  value={selectedClassId} 
+                  onChange={e => setSelectedClassId(e.target.value)} 
+                  required
+                >
+                  <option value="">Select Class...</option>
+                  {!classesLoading && classes.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="col-12 col-md-3">
+                <label className="form-label fw-medium text-secondary small mb-2">NEXT SESSION *</label>
+                <input 
+                  type="text" 
+                  className="form-control form-control-lg rounded-3 shadow-none border-light bg-light" 
+                  placeholder="e.g. 2026/2027" 
+                  value={nextSession} 
+                  onChange={e => setNextSession(e.target.value)} 
+                  required 
+                />
+              </div>
 
-            <div className="col-md-3">
-              <label className="form-label">Next Class (Target)</label>
-              <select className="form-select" value={targetClassId} onChange={e => setTargetClassId(e.target.value)}>
-                <option value="">-- Graduating (Leave Empty) --</option>
-                {classes.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-              <small className="text-muted">Leave empty if class is graduating</small>
-            </div>
+              <div className="col-12 col-md-3">
+                <label className="form-label fw-medium text-secondary small mb-2">TARGET CLASS</label>
+                <select 
+                  className="form-select form-select-lg rounded-3 shadow-none border-light bg-light" 
+                  value={targetClassId} 
+                  onChange={e => setTargetClassId(e.target.value)}
+                >
+                  <option value="">-- Graduating (Leave Empty) --</option>
+                  {!classesLoading && classes.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="col-md-2">
-              <label className="form-label">Min Score (%)</label>
-              <input type="number" className="form-control" value={minScore} onChange={e => setMinScore(Number(e.target.value))} min="0" max="100" required />
-            </div>
+              <div className="col-12 col-md-1">
+                <label className="form-label fw-medium text-secondary small mb-2">MIN SCORE</label>
+                <input 
+                  type="number" 
+                  className="form-control form-control-lg rounded-3 shadow-none border-light bg-light text-center" 
+                  value={minScore} 
+                  onChange={e => setMinScore(Number(e.target.value))} 
+                  min="0" 
+                  max="100" 
+                  required 
+                />
+              </div>
 
-            <div className="col-md-1">
-              <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-                {loading ? '...' : 'Generate'}
-              </button>
+              <div className="col-12 col-md-2">
+                <button 
+                  type="submit" 
+                  className="btn btn-primary btn-lg w-100 rounded-3 shadow-sm d-flex align-items-center justify-content-center" 
+                  disabled={generateBatchMutation.isPending}
+                >
+                  {generateBatchMutation.isPending ? (
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  ) : (
+                    <ArrowRightCircle className="me-2" size={20} />
+                  )}
+                  Generate List
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
 
-      {loading && !report && <div className="text-center py-5">Loading...</div>}
+      {/* Loading States */}
+      {(reportLoading || isRefetching) && (
+        <div className="d-flex justify-content-center py-5">
+          <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
 
-      {report && (
-        <div className="card">
-          <div className="card-header d-flex justify-content-between align-items-center">
-            <h3>Promotion Review: {report.class} ➡️ {report.nextClass} ({report.session})</h3>
-            {report.status !== 'Approved' ? (
-              <button className="btn btn-success" onClick={handleApprove} disabled={loading}>
-                Approve & Execute Promotions
-              </button>
-            ) : (
-              <span className="badge bg-success" style={{ fontSize: '1rem', padding: '10px' }}>✅ Approved & Executed</span>
-            )}
+      {/* Report View */}
+      {report && !(reportLoading || isRefetching) && (
+        <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 slide-in">
+          
+          <div className="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <h4 className="mb-1 fw-bold text-dark d-flex align-items-center">
+                <FileText className="me-2 text-primary" size={24} />
+                Promotion Review
+              </h4>
+              <p className="text-muted mb-0 small">
+                {report.class} ➡️ {report.nextClass || "Graduating"} ({report.session})
+              </p>
+            </div>
+            
+            <div className="d-flex align-items-center gap-3">
+              <div className="input-group">
+                <span className="input-group-text bg-light border-0"><Search size={18} className="text-muted"/></span>
+                <input 
+                  type="text" 
+                  className="form-control bg-light border-0 shadow-none" 
+                  placeholder="Search student..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {report.status !== 'Approved' ? (
+                <button 
+                  className="btn btn-success d-flex align-items-center rounded-3 px-4 shadow-sm" 
+                  onClick={handleApprove} 
+                  disabled={approveBatchMutation.isPending}
+                >
+                  {approveBatchMutation.isPending ? (
+                    <span className="spinner-border spinner-border-sm me-2" />
+                  ) : (
+                    <CheckCircle className="me-2" size={20} />
+                  )}
+                  Approve & Execute
+                </button>
+              ) : (
+                <span className="badge bg-success-subtle text-success border border-success-subtle px-4 py-2 rounded-pill fs-6 d-flex align-items-center">
+                  <CheckCircle className="me-2" size={18} /> Approved
+                </span>
+              )}
+            </div>
           </div>
           
-          <div className="card-body">
-            <div className="row mb-4 text-center">
-              <div className="col-md-2">
-                <div className="p-3 border rounded bg-light">
-                  <h4 className="m-0">{report.summary.totalStudents}</h4>
-                  <small className="text-muted">Total Students</small>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <div className="p-3 border rounded bg-light text-success">
-                  <h4 className="m-0">{report.summary.promotableCount}</h4>
-                  <small>Promotable</small>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <div className="p-3 border rounded bg-light text-danger">
-                  <h4 className="m-0">{report.summary.heldBackCount}</h4>
-                  <small>Held Back</small>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <div className="p-3 border rounded bg-light text-primary">
-                  <h4 className="m-0">{report.summary.graduatingCount}</h4>
-                  <small>Graduating</small>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <div className="p-3 border rounded bg-light text-warning">
-                  <h4 className="m-0">{report.summary.overridesCount}</h4>
-                  <small>Manual Overrides</small>
-                </div>
-              </div>
+          <div className="card-body p-4 bg-light">
+            
+            {/* Metric Cards */}
+            <div className="row g-3 mb-4">
+              {[
+                { label: 'Total Students', value: report.summary.totalStudents, color: 'primary', icon: Users },
+                { label: 'Promotable', value: report.summary.promotableCount, color: 'success', icon: CheckCircle },
+                { label: 'Held Back', value: report.summary.heldBackCount, color: 'danger', icon: AlertTriangle },
+                { label: 'Graduating', value: report.summary.graduatingCount, color: 'info', icon: GraduationCap },
+                { label: 'Overrides', value: report.summary.overridesCount, color: 'warning', icon: FileText },
+              ].map((metric, idx) => {
+                const Icon = metric.icon;
+                return (
+                  <div className="col" key={idx}>
+                    <div className="card border-0 shadow-sm rounded-3 h-100">
+                      <div className="card-body text-center p-3">
+                        <Icon className={`text-${metric.color} mb-2`} size={24} />
+                        <h3 className={`fw-bold text-${metric.color} mb-0`}>{metric.value}</h3>
+                        <span className="text-muted small fw-medium text-uppercase">{metric.label}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="table-responsive">
-              <table className="table table-hover table-bordered align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>S/N</th>
-                    <th>Student Name</th>
-                    <th>Reg. Number</th>
-                    <th>Annual Average</th>
-                    <th>System Rec.</th>
-                    <th>Final Decision</th>
-                    <th>Status</th>
-                    {report.status !== 'Approved' && <th>Action</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {report.records.map((rec, idx) => (
-                    <tr key={rec.recommendationId}>
-                      <td>{idx + 1}</td>
-                      <td>{rec.studentName}</td>
-                      <td>{rec.registrationNumber}</td>
-                      <td>
-                        <span className={`badge ${rec.annualAverage >= minScore ? 'bg-success' : 'bg-danger'}`}>
-                          {rec.annualAverage.toFixed(2)}%
-                        </span>
-                      </td>
-                      <td>{rec.systemRecommendation}</td>
-                      <td>
-                        <strong>{rec.finalDecision}</strong>
-                      </td>
-                      <td>
-                        {rec.hasOverride ? (
-                          <span className="badge bg-warning text-dark" title={`Overridden by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`}>
-                            Overridden
-                          </span>
-                        ) : (
-                          <span className="badge bg-secondary">System</span>
-                        )}
-                      </td>
-                      {report.status !== 'Approved' && (
-                        <td>
-                          <button 
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
-                          >
-                            Override
-                          </button>
-                        </td>
-                      )}
+            {/* Data Table */}
+            <div className="bg-white rounded-3 shadow-sm border overflow-hidden">
+              <div className="table-responsive">
+                <table className="table table-hover align-middle mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="px-4 py-3 text-secondary small fw-semibold">S/N</th>
+                      <th className="px-4 py-3 text-secondary small fw-semibold">STUDENT</th>
+                      <th className="px-4 py-3 text-secondary small fw-semibold">ANNUAL AVG</th>
+                      <th className="px-4 py-3 text-secondary small fw-semibold">SYSTEM REC.</th>
+                      <th className="px-4 py-3 text-secondary small fw-semibold">FINAL DECISION</th>
+                      {report.status !== 'Approved' && <th className="px-4 py-3 text-secondary small fw-semibold text-end">ACTION</th>}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredRecords?.map((rec, idx) => (
+                      <tr key={rec.recommendationId}>
+                        <td className="px-4 text-muted">{idx + 1}</td>
+                        <td className="px-4">
+                          <div className="fw-semibold text-dark">{rec.studentName}</div>
+                          <div className="text-muted small">{rec.registrationNumber}</div>
+                        </td>
+                        <td className="px-4">
+                          <span className={`badge ${rec.annualAverage >= minScore ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'} rounded-pill`}>
+                            {rec.annualAverage.toFixed(2)}%
+                          </span>
+                        </td>
+                        <td className="px-4">
+                          <span className="text-muted">{rec.systemRecommendation}</span>
+                        </td>
+                        <td className="px-4">
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="fw-bold">{rec.finalDecision}</span>
+                            {rec.hasOverride && (
+                              <span 
+                                className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill" 
+                                title={`Overridden by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`}
+                                style={{ cursor: 'help' }}
+                              >
+                                Overridden
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        {report.status !== 'Approved' && (
+                          <td className="px-4 text-end">
+                            <button 
+                              className="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm"
+                              onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                            >
+                              Override
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                    {filteredRecords?.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="text-center py-5 text-muted">
+                          No students found matching your search.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
+            
           </div>
         </div>
       )}
 
       {/* Override Modal */}
       {showOverrideModal && (
-        <div className="modal-backdrop-custom" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="card shadow" style={{ width: '100%', maxWidth: '500px' }}>
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="m-0">Manual Promotion Override</h5>
-              <button className="btn-close" onClick={() => setShowOverrideModal(false)}></button>
+        <div className="modal-backdrop-custom d-flex align-items-center justify-content-center" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 23, 42, 0.6)', zIndex: 1050, backdropFilter: 'blur(4px)' }}>
+          <div className="card border-0 shadow-lg rounded-4 w-100 animate-zoom-in" style={{ maxWidth: '500px' }}>
+            <div className="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center rounded-top-4">
+              <h5 className="m-0 fw-bold d-flex align-items-center">
+                <AlertTriangle className="text-warning me-2" size={24} />
+                Manual Decision Override
+              </h5>
+              <button className="btn btn-light rounded-circle p-2 d-flex align-items-center justify-content-center" onClick={() => setShowOverrideModal(false)}>
+                <X size={20} className="text-muted" />
+              </button>
             </div>
-            <div className="card-body">
+            <div className="card-body p-4">
               <form onSubmit={handleOverrideSubmit}>
-                <div className="mb-3">
-                  <label className="form-label">New Final Decision</label>
-                  <select className="form-select" value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)} required>
+                <div className="mb-4">
+                  <label className="form-label fw-semibold text-secondary small">NEW DECISION</label>
+                  <select 
+                    className="form-select form-select-lg bg-light border-0 shadow-none rounded-3" 
+                    value={overrideDecision} 
+                    onChange={e => setOverrideDecision(e.target.value)} 
+                    required
+                  >
                     <option value="Promotable">Promotable</option>
                     <option value="Held Back">Held Back</option>
                     <option value="Withdrawn">Withdrawn</option>
                     <option value="Graduating">Graduating</option>
                   </select>
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">Reason for Override (Required)</label>
+                <div className="mb-4">
+                  <label className="form-label fw-semibold text-secondary small">REASON FOR OVERRIDE *</label>
                   <textarea 
-                    className="form-control" 
-                    rows={3} 
+                    className="form-control bg-light border-0 shadow-none rounded-3 p-3" 
+                    rows={4} 
                     value={overrideReason} 
                     onChange={e => setOverrideReason(e.target.value)} 
-                    placeholder="e.g. Principal's discretion based on parent meeting"
+                    placeholder="Enter explicit reason for changing the system's recommendation..."
                     required
                   ></textarea>
                 </div>
-                <div className="d-flex justify-content-end gap-2">
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowOverrideModal(false)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary" disabled={overrideLoading}>
-                    {overrideLoading ? 'Saving...' : 'Save Override'}
+                <div className="d-flex justify-content-end gap-3 mt-2">
+                  <button type="button" className="btn btn-light px-4 py-2 rounded-3 fw-medium" onClick={() => setShowOverrideModal(false)}>Cancel</button>
+                  <button type="submit" className="btn btn-primary px-4 py-2 rounded-3 shadow-sm fw-medium d-flex align-items-center" disabled={overrideMutation.isPending}>
+                    {overrideMutation.isPending ? <span className="spinner-border spinner-border-sm me-2"/> : <CheckCircle className="me-2" size={18} />}
+                    Save Override
                   </button>
                 </div>
               </form>
@@ -364,6 +486,23 @@ export default function PromotionManagement() {
           </div>
         </div>
       )}
+
+      <style>{`
+        .slide-in {
+          animation: slideIn 0.3s ease-out forwards;
+        }
+        .animate-zoom-in {
+          animation: zoomIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes zoomIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 }
