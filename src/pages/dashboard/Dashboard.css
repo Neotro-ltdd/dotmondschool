@@ -7,7 +7,7 @@
 
 /* Dashboard Banner */
 .dashboard-banner {
-  background: linear-gradient(135deg, #1e1e2f 0%, #2a1122 100%);
+  background: var(--primary-color);
   border-radius: 16px;
   padding: 2rem;
   color: white;
