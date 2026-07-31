@@ -10,16 +10,16 @@ interface TenantContextType {
 }
 
 const TenantContext = createContext<TenantContextType>({
-  schoolName: 'School Portal',
-  logoUrl: null,
+  schoolName: 'Dotmond School',
+  logoUrl: '/images/dotmond-logo-1.png',
   primaryColor: '#007bff',
   secondaryColor: '#6c757d',
   refreshTenantDetails: async () => {}
 });
 
 export const TenantProvider = ({ children }: { children: ReactNode }) => {
-  const [schoolName, setSchoolName] = useState('School Portal');
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [schoolName, setSchoolName] = useState('Dotmond School');
+  const [logoUrl, setLogoUrl] = useState<string | null>('/images/dotmond-logo-1.png');
   const [primaryColor, setPrimaryColor] = useState('#007bff');
   const [secondaryColor, setSecondaryColor] = useState('#6c757d');
 
@@ -30,12 +30,8 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
         const details = await getPublicTenantDetails(tenantId);
         if (details) {
           if (details.schoolName) setSchoolName(details.schoolName);
-          if (details.logoUrl) {
-            const url = details.logoUrl.startsWith('http') || details.logoUrl.startsWith('data:') 
-              ? details.logoUrl 
-              : `${API_ROOT}${details.logoUrl}`;
-            setLogoUrl(url);
-          }
+          // Override backend logo with the new system logo
+          setLogoUrl('/images/dotmond-logo-1.png');
           if (details.primaryColor) {
             setPrimaryColor(details.primaryColor);
             document.documentElement.style.setProperty('--primary-color', details.primaryColor);
