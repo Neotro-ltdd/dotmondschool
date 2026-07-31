@@ -196,7 +196,7 @@ export default function Login() {
           </div>
           <div className="crest-motion-wrap">
             <div className="crest-glow-big" aria-hidden="true"></div>
-            <img className="crest-motion" src={logoSrc} alt={`${schoolName} Logo`} />
+            <img className="crest-motion" src="/images/dotmond-logo-1.png" alt={`${schoolName} Logo`} />
           </div>
         </div>
         
@@ -204,6 +204,8 @@ export default function Login() {
           <div className="curve-frame">
             <div className="form-card">
               <div className="form-glow"></div>
+              
+              <img className="crest-steady" src={logoSrc} alt={`${schoolName} Logo`} />
               
               <h1 className="title">
                 {isForgotPasswordMode ? "Reset Password" : isOtpMode ? "Verify Account" : "Sign In"}
