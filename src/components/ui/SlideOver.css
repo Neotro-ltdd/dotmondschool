@@ -138,3 +138,121 @@
   justify-content: flex-end;
   gap: 12px;
 }
+
+/* Reusable Multi-Stage Slide Stepper & Transitions (EasyWorka v2 pattern) */
+.slideover-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background-color: #F8FAFC;
+  border-bottom: 1px solid #E3E7EF;
+  overflow-x: auto;
+}
+
+.stepper-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.stepper-step.active {
+  color: #10203F;
+  background-color: rgba(16, 32, 63, 0.08);
+  font-weight: 700;
+}
+
+.stepper-step.completed {
+  color: #10B981;
+}
+
+.stepper-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #E2E8F0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.stepper-step.active .stepper-circle {
+  background-color: #10203F;
+  color: #ffffff;
+}
+
+.stepper-step.completed .stepper-circle {
+  background-color: #10B981;
+  color: #ffffff;
+}
+
+.stepper-divider {
+  width: 20px;
+  height: 2px;
+  background-color: #E2E8F0;
+  flex-shrink: 0;
+}
+
+/* Slide stage internal animations */
+@keyframes stageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-stage-content {
+  animation: stageSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Review grid styling for final slide verification */
+.review-summary-card {
+  background: #FAFCFE;
+  border: 1px solid #E3E7EF;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #E2E8F0;
+}
+.review-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.review-label {
+  color: #5B6B85;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.review-value {
+  color: #10203F;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+

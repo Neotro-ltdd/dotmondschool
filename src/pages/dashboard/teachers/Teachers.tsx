@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
+import SlideOver from '../../../components/ui/SlideOver';
+import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft } from 'lucide-react';
 
 
 interface TeacherItem {
@@ -39,6 +41,7 @@ export default function Teachers() {
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
+  const [formStep, setFormStep] = useState<number>(1);
   const [isEditing, setIsEditing] = useState(false);
   const [editStaffId, setEditStaffId] = useState<string | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
@@ -143,6 +146,7 @@ export default function Teachers() {
     setSignatureFile(null);
     setEditStaffId(teacher.id);
     setIsEditing(true);
+    setFormStep(1);
     setShowModal(true);
   };
 
@@ -159,7 +163,24 @@ export default function Teachers() {
     setSignatureFile(null);
     setEditStaffId(null);
     setIsEditing(false);
+    setFormStep(1);
     setShowModal(true);
+  };
+
+  const handleNextStep = () => {
+    if (formStep === 1) {
+      if (!formData.surname || !formData.firstName || !formData.phoneNumber || !formData.email) {
+        showAlert('Please complete all required personal details (Surname, First Name, Phone, and Email) before continuing.');
+        return;
+      }
+      setFormStep(2);
+    } else if (formStep === 2) {
+      if (!formData.designation || !formData.role) {
+        showAlert('Please specify the Designation and Staff Role before continuing.');
+        return;
+      }
+      setFormStep(3);
+    }
   };
 
   const handleRemove = async (id: string, name: string) => {
@@ -347,80 +368,206 @@ export default function Teachers() {
         )}
       </div>
 
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content glass-panel large-modal">
-            <h2>{isEditing ? 'Edit Staff Details' : 'Add New Staff'}</h2>
-            <form onSubmit={handleCreate} className="modal-form">
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Surname</label>
-                  <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
-                  <label>First Name</label>
-                  <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
-                  <label>Other Names</label>
-                  <input type="text" name="otherNames" value={formData.otherNames} onChange={handleInputChange} />
-                </div>
-                <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group full-width">
-                  <label>Email Address</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
-                </div>
-                
-                <div className="form-group full-width section-divider">
-                  <h3>Role Details</h3>
-                </div>
+      {/* EasyWorka v2 Slide Show & Slide-Over Panel Architecture */}
+      <SlideOver
+        isOpen={showModal}
+        onClose={() => !submitting && setShowModal(false)}
+        title={isEditing ? 'Edit Staff Credentials & Profile' : 'Onboard New Staff Member'}
+        subtitle="Complete the step-by-step clearance and role allocation process."
+        width="lg"
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            {formStep > 1 ? (
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setFormStep(prev => prev - 1)}
+                disabled={submitting}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <ArrowLeft size={16} /> Back
+              </button>
+            ) : (
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setShowModal(false)} 
+                disabled={submitting}
+              >
+                Cancel
+              </button>
+            )}
 
-                <div className="form-group full-width">
-                  <label>Designation / Job Title</label>
-                  <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Mathematics Teacher, Senior Accountant" required />
-                </div>
-
-                <div className="form-group full-width">
-                  <label>Staff Role</label>
-                  <select name="role" value={formData.role} onChange={handleInputChange} required>
-                    <option value="Teacher">Teacher</option>
-                    <option value="SubjectTeacher">SubjectTeacher</option>
-                    <option value="Vendor">Vendor</option>
-                    <option value="Accountant">Accountant</option>
-                    <option value="Principal">Principal</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Staff">Staff</option>
-                  </select>
-                </div>
-                
-                {isEditing && (
-                  <div className="form-group full-width section-divider" style={{ marginTop: '1rem' }}>
-                    <h3>Upload Signature (Optional)</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '0.5rem' }}>If you upload a signature here, it will automatically override their current signature.</p>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
-                      className="form-control"
-                      style={{ padding: '0.5rem', border: '1px dashed #ccc', width: '100%' }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="modal-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Onboard Staff'}
-                </button>
-              </div>
-            </form>
+            {formStep < 3 ? (
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={handleNextStep}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                Continue <ChevronRight size={16} />
+              </button>
+            ) : (
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={handleCreate as any} 
+                disabled={submitting}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#10B981' }}
+              >
+                <Check size={18} /> {submitting ? 'Processing...' : isEditing ? 'Save Changes' : 'Confirm & Onboard Staff'}
+              </button>
+            )}
+          </div>
+        }
+      >
+        {/* Horizontal Progress Stepper */}
+        <div className="slideover-stepper" style={{ margin: '-24px -24px 24px -24px' }}>
+          <div className={`stepper-step ${formStep === 1 ? 'active' : formStep > 1 ? 'completed' : ''}`}>
+            <span className="stepper-circle">{formStep > 1 ? '✓' : '1'}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14} /> Biodata & Contact</span>
+          </div>
+          <div className="stepper-divider"></div>
+          <div className={`stepper-step ${formStep === 2 ? 'active' : formStep > 2 ? 'completed' : ''}`}>
+            <span className="stepper-circle">{formStep > 2 ? '✓' : '2'}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Briefcase size={14} /> Role Details</span>
+          </div>
+          <div className="stepper-divider"></div>
+          <div className={`stepper-step ${formStep === 3 ? 'active' : ''}`}>
+            <span className="stepper-circle">3</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><FileCheck size={14} /> Verification & Review</span>
           </div>
         </div>
-      )}
+
+        {/* Slide 1: Biodata & Contact */}
+        {formStep === 1 && (
+          <div className="slide-stage-content">
+            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
+              Candidate Biodata & Contact Information
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 8px 0' }}>
+              Please enter the official legal names and active communication channels for the staff member.
+            </p>
+
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Surname <span style={{ color: '#ef4444' }}>*</span></label>
+                <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required placeholder="e.g. Bakare" />
+              </div>
+              <div className="form-group">
+                <label>First Name <span style={{ color: '#ef4444' }}>*</span></label>
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required placeholder="e.g. Adefolarin" />
+              </div>
+              <div className="form-group full-width">
+                <label>Other Names</label>
+                <input type="text" name="otherNames" value={formData.otherNames} onChange={handleInputChange} placeholder="Optional middle names" />
+              </div>
+              <div className="form-group">
+                <label>Phone Number <span style={{ color: '#ef4444' }}>*</span></label>
+                <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} required placeholder="e.g. 08030000000" />
+              </div>
+              <div className="form-group">
+                <label>Email Address <span style={{ color: '#ef4444' }}>*</span></label>
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="staff@dotmond.edu.ng" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Slide 2: Role Details & Signature */}
+        {formStep === 2 && (
+          <div className="slide-stage-content">
+            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
+              System Role & Job Designation
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 8px 0' }}>
+              Specify their official title and assign administrative portal access levels.
+            </p>
+
+            <div className="form-grid">
+              <div className="form-group full-width">
+                <label>Designation / Job Title <span style={{ color: '#ef4444' }}>*</span></label>
+                <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Senior Mathematics Teacher, Bursaria Officer" required />
+              </div>
+
+              <div className="form-group full-width">
+                <label>Portal Access Role <span style={{ color: '#ef4444' }}>*</span></label>
+                <select name="role" value={formData.role} onChange={handleInputChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                  <option value="Teacher">Teacher (Class & Attendance Management)</option>
+                  <option value="SubjectTeacher">Subject Teacher (Grading & Assignments Only)</option>
+                  <option value="Accountant">Accountant (Fee Clearance & POS Billing)</option>
+                  <option value="Principal">Principal (Full Analytics & Academic Overseer)</option>
+                  <option value="Vendor">Vendor (POS & Service Processing)</option>
+                  <option value="Admin">System Admin (Full Portal Configurations)</option>
+                  <option value="Staff">General Support Staff</option>
+                </select>
+              </div>
+
+              {isEditing && (
+                <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
+                  <label style={{ color: '#10203F', fontWeight: 600 }}>Update Official Signature (Optional)</label>
+                  <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
+                    Uploading a signature file will automatically override their current receipt/report signature watermark.
+                  </p>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
+                    className="form-control"
+                    style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
+                  />
+                  {signatureFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected: {signatureFile.name}</span>}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Slide 3: Verification & Summary */}
+        {formStep === 3 && (
+          <div className="slide-stage-content">
+            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
+              Final Verification & Review
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 8px 0' }}>
+              Please review all entered details below before executing the onboarding process.
+            </p>
+
+            <div className="review-summary-card">
+              <div className="review-row">
+                <span className="review-label">Full Name:</span>
+                <span className="review-value">{formData.surname} {formData.firstName} {formData.otherNames}</span>
+              </div>
+              <div className="review-row">
+                <span className="review-label">Phone Contact:</span>
+                <span className="review-value">{formData.phoneNumber}</span>
+              </div>
+              <div className="review-row">
+                <span className="review-label">Email Address:</span>
+                <span className="review-value">{formData.email}</span>
+              </div>
+              <div className="review-row">
+                <span className="review-label">Job Designation:</span>
+                <span className="review-value">{formData.designation}</span>
+              </div>
+              <div className="review-row">
+                <span className="review-label">Assigned Role:</span>
+                <span className="review-value" style={{ color: '#3b82f6', fontWeight: 700 }}>{formData.role}</span>
+              </div>
+              {isEditing && (
+                <div className="review-row">
+                  <span className="review-label">Signature Update:</span>
+                  <span className="review-value">{signatureFile ? signatureFile.name : 'No changes made'}</span>
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding: '12px 16px', borderRadius: '8px', backgroundColor: '#EFF6FF', borderLeft: '4px solid #3B82F6', color: '#1E3A8A', fontSize: '0.85rem', lineHeight: 1.5 }}>
+              <strong>ℹ️ Note:</strong> Upon completion, access credentials and onboarding instructions can be dispatched or generated directly from the master staff table.
+            </div>
+          </div>
+        )}
+      </SlideOver>
 
       {showCredsModal && credsData && (
         <div className="modal-overlay">
