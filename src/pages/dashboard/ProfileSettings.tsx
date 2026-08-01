@@ -251,8 +251,11 @@ export default function ProfileSettings() {
             </div>
 
             <button className="btn btn-primary" onClick={handleUpdateInfo} style={{ width: '100%', padding: '0.75rem' }}>
-              💾 Save Profile Changes
+              💾 Save Basic Info & Title
             </button>
+            <p style={{ margin: '0.65rem 0 0 0', fontSize: '0.78rem', color: '#64748B', textAlign: 'center', lineHeight: 1.4 }}>
+              Note: This button saves your names, academic title, and phone number only. Profile pictures and signatures have their own independent save buttons on the right.
+            </p>
           </div>
 
           {/* Active Role & Access Management */}
@@ -328,7 +331,7 @@ export default function ProfileSettings() {
                 </h4>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748B', lineHeight: 1.4 }}>
                   {avatarFile 
-                    ? `Selected size: ${(avatarFile.size / 1024).toFixed(1)} KB. Ready to confirm upload.` 
+                    ? `Selected size: ${(avatarFile.size / 1024).toFixed(1)} KB. Ready to save image.` 
                     : 'Recommended format: JPG or PNG, at least 300x300px for sharp display across school reports.'}
                 </p>
               </div>
@@ -349,39 +352,44 @@ export default function ProfileSettings() {
             />
 
             {/* Interactive Executive Button Group */}
-            {!avatarFile ? (
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button 
                 type="button" 
                 className="btn btn-outline" 
                 onClick={() => avatarInputRef.current?.click()}
-                style={{ width: '100%', padding: '0.65rem', borderStyle: 'dashed', borderWidth: '1.5px', fontWeight: 700 }}
+                disabled={avatarUploading}
+                style={{ flex: 1, padding: '0.65rem', fontWeight: 600, fontSize: '0.88rem', borderStyle: 'dashed' }}
               >
-                📁 Select Profile Picture...
+                📁 {avatarFile ? 'Change File...' : 'Select Picture...'}
               </button>
-            ) : (
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button 
-                  type="button"
-                  className="btn btn-primary" 
-                  onClick={handleUploadAvatar} 
-                  disabled={avatarUploading}
-                  style={{ flex: 2 }}
-                >
-                  {avatarUploading ? '⏳ Uploading...' : '✓ Confirm & Upload Picture'}
-                </button>
-                <button 
-                  type="button"
-                  className="btn btn-secondary" 
-                  onClick={() => {
-                    setAvatarFile(null);
-                    if (avatarInputRef.current) avatarInputRef.current.value = '';
-                  }} 
-                  disabled={avatarUploading}
-                  style={{ flex: 1 }}
-                >
-                  Cancel
-                </button>
-              </div>
+              <button 
+                type="button"
+                className="btn btn-primary" 
+                onClick={() => {
+                  if (!avatarFile) {
+                    avatarInputRef.current?.click();
+                  } else {
+                    handleUploadAvatar();
+                  }
+                }} 
+                disabled={avatarUploading}
+                style={{ flex: 1.4, padding: '0.65rem', fontWeight: 700, fontSize: '0.88rem', boxShadow: avatarFile ? '0 4px 12px rgba(37,99,235,0.3)' : 'none', opacity: avatarFile ? 1 : 0.85 }}
+              >
+                {avatarUploading ? '⏳ Uploading...' : '💾 Save Profile Picture'}
+              </button>
+            </div>
+            {avatarFile && (
+              <button 
+                type="button"
+                onClick={() => {
+                  setAvatarFile(null);
+                  if (avatarInputRef.current) avatarInputRef.current.value = '';
+                }} 
+                disabled={avatarUploading}
+                style={{ background: 'transparent', border: 'none', color: '#EF4444', fontSize: '0.82rem', fontWeight: 600, marginTop: '0.5rem', cursor: 'pointer', display: 'block', width: '100%', textAlign: 'center' }}
+              >
+                ✕ Discard selected picture
+              </button>
             )}
           </div>
 
@@ -438,39 +446,44 @@ export default function ProfileSettings() {
             />
 
             {/* Interactive Executive Button Group */}
-            {!signatureFile ? (
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button 
                 type="button"
                 className="btn btn-outline" 
                 onClick={() => signatureInputRef.current?.click()}
-                style={{ width: '100%', padding: '0.65rem', borderStyle: 'dashed', borderWidth: '1.5px', fontWeight: 700 }}
+                disabled={signatureUploading}
+                style={{ flex: 1, padding: '0.65rem', fontWeight: 600, fontSize: '0.88rem', borderStyle: 'dashed' }}
               >
-                ✍️ Select Signature Image...
+                ✍️ {signatureFile ? 'Change File...' : 'Select Signature...'}
               </button>
-            ) : (
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button 
-                  type="button"
-                  className="btn btn-primary" 
-                  onClick={handleUploadSignature} 
-                  disabled={signatureUploading}
-                  style={{ flex: 2 }}
-                >
-                  {signatureUploading ? '⏳ Saving Asset...' : '✓ Confirm & Save Signature'}
-                </button>
-                <button 
-                  type="button"
-                  className="btn btn-secondary" 
-                  onClick={() => {
-                    setSignatureFile(null);
-                    if (signatureInputRef.current) signatureInputRef.current.value = '';
-                  }} 
-                  disabled={signatureUploading}
-                  style={{ flex: 1 }}
-                >
-                  Cancel
-                </button>
-              </div>
+              <button 
+                type="button"
+                className="btn btn-primary" 
+                onClick={() => {
+                  if (!signatureFile) {
+                    signatureInputRef.current?.click();
+                  } else {
+                    handleUploadSignature();
+                  }
+                }} 
+                disabled={signatureUploading}
+                style={{ flex: 1.4, padding: '0.65rem', fontWeight: 700, fontSize: '0.88rem', boxShadow: signatureFile ? '0 4px 12px rgba(37,99,235,0.3)' : 'none', opacity: signatureFile ? 1 : 0.85 }}
+              >
+                {signatureUploading ? '⏳ Saving Asset...' : '💾 Save Official Signature'}
+              </button>
+            </div>
+            {signatureFile && (
+              <button 
+                type="button"
+                onClick={() => {
+                  setSignatureFile(null);
+                  if (signatureInputRef.current) signatureInputRef.current.value = '';
+                }} 
+                disabled={signatureUploading}
+                style={{ background: 'transparent', border: 'none', color: '#EF4444', fontSize: '0.82rem', fontWeight: 600, marginTop: '0.5rem', cursor: 'pointer', display: 'block', width: '100%', textAlign: 'center' }}
+              >
+                ✕ Discard selected signature
+              </button>
             )}
           </div>
         </div>
