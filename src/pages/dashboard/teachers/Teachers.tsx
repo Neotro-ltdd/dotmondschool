@@ -4,7 +4,7 @@ import { api } from '../../../services/api';
 import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
-import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users } from 'lucide-react';
+import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus } from 'lucide-react';
 
 
 interface TeacherItem {
@@ -237,9 +237,11 @@ export default function Teachers() {
           <h1 className="page-title">Staff Management</h1>
           <p className="page-subtitle">Onboard and manage staff members across academic departments</p>
         </div>
-        <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleAddNewClick}>
-          <Users size={18} />
-          <span>Add Staff</span>
+        <button className="btn-executive-onboard" onClick={handleAddNewClick} title="Open interactive clearance & role onboarding panel">
+          <span className="onboard-icon-wrapper">
+            <UserPlus size={16} />
+          </span>
+          <span>Onboard Staff Member</span>
         </button>
       </div>
 
