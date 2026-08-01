@@ -212,26 +212,31 @@
 
 .login-container button.signin {
   width: 100%;
-  padding: 13px 16px;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--gold) 0%, #E08F2B 100%);
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #FAD161 0%, #F0A93B 50%, #D88219 100%);
   color: var(--navy-deep);
-  font-weight: 700;
-  font-size: 14.5px;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.3px;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
-  box-shadow: 0 12px 24px -8px rgba(240,169,59,0.45);
-  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 10px 25px -5px rgba(240, 169, 59, 0.5), 0 2px 4px rgba(255, 255, 255, 0.4) inset;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .login-container button.signin:hover { 
-  transform: translateY(-1px); 
-  box-shadow: 0 16px 28px -8px rgba(240,169,59,0.55); 
+  transform: translateY(-2px); 
+  background: linear-gradient(135deg, #FDE694 0%, #F4B957 50%, #E39226 100%);
+  box-shadow: 0 16px 32px -6px rgba(240, 169, 59, 0.65), 0 2px 6px rgba(255, 255, 255, 0.6) inset; 
 }
 
 .login-container button.signin:active { 
-  transform: translateY(0); 
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 6px 15px -4px rgba(240, 169, 59, 0.4) !important;
 }
 
 .login-container button.signin:focus-visible { 
@@ -242,9 +247,10 @@
 .login-container button.signin:disabled {
   background: #E3E7EF;
   color: #A6AEBF;
+  border-color: transparent;
   box-shadow: none;
   cursor: not-allowed;
-  transform: none;
+  transform: none !important;
 }
 
 .login-container .bottom-links {

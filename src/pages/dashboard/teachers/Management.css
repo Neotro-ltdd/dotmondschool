@@ -332,74 +332,93 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0.35rem 0.65rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
   border: 1px solid transparent;
+  user-select: none;
+}
+
+.action-btn:active, .action-icon-btn:active {
+  transform: translateY(1px) scale(0.97);
 }
 
 .action-btn-blue {
-  background-color: #EFF6FF;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
   color: #2563EB;
-  border-color: #DBEAFE;
+  border: 1px solid #BFDBFE;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.08);
 }
 
 .action-btn-blue:hover:not(:disabled) {
-  background-color: #DBEAFE;
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
   color: #1D4ED8;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
 }
 
 .action-btn-blue:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .action-btn-neutral {
-  background-color: #F8FAFC;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
   color: #334155;
-  border-color: #CBD5E1;
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
 }
 
 .action-btn-neutral:hover {
-  background-color: #F1F5F9;
+  background: #F1F5F9;
   color: #0F172A;
   border-color: #94A3B8;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
 }
 
 .action-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   border: 1px solid #E2E8F0;
-  background-color: transparent;
+  background-color: #ffffff;
   color: #64748B;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .action-icon-amber:hover {
   background-color: #FFFBEB;
   color: #D97706;
   border-color: #FDE68A;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
 }
 
 .action-icon-green:hover {
   background-color: #ECFDF5;
   color: #059669;
   border-color: #A7F3D0;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
 }
 
 .action-icon-red:hover {
   background-color: #FEF2F2;
   color: #DC2626;
   border-color: #FECACA;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2);
 }
 
 .desk-footer {
