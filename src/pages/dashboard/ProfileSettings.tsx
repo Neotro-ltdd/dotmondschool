@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../services/api';
 import { useDialog } from '../../context/DialogContext';
+import { useAuth } from '../../context/AuthContext';
 
 
 export default function ProfileSettings() {
   const { showAlert } = useDialog();
+  const { userRole, availableRoles, setActiveRole } = useAuth();
 
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
   // Edit states
+  const [title, setTitle] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -29,6 +32,7 @@ export default function ProfileSettings() {
     try {
       const data = await api.get('/profile');
       setProfile(data);
+      setTitle(data.title || '');
       setPhoneNumber(data.phoneNumber || '');
       setFirstName(data.firstName || '');
       setLastName(data.lastName || '');
@@ -42,6 +46,7 @@ export default function ProfileSettings() {
   const handleUpdateInfo = async () => {
     try {
       await api.put('/profile', {
+        title,
         phoneNumber,
         firstName,
         lastName,
@@ -111,6 +116,28 @@ export default function ProfileSettings() {
             <input type="email" className="form-control" value={profile.email || ''} readOnly disabled style={{ opacity: 0.7 }} />
           </div>
 
+          <div className="form-group" style={{ marginBottom: '1rem' }}>
+            <label className="form-label" style={{ fontWeight: 600 }}>Professional & Academic Title</label>
+            <select 
+              className="form-control" 
+              value={title} 
+              onChange={e => setTitle(e.target.value)}
+              style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #CBD5E1', backgroundColor: '#fff', fontSize: '0.95rem' }}
+            >
+              <option value="">-- Select Title (Optional) --</option>
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Miss">Miss</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Dr.">Dr.</option>
+              <option value="Prof.">Prof.</option>
+              <option value="Engr.">Engr.</option>
+              <option value="Pastor">Pastor</option>
+              <option value="Rev.">Rev.</option>
+              <option value="Chief">Chief</option>
+            </select>
+          </div>
+
           <div className="form-group" style={{ display: 'flex', gap: '1rem' }}>
             <div style={{ flex: 1 }}>
               <label className="form-label">Last Name</label>
@@ -133,6 +160,42 @@ export default function ProfileSettings() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {/* Active Role & Access Management */}
+          {availableRoles && availableRoles.length > 0 && (
+            <div className="glass-panel" style={{ padding: '2rem' }}>
+              <h3 style={{ marginBottom: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🛡️</span> System Access & Active Role
+              </h3>
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, color: '#0F172A', display: 'block', marginBottom: '0.5rem' }}>Current Active Role</label>
+                <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Select which administrative persona or permission set to activate for your dashboard view.
+                </p>
+                {availableRoles.length > 1 ? (
+                  <select 
+                    value={userRole || ''} 
+                    onChange={(e) => {
+                      setActiveRole(e.target.value);
+                      showAlert(`Switched active workspace role to ${e.target.value}.`);
+                    }}
+                    className="form-control"
+                    style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '2px solid #3B82F6', backgroundColor: '#fff', fontWeight: 600, fontSize: '0.95rem', color: '#0F172A', cursor: 'pointer' }}
+                  >
+                    {availableRoles.map(role => (
+                      <option key={role} value={role}>{role}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.65rem 1rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: 600, color: '#334155' }}>
+                    <span style={{ color: '#10B981' }}>✓</span>
+                    <span>{userRole || 'User'}</span>
+                    <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 400 }}>(Assigned Role)</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Avatar Upload */}
           <div className="glass-panel" style={{ padding: '2rem' }}>
             <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>Profile Picture</h3>

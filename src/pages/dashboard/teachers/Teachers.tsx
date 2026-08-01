@@ -10,6 +10,7 @@ import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mai
 interface TeacherItem {
   id: string;
   identityUserId?: string;
+  title?: string;
   surname: string;
   firstName: string;
   otherNames: string;
@@ -38,7 +39,7 @@ export default function Teachers() {
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const filteredTeachers = teachers.filter(teacher => {
-    const fullName = `${teacher.surname || ''} ${teacher.firstName || ''} ${teacher.otherNames || ''}`.toLowerCase();
+    const fullName = `${teacher.title || ''} ${teacher.surname || ''} ${teacher.firstName || ''} ${teacher.otherNames || ''}`.toLowerCase();
     const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || 
                           (teacher.email && teacher.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
                           (teacher.phoneNumber && teacher.phoneNumber.includes(searchTerm));
@@ -54,6 +55,7 @@ export default function Teachers() {
   const [editStaffId, setEditStaffId] = useState<string | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
+    title: '',
     surname: '',
     firstName: '',
     otherNames: '',
@@ -97,6 +99,7 @@ export default function Teachers() {
     e.preventDefault();
     if (isEditing && editStaffId) {
       const data = new FormData();
+      if (formData.title) data.append('title', formData.title);
       data.append('surname', formData.surname);
       data.append('firstName', formData.firstName);
       if (formData.otherNames) data.append('otherNames', formData.otherNames);
@@ -116,6 +119,7 @@ export default function Teachers() {
 
   const handleEditClick = (teacher: TeacherItem) => {
     setFormData({
+      title: teacher.title || '',
       surname: teacher.surname || '',
       firstName: teacher.firstName || '',
       otherNames: teacher.otherNames || '',
@@ -133,6 +137,7 @@ export default function Teachers() {
 
   const handleAddNewClick = () => {
     setFormData({
+      title: '',
       surname: '',
       firstName: '',
       otherNames: '',
@@ -326,7 +331,7 @@ export default function Teachers() {
                           />
                         )}
                         <div className="staff-names">
-                          <span className="staff-primary-name">{teacher.surname} {teacher.firstName}</span>
+                          <span className="staff-primary-name">{teacher.title ? `${teacher.title} ` : ''}{teacher.surname} {teacher.firstName}</span>
                           <span className="staff-secondary-name">{teacher.otherNames || 'Staff Member'}</span>
                         </div>
                       </div>
@@ -501,6 +506,22 @@ export default function Teachers() {
             </p>
 
             <div className="form-grid">
+              <div className="form-group full-width">
+                <label>Professional / Academic Title</label>
+                <select name="title" value={formData.title} onChange={handleInputChange}>
+                  <option value="">-- No Title / Select Title --</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Mrs.">Mrs.</option>
+                  <option value="Miss">Miss</option>
+                  <option value="Ms.">Ms.</option>
+                  <option value="Dr.">Dr.</option>
+                  <option value="Prof.">Prof.</option>
+                  <option value="Engr.">Engr.</option>
+                  <option value="Pastor">Pastor</option>
+                  <option value="Rev.">Rev.</option>
+                  <option value="Chief">Chief</option>
+                </select>
+              </div>
               <div className="form-group">
                 <label>Surname <span style={{ color: '#ef4444' }}>*</span></label>
                 <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required placeholder="e.g. Bakare" />
@@ -587,7 +608,7 @@ export default function Teachers() {
             <div className="review-summary-card">
               <div className="review-row">
                 <span className="review-label">Full Name:</span>
-                <span className="review-value">{formData.surname} {formData.firstName} {formData.otherNames}</span>
+                <span className="review-value">{formData.title ? `${formData.title} ` : ''}{formData.surname} {formData.firstName} {formData.otherNames}</span>
               </div>
               <div className="review-row">
                 <span className="review-label">Phone Contact:</span>

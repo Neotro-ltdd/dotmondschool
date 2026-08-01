@@ -1,0 +1,249 @@
+﻿<USER_REQUEST>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dotmond School â€” Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:   #071739;
+    --navy:        #0F2A5C;
+    --navy-mid:    #16407D;
+    --gold:        #F0A93B;
+    --gold-soft:   #F6C877;
+    --ink:         #10203F;
+    --ink-soft:    #5B6B85;
+    --line:        #E3E7EF;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    font-family:'Inter', sans-serif;
+  }
+
+  .split{
+    display:flex;
+    min-height:100vh;
+    width:100%;
+  }
+
+  /* ---------- LEFT: brand panel, dark, logo in motion ---------- */
+  .panel-brand{
+    flex:1;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(ellipse 900px 700px at 50% -10%, rgba(240,169,59,0.10), transparent 60%),
+      radial-gradient(ellipse 1000px 800px at 0% 100%, rgba(22,64,125,0.55), transparent 60%),
+      linear-gradient(200deg, var(--navy-deep) 0%, var(--navy) 45%, #0A1F44 100%);
+  }
+
+  .ribbon-decor{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .ribbon-decor svg{ position:absolute; }
+  .rd-1{ top:10%; left:10%; width:220px; opacity:0.28; }
+  .rd-2{ bottom:14%; left:14%; width:180px; opacity:0.18; }
+  .rd-3{ top:16%; right:8%; width:220px; opacity:0.24; }
+  .rd-4{ bottom:10%; right:12%; width:260px; opacity:0.16; }
+
+  .crest-motion-wrap{
+    position:relative;
+    width:min(420px, 60%);
+  }
+  .crest-glow-big{
+    position:absolute;
+    top:50%; left:50%;
+    width:130%; height:130%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(240,169,59,0.10) 45%, rgba(255,255,255,0) 72%);
+    filter:blur(2px);
+    pointer-events:none;
+  }
+  .crest-motion{
+    position:relative;
+    width:100%;
+    display:block;
+    filter: drop-shadow(0 24px 50px rgba(2,8,22,0.6));
+    animation: drift 9s ease-in-out infinite;
+  }
+  @keyframes drift{
+    0%,100%{ transform:translateY(0) scale(1) rotate(0deg); }
+    50%{ transform:translateY(-16px) scale(1.03) rotate(1deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .crest-motion{ animation:none; }
+  }
+
+  /* ---------- RIGHT: form panel â€” form nested inside a curved frame ---------- */
+  .panel-form{
+    flex:0 0 46%;
+    max-width:600px;
+    min-width:400px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    background:linear-gradient(170deg, #EDF0F6 0%, #E4E9F2 100%);
+  }
+
+  .curve-frame{
+    position:relative;
+    width:100%;
+    max-width:420px;
+    padding:22px;
+    border-radius:56px;
+    background:linear-gradient(170deg, #FFFFFF 0%, #F1F4F9 100%);
+    border:1px solid #FFFFFF;
+    box-shadow:
+      0 40px 70px -30px rgba(16,32,63,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  .form-card{
+    position:relative;
+    background:#fff;
+    border-radius:38px;
+    padding:44px 32px 34px;
+    box-shadow:0 18px 40px -22px rgba(16,32,63,0.35);
+  }
+
+  .form-glow{
+    position:absolute;
+    top:-90px; left:50%;
+    width:340px; height:340px;
+    transform:translateX(-50%);
+    background:radial-gradient(circle, rgba(240,169,59,0.28) 0%, rgba(240,169,59,0.08) 42%, rgba(240,169,59,0) 70%);
+    pointer-events:none;
+  }
+
+  .crest-steady{
+    position:relative;
+    display:block;
+    width:74px;
+    margin:0 auto 18px;
+    filter: drop-shadow(0 10px 18px rgba(16,32,63,0.18));
+  }
+
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:23px;
+    text-align:center;
+    margin:0 0 6px;
+    color:var(--ink);
+    position:relative;
+  }
+  .subtitle{
+    font-size:13.5px;
+    text-align:center;
+    color:var(--ink-soft);
+    margin:0 0 28px;
+    position:relative;
+  }
+
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin:0 0 7px;
+  }
+  .field{ margin-bottom:16px; }
+  .field input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#FBFCFE;
+    color:var(--ink);
+    font-size:14px;
+    font-family:'Inter', sans-serif;
+    outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  .field input::placeholder{ color:#A6AEBF; }
+  .field input:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(240,169,59,0.22);
+  }
+
+  .row-between{
+    display:flex; justify-content:flex-end; margin:-4px 0 22px;
+  }
+  .link{
+    font-size:12.5px;
+    color:var(--navy-mid);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .link:hover{ text-decoration:underline; }
+
+  button.signin{
+    width:100%;
+    padding:13px 16px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg, var(--gold) 0%, #E08F2B 100%);
+    color:var(--navy-deep);
+    font-weight:700;
+    font-size:14.5px;
+    font-family:'Inter', sans-serif;
+    cursor:pointer;
+    box-shadow:0 12px 24px -8px rgba(240,169,59,0.45);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  button.signin:hover{ transform:translateY(-1px); box-shadow:0 16px 28px -8px rgba(240,169,59,0.55); }
+  button.signin:active{ transform:translateY(0); }
+  button.signin:focus-visible{ outline:2px solid var(--navy); outline-offset:3px; }
+
+  .bottom-links{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:24px 0 0;
+    font-size:12.5px;
+  }
+  .bottom-links a{
+    color:var(--navy-mid);
+    font-weight:700;
+    text-decoration:none;
+  }
+  .bottom-links a:hover{ text-decoration:underline; }
+  .bottom-links .sep{ color:var(--line); }
+
+  /* ---------- responsive stack ---------- */
+  @media (max-width:860px){
+    .split{ flex-direction:column; }
+    .panel-brand{ flex:none; min-height:220px; padding:28px 0; }
+    .panel-form{ flex:none; max-width:none; min-width:0; padding:28px 18px 48px; }
+    .crest-motion-wrap{ width:140px; }
+    .ribbon-decor{ display:none; }
+    .curve-frame{ border-radius:40px; padding:16px; }
+    .form-card{ border-radius:28px; padding:36px 24px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="split">
+
+  <div class="panel-brand">
+    <div class="ribbon-decor" aria-hidden="true">
+      <svg class="rd-1" viewBox="0 0 200 60"><path d="M2 40 Q30 10 55 35 T110 30 T170 15" stroke="#F0A93B" stroke-width="10" fill="none" stroke-linecap="round"/></svg>
+      <svg class="rd-2" viewBox="0 0 200 60"><path d="M2 20 Q30 50 55 25 T110 30 T170 45" stroke="#7FA6E0" stroke-width="9" fill="none" stroke-linecap="round"/></svg>
+      <svg class="rd-3" viewBox="0 0 200 60"><path d="M2 30 Q30 5 55 30 T110 25 T170 40" stroke="#F0A93B" stroke-width="8" fill="none" stroke-linecap="round"/></svg>
+      <svg class="rd-4" viewBox="0 0 200 60"><path d="M2 45 Q30 15 55 40 T110 20 T170 35" stroke="#7FA6E0" stroke-width="10" fill="none" stroke-linecap="round"/></svg>
+    </div>
+
+    <div class="crest-motion-wrap">
+      <div class="crest-glow-big" aria-hidden="true"></div>
+      <img class="crest-motion" src="

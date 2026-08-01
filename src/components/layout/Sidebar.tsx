@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import './Layout.css';
 
 export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen?: boolean, setIsSidebarOpen?: (open: boolean) => void }) {
-  const { logout, userRole, availableRoles, setActiveRole } = useAuth();
+  const { logout, userRole } = useAuth();
   const { schoolName, logoUrl } = useTenant();
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,8 +28,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
           ×
         </button>
       )}
-      <div className="sidebar-brand" style={{ flexDirection: 'column', gap: '1rem', alignItems: 'flex-start', padding: '1.5rem 1.5rem 0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div className="sidebar-brand" style={{ padding: '1.5rem 1.5rem 1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%' }}>
           {logoUrl ? (
             <img src={logoUrl} alt="Logo" className="brand-logo-img" style={{ maxHeight: '40px', maxWidth: '40px', borderRadius: '4px' }} />
           ) : (
@@ -37,21 +37,6 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
           )}
           <span className="brand-name" style={{ fontSize: schoolName.length > 15 ? '0.9rem' : '1.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{schoolName}</span>
         </div>
-        
-        {availableRoles && availableRoles.length > 1 && (
-          <div className="role-switcher" style={{ width: '100%', marginTop: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            <label style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: '0.25rem', display: 'block' }}>Active Role</label>
-            <select 
-              value={userRole || ''} 
-              onChange={(e) => setActiveRole(e.target.value)}
-              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', outline: 'none', fontSize: '0.85rem' }}
-            >
-              {availableRoles.map(role => (
-                <option key={role} value={role} style={{ color: 'black' }}>{role}</option>
-              ))}
-            </select>
-          </div>
-        )}
       </div>
       
       <nav className="sidebar-nav">
