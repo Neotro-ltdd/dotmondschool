@@ -11,6 +11,7 @@ interface AuthContextType {
     userEmail: string | null;
     userAvatar: string | null;
     requiresPasswordChange: boolean;
+    updateUserInfo: (data: { avatarUrl?: string; firstName?: string; lastName?: string; title?: string }) => void;
     login: (token: string) => void;
     logout: () => void;
 }
@@ -75,19 +76,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const firstName = decoded['first_name'] || '';
                 const lastName = decoded['last_name'] || '';
                 const title = decoded['title'] || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/title'] || '';
-                setUserTitle(title || null);
+                const overrideTitle = localStorage.getItem('srms_override_title');
+                const finalTitle = overrideTitle !== null ? overrideTitle : (title || null);
+                setUserTitle(finalTitle);
                 
-                if (firstName || lastName) {
+                const overrideName = localStorage.getItem('srms_override_name');
+                if (overrideName) {
+                    setUserName(overrideName);
+                } else if (firstName || lastName) {
                     const fullName = `${lastName} ${firstName}`.trim();
-                    setUserName(title ? `${title} ${fullName}` : fullName);
+                    setUserName(finalTitle ? `${finalTitle} ${fullName}` : fullName);
                 } else if (email) {
                     const namePart = email.split('@')[0];
                     const defaultName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                    setUserName(title ? `${title} ${defaultName}` : defaultName);
+                    setUserName(finalTitle ? `${finalTitle} ${defaultName}` : defaultName);
                 }
                 
                 const avatar = decoded['avatar_url'] || null;
-                setUserAvatar(avatar);
+                const overrideAvatar = localStorage.getItem('srms_override_avatar');
+                setUserAvatar(overrideAvatar !== null ? overrideAvatar : avatar);
 
                 if (decoded['requires_password_change'] === 'true') {
                     setRequiresPasswordChange(true);
@@ -98,6 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
             localStorage.removeItem('srms_token');
             localStorage.removeItem('srms_active_role');
+            localStorage.removeItem('srms_override_avatar');
+            localStorage.removeItem('srms_override_name');
+            localStorage.removeItem('srms_override_title');
             setUserRole(null);
             setAvailableRoles([]);
             setUserEmail(null);
@@ -108,11 +118,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }, [token]);
 
+    const updateUserInfo = (data: { avatarUrl?: string; firstName?: string; lastName?: string; title?: string }) => {
+        if (data.avatarUrl !== undefined) {
+            setUserAvatar(data.avatarUrl || null);
+            if (data.avatarUrl) {
+                localStorage.setItem('srms_override_avatar', data.avatarUrl);
+            } else {
+                localStorage.removeItem('srms_override_avatar');
+            }
+        }
+        
+        let activeTitle = userTitle;
+        if (data.title !== undefined) {
+            activeTitle = data.title || null;
+            setUserTitle(activeTitle);
+            if (activeTitle) {
+                localStorage.setItem('srms_override_title', activeTitle);
+            } else {
+                localStorage.removeItem('srms_override_title');
+            }
+        }
+
+        if (data.firstName !== undefined && data.lastName !== undefined) {
+            const fullName = `${data.lastName} ${data.firstName}`.trim();
+            if (fullName) {
+                const formattedName = activeTitle ? `${activeTitle} ${fullName}` : fullName;
+                setUserName(formattedName);
+                localStorage.setItem('srms_override_name', formattedName);
+            }
+        }
+    };
+
     const login = (newToken: string) => {
+        localStorage.removeItem('srms_override_avatar');
+        localStorage.removeItem('srms_override_name');
+        localStorage.removeItem('srms_override_title');
         setToken(newToken);
     };
 
     const logout = () => {
+        localStorage.removeItem('srms_override_avatar');
+        localStorage.removeItem('srms_override_name');
+        localStorage.removeItem('srms_override_title');
         setToken(null);
     };
 
@@ -124,7 +171,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, availableRoles, setActiveRole, userName, userTitle, userEmail, userAvatar, requiresPasswordChange, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, availableRoles, setActiveRole, userName, userTitle, userEmail, userAvatar, requiresPasswordChange, updateUserInfo, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { API_ROOT } from '../../services/api';
@@ -6,13 +6,24 @@ import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
   const { userName, userRole, userAvatar } = useAuth();
+  const [imgError, setImgError] = useState(false);
   
+  useEffect(() => {
+    setImgError(false);
+  }, [userAvatar]);
+
   // Format role for display: e.g. "Principal" -> "Super Admin" (optional) or just use the exact role
   const displayRole = userRole === 'Principal' ? 'Super Admin' : userRole || 'User';
   // Get initial for avatar
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
 
-  const avatarUrl = userAvatar && userAvatar !== '/images/default-avatar.png' ? userAvatar : null;
+  const resolveAvatarUrl = (url?: string | null) => {
+    if (!url || url === '/images/default-avatar.png') return null;
+    if (url.startsWith('http') || url.startsWith('blob:')) return url;
+    return `${API_ROOT}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
+  const avatarUrl = resolveAvatarUrl(userAvatar);
 
   return (
     <header className="top-header glass-panel">
@@ -34,10 +45,16 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         
         <Link to="/dashboard/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div className="user-profile" style={{ cursor: 'pointer' }}>
-            {avatarUrl ? (
-              <img src={avatarUrl.startsWith('http') ? avatarUrl : `${API_ROOT}${avatarUrl}`} alt="Profile" className="avatar" style={{ objectFit: 'cover' }} />
+            {avatarUrl && !imgError ? (
+              <img 
+                src={avatarUrl} 
+                alt="Profile" 
+                onError={() => setImgError(true)}
+                className="avatar" 
+                style={{ objectFit: 'cover', width: '40px', height: '40px', borderRadius: '50%' }} 
+              />
             ) : (
-              <div className="avatar">{initial}</div>
+              <div className="avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{initial}</div>
             )}
             <div className="user-info">
               <span className="user-name">{userName}</span>

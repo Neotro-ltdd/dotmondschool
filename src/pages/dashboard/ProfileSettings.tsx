@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function ProfileSettings() {
   const { showAlert } = useDialog();
-  const { userRole, availableRoles, setActiveRole } = useAuth();
+  const { userRole, availableRoles, setActiveRole, updateUserInfo } = useAuth();
 
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -72,6 +72,15 @@ export default function ProfileSettings() {
       setLastName(data.lastName || '');
       setAvatarLoadError(false);
       setSignatureLoadError(false);
+      
+      if (updateUserInfo) {
+        updateUserInfo({
+          avatarUrl: data.avatarUrl,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          title: data.title
+        });
+      }
     } catch (error) {
       console.error('Failed to load profile', error);
     } finally {
