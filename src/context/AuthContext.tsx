@@ -139,13 +139,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         }
 
+        let baseName = '';
         if (data.firstName !== undefined && data.lastName !== undefined) {
-            const fullName = `${data.lastName} ${data.firstName}`.trim();
-            if (fullName) {
-                const formattedName = activeTitle ? `${activeTitle} ${fullName}` : fullName;
-                setUserName(formattedName);
-                localStorage.setItem('srms_override_name', formattedName);
+            baseName = `${data.lastName} ${data.firstName}`.trim();
+        } else {
+            baseName = userName;
+            if (userTitle && baseName.startsWith(userTitle)) {
+                baseName = baseName.slice(userTitle.length).trim();
             }
+        }
+
+        if (baseName) {
+            const formattedName = activeTitle ? `${activeTitle} ${baseName}` : baseName;
+            setUserName(formattedName);
+            localStorage.setItem('srms_override_name', formattedName);
         }
     };
 

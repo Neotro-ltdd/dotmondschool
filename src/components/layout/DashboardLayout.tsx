@@ -7,7 +7,7 @@ import { api, API_ROOT } from '../../services/api';
 import './Layout.css';
 
 export default function DashboardLayout() {
-  const { isAuthenticated, requiresPasswordChange } = useAuth();
+  const { isAuthenticated, requiresPasswordChange, updateUserInfo } = useAuth();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,6 +24,19 @@ export default function DashboardLayout() {
           }
         })
         .catch(err => console.error("Could not load school profile", err));
+
+      api.get('/profile')
+        .then(data => {
+          if (data && updateUserInfo) {
+            updateUserInfo({
+              avatarUrl: data.avatarUrl,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              title: data.title
+            });
+          }
+        })
+        .catch(err => console.error("Could not load user profile", err));
     }
   }, [isAuthenticated]);
 
