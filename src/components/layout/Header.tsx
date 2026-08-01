@@ -5,7 +5,7 @@ import { API_ROOT } from '../../services/api';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
-  const { userName, userRole, userAvatar } = useAuth();
+  const { userName, userRole, userAvatar, userTitle } = useAuth();
   const [imgError, setImgError] = useState(false);
   
   useEffect(() => {
@@ -14,6 +14,19 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
 
   // Format role for display: e.g. "Principal" -> "Super Admin" (optional) or just use the exact role
   const displayRole = userRole === 'Principal' ? 'Super Admin' : userRole || 'User';
+  
+  const displayUserName = (() => {
+    if (userTitle && userTitle.trim()) {
+      const titleClean = userTitle.trim();
+      const normName = userName.toLowerCase().replace(/[.,]/g, '');
+      const normTitle = titleClean.toLowerCase().replace(/[.,]/g, '');
+      if (!normName.startsWith(normTitle)) {
+        return `${titleClean} ${userName}`;
+      }
+    }
+    return userName;
+  })();
+
   // Get initial for avatar
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
 
@@ -57,7 +70,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
               <div className="avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{initial}</div>
             )}
             <div className="user-info">
-              <span className="user-name">{userName}</span>
+              <span className="user-name">{displayUserName}</span>
               <span className="user-role">{displayRole}</span>
             </div>
           </div>

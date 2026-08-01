@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { Link } from 'react-router-dom';
+import { api } from '../../services/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
 import { Calendar, Users, GraduationCap, LayoutDashboard, AlertCircle, CheckCircle, FileText, Activity, MapPin } from 'lucide-react';
 import SlideOver from '../../components/ui/SlideOver';
@@ -36,7 +37,7 @@ const StatCard = ({ label, value, icon: Icon, iconBg, iconColor, trend, trendTex
 );
 
 export default function Overview() {
-  const { userRole, userName } = useAuth();
+  const { userRole, userName, userTitle } = useAuth();
   const { schoolName } = useTenant();
   const [showActivityLog, setShowActivityLog] = React.useState(false);
   
@@ -52,7 +53,6 @@ export default function Overview() {
       const fetchAccountantData = async () => {
         try {
           setLoading(true);
-          const { api } = await import('../../services/api');
           const res = await api.get('/finance/dashboard');
           setAccountantData(res);
         } catch (err) {
@@ -66,7 +66,6 @@ export default function Overview() {
       const fetchTeacherData = async () => {
         try {
           setLoading(true);
-          const { api } = await import('../../services/api');
           const res = await api.get('/academics/teacher/dashboard');
           setTeacherData(res);
         } catch (err) {
@@ -76,11 +75,10 @@ export default function Overview() {
         }
       };
       fetchTeacherData();
-    } else if (userRole === 'Admin') {
+    } else if (userRole === 'Admin' || userRole === 'SystemAdmin' || userRole === 'Superadmin') {
       const fetchAdminData = async () => {
         try {
           setLoading(true);
-          const { api } = await import('../../services/api');
           const res = await api.get('/setup/admin/dashboard');
           setAdminData(res);
         } catch (err) {
@@ -94,7 +92,6 @@ export default function Overview() {
       const fetchPrincipalData = async () => {
         try {
           setLoading(true);
-          const { api } = await import('../../services/api');
           const res = await api.get('/academics/principal/dashboard');
           setPrincipalData(res);
         } catch (err) {
@@ -108,7 +105,6 @@ export default function Overview() {
       const fetchVendorData = async () => {
         try {
           setLoading(true);
-          const { api } = await import('../../services/api');
           const res = await api.get('/setup/students/vendor/stats');
           setVendorData(res);
         } catch (err) {
@@ -133,6 +129,41 @@ export default function Overview() {
     return 'Good Evening';
   };
 
+  const getFormattedName = () => {
+    if (userTitle && userTitle.trim()) {
+      const titleClean = userTitle.trim();
+      const normName = userName.toLowerCase().replace(/[.,]/g, '');
+      const normTitle = titleClean.toLowerCase().replace(/[.,]/g, '');
+      if (!normName.startsWith(normTitle)) {
+        return `${titleClean} ${userName}`;
+      }
+    }
+    return userName;
+  };
+
+  const getRoleWelcomeMessage = () => {
+    switch (userRole) {
+      case 'Admin':
+      case 'SystemAdmin':
+      case 'Superadmin':
+        return 'Admin : Manage staffs, Student Records, Setup, and overall institutional governance.';
+      case 'Teacher':
+        return 'Class Teacher : Manage your class records, review attendance register, and input termly affective ratings.';
+      case 'SubjectTeacher':
+        return 'Subject Teacher : Manage your subject details, continuous assessments, and student score distributions.';
+      case 'Accountant':
+        return 'Accountant : Manage student fee billing, reconcile tuition payments, perform manual clearances, and oversee POS transactions.';
+      case 'Principal':
+        return 'Principal : Monitor institutional analytics, oversee teacher performance, review attendance trends, and approve termly broadsheets.';
+      case 'Vendor':
+        return 'Vendor : Manage campus merchandise sales, inventory items, digital ID card verification, and student store receipts.';
+      case 'Parent':
+        return 'Parent : View termly academic result sheets, monitor daily gate check-in attendance records, and review school fee billings.';
+      default:
+        return `Welcome to the ${schoolName || 'Dotmond School'} Operations Portal. Manage students, track metrics, and review activities.`;
+    }
+  };
+
   const todayDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   
   return (
@@ -145,8 +176,8 @@ export default function Overview() {
         </div>
         <div className="banner-content">
           <div className="banner-text">
-            <h2>{getGreeting()}, {userName} 👋</h2>
-            <p>Welcome to the {schoolName} Operations Portal. Manage students, track metrics, and review activities.</p>
+            <h2>{getGreeting()}, {getFormattedName()} 👋</h2>
+            <p>{getRoleWelcomeMessage()}</p>
           </div>
           <div className="banner-actions">
             {userRole === 'Accountant' && (
@@ -154,12 +185,37 @@ export default function Overview() {
                 <CheckCircle size={18} /> Manual Clearance
               </Link>
             )}
+            {userRole === 'Teacher' && (
+              <Link to="/dashboard/teacher/attendance" className="banner-btn banner-btn-primary">
+                <CheckCircle size={18} /> Attendance Register
+              </Link>
+            )}
+            {userRole === 'SubjectTeacher' && (
+              <Link to="/dashboard/teacher/assessment" className="banner-btn banner-btn-primary">
+                <FileText size={18} /> Enter Assessments
+              </Link>
+            )}
+            {(userRole === 'Admin' || userRole === 'SystemAdmin' || userRole === 'Superadmin') && (
+              <Link to="/dashboard/teachers" className="banner-btn banner-btn-primary">
+                <Users size={18} /> Manage Staff
+              </Link>
+            )}
+            {userRole === 'Principal' && (
+              <Link to="/dashboard/approvals" className="banner-btn banner-btn-primary">
+                <CheckCircle size={18} /> Review Approvals
+              </Link>
+            )}
+            {userRole === 'Vendor' && (
+              <Link to="/dashboard/vendor-hub" className="banner-btn banner-btn-primary">
+                <FileText size={18} /> Printing Hub
+              </Link>
+            )}
             <button 
               type="button"
               className="banner-btn banner-btn-outline" 
               onClick={() => setShowActivityLog(true)}
             >
-              <Activity size={18} /> Activity Log (SlideOver Demo)
+              <Activity size={18} /> Recent System Activity
             </button>
           </div>
         </div>
