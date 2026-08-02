@@ -12,7 +12,10 @@ import {
   Search,
   Filter,
   Download,
-  Edit3
+  Edit3,
+  RotateCcw,
+  Eye,
+  History
 } from 'lucide-react';
 import '../students/Management.css';
 
@@ -117,6 +120,15 @@ export default function PromotionManagement() {
     retry: false
   });
 
+  // 4. Fetch All Promotion Batches for Approved & Historical Lists Tab
+  const { data: promotionBatches, isLoading: batchesLoading } = useQuery<any[]>({
+    queryKey: ['allPromotionBatches'],
+    queryFn: async () => {
+      return await api.get('/academics/promotion/batches');
+    },
+    enabled: activeTab === 'history',
+  });
+
   // Mutations
   const generateBatchMutation = useMutation({
     mutationFn: async (payload: any) => {
@@ -140,6 +152,7 @@ export default function PromotionManagement() {
       alert('Promotions executed successfully!');
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+      queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
       alert(err.message || 'Failed to approve promotions.');
@@ -153,9 +166,10 @@ export default function PromotionManagement() {
       return await api.post('/academics/promotion/revert', { batchId: idToUse });
     },
     onSuccess: () => {
-      alert('Promotion list successfully unlocked and reverted to draft status. You can now edit student decisions!');
+      alert('Promotion list successfully revoked & unlocked! You can now edit student decisions or regenerate.');
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+      queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
       alert(err.message || 'Failed to unlock promotion batch.');
@@ -170,6 +184,7 @@ export default function PromotionManagement() {
       setShowOverrideModal(false);
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+      queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
       alert(err.message || 'Failed to override.');
@@ -296,6 +311,24 @@ export default function PromotionManagement() {
           }}
         >
           Promotion Report (View &amp; Export)
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
+          onClick={() => setActiveTab('history')}
+          style={{ 
+            padding: '10px 20px', 
+            background: 'none', 
+            border: 'none', 
+            borderBottom: activeTab === 'history' ? '2px solid #3b82f6' : '2px solid transparent',
+            color: activeTab === 'history' ? '#3b82f6' : 'var(--color-text-light)',
+            fontWeight: activeTab === 'history' ? 'bold' : 'normal',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <History size={16} /> Approved Promotions (Revoke &amp; Revert)
         </button>
       </div>
 
@@ -577,6 +610,127 @@ export default function PromotionManagement() {
                   </tbody>
                 </table>
               )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* =========================================
+          TAB 3: APPROVED & HISTORICAL PROMOTIONS (REVERT / REVOKE)
+          ========================================= */}
+      {activeTab === 'history' && (
+        <div className='tab-pane slide-in'>
+          <div className='glass-panel' style={{ padding: '20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div>
+              <h3 style={{ margin: 0, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <History size={22} className='text-primary' /> Approved Promotions &amp; Batch History
+              </h3>
+              <p className='text-muted' style={{ margin: '5px 0 0 0', fontSize: '14px' }}>
+                View all generated and executed promotion lists across classes and sessions. Revoke or revert approved promotions when adjustments or re-generation are required.
+              </p>
+            </div>
+            <button type='button' className='btn btn-secondary btn-sm' onClick={() => queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] })}>
+              Refresh List
+            </button>
+          </div>
+
+          {batchesLoading ? (
+            <div className='glass-panel' style={{ padding: '40px', textAlign: 'center' }}>
+              <p className='text-muted'>Loading promotion lists and approval history...</p>
+            </div>
+          ) : !promotionBatches || promotionBatches.length === 0 ? (
+            <div className='glass-panel' style={{ padding: '50px', textAlign: 'center' }}>
+              <AlertTriangle size={36} className='text-warning' style={{ margin: '0 auto 15px auto', opacity: 0.8, color: '#f59e0b' }} />
+              <h4 style={{ margin: '0 0 8px 0', color: 'var(--color-text)' }}>No Promotion Lists Found</h4>
+              <p className='text-muted' style={{ maxWidth: '400px', margin: '0 auto' }}>You haven't generated or approved any promotion lists for any class or session yet.</p>
+            </div>
+          ) : (
+            <div className='table-container glass-panel'>
+              <table className='data-table'>
+                <thead>
+                  <tr>
+                    <th>S/N</th>
+                    <th>Session</th>
+                    <th>Current Class</th>
+                    <th>Target Class</th>
+                    <th>Min Score</th>
+                    <th>Students</th>
+                    <th>Status</th>
+                    <th>Actions (Revoke / View)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {promotionBatches.map((b: any, idx: number) => (
+                    <tr key={b.id}>
+                      <td>{idx + 1}</td>
+                      <td><strong>{b.session}</strong></td>
+                      <td><span style={{ fontWeight: 600, color: 'var(--color-text)' }}>{b.className}</span></td>
+                      <td><span className='badge badge-primary' style={{ backgroundColor: '#3b82f6', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>{b.nextClassName}</span></td>
+                      <td>{b.minimumPromotionScore}%</td>
+                      <td>
+                        <strong>{b.totalStudents} total</strong>
+                        <span className='text-muted text-sm' style={{ display: 'block', fontSize: '11px' }}>
+                          {b.promotedCount} Promotable, {b.heldBackCount} Held Back
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`badge ${b.status === 'Approved' ? 'badge-success' : 'badge-warning'}`} style={{ backgroundColor: b.status === 'Approved' ? '#10b981' : '#f59e0b', color: 'white', padding: '5px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          {b.status === 'Approved' && <CheckCircle size={13} />}
+                          {b.status === 'Approved' ? 'Approved & Executed' : 'Draft / Pending'}
+                        </span>
+                        {b.approvedBy && <span className='text-muted' style={{ display: 'block', fontSize: '11px', marginTop: '4px' }}>By: {b.approvedBy}</span>}
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          <button
+                            type='button'
+                            className='btn btn-secondary btn-sm'
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '6px 10px', borderRadius: '6px' }}
+                            onClick={() => {
+                              if (b.classId) {
+                                setReportClassId(b.classId);
+                              }
+                              setBatchId(b.id);
+                              setActiveTab('report');
+                            }}
+                          >
+                            <Eye size={14} /> View List
+                          </button>
+
+                          {b.status === 'Approved' ? (
+                            <button
+                              type='button'
+                              className='btn btn-secondary btn-sm'
+                              disabled={revertBatchMutation.isPending}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.4)', backgroundColor: 'rgba(239, 68, 68, 0.08)', fontWeight: 600, padding: '6px 12px', borderRadius: '6px' }}
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to REVOKE / REVERT the approved promotion list for ${b.className} (${b.session})?\n\nThis will safely move all affected students back to their original ${b.className} roster and unlock the promotion list so you can modify decisions or generate anew.`)) {
+                                  revertBatchMutation.mutate(b.id);
+                                }
+                              }}
+                            >
+                              <RotateCcw size={15} /> Revoke &amp; Revert
+                            </button>
+                          ) : (
+                            <button
+                              type='button'
+                              className='btn btn-primary btn-sm'
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 600 }}
+                              onClick={() => {
+                                if (b.classId) setCurrentClassId(b.classId);
+                                setBatchId(b.id);
+                                setActiveTab('promotion');
+                              }}
+                            >
+                              Resume &amp; Execute
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
