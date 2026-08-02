@@ -16,8 +16,8 @@ import {
   RotateCcw,
   Eye,
   History
-} from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
+import { useDialog } from '../../../context/DialogContext';
 import '../students/Management.css';
 
 interface ClassItem {
@@ -61,6 +61,7 @@ interface ReportData {
 
 export default function PromotionManagement() {
   const queryClient = useQueryClient();
+  const { showConfirm } = useDialog();
   const year = new Date().getFullYear();
   
   // Tab State
@@ -237,9 +238,18 @@ export default function PromotionManagement() {
     });
   };
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
     if (!batchId) return;
-    if (window.confirm('Are you sure you want to approve and execute these promotions? This action is permanent and will move students to their new classes.')) {
+    const confirmed = await showConfirm(
+      'Are you sure you want to approve and execute these promotions? This action is permanent and will move students to their new target classes.',
+      {
+        title: 'Confirm Promotion Execution',
+        type: 'warning',
+        confirmText: 'Execute Promotions',
+        cancelText: 'Cancel'
+      }
+    );
+    if (confirmed) {
       approveBatchMutation.mutate();
     }
   };
@@ -735,8 +745,21 @@ export default function PromotionManagement() {
                               className='btn btn-secondary btn-sm'
                               disabled={revertBatchMutation.isPending}
                               style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.4)', backgroundColor: 'rgba(239, 68, 68, 0.08)', fontWeight: 600, padding: '6px 12px', borderRadius: '6px' }}
-                              onClick={() => {
-                                if (window.confirm(`Are you sure you want to REVOKE / REVERT the approved promotion list for ${b.className} (${b.session})?\n\nThis will safely move all affected students back to their original ${b.className} roster and unlock the promotion list so you can modify decisions or generate anew.`)) {
+                              onClick={async () => {
+                                const confirmed = await showConfirm(
+                                  <span>
+                                    Are you sure you want to <strong>REVOKE / REVERT</strong> the approved promotion list for <strong>{b.className} ({b.session})</strong>?
+                                    <br /><br />
+                                    This will safely transition all affected students back to their original <strong>{b.className}</strong> roster and unlock the promotion list immediately so you can modify decisions or generate anew.
+                                  </span>,
+                                  {
+                                    title: 'Revoke & Revert Promotion',
+                                    type: 'danger',
+                                    confirmText: 'Revoke List',
+                                    cancelText: 'Cancel'
+                                  }
+                                );
+                                if (confirmed) {
                                   revertBatchMutation.mutate(b.id);
                                 }
                               }}
