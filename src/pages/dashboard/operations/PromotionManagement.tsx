@@ -14,8 +14,8 @@ import {
   Download,
   Edit3,
   RotateCcw,
-  Eye,
   History
+} from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
 import '../students/Management.css';
