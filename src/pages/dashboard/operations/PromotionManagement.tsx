@@ -11,7 +11,8 @@ import {
   X,
   Search,
   Filter,
-  Download
+  Download,
+  Edit3
 } from 'lucide-react';
 import '../students/Management.css';
 
@@ -397,13 +398,15 @@ export default function PromotionManagement() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <strong>{rec.finalDecision}</strong>
                               {rec.hasOverride && (
-                                <span className='badge badge-warning' title={`Overridden by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`} style={{ cursor: 'help', backgroundColor: '#f59e0b', color: 'white' }}>Overridden</span>
+                                <span className='badge badge-warning' title={`Edited by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`} style={{ cursor: 'help', backgroundColor: '#f59e0b', color: 'white', fontSize: '11px', padding: '2px 6px', borderRadius: '4px' }}>Manually Edited</span>
                               )}
                             </div>
                           </td>
                           {batchReport.status !== 'Approved' && (
                             <td>
-                              <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}>Override</button>
+                              <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <Edit3 size={14} /> Edit Status
+                              </button>
                             </td>
                           )}
                         </tr>
@@ -500,6 +503,7 @@ export default function PromotionManagement() {
                       <th>Annual Avg</th>
                       <th>System Rec.</th>
                       <th>Final Decision</th>
+                      {classReport.status !== 'Approved' && <th>Actions</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -512,8 +516,15 @@ export default function PromotionManagement() {
                         <td>{rec.systemRecommendation}</td>
                         <td>
                           <strong>{rec.finalDecision}</strong>
-                          {rec.hasOverride && <span style={{ marginLeft: '8px', fontSize: '12px', color: '#f59e0b' }}>(Overridden)</span>}
+                          {rec.hasOverride && <span style={{ marginLeft: '8px', fontSize: '11px', color: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', padding: '2px 6px', borderRadius: '4px', fontWeight: '500' }}>Manually Edited</span>}
                         </td>
+                        {classReport.status !== 'Approved' && (
+                          <td>
+                            <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <Edit3 size={14} /> Edit Status
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -524,29 +535,34 @@ export default function PromotionManagement() {
         </div>
       )}
 
-      {/* Override Modal */}
+      {/* Override / Edit Decision Modal */}
       {showOverrideModal && (
         <div className='modal-overlay'>
           <div className='modal-content glass-panel'>
-            <h2>Manual Decision Override</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <Edit3 size={22} style={{ color: '#3b82f6' }} /> Edit Promotion Decision
+            </h2>
+            <p className='text-muted text-sm' style={{ marginBottom: '1.5rem', lineHeight: '1.4' }}>
+              Modify this student's academic status for the upcoming session. All administrative changes are recorded in the audit log.
+            </p>
             <form onSubmit={handleOverrideSubmit} className='modal-form'>
               <div className='form-group full-width'>
-                <label>New Decision</label>
-                <select name='overrideDecision' value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)} required>
-                  <option value='Promotable'>Promotable</option>
-                  <option value='Held Back'>Held Back</option>
-                  <option value='Withdrawn'>Withdrawn</option>
-                  <option value='Graduating'>Graduating</option>
+                <label>New Decision Status</label>
+                <select name='overrideDecision' value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)} required style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--color-border)', borderRadius: '6px', backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)' }}>
+                  <option value='Promotable'>Promotable (Promote to Next Class)</option>
+                  <option value='Held Back'>Held Back (Repeat Current Class)</option>
+                  <option value='Withdrawn'>Withdrawn (Leaving School / Deactivated)</option>
+                  <option value='Graduating'>Graduating (Complete &amp; Archive)</option>
                 </select>
               </div>
-              <div className='form-group full-width'>
-                <label>Reason for Override *</label>
-                <textarea rows={4} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} placeholder='Enter explicit reason...' required style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--color-border)', borderRadius: '4px', backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)' }}></textarea>
+              <div className='form-group full-width' style={{ marginTop: '1rem' }}>
+                <label>Reason for Decision Adjustment *</label>
+                <textarea rows={3} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} placeholder='e.g. Approved by Academic Board / Parental request / Special consideration...' required style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--color-border)', borderRadius: '6px', backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)' }}></textarea>
               </div>
-              <div className='modal-actions'>
+              <div className='modal-actions' style={{ marginTop: '1.5rem' }}>
                 <button type='button' className='btn btn-secondary' onClick={() => setShowOverrideModal(false)}>Cancel</button>
-                <button type='submit' className='btn btn-primary' disabled={overrideMutation.isPending} style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
-                  {overrideMutation.isPending ? 'Saving...' : 'Save Override'}
+                <button type='submit' className='btn btn-primary' disabled={overrideMutation.isPending} style={{ backgroundColor: '#3b82f6', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 20px', borderRadius: '6px', fontWeight: 600 }}>
+                  {overrideMutation.isPending ? 'Saving Decision...' : 'Save Decision'}
                 </button>
               </div>
             </form>
