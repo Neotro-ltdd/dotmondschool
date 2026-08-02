@@ -39,6 +39,7 @@ interface StudentRecord {
 }
 
 interface ReportData {
+  batchId?: string;
   class: string;
   nextClass: string;
   session: string;
@@ -142,6 +143,22 @@ export default function PromotionManagement() {
     },
     onError: (err: any) => {
       alert(err.message || 'Failed to approve promotions.');
+    }
+  });
+
+  const revertBatchMutation = useMutation({
+    mutationFn: async (targetId?: string) => {
+      const idToUse = targetId || batchId;
+      if (!idToUse) throw new Error('No promotion list selected.');
+      return await api.post('/academics/promotion/revert', { batchId: idToUse });
+    },
+    onSuccess: () => {
+      alert('Promotion list successfully unlocked and reverted to draft status. You can now edit student decisions!');
+      queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
+      queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Failed to unlock promotion batch.');
     }
   });
 
@@ -357,9 +374,24 @@ export default function PromotionManagement() {
                         </button>
                       )}
                       {batchReport.status === 'Approved' && (
-                        <span className='badge badge-success' style={{ backgroundColor: '#10b981', padding: '10px 15px', fontSize: '14px', height: '42px', display: 'flex', alignItems: 'center' }}>
-                          <CheckCircle size={18} style={{ marginRight: '5px' }} /> Approved
-                        </span>
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <span className='badge badge-success' style={{ backgroundColor: '#10b981', padding: '10px 15px', fontSize: '14px', height: '42px', display: 'flex', alignItems: 'center' }}>
+                            <CheckCircle size={18} style={{ marginRight: '5px' }} /> Approved &amp; Executed
+                          </span>
+                          <button
+                            type='button'
+                            className='btn btn-secondary'
+                            onClick={() => {
+                              if (window.confirm('Are you sure you want to unlock this promotion list? Students will temporarily return to their original classes so you can edit status decisions and re-approve.')) {
+                                revertBatchMutation.mutate(batchReport.batchId || batchId || undefined);
+                              }
+                            }}
+                            disabled={revertBatchMutation.isPending}
+                            style={{ height: '42px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-alt)', fontWeight: 600, color: 'var(--color-text)' }}
+                          >
+                            <Edit3 size={16} style={{ color: '#f59e0b' }} /> {revertBatchMutation.isPending ? 'Unlocking...' : 'Unlock & Re-open for Editing'}
+                          </button>
+                        </div>
                       )}
                     </div>
                  </div>
@@ -484,10 +516,25 @@ export default function PromotionManagement() {
                   <h3 style={{ margin: 0, color: 'var(--color-text)' }}>{classReport.class} — Promotion Report</h3>
                   <p className='text-muted' style={{ margin: '5px 0 0 0', fontSize: '14px' }}>Session: {classReport.session} | Target: {classReport.nextClass}</p>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                   <span className={`badge ${classReport.status === 'Approved' ? 'badge-success' : 'badge-warning'}`} style={{ backgroundColor: classReport.status === 'Approved' ? '#10b981' : '#f59e0b', color: 'white', padding: '8px 12px', fontSize: '14px' }}>
                     Status: {classReport.status === 'Approved' ? 'Executed' : 'Draft / Pending'}
                   </span>
+                  {classReport.status === 'Approved' && classReport.batchId && (
+                    <button
+                      type='button'
+                      className='btn btn-secondary'
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to unlock and revert this promotion list? Students will temporarily return to their original class rosters so you can edit status decisions.')) {
+                          revertBatchMutation.mutate(classReport.batchId);
+                        }
+                      }}
+                      disabled={revertBatchMutation.isPending}
+                      style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-alt)', fontWeight: 600, color: 'var(--color-text)' }}
+                    >
+                      <Edit3 size={15} style={{ color: '#f59e0b' }} /> {revertBatchMutation.isPending ? 'Unlocking...' : 'Unlock for Editing'}
+                    </button>
+                  )}
                 </div>
               </div>
 
