@@ -17,6 +17,7 @@ import {
   Eye,
   History
 } from 'lucide-react';
+import { SlideNotification } from '../../../components/ui/SlideNotification';
 import '../students/Management.css';
 
 interface ClassItem {
@@ -64,6 +65,23 @@ export default function PromotionManagement() {
   
   // Tab State
   const [activeTab, setActiveTab] = useState<'promotion' | 'report' | 'history'>('promotion');
+
+  // Notification Toast State (Slide from right)
+  const [notification, setNotification] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    type: 'success' | 'warning' | 'error' | 'info';
+    action?: { label: string; onClick: () => void };
+  }>({
+    isOpen: false,
+    message: '',
+    type: 'info'
+  });
+
+  const showNotification = (message: string, type: 'success' | 'warning' | 'error' | 'info' = 'info', title?: string, action?: { label: string; onClick: () => void }) => {
+    setNotification({ isOpen: true, message, type, title, action });
+  };
 
   // --- CLASS PROMOTION STATE ---
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -140,7 +158,20 @@ export default function PromotionManagement() {
       }
     },
     onError: (err: any) => {
-      alert(err.message || 'Failed to generate promotion list.');
+      const errMsg = err.message || 'Failed to generate promotion list.';
+      if (errMsg.toLowerCase().includes('already approved') || errMsg.toLowerCase().includes('already exists')) {
+        showNotification(
+          errMsg,
+          'warning',
+          'Promotion Already Executed',
+          {
+            label: 'View Approved Promotions',
+            onClick: () => setActiveTab('history')
+          }
+        );
+      } else {
+        showNotification(errMsg, 'error', 'Generation Error');
+      }
     }
   });
 
@@ -149,13 +180,13 @@ export default function PromotionManagement() {
       return await api.post('/academics/promotion/approve', { batchId });
     },
     onSuccess: () => {
-      alert('Promotions executed successfully!');
+      showNotification('Promotions executed successfully! Students have been transitioned to their target classes.', 'success', 'Execution Complete');
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
-      alert(err.message || 'Failed to approve promotions.');
+      showNotification(err.message || 'Failed to approve promotions.', 'error', 'Approval Error');
     }
   });
 
@@ -166,13 +197,13 @@ export default function PromotionManagement() {
       return await api.post('/academics/promotion/revert', { batchId: idToUse });
     },
     onSuccess: () => {
-      alert('Promotion list successfully revoked & unlocked! You can now edit student decisions or regenerate.');
+      showNotification('Promotion list successfully revoked & unlocked! You can now edit student decisions or regenerate.', 'success', 'Batch Unlocked');
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
-      alert(err.message || 'Failed to unlock promotion batch.');
+      showNotification(err.message || 'Failed to unlock promotion batch.', 'error', 'Revert Error');
     }
   });
 
@@ -182,19 +213,20 @@ export default function PromotionManagement() {
     },
     onSuccess: () => {
       setShowOverrideModal(false);
+      showNotification('Student promotion decision updated successfully.', 'success', 'Status Overridden');
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
-      alert(err.message || 'Failed to override.');
+      showNotification(err.message || 'Failed to override student decision.', 'error', 'Update Error');
     }
   });
 
   const handleGenerateList = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedClassId || !nextSession) {
-      alert('Please select a class and specify the next session.');
+      showNotification('Please select a current class and specify the target academic session.', 'warning', 'Missing Selection');
       return;
     }
     generateBatchMutation.mutate({
@@ -222,7 +254,7 @@ export default function PromotionManagement() {
   const handleOverrideSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!overrideReason.trim()) {
-      alert('Please provide a reason for this override.');
+      showNotification('Please provide a reason for overriding this decision for audit logs.', 'warning', 'Reason Required');
       return;
     }
     overrideMutation.mutate({
@@ -780,6 +812,16 @@ export default function PromotionManagement() {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+
+      {/* Slide-from-right Notification Toast */}
+      <SlideNotification
+        isOpen={notification.isOpen}
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
+        action={notification.action}
+      />
     </div>
   );
 }
