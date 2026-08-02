@@ -63,7 +63,7 @@ export default function PromotionManagement() {
   const year = new Date().getFullYear();
   
   // Tab State
-  const [activeTab, setActiveTab] = useState<'promotion' | 'report'>('promotion');
+  const [activeTab, setActiveTab] = useState<'promotion' | 'report' | 'history'>('promotion');
 
   // --- CLASS PROMOTION STATE ---
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -717,7 +717,7 @@ export default function PromotionManagement() {
                               className='btn btn-primary btn-sm'
                               style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 600 }}
                               onClick={() => {
-                                if (b.classId) setCurrentClassId(b.classId);
+                                if (b.classId) setSelectedClassId(b.classId);
                                 setBatchId(b.id);
                                 setActiveTab('promotion');
                               }}
