@@ -331,7 +331,8 @@
 .slideover-panel {
   width: 100%;
   max-width: 440px;
-  height: 100%;
+  height: calc(100vh - 72px);
+  max-height: calc(100vh - 72px);
   background: #FFFFFF;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
   display: flex;
@@ -339,6 +340,7 @@
   animation: slideInFromRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   position: relative;
   z-index: 1001;
+  overflow: hidden;
 }
 
 @keyframes slideInFromRight {
@@ -347,33 +349,36 @@
 }
 
 .slideover-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #E2E8F0;
+  padding: 1.35rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  background: #F8FAFC;
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, #030712 100%);
+  color: #FFFFFF;
+  flex-shrink: 0;
 }
 
 .slideover-title {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #FFFFFF;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .slideover-subtitle {
-  font-size: 0.85rem;
-  color: #64748B;
-  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.2rem;
 }
 
 .btn-close-slideover {
-  background: transparent;
-  border: none;
-  color: #64748B;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
   padding: 6px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -382,13 +387,14 @@
 }
 
 .btn-close-slideover:hover {
-  background: #E2E8F0;
-  color: #0F172A;
+  background: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
 }
 
 .slideover-body {
   padding: 1.5rem;
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -406,11 +412,12 @@
 }
 
 .slideover-footer {
-  padding: 1.25rem 1.5rem;
+  padding: 1.15rem 1.5rem;
   border-top: 1px solid #E2E8F0;
   background: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
