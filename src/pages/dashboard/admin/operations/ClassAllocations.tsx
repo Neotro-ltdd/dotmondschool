@@ -393,40 +393,66 @@ export default function ClassAllocations() {
         </div>
       )}
 
-      {/* ASSIGN TEACHER MODAL */}
+      {/* SLIDE-OVER DRAWER FORM */}
       {showModal && selectedClass && (
-        <div className="modal-overlay">
-          <div className="modal-content glass-panel" style={{ maxWidth: '480px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#0F172A' }}>Assign Form Teacher</h2>
-              <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748B' }}>
+        <div className="slideover-backdrop" onClick={() => setShowModal(false)}>
+          <div className="slideover-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="slideover-header">
+              <div>
+                <h2 className="slideover-title">Form Teacher Allocation</h2>
+                <p className="slideover-subtitle">Assign or update form teacher for <strong>{selectedClass.name}</strong></p>
+              </div>
+              <button className="btn-close-slideover" onClick={() => setShowModal(false)}>
                 <X size={20} />
               </button>
             </div>
 
-            <p style={{ color: '#475569', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-              Select a Form Teacher to assign to <strong>{selectedClass.name}</strong> ({selectedClass.level})
-            </p>
+            <form onSubmit={handleAssign} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div className="slideover-body">
+                {/* Class Summary Card */}
+                <div className="class-summary-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>{selectedClass.name}</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, background: '#EFF6FF', color: '#1E40AF', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                      {selectedClass.level}
+                    </span>
+                  </div>
 
-            <form onSubmit={handleAssign}>
-              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                  Select Staff Member
-                </label>
-                <select 
-                  className="select-filter-input"
-                  style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
-                  value={selectedTeacherId} 
-                  onChange={(e) => setSelectedTeacherId(e.target.value)}
-                >
-                  <option value="">-- Unassigned (Leave Empty) --</option>
-                  {teachers.map(t => (
-                    <option key={t.id} value={t.id}>{`${t.firstName} ${t.surname}`}</option>
-                  ))}
-                </select>
+                  <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#64748B' }}>
+                    Currently Assigned: {' '}
+                    {selectedClass.classTeacherName ? (
+                      <strong style={{ color: '#0F172A' }}>{selectedClass.classTeacherName}</strong>
+                    ) : (
+                      <span style={{ color: '#D97706', fontWeight: 700 }}>Unassigned</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Teacher Select Input */}
+                <div className="form-group">
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.5rem' }}>
+                    Select Staff Member
+                  </label>
+                  <select 
+                    className="select-filter-input"
+                    style={{ width: '100%', padding: '0.75rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                    value={selectedTeacherId} 
+                    onChange={(e) => setSelectedTeacherId(e.target.value)}
+                  >
+                    <option value="">-- Unassigned (Remove Teacher) --</option>
+                    {teachers.map(t => (
+                      <option key={t.id} value={t.id}>{`${t.firstName} ${t.surname}`}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '0.82rem', color: '#64748B', display: 'flex', gap: '0.5rem' }}>
+                  <AlertCircle size={16} color="#3B82F6" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <span>Assigning a staff member will immediately update class record access and grant them Form Teacher privileges for <strong>{selectedClass.name}</strong>.</span>
+                </div>
               </div>
 
-              <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <div className="slideover-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>
                   Cancel
                 </button>
