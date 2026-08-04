@@ -210,10 +210,10 @@ export default function ProfileSettings() {
       {/* ════════ TOP HERO BANNER & AVATAR ════════ */}
       <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', marginBottom: '1.5rem' }}>
         
-        {/* Banner header background */}
+        {/* Banner header background - School Primary Navy Gradient */}
         <div style={{
           height: '160px',
-          background: 'linear-gradient(135deg, #7F1D1D 0%, #450A0A 40%, #0F172A 100%)',
+          background: 'linear-gradient(135deg, #0A192F 0%, #000080 50%, #1E3A8A 100%)',
           position: 'relative'
         }} />
 
@@ -223,13 +223,13 @@ export default function ProfileSettings() {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
             
             {/* Left: Avatar + Name + Badges */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1.5rem', marginTop: '-55px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1.5rem', marginTop: '-70px' }}>
               
-              {/* Overlapping Circle Avatar */}
+              {/* Overlapping Circle Avatar (Enlarged to 140px) */}
               <div style={{
                 position: 'relative',
-                width: '120px',
-                height: '120px',
+                width: '140px',
+                height: '140px',
                 borderRadius: '50%',
                 border: '4px solid #ffffff',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
@@ -248,12 +248,12 @@ export default function ProfileSettings() {
                   <div style={{
                     width: '100%',
                     height: '100%',
-                    background: 'linear-gradient(135deg, #0C2340 0%, #1E3A8A 100%)',
+                    background: 'linear-gradient(135deg, #000080 0%, #1E3A8A 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#ffffff',
-                    fontSize: '2.5rem',
+                    fontSize: '3rem',
                     fontWeight: 800
                   }}>
                     {firstName ? firstName[0].toUpperCase() : '👤'}
@@ -261,22 +261,22 @@ export default function ProfileSettings() {
                 )}
               </div>
 
-              {/* Name & Subtitles */}
-              <div style={{ paddingBottom: '0.25rem' }}>
-                <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em' }}>
+              {/* Name & Subtitles (Shifted down with padding-top: 1.25rem) */}
+              <div style={{ paddingTop: '1.25rem', paddingBottom: '0.25rem' }}>
+                <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em' }}>
                   {fullName}
                 </h1>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                  {/* Primary Role Badge */}
-                  <span style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5', fontSize: '0.78rem', fontWeight: 700, padding: '3px 10px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <Shield size={13} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                  {/* Primary Role Badge (School Navy Theme) */}
+                  <span style={{ background: '#EFF6FF', color: '#1E3A8A', border: '1px solid #BFDBFE', fontSize: '0.8rem', fontWeight: 700, padding: '3px 12px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <Shield size={14} />
                     {userRole || 'User'}
                   </span>
 
                   {/* Joined Date Badge */}
-                  <span style={{ background: '#F1F5F9', color: '#475569', fontSize: '0.78rem', fontWeight: 600, padding: '3px 10px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                    <Calendar size={13} />
+                  <span style={{ background: '#F8FAFC', color: '#475569', border: '1px solid #E2E8F0', fontSize: '0.8rem', fontWeight: 600, padding: '3px 12px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <Calendar size={14} />
                     Joined: {profile.createdDate ? new Date(profile.createdDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Active Staff'}
                   </span>
                 </div>
@@ -314,13 +314,13 @@ export default function ProfileSettings() {
                 padding: '0.65rem 1.25rem',
                 borderRadius: '10px',
                 border: 'none',
-                background: activeTab === 'biodata' ? '#991B1B' : 'transparent',
+                background: activeTab === 'biodata' ? '#000080' : 'transparent',
                 color: activeTab === 'biodata' ? '#ffffff' : '#64748B',
                 fontWeight: activeTab === 'biodata' ? 700 : 600,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: activeTab === 'biodata' ? '0 4px 12px rgba(153, 27, 27, 0.25)' : 'none'
+                boxShadow: activeTab === 'biodata' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
               }}
             >
               <User size={16} />
@@ -337,13 +337,13 @@ export default function ProfileSettings() {
                 padding: '0.65rem 1.25rem',
                 borderRadius: '10px',
                 border: 'none',
-                background: activeTab === 'roles' ? '#991B1B' : 'transparent',
+                background: activeTab === 'roles' ? '#000080' : 'transparent',
                 color: activeTab === 'roles' ? '#ffffff' : '#64748B',
                 fontWeight: activeTab === 'roles' ? 700 : 600,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: activeTab === 'roles' ? '0 4px 12px rgba(153, 27, 27, 0.25)' : 'none'
+                boxShadow: activeTab === 'roles' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
               }}
             >
               <Shield size={16} />
@@ -360,13 +360,13 @@ export default function ProfileSettings() {
                 padding: '0.65rem 1.25rem',
                 borderRadius: '10px',
                 border: 'none',
-                background: activeTab === 'avatar' ? '#991B1B' : 'transparent',
+                background: activeTab === 'avatar' ? '#000080' : 'transparent',
                 color: activeTab === 'avatar' ? '#ffffff' : '#64748B',
                 fontWeight: activeTab === 'avatar' ? 700 : 600,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: activeTab === 'avatar' ? '0 4px 12px rgba(153, 27, 27, 0.25)' : 'none'
+                boxShadow: activeTab === 'avatar' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
               }}
             >
               <Camera size={16} />
@@ -383,13 +383,13 @@ export default function ProfileSettings() {
                 padding: '0.65rem 1.25rem',
                 borderRadius: '10px',
                 border: 'none',
-                background: activeTab === 'signature' ? '#991B1B' : 'transparent',
+                background: activeTab === 'signature' ? '#000080' : 'transparent',
                 color: activeTab === 'signature' ? '#ffffff' : '#64748B',
                 fontWeight: activeTab === 'signature' ? 700 : 600,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: activeTab === 'signature' ? '0 4px 12px rgba(153, 27, 27, 0.25)' : 'none'
+                boxShadow: activeTab === 'signature' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
               }}
             >
               <FileSignature size={16} />
@@ -415,7 +415,7 @@ export default function ProfileSettings() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#991B1B', flexShrink: 0 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000080', flexShrink: 0 }}>
                   <Mail size={18} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -425,7 +425,7 @@ export default function ProfileSettings() {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#991B1B', flexShrink: 0 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000080', flexShrink: 0 }}>
                   <Phone size={18} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -435,7 +435,7 @@ export default function ProfileSettings() {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#991B1B', flexShrink: 0 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000080', flexShrink: 0 }}>
                   <Briefcase size={18} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -445,7 +445,7 @@ export default function ProfileSettings() {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#991B1B', flexShrink: 0 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000080', flexShrink: 0 }}>
                   <Shield size={18} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -477,7 +477,7 @@ export default function ProfileSettings() {
                 type="button"
                 className="btn btn-outline"
                 onClick={() => setIsEditing(!isEditing)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', fontSize: '0.85rem', fontWeight: 700, borderColor: '#991B1B', color: '#991B1B' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', fontSize: '0.85rem', fontWeight: 700, borderColor: '#000080', color: '#000080' }}
               >
                 <Edit3 size={15} />
                 {isEditing ? 'Cancel Edit' : 'Edit Profile'}
@@ -517,12 +517,13 @@ export default function ProfileSettings() {
                 )}
               </div>
 
+              {/* Username / ID (Displays Email Address) */}
               <div>
                 <label style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
-                  Username / ID
+                  USERNAME (EMAIL)
                 </label>
-                <div style={{ padding: '0.65rem 0.85rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', fontWeight: 600, color: '#64748B' }}>
-                  {profile.username || profile.email?.split('@')[0] || 'N/A'}
+                <div style={{ padding: '0.65rem 0.85rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', fontWeight: 600, color: '#0F172A', wordBreak: 'break-all' }}>
+                  {profile.email || profile.username || 'N/A'}
                 </div>
               </div>
 
@@ -604,18 +605,18 @@ export default function ProfileSettings() {
 
             </div>
 
-            {/* Roles Summary Box */}
-            <div style={{ marginTop: '1.5rem', background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '10px', padding: '1.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: '#6B21A8', fontWeight: 700, fontSize: '0.9rem' }}>
+            {/* Roles Summary Box (School Navy Theme) */}
+            <div style={{ marginTop: '1.5rem', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '10px', padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: '#000080', fontWeight: 700, fontSize: '0.9rem' }}>
                 <Shield size={18} />
                 <span>Assigned System Roles</span>
               </div>
-              <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.82rem', color: '#7E22CE', lineHeight: 1.4 }}>
+              <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.82rem', color: '#1E3A8A', lineHeight: 1.4 }}>
                 Below are all administrative & instructional roles assigned to your user account across the portal.
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {rolesList.map(role => (
-                  <span key={role} style={{ background: '#ffffff', color: '#6B21A8', border: '1px solid #D8B4FE', fontWeight: 700, fontSize: '0.82rem', padding: '4px 12px', borderRadius: '20px', boxShadow: '0 2px 4px rgba(107, 33, 168, 0.05)' }}>
+                  <span key={role} style={{ background: '#ffffff', color: '#000080', border: '1px solid #93C5FD', fontWeight: 700, fontSize: '0.82rem', padding: '4px 12px', borderRadius: '20px', boxShadow: '0 2px 4px rgba(0, 0, 128, 0.05)' }}>
                     ✓ {role}
                   </span>
                 ))}
@@ -638,7 +639,7 @@ export default function ProfileSettings() {
                   className="btn btn-primary"
                   onClick={handleUpdateInfo}
                   disabled={infoSaving}
-                  style={{ padding: '0.65rem 1.75rem', backgroundColor: '#991B1B', borderColor: '#991B1B', fontWeight: 700 }}
+                  style={{ padding: '0.65rem 1.75rem', fontWeight: 700 }}
                 >
                   {infoSaving ? 'Saving...' : '💾 Save Bio-Data'}
                 </button>
@@ -656,7 +657,7 @@ export default function ProfileSettings() {
           
           <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Shield style={{ color: '#991B1B' }} />
+              <Shield style={{ color: '#000080' }} />
               Role Selection & Workspace Switcher
             </h3>
             <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>
@@ -679,11 +680,11 @@ export default function ProfileSettings() {
                   style={{
                     padding: '1.25rem',
                     borderRadius: '12px',
-                    border: isCurrentActive ? '2px solid #991B1B' : '1px solid #CBD5E1',
-                    background: isCurrentActive ? '#FEF2F2' : '#FFFFFF',
+                    border: isCurrentActive ? '2px solid #000080' : '1px solid #CBD5E1',
+                    background: isCurrentActive ? '#EFF6FF' : '#FFFFFF',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: isCurrentActive ? '0 4px 12px rgba(153,27,27,0.1)' : '0 2px 4px rgba(0,0,0,0.02)',
+                    boxShadow: isCurrentActive ? '0 4px 12px rgba(0,0,128,0.1)' : '0 2px 4px rgba(0,0,0,0.02)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -692,7 +693,7 @@ export default function ProfileSettings() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: isCurrentActive ? '#991B1B' : '#F1F5F9', color: isCurrentActive ? '#FFFFFF' : '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: isCurrentActive ? '#000080' : '#F1F5F9', color: isCurrentActive ? '#FFFFFF' : '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
                         <Shield size={20} />
                       </div>
                       <div>
@@ -702,18 +703,18 @@ export default function ProfileSettings() {
                     </div>
 
                     {isCurrentActive && (
-                      <span style={{ background: '#991B1B', color: '#ffffff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ background: '#000080', color: '#ffffff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Check size={14} />
                       </span>
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem', borderTop: isCurrentActive ? '1px solid #FCA5A5' : '1px solid #F1F5F9' }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: isCurrentActive ? '#991B1B' : '#64748B' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem', borderTop: isCurrentActive ? '1px solid #93C5FD' : '1px solid #F1F5F9' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: isCurrentActive ? '#000080' : '#64748B' }}>
                       {isCurrentActive ? '● Active Persona' : 'Click to Activate'}
                     </span>
                     {isCurrentActive && (
-                      <span style={{ fontSize: '0.72rem', background: '#991B1B', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.72rem', background: '#000080', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 700 }}>
                         Current
                       </span>
                     )}
@@ -732,7 +733,7 @@ export default function ProfileSettings() {
           
           <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Camera style={{ color: '#991B1B' }} />
+              <Camera style={{ color: '#000080' }} />
               Profile Picture Management
             </h3>
             <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>
@@ -742,17 +743,17 @@ export default function ProfileSettings() {
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', background: '#F8FAFC', padding: '2rem', borderRadius: '14px', border: '2px dashed #CBD5E1' }}>
             
-            {/* Avatar Preview */}
-            <div style={{ position: 'relative', width: '130px', height: '130px' }}>
+            {/* Avatar Preview (140px) */}
+            <div style={{ position: 'relative', width: '140px', height: '140px' }}>
               {currentAvatarUrl && !avatarLoadError ? (
                 <img 
                   src={currentAvatarUrl} 
                   alt="Avatar Preview" 
                   onError={() => setAvatarLoadError(true)}
-                  style={{ width: '130px', height: '130px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.1)' }} 
+                  style={{ width: '140px', height: '140px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.1)' }} 
                 />
               ) : (
-                <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'linear-gradient(135deg, #0C2340 0%, #1E3A8A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '3rem', fontWeight: 800, border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.1)' }}>
+                <div style={{ width: '140px', height: '140px', borderRadius: '50%', background: 'linear-gradient(135deg, #000080 0%, #1E3A8A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '3rem', fontWeight: 800, border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.1)' }}>
                   {firstName ? firstName[0].toUpperCase() : '👤'}
                 </div>
               )}
@@ -811,7 +812,7 @@ export default function ProfileSettings() {
                   }
                 }} 
                 disabled={avatarUploading}
-                style={{ flex: 1.4, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem', backgroundColor: '#991B1B', borderColor: '#991B1B' }}
+                style={{ flex: 1.4, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem' }}
               >
                 {avatarUploading ? 'Uploading...' : 'Save Profile Picture'}
               </button>
@@ -842,7 +843,7 @@ export default function ProfileSettings() {
           
           <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FileSignature style={{ color: '#991B1B' }} />
+              <FileSignature style={{ color: '#000080' }} />
               Official Digital Signature
             </h3>
             <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>
@@ -914,7 +915,7 @@ export default function ProfileSettings() {
                   }
                 }} 
                 disabled={signatureUploading}
-                style={{ flex: 1.4, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem', backgroundColor: '#991B1B', borderColor: '#991B1B' }}
+                style={{ flex: 1.4, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem' }}
               >
                 {signatureUploading ? 'Saving Asset...' : 'Save Signature'}
               </button>
