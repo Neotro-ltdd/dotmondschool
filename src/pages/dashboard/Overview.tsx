@@ -18,9 +18,10 @@ import {
   BookOpen,
   Award,
   CreditCard,
-  ArrowRight,
+  Printer,
+  ShieldCheck,
   UserCheck,
-  ShieldAlert
+  DollarSign
 } from 'lucide-react';
 import SlideOver from '../../components/ui/SlideOver';
 import './Dashboard.css';
@@ -301,6 +302,61 @@ export default function Overview() {
                 />
               </div>
 
+              {/* Principal Shortcuts */}
+              <div className="quick-shortcuts-section">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>Executive Workstation Shortcuts</h3>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748B' }}>Fast access to principal approvals, reports, and governance.</p>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#000080', background: '#EFF6FF', padding: '4px 12px', borderRadius: '12px' }}>
+                    Principal Portal
+                  </span>
+                </div>
+
+                <div className="shortcuts-grid">
+                  <Link to="/dashboard/approvals" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                      <CheckCircle size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Result Approvals</h4>
+                      <p>Review & stamp broadsheets</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/reports" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                      <Award size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Academic Reports</h4>
+                      <p>Student performance analytics</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/teachers" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                      <Users size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Faculty Directory</h4>
+                      <p>View teachers & assignments</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/students" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                      <GraduationCap size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Student Records</h4>
+                      <p>Full student database</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
               {/* Charts Grid */}
               <div className="charts-grid">
                 <div className="chart-card">
@@ -402,6 +458,61 @@ export default function Overview() {
                   trendTag={{ text: 'Bank Uploads', type: 'positive' }}
                   subText="Online Receipts Staged"
                 />
+              </div>
+
+              {/* Accountant Shortcuts */}
+              <div className="quick-shortcuts-section">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>Finance & Billing Shortcuts</h3>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748B' }}>Quick actions for payment verifications, POS sales, and student ledger.</p>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#000080', background: '#EFF6FF', padding: '4px 12px', borderRadius: '12px' }}>
+                    Accountant Operations
+                  </span>
+                </div>
+
+                <div className="shortcuts-grid">
+                  <Link to="/dashboard/finance/verifications" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                      <CheckCircle size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Bank Verifications</h4>
+                      <p>Approve online transfers</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/finance/pos" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                      <CreditCard size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Point of Sale (POS)</h4>
+                      <p>Issue counter receipts</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/operations/manual-clearance" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                      <ShieldCheck size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Manual Clearance</h4>
+                      <p>Stamp exam clearances</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/finance/ledger" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                      <FileText size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Student Ledgers</h4>
+                      <p>View billing balances</p>
+                    </div>
+                  </Link>
+                </div>
               </div>
 
               <div className="charts-grid">
@@ -515,6 +626,112 @@ export default function Overview() {
                 )}
               </div>
 
+              {/* Teacher Shortcuts */}
+              <div className="quick-shortcuts-section">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>Teacher Workstation Shortcuts</h3>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748B' }}>Fast actions for attendance taking, assessment entry, and class records.</p>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#000080', background: '#EFF6FF', padding: '4px 12px', borderRadius: '12px' }}>
+                    Teacher Tools
+                  </span>
+                </div>
+
+                <div className="shortcuts-grid">
+                  <Link to="/dashboard/teacher/attendance" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                      <CheckCircle size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Attendance Register</h4>
+                      <p>Mark daily class attendance</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/teacher/assessment" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                      <FileText size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Continuous Assessment</h4>
+                      <p>Input test & assignment scores</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/teacher/my-class" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                      <Users size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>My Class Roster</h4>
+                      <p>View student arm records</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/teacher/results" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                      <Award size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Teacher Results</h4>
+                      <p>Review class broadsheets</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+      ) : userRole === 'Vendor' ? (
+
+        /* ════════ VENDOR DASHBOARD ════════ */
+        <div className="analytics-section">
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+              <p>Loading vendor print dashboard...</p>
+            </div>
+          ) : vendorData && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+              <div className="stats-grid">
+                <StatCard 
+                  label="TOTAL REGISTERED STUDENTS" 
+                  value={vendorData.totalStudents} 
+                  icon={Users} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                />
+                <StatCard 
+                  label="PRINTED ID CARDS" 
+                  value={vendorData.printedCards} 
+                  icon={CheckCircle} 
+                  topColor="#10B981"
+                  iconBg="#DCFCE7" iconColor="#15803D" 
+                />
+                <StatCard 
+                  label="PENDING ID CARDS" 
+                  value={vendorData.pendingCards} 
+                  icon={AlertCircle} 
+                  topColor="#F59E0B"
+                  iconBg="#FEF3C7" iconColor="#D97706" 
+                />
+              </div>
+
+              <div className="quick-shortcuts-section">
+                <div className="shortcuts-grid">
+                  <Link to="/dashboard/vendor-hub" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                      <Printer size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>ID Card Print Queue</h4>
+                      <p>Generate plastic ID badges</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
             </div>
           )}
         </div>
