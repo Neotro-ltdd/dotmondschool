@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
-import '../SystemOperations.css';
 import { useDialog } from '../../../../context/DialogContext';
-
+import { 
+  School, 
+  UserCheck, 
+  UserX, 
+  Users, 
+  Search, 
+  LayoutList, 
+  LayoutGrid, 
+  Edit3, 
+  CheckCircle2, 
+  AlertCircle, 
+  X,
+  UserPlus
+} from 'lucide-react';
+import './ClassAllocations.css';
 
 interface TeacherItem {
   id: string;
@@ -18,7 +31,7 @@ interface ClassItem {
   section: string;
   session: string;
   classTeacherName: string | null;
-  classTeacherId?: string; // Add if API returns it, or we will just use it for mapping
+  classTeacherId?: string;
 }
 
 export default function ClassAllocations() {
@@ -28,8 +41,11 @@ export default function ClassAllocations() {
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Selection States
+  // Selection & Search Filters
   const [levelFilter, setLevelFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   // Modal State for assigning
   const [showModal, setShowModal] = useState(false);
@@ -83,23 +99,45 @@ export default function ClassAllocations() {
     
     if (numA !== numB) {
       if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Middle Primary', 'Lower Primary', 'Primary', 'Nursery 2', 'Nursery 1', 'Nursery'].includes(a.level)) {
-        return numB - numA; // Descending
+        return numB - numA;
       }
-      return numA - numB; // Ascending
+      return numA - numB;
     }
     
     return (a.section || '').localeCompare(b.section || '');
   });
 
-  const filteredClasses = levelFilter ? sortedClasses.filter(c => c.level === levelFilter) : sortedClasses;
+  // Filter Computation
+  let filteredClasses = sortedClasses;
+  if (levelFilter) {
+    filteredClasses = filteredClasses.filter(c => c.level === levelFilter);
+  }
+  if (statusFilter) {
+    if (statusFilter === 'assigned') {
+      filteredClasses = filteredClasses.filter(c => !!c.classTeacherName);
+    } else if (statusFilter === 'unassigned') {
+      filteredClasses = filteredClasses.filter(c => !c.classTeacherName);
+    }
+  }
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filteredClasses = filteredClasses.filter(c => 
+      c.name.toLowerCase().includes(query) ||
+      c.level.toLowerCase().includes(query) ||
+      (c.classTeacherName && c.classTeacherName.toLowerCase().includes(query))
+    );
+  }
+
+  // Metrics
+  const totalClasses = classes.length;
+  const assignedCount = classes.filter(c => !!c.classTeacherName).length;
+  const unassignedCount = totalClasses - assignedCount;
+  const teacherPoolCount = teachers.length;
 
   const openAssignModal = (cls: ClassItem) => {
     setSelectedClass(cls);
-    
-    // Attempt to find the teacher ID by name since GetClasses currently returns classTeacherName
     const teacherMatch = teachers.find(t => `${t.firstName} ${t.surname}` === cls.classTeacherName);
     setSelectedTeacherId(teacherMatch ? teacherMatch.id : '');
-    
     setShowModal(true);
   };
 
@@ -114,7 +152,8 @@ export default function ClassAllocations() {
         teacherId: selectedTeacherId || null
       });
       setShowModal(false);
-      fetchData(); // Refresh data
+      fetchData();
+      showAlert('Class Form Teacher allocation updated successfully');
     } catch (err: any) {
       showAlert(err.message || 'Failed to assign class teacher');
     } finally {
@@ -122,16 +161,85 @@ export default function ClassAllocations() {
     }
   };
 
+  const getTeacherInitials = (name: string) => {
+    if (!name) return 'TR';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
-    <div className="operations-page">
-      <div className="page-header">
+    <div className="allocations-page-container">
+      {/* Header */}
+      <div className="allocations-page-header">
         <div>
-          <h1 className="page-title">Class Allocations</h1>
-          <p className="page-subtitle">Assign Class Teachers to specific classes.</p>
+          <h1 className="allocations-page-title">Class Allocations</h1>
+          <p className="allocations-page-subtitle">Assign and manage Form Teachers assigned to each class</p>
         </div>
-        <div className="filters" style={{ display: 'flex', gap: '1rem' }}>
-          <select className="form-control" value={levelFilter} onChange={e => setLevelFilter(e.target.value)}>
-            <option value="">-- All Levels --</option>
+      </div>
+
+      {/* Top Metrics Cards */}
+      <div className="allocations-metrics-grid">
+        <div className="allocations-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">TOTAL CLASSES</span>
+            <span className="metric-number">{totalClasses}</span>
+          </div>
+          <div className="metric-icon-badge total">
+            <School size={24} />
+          </div>
+        </div>
+
+        <div className="allocations-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">ASSIGNED FORM TEACHERS</span>
+            <span className="metric-number">{assignedCount}</span>
+          </div>
+          <div className="metric-icon-badge assigned">
+            <UserCheck size={24} />
+          </div>
+        </div>
+
+        <div className="allocations-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">UNASSIGNED CLASSES</span>
+            <span className="metric-number">{unassignedCount}</span>
+          </div>
+          <div className="metric-icon-badge unassigned">
+            <UserX size={24} />
+          </div>
+        </div>
+
+        <div className="allocations-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">STAFF POOL</span>
+            <span className="metric-number">{teacherPoolCount}</span>
+          </div>
+          <div className="metric-icon-badge staff">
+            <Users size={24} />
+          </div>
+        </div>
+      </div>
+
+      {/* Controls & Filter Bar */}
+      <div className="allocations-controls-card">
+        <div className="allocations-search-group">
+          <div className="allocations-search-box">
+            <Search size={16} className="allocations-search-icon" />
+            <input 
+              type="text" 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              placeholder="Search class or form teacher name..."
+            />
+          </div>
+
+          <select 
+            value={levelFilter} 
+            onChange={(e) => setLevelFilter(e.target.value)} 
+            className="select-filter-input"
+          >
+            <option value="">All Levels</option>
             <option value="Senior Secondary">Senior Secondary</option>
             <option value="Junior Secondary">Junior Secondary</option>
             <option value="Upper Primary">Upper Primary</option>
@@ -141,83 +249,187 @@ export default function ClassAllocations() {
             <option value="Nursery 1">Nursery 1</option>
             <option value="Kindergarten">Kindergarten</option>
           </select>
+
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)} 
+            className="select-filter-input"
+          >
+            <option value="">All Statuses</option>
+            <option value="assigned">Assigned</option>
+            <option value="unassigned">Unassigned</option>
+          </select>
+        </div>
+
+        {/* View Switcher */}
+        <div className="view-mode-toggle">
+          <button 
+            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => setViewMode('table')}
+          >
+            <LayoutList size={16} /> Table View
+          </button>
+          <button 
+            className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+          >
+            <LayoutGrid size={16} /> Grid Cards
+          </button>
         </div>
       </div>
 
-      <div className="glass-panel" style={{ padding: '2rem' }}>
-        {loading ? (
-          <p>Loading allocations...</p>
-        ) : filteredClasses.length === 0 ? (
-          <p className="empty-text">No classes found for this level.</p>
-        ) : (
-          <table className="data-table">
+      {/* Main Content */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem', background: '#FFF', borderRadius: '16px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+          Loading class allocations...
+        </div>
+      ) : filteredClasses.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', background: '#FFF', borderRadius: '16px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+          No classes match the selected filter criteria.
+        </div>
+      ) : viewMode === 'table' ? (
+        /* TABLE VIEW */
+        <div className="allocations-table-wrapper">
+          <table className="executive-allocations-table">
             <thead>
               <tr>
                 <th>Class Name</th>
-                <th>Level</th>
-                <th>Class Teacher</th>
-                <th>Action</th>
+                <th>Academic Level</th>
+                <th>Assigned Class Form Teacher</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredClasses.map(cls => (
                 <tr key={cls.id}>
-                  <td style={{ fontWeight: '500' }}>{cls.name}</td>
-                  <td>{cls.level}</td>
+                  <td>
+                    <div className="class-badge-box">
+                      <span className="class-main-name">{cls.name}</span>
+                      <span className="class-level-subtext">{cls.section || 'General'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 700, background: '#F1F5F9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.82rem' }}>
+                      {cls.level}
+                    </span>
+                  </td>
                   <td>
                     {cls.classTeacherName ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <img 
-                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(cls.classTeacherName)}&background=000080&color=fff&rounded=true&bold=true`}
-                          alt="Avatar" 
-                          className="avatar-small" 
-                          style={{ width: '24px', height: '24px', margin: 0 }}
-                        />
-                        {cls.classTeacherName}
+                      <div className="teacher-profile-cell">
+                        <div className="teacher-avatar">
+                          {getTeacherInitials(cls.classTeacherName)}
+                        </div>
+                        <span className="teacher-name-title">{cls.classTeacherName}</span>
                       </div>
                     ) : (
-                      <span className="badge badge-warning">Unassigned</span>
+                      <span className="unassigned-warning-pill">
+                        <AlertCircle size={14} /> Unassigned
+                      </span>
                     )}
                   </td>
                   <td>
+                    <span className={`status-pill ${cls.classTeacherName ? 'active' : 'inactive'}`}>
+                      {cls.classTeacherName ? 'Assigned' : 'Needs Teacher'}
+                    </span>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
                     <button 
-                      className="btn btn-outline btn-sm" 
+                      className={`btn-assign-action ${cls.classTeacherName ? 'change' : 'new'}`}
                       onClick={() => openAssignModal(cls)}
                     >
-                      {cls.classTeacherName ? 'Change' : 'Assign'}
+                      <UserPlus size={15} />
+                      {cls.classTeacherName ? 'Change Teacher' : 'Assign Teacher'}
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      ) : (
+        /* GRID CARDS VIEW */
+        <div className="allocations-grid-wrapper">
+          {filteredClasses.map(cls => (
+            <div key={cls.id} className="allocation-grid-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>{cls.name}</h3>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B' }}>{cls.level}</span>
+                </div>
+                <span className={`status-pill ${cls.classTeacherName ? 'active' : 'inactive'}`}>
+                  {cls.classTeacherName ? 'Assigned' : 'Needs Teacher'}
+                </span>
+              </div>
 
+              <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '0.5rem' }}>
+                  Form Teacher
+                </span>
+                {cls.classTeacherName ? (
+                  <div className="teacher-profile-cell">
+                    <div className="teacher-avatar">
+                      {getTeacherInitials(cls.classTeacherName)}
+                    </div>
+                    <span className="teacher-name-title">{cls.classTeacherName}</span>
+                  </div>
+                ) : (
+                  <span className="unassigned-warning-pill">
+                    <AlertCircle size={14} /> Unassigned
+                  </span>
+                )}
+              </div>
+
+              <button 
+                className={`btn-assign-action ${cls.classTeacherName ? 'change' : 'new'}`}
+                onClick={() => openAssignModal(cls)}
+                style={{ width: '100%', justifyContent: 'center', marginTop: 'auto' }}
+              >
+                <UserPlus size={15} />
+                {cls.classTeacherName ? 'Change Form Teacher' : 'Assign Form Teacher'}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ASSIGN TEACHER MODAL */}
       {showModal && selectedClass && (
         <div className="modal-overlay">
-          <div className="modal-content glass-panel">
-            <h2>Assign Class Teacher</h2>
-            <p className="text-muted" style={{ marginBottom: '1.5rem' }}>
-              Assigning a Class Teacher for <strong>{selectedClass.name}</strong>
+          <div className="modal-content glass-panel" style={{ maxWidth: '480px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#0F172A' }}>Assign Form Teacher</h2>
+              <button onClick={() => setShowModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748B' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <p style={{ color: '#475569', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+              Select a Form Teacher to assign to <strong>{selectedClass.name}</strong> ({selectedClass.level})
             </p>
+
             <form onSubmit={handleAssign}>
-              <div className="form-group" style={{ marginBottom: '2rem' }}>
-                <label>Select Teacher</label>
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                  Select Staff Member
+                </label>
                 <select 
-                  className="form-control" 
+                  className="select-filter-input"
+                  style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
                   value={selectedTeacherId} 
                   onChange={(e) => setSelectedTeacherId(e.target.value)}
                 >
-                  <option value="">-- Unassigned --</option>
+                  <option value="">-- Unassigned (Leave Empty) --</option>
                   {teachers.map(t => (
                     <option key={t.id} value={t.id}>{`${t.firstName} ${t.surname}`}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="modal-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
+              <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>
+                  Cancel
+                </button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
                   {submitting ? 'Saving...' : 'Save Allocation'}
                 </button>
