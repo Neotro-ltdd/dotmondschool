@@ -1,9 +1,19 @@
-import { useActiveTerm, invalidateActiveTermCache } from '../../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
+import { useActiveTerm, invalidateActiveTermCache } from '../../../../hooks/useActiveTerm';
 import { api } from '../../../../services/api';
-import '../SystemOperations.css';
+import './TermSetup.css';
 import { useDialog } from '../../../../context/DialogContext';
-import { Sparkles, Calendar, ShieldAlert, CheckCircle, Palmtree } from 'lucide-react';
+import { 
+  Calendar, 
+  Clock, 
+  CheckCircle, 
+  Palmtree, 
+  Scale, 
+  Save, 
+  AlertCircle, 
+  Sparkles, 
+  Layers 
+} from 'lucide-react';
 
 export default function TermSetup() {
   const { showAlert } = useDialog();
@@ -64,7 +74,7 @@ export default function TermSetup() {
     }
     
     if (caWeightFirst + caWeightSecond + examWeight !== 100) {
-      showAlert("The sum of CA weights and Exam weight must equal exactly 100.");
+      showAlert("The sum of CA weights and Exam weight must equal exactly 100%.");
       return;
     }
     
@@ -95,211 +105,291 @@ export default function TermSetup() {
     }
   };
 
+  const totalWeight = caWeightFirst + caWeightSecond + examWeight;
+  const isWeightValid = totalWeight === 100;
+
   return (
-    <div className="operations-page fade-in">
-      <div className="page-header">
+    <div className="termsetup-page-container">
+      {/* Page Header */}
+      <div className="termsetup-page-header">
         <div>
-          <h1 className="page-title">Term & Session Setup</h1>
-          <p className="page-subtitle">Configure session parameters, operational status (In Session vs. Holiday), and CA weights.</p>
+          <h1 className="termsetup-page-title">Term & Session Setup</h1>
+          <p className="termsetup-page-subtitle">Configure operational status, academic calendar parameters, and continuous assessment weights</p>
         </div>
       </div>
 
-      <div className="operations-grid" style={{ gridTemplateColumns: '1fr', maxWidth: '680px', margin: '0 auto' }}>
-        <div className="operations-card glass-panel" style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '2rem' }}>
-          
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem' }}>Configure Academic Term</h2>
-          <p style={{ marginBottom: '1.75rem', color: '#64748B', fontSize: '0.9rem' }}>Define session status and control automatic attendance logging and report triggers.</p>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
+      {/* KPI Metrics Banner */}
+      <div className="termsetup-metrics-grid">
+        <div className="termsetup-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Active Session</span>
+            <span className="metric-number">{session || '2025/2026'}</span>
+          </div>
+          <div className="metric-icon-badge session">
+            <Calendar size={24} />
+          </div>
+        </div>
+
+        <div className="termsetup-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Active Term</span>
+            <span className="metric-number" style={{ fontSize: '1.4rem', marginTop: '0.3rem' }}>
+              {term || 'First Term'}
+            </span>
+          </div>
+          <div className="metric-icon-badge term">
+            <Clock size={24} />
+          </div>
+        </div>
+
+        <div className="termsetup-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">System Status</span>
+            <span className="metric-number" style={{ fontSize: '1.15rem', marginTop: '0.4rem', color: isHoliday ? '#B45309' : '#047857' }}>
+              {isHoliday ? '🌴 Holiday Mode' : '🟢 In Session (Active)'}
+            </span>
+          </div>
+          <div className="metric-icon-badge status">
+            {isHoliday ? <Palmtree size={24} /> : <CheckCircle size={24} />}
+          </div>
+        </div>
+
+        <div className="termsetup-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Grading Scheme</span>
+            <span className="metric-number" style={{ fontSize: '1.15rem', marginTop: '0.4rem' }}>
+              {caWeightFirst}% / {caWeightSecond}% / {examWeight}%
+            </span>
+          </div>
+          <div className="metric-icon-badge weights">
+            <Scale size={24} />
+          </div>
+        </div>
+      </div>
+
+      {/* Workspace Grid */}
+      <div className="termsetup-workspace-grid">
+        {/* Card 1: Academic Calendar & Status Setup */}
+        <div className="termsetup-card">
+          <div>
+            <h2 className="termsetup-card-title">Academic Term & Operational Status</h2>
+            <p className="termsetup-card-subtitle">Define active term parameters and control automated attendance scanning</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                Academic Session
+              </label>
+              <input 
+                type="text" 
+                className="select-filter-input"
+                value={session} 
+                onChange={(e) => setSession(e.target.value)} 
+                placeholder="2025/2026" 
+                style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
+              />
+            </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div>
-                <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>Session</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  value={session} 
-                  onChange={(e) => setSession(e.target.value)} 
-                  placeholder="2025/2026" 
-                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
+            <div>
+              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                Academic Term
+              </label>
+              <select 
+                value={term} 
+                onChange={(e) => {
+                  const selectedTerm = e.target.value;
+                  setTerm(selectedTerm);
+                  if (selectedTerm === 'Holiday') {
+                    setIsHoliday(true);
+                    setIsActive(false);
+                    setStatus('Holiday');
+                  } else if (selectedTerm === 'MTB (Mid Term Break)' || selectedTerm === 'MTB') {
+                    setIsHoliday(true);
+                    setIsActive(false);
+                    setStatus('MTB');
+                  } else {
+                    setIsHoliday(false);
+                    setIsActive(true);
+                    setStatus('Active');
+                  }
+                }} 
+                className="select-filter-input"
+                style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
+              >
+                <option value="First Term">First Term</option>
+                <option value="Second Term">Second Term</option>
+                <option value="Third Term">Third Term</option>
+                <option value="Holiday">Holiday</option>
+                <option value="MTB (Mid Term Break)">MTB (Mid Term Break)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Operational Status Banner Card */}
+          <div className={`operational-banner ${isHoliday ? 'holiday' : 'active'}`}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {isHoliday ? <Palmtree size={20} color="#D97706" /> : <CheckCircle size={20} color="#15803D" />}
+                <strong style={{ fontSize: '1rem', color: isHoliday ? '#92400E' : '#166534' }}>
+                  {isHoliday ? '🌴 Holiday / Session Ended Mode' : '🟢 School In Session (Active Mode)'}
+                </strong>
               </div>
-              
-              <div>
-                <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>Term</label>
-                <select 
-                  value={term} 
-                  onChange={(e) => {
-                    const selectedTerm = e.target.value;
-                    setTerm(selectedTerm);
-                    if (selectedTerm === 'Holiday') {
-                      setIsHoliday(true);
-                      setIsActive(false);
-                      setStatus('Holiday');
-                    } else if (selectedTerm === 'MTB (Mid Term Break)' || selectedTerm === 'MTB') {
-                      setIsHoliday(true);
-                      setIsActive(false);
-                      setStatus('MTB');
-                    } else {
-                      setIsHoliday(false);
-                      setIsActive(true);
-                      setStatus('Active');
-                    }
-                  }} 
-                  className="form-control"
-                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                >
-                  <option value="First Term">First Term</option>
-                  <option value="Second Term">Second Term</option>
-                  <option value="Third Term">Third Term</option>
-                  <option value="Holiday">Holiday</option>
-                  <option value="MTB (Mid Term Break)">MTB (Mid Term Break)</option>
-                </select>
-              </div>
+
+              <span style={{ 
+                fontSize: '0.72rem', 
+                fontWeight: 800, 
+                padding: '4px 10px', 
+                borderRadius: '12px',
+                background: isHoliday ? '#FEF3C7' : '#DCFCE7',
+                color: isHoliday ? '#B45309' : '#15803D'
+              }}>
+                {isHoliday ? 'ATTENDANCE & REPORTS STOPPED' : 'LIVE SYSTEM'}
+              </span>
             </div>
 
-            {/* ════════ OPERATIONAL STATUS TOGGLE CARD ════════ */}
-            <div style={{
-              padding: '1.25rem',
-              borderRadius: '12px',
-              border: isHoliday ? '2px solid #F59E0B' : '2px solid #10B981',
-              backgroundColor: isHoliday ? '#FFFBEB' : '#F0FDF4',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.85rem'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {isHoliday ? <Palmtree size={20} color="#D97706" /> : <CheckCircle size={20} color="#15803D" />}
-                  <strong style={{ fontSize: '1rem', color: isHoliday ? '#92400E' : '#166534' }}>
-                    {isHoliday ? '🌴 Holiday / Session Ended Mode' : '🟢 School In Session (Active Mode)'}
-                  </strong>
-                </div>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: isHoliday ? '#78350F' : '#14532D', lineHeight: 1.5 }}>
+              {isHoliday 
+                ? 'School has closed or the session has ended after Third Term. Gate/class attendance scanning is blocked, and automated attendance notifications are paused.'
+                : 'School is actively in session. Gate attendance scanners, class registers, and automated parent notifications are fully operational.'
+              }
+            </p>
 
-                <span style={{ 
-                  fontSize: '0.75rem', 
-                  fontWeight: 800, 
-                  padding: '4px 10px', 
-                  borderRadius: '12px',
-                  background: isHoliday ? '#FEF3C7' : '#DCFCE7',
-                  color: isHoliday ? '#B45309' : '#15803D'
-                }}>
-                  {isHoliday ? 'ATTENDANCE & REPORTS STOPPED' : 'LIVE SYSTEM'}
-                </span>
-              </div>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem' }}>
+              <button
+                type="button"
+                className="btn-status-toggle"
+                onClick={() => { setIsHoliday(false); setIsActive(true); setStatus('Active'); }}
+                style={{
+                  border: !isHoliday ? '2px solid #10B981' : '1px solid #CBD5E1',
+                  background: !isHoliday ? '#10B981' : '#FFFFFF',
+                  color: !isHoliday ? '#FFFFFF' : '#334155'
+                }}
+              >
+                <CheckCircle size={16} /> In Session (Active)
+              </button>
 
-              <p style={{ margin: 0, fontSize: '0.85rem', color: isHoliday ? '#78350F' : '#14532D', lineHeight: 1.5 }}>
-                {isHoliday 
-                  ? 'School has closed or the session has ended after Third Term. Gate/class attendance scanning is blocked, and automated attendance notifications/reports are paused.'
-                  : 'School is actively in session. Gate attendance scanners, class attendance registers, and automated parent notifications are fully operational.'
-                }
-              </p>
+              <button
+                type="button"
+                className="btn-status-toggle"
+                onClick={() => { setIsHoliday(true); setIsActive(false); setStatus('Holiday'); }}
+                style={{
+                  border: isHoliday ? '2px solid #D97706' : '1px solid #CBD5E1',
+                  background: isHoliday ? '#D97706' : '#FFFFFF',
+                  color: isHoliday ? '#FFFFFF' : '#334155'
+                }}
+              >
+                <Palmtree size={16} /> Holiday / Session Ended
+              </button>
+            </div>
+          </div>
 
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                <button
-                  type="button"
-                  onClick={() => { setIsHoliday(false); setIsActive(true); setStatus('Active'); }}
-                  style={{
-                    flex: 1,
-                    padding: '0.6rem 1rem',
-                    borderRadius: '8px',
-                    border: !isHoliday ? '2px solid #10B981' : '1px solid #CBD5E1',
-                    background: !isHoliday ? '#10B981' : '#FFFFFF',
-                    color: !isHoliday ? '#FFFFFF' : '#334155',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <CheckCircle size={16} /> In Session (Active)
-                </button>
+          <div>
+            <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+              Next Term Resumption Date
+            </label>
+            {loading ? (
+              <p style={{ color: '#64748B', fontSize: '0.88rem' }}>Loading date parameters...</p>
+            ) : (
+              <input 
+                type="date" 
+                className="select-filter-input"
+                value={resumptionDate} 
+                onChange={(e) => setResumptionDate(e.target.value)} 
+                style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
+              />
+            )}
+          </div>
+        </div>
 
-                <button
-                  type="button"
-                  onClick={() => { setIsHoliday(true); setIsActive(false); setStatus('Holiday'); }}
-                  style={{
-                    flex: 1,
-                    padding: '0.6rem 1rem',
-                    borderRadius: '8px',
-                    border: isHoliday ? '2px solid #D97706' : '1px solid #CBD5E1',
-                    background: isHoliday ? '#D97706' : '#FFFFFF',
-                    color: isHoliday ? '#FFFFFF' : '#334155',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <Palmtree size={16} /> Holiday / Session Ended
-                </button>
-              </div>
+        {/* Card 2: CA & Exam Grading Weights */}
+        <div className="termsetup-card">
+          <div>
+            <h2 className="termsetup-card-title">Continuous Assessment & Exam Weights</h2>
+            <p className="termsetup-card-subtitle">Configure mark weightings for 1st CA, 2nd CA, and Final Examination</p>
+          </div>
+
+          {/* Weighting Progress Bar Visualizer */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.4rem' }}>
+              <span>Weighting Breakdown</span>
+              <span style={{ color: isWeightValid ? '#047857' : '#DC2626' }}>
+                {isWeightValid ? '100% Balanced' : `Total: ${totalWeight}% (Must be 100%)`}
+              </span>
+            </div>
+            
+            <div className="weighting-progress-bar">
+              <div className="weight-segment-ca1" style={{ width: `${Math.min(caWeightFirst, 100)}%` }} title={`1st CA: ${caWeightFirst}%`} />
+              <div className="weight-segment-ca2" style={{ width: `${Math.min(caWeightSecond, 100)}%` }} title={`2nd CA: ${caWeightSecond}%`} />
+              <div className="weight-segment-exam" style={{ width: `${Math.min(examWeight, 100)}%` }} title={`Exam: ${examWeight}%`} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.65rem', fontSize: '0.78rem', fontWeight: 700 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#1E40AF' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6' }} /> 1st CA ({caWeightFirst}%)
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#6B21A8' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#8B5CF6' }} /> 2nd CA ({caWeightSecond}%)
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#047857' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981' }} /> Exam ({examWeight}%)
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                1st CA (%)
+              </label>
+              <input 
+                type="number" 
+                className="select-filter-input"
+                value={caWeightFirst} 
+                onChange={(e) => setCaWeightFirst(parseInt(e.target.value) || 0)} 
+                style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
+              />
+            </div>
+            
+            <div>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                2nd CA (%)
+              </label>
+              <input 
+                type="number" 
+                className="select-filter-input"
+                value={caWeightSecond} 
+                onChange={(e) => setCaWeightSecond(parseInt(e.target.value) || 0)} 
+                style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
+              />
             </div>
 
             <div>
-              <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>Next Term Resumption Date</label>
-              {loading ? (
-                <p style={{ color: '#64748B' }}>Loading parameters...</p>
-              ) : (
-                <input 
-                  type="date" 
-                  className="form-control" 
-                  value={resumptionDate} 
-                  onChange={(e) => setResumptionDate(e.target.value)} 
-                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
-              )}
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                Exam (%)
+              </label>
+              <input 
+                type="number" 
+                className="select-filter-input"
+                value={examWeight} 
+                onChange={(e) => setExamWeight(parseInt(e.target.value) || 0)} 
+                style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
+              />
             </div>
-
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-              <div style={{ flex: 1 }}>
-                <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>1st CA Weight (%)</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  value={caWeightFirst} 
-                  onChange={(e) => setCaWeightFirst(parseInt(e.target.value) || 0)} 
-                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>2nd CA Weight (%)</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  value={caWeightSecond} 
-                  onChange={(e) => setCaWeightSecond(parseInt(e.target.value) || 0)} 
-                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>Exam Weight (%)</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  value={examWeight} 
-                  onChange={(e) => setExamWeight(parseInt(e.target.value) || 0)} 
-                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
-              </div>
-            </div>
-            <p style={{ fontSize: '0.8rem', color: '#64748B', marginTop: '-0.25rem' }}>Grading weights total must equal exactly 100%.</p>
-
           </div>
-          
+
+          <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '12px', border: '1px solid #E2E8F0', fontSize: '0.82rem', color: '#64748B', display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+            <AlertCircle size={16} color="#3B82F6" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <span>CA and Exam weights are used automatically across teacher score sheets and student report card computations.</span>
+          </div>
+
           <button 
-            className="btn btn-primary" 
+            className="btn-save-setup" 
             onClick={handleSave} 
-            disabled={saving || loading}
-            style={{ width: '100%', padding: '0.8rem', fontSize: '1rem', fontWeight: 800, borderRadius: '10px', background: '#000080', color: '#ffffff' }}
+            disabled={saving || loading || !isWeightValid}
           >
-            {saving ? 'Saving Term Configuration...' : 'Save Term & Status Configuration'}
+            <Save size={18} />
+            {saving ? 'Saving Configuration...' : 'Save Term & Status Configuration'}
           </button>
         </div>
       </div>
