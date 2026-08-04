@@ -1,11 +1,34 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
-import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
-import './Management.css'; // We'll share CSS with Teachers
 import IdCardPrintModal from './IdCardPrintModal';
 import EditStudentModal from './EditStudentModal';
 import { useDialog } from '../../../context/DialogContext';
-
+import { 
+  Users, 
+  GraduationCap, 
+  School, 
+  CheckCircle2, 
+  AlertCircle, 
+  Search, 
+  FileSpreadsheet, 
+  UserPlus, 
+  MoreVertical, 
+  Eye, 
+  Edit3, 
+  QrCode, 
+  KeyRound, 
+  Trash2, 
+  LayoutList, 
+  LayoutGrid,
+  Mail,
+  Phone,
+  X,
+  ShieldCheck,
+  ShieldAlert,
+  UserCheck
+} from 'lucide-react';
+import './Students.css';
 
 interface StudentItem {
   id: string;
@@ -39,15 +62,22 @@ export default function Students() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters
+  // Filters & View Mode
   const [filterSearch, setFilterSearch] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
-  // Modal State
+
+  // Modals
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
+  const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
   const [printStudentId, setPrintStudentId] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState({
     surname: '',
     firstName: '',
@@ -65,8 +95,19 @@ export default function Students() {
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   
   // Upload State
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdownId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchStudents = async () => {
     try {
@@ -114,10 +155,11 @@ export default function Students() {
         otherNames: '',
         parentPhoneNumber: '',
         parentEmail: '',
-        classId: formData.classId, // Keep the class selected for rapid entry
+        classId: formData.classId,
         departmentTrack: 'General'
       });
       fetchStudents();
+      showAlert('Student admitted successfully');
     } catch (err: any) {
       showAlert(err.message || 'Failed to admit student');
     } finally {
@@ -126,25 +168,26 @@ export default function Students() {
   };
 
   const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
+    setOpenDropdownId(null);
     if (!identityUserId) {
-        showAlert('This parent does not have an active login account.');
-        return;
+      showAlert('This parent does not have an active login account.');
+      return;
     }
     if (!await showConfirm(`Are you sure you want to regenerate credentials for ${name}'s Parent? Their old password will be invalidated immediately.`)) return;
     
     try {
-        setGeneratingId(identityUserId);
-        const response = await api.post('/user-management/regenerate-credentials', { userId: identityUserId });
-        setCredsData({
-            username: response.username,
-            password: response.password,
-            emailQueued: response.emailQueued
-        });
-        setShowCredsModal(true);
+      setGeneratingId(identityUserId);
+      const response = await api.post('/user-management/regenerate-credentials', { userId: identityUserId });
+      setCredsData({
+        username: response.username,
+        password: response.password,
+        emailQueued: response.emailQueued
+      });
+      setShowCredsModal(true);
     } catch (err: any) {
-        showAlert(err.message || 'Failed to regenerate credentials.');
+      showAlert(err.message || 'Failed to regenerate credentials.');
     } finally {
-        setGeneratingId(null);
+      setGeneratingId(null);
     }
   };
 
@@ -171,6 +214,7 @@ export default function Students() {
   };
 
   const handleDelete = async (studentId: string, studentName: string) => {
+    setOpenDropdownId(null);
     if (!await showConfirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
       return;
     }
@@ -183,6 +227,13 @@ export default function Students() {
     }
   };
 
+  const getStudentInitials = (s: StudentItem) => {
+    const f = s.firstName ? s.firstName[0] : '';
+    const l = s.surname ? s.surname[0] : '';
+    return `${f}${l}`.toUpperCase() || 'ST';
+  };
+
+  // Filter Computation
   let filteredStudents = students;
   if (filterSearch) {
     const searchLower = filterSearch.toLowerCase();
@@ -200,56 +251,110 @@ export default function Students() {
     filteredStudents = filteredStudents.filter(s => s.classId === filterClassId);
   }
 
-  // Generate options for classes based on selected level
+  // Metrics calculation
+  const totalCount = students.length;
+  const clearedCount = students.filter(s => s.isCleared).length;
+  const pendingCount = totalCount - clearedCount;
+  const uniqueClassesCount = new Set(students.map(s => s.className).filter(Boolean)).size;
+
   const classOptions = filterLevel ? classes.filter(c => c.level === filterLevel) : classes;
 
   return (
-    <div className="management-page">
-      <div className="page-header">
+    <div className="students-page-container">
+      
+      {/* Page Header */}
+      <div className="students-page-header">
         <div>
-          <h1 className="page-title">Student Management</h1>
-          <p className="page-subtitle">Admit, manage, and archive student records</p>
+          <h1 className="students-page-title">Student Management</h1>
+          <p className="students-page-subtitle">Manage student enrollment, class placements, clearance status, and credentials</p>
         </div>
-        <div className="header-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <input 
-              type="file" 
-              accept=".xlsx,.xls" 
-              ref={fileInputRef} 
-              style={{ display: 'none' }} 
-              onChange={handleFileUpload} 
-            />
-            <button 
-              className="btn btn-secondary" 
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              <span className="icon">📁</span> {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
-            </button>
-            <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-              <span className="icon">➕</span> Add Student
-            </button>
-          </div>
-          <small style={{ color: 'var(--color-text-light)', fontSize: '0.8rem' }}>
-            Excel Format: Surname, FirstName, OtherNames, Gender, DOB, Class, Phone, Email, DepartmentTrack
-          </small>
+        
+        <div className="header-action-buttons">
+          <input 
+            type="file" 
+            accept=".xlsx,.xls" 
+            ref={fileInputRef} 
+            style={{ display: 'none' }} 
+            onChange={handleFileUpload} 
+          />
+          <button 
+            className="btn-upload-excel" 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            title="Bulk import students via Excel template"
+          >
+            <FileSpreadsheet size={18} />
+            {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
+          </button>
+          
+          <button className="btn-add-student" onClick={() => setShowModal(true)}>
+            <UserPlus size={18} />
+            Admit New Student
+          </button>
         </div>
       </div>
 
-      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '200px' }}>
-          <label>Search Student:</label>
-          <input 
-            type="text" 
-            value={filterSearch} 
-            onChange={(e) => setFilterSearch(e.target.value)} 
-            className="filter-select" 
-            placeholder="Name or Reg. Number..."
-          />
+      {/* Top Metrics Banner */}
+      <div className="students-metrics-grid">
+        <div className="students-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">TOTAL STUDENTS</span>
+            <span className="metric-number">{totalCount}</span>
+          </div>
+          <div className="metric-icon-badge total">
+            <Users size={24} />
+          </div>
         </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Filter by Level:</label>
-          <select value={filterLevel} onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} className="filter-select">
+
+        <div className="students-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">CLEARED STUDENTS</span>
+            <span className="metric-number">{clearedCount}</span>
+          </div>
+          <div className="metric-icon-badge cleared">
+            <ShieldCheck size={24} />
+          </div>
+        </div>
+
+        <div className="students-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">NOT CLEARED</span>
+            <span className="metric-number">{pendingCount}</span>
+          </div>
+          <div className="metric-icon-badge pending">
+            <ShieldAlert size={24} />
+          </div>
+        </div>
+
+        <div className="students-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">CLASSES & LEVELS</span>
+            <span className="metric-number">{uniqueClassesCount || classes.length}</span>
+          </div>
+          <div className="metric-icon-badge classes">
+            <School size={24} />
+          </div>
+        </div>
+      </div>
+
+      {/* Controls & Filter Bar */}
+      <div className="students-controls-card">
+        <div className="search-filter-group">
+          <div className="students-search-box">
+            <Search size={16} className="students-search-icon" />
+            <input 
+              type="text" 
+              value={filterSearch} 
+              onChange={(e) => setFilterSearch(e.target.value)} 
+              placeholder="Search by name or reg. number..."
+            />
+          </div>
+
+          <select 
+            value={filterLevel} 
+            onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} 
+            className="select-filter-input"
+          >
             <option value="">All Levels</option>
             <option value="Senior Secondary">Senior Secondary</option>
             <option value="Junior Secondary">Junior Secondary</option>
@@ -262,106 +367,365 @@ export default function Students() {
             <option value="Nursery 1">Nursery 1</option>
             <option value="Kindergarten">Kindergarten</option>
           </select>
-        </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Filter by Class:</label>
-          <select value={filterClassId} onChange={(e) => setFilterClassId(e.target.value)} className="filter-select">
+
+          <select 
+            value={filterClassId} 
+            onChange={(e) => setFilterClassId(e.target.value)} 
+            className="select-filter-input"
+          >
             <option value="">All Classes</option>
             {classOptions.map(cls => (
               <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
             ))}
           </select>
-        </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Session:</label>
-          <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="filter-select">
+
+          <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="select-filter-input">
             <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
             <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
             <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
           </select>
-        </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Term:</label>
-          <select value={filterTerm} onChange={(e) => setFilterTerm(e.target.value)} className="filter-select">
+
+          <select value={filterTerm} onChange={(e) => setFilterTerm(e.target.value)} className="select-filter-input">
             <option value="First Term">First Term</option>
             <option value="Second Term">Second Term</option>
             <option value="Third Term">Third Term</option>
           </select>
         </div>
+
+        {/* View Switcher */}
+        <div className="view-mode-toggle">
+          <button 
+            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => setViewMode('table')}
+          >
+            <LayoutList size={16} /> Table View
+          </button>
+          <button 
+            className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+          >
+            <LayoutGrid size={16} /> Grid Cards
+          </button>
+        </div>
       </div>
 
-      {error && <div className="alert-error">{error}</div>}
+      {error && <div className="alert-error" style={{ padding: '0.85rem 1rem', borderRadius: '10px', background: '#FEE2E2', color: '#991B1B' }}>{error}</div>}
 
-      <div className="table-container glass-panel">
-        {loading ? (
-          <p className="loading-text">Loading students...</p>
-        ) : filteredStudents.length === 0 ? (
-          <p className="empty-text">No students found.</p>
-        ) : (
-          <table className="data-table">
+      {/* Main Content Area */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem', background: '#FFF', borderRadius: '16px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+          Loading students...
+        </div>
+      ) : filteredStudents.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem', background: '#FFF', borderRadius: '16px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+          No student records matching current filters.
+        </div>
+      ) : viewMode === 'table' ? (
+        /* TABLE VIEW */
+        <div className="students-table-wrapper" ref={dropdownRef}>
+          <table className="executive-students-table">
             <thead>
               <tr>
                 <th>Registration No.</th>
-                <th>Student Name</th>
+                <th>Student Profile</th>
                 <th>Class</th>
                 <th>Parent Contact</th>
                 <th>Clearance</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredStudents.map(student => (
-                <tr key={student.id}>
-                  <td><strong>{student.registrationNumber || 'Pending'}</strong></td>
-                  <td>
-                    <strong>{student.surname} {student.firstName}</strong>
-                    <div className="text-muted text-sm">{student.otherNames}</div>
-                  </td>
-                  <td><span className="badge badge-info">{student.className || 'Unassigned'}</span></td>
-                  <td>
-                    <div>{student.parentEmail}</div>
-                    <div className="text-muted text-sm">{student.parentPhoneNumber}</div>
-                  </td>
-                  <td>
-                    <span className={`badge ${student.isCleared ? 'badge-success' : 'badge-danger'}`} style={{ backgroundColor: student.isCleared ? '#28a745' : '#dc3545', color: 'white' }}>
-                      {student.isCleared ? 'Cleared' : 'Not Cleared'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`badge ${student.status === 'Active' ? 'badge-success' : 'badge-warning'}`}>
-                      {student.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <button className="btn btn-primary btn-sm" onClick={() => setEditingStudent(student)}>
-                        Edit
-                      </button>
-                      <button className="btn btn-danger btn-sm" style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '4px' }} onClick={() => handleDelete(student.id, `${student.surname} ${student.firstName}`)}>
-                        Delete
-                      </button>
-                      <button className="btn btn-secondary btn-sm" onClick={() => setPrintStudentId(student.id)}>
-                        🪪 ID Card
-                      </button>
-                      <button 
-                        className="btn btn-secondary btn-sm" 
-                        title="Parent Credentials"
-                        style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none' }}
-                        onClick={() => handleRegenerateCredentials(student.parentIdentityUserId!, `${student.surname} ${student.firstName}`)}
-                        disabled={generatingId === student.parentIdentityUserId || !student.parentIdentityUserId}
-                      >
-                        {generatingId === student.parentIdentityUserId ? 'Generating...' : '🔐 Credentials'}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filteredStudents.map(student => {
+                const fullName = `${student.firstName} ${student.surname}`;
+                const isDropdownOpen = openDropdownId === student.id;
+
+                return (
+                  <tr key={student.id}>
+                    <td>
+                      <span style={{ fontWeight: 800, color: '#0F172A', fontFamily: 'monospace' }}>
+                        {student.registrationNumber || 'Pending'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="student-profile-cell">
+                        <div className="student-avatar">{getStudentInitials(student)}</div>
+                        <div className="student-name-box">
+                          <span className="student-full-name">{fullName}</span>
+                          {student.otherNames && <span className="student-other-names">{student.otherNames}</span>}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: 700, background: '#F1F5F9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.82rem' }}>
+                        {student.className || 'Unassigned'}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', fontSize: '0.82rem' }}>
+                        {student.parentEmail && (
+                          <span style={{ color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <Mail size={12} color="#94A3B8" /> {student.parentEmail}
+                          </span>
+                        )}
+                        {student.parentPhoneNumber && (
+                          <span style={{ color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <Phone size={12} color="#94A3B8" /> {student.parentPhoneNumber}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`clearance-pill ${student.isCleared ? 'cleared' : 'not-cleared'}`}>
+                        {student.isCleared ? <ShieldCheck size={14} /> : <ShieldAlert size={14} />}
+                        {student.isCleared ? 'Cleared' : 'Not Cleared'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-pill ${student.status === 'Active' ? 'active' : 'inactive'}`}>
+                        {student.status || 'Active'}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <div className="action-dropdown-container">
+                        <button 
+                          className="btn-action-dots"
+                          onClick={() => setOpenDropdownId(isDropdownOpen ? null : student.id)}
+                          title="Actions menu"
+                        >
+                          <MoreVertical size={18} />
+                        </button>
+
+                        {isDropdownOpen && (
+                          <div className="action-dropdown-menu">
+                            <button 
+                              className="dropdown-action-item" 
+                              onClick={() => { setViewingStudent(student); setOpenDropdownId(null); }}
+                            >
+                              <Eye size={15} color="#3B82F6" /> View Full Profile
+                            </button>
+                            <button 
+                              className="dropdown-action-item" 
+                              onClick={() => { setEditingStudent(student); setOpenDropdownId(null); }}
+                            >
+                              <Edit3 size={15} color="#000080" /> Edit Details
+                            </button>
+                            <button 
+                              className="dropdown-action-item" 
+                              onClick={() => { setPrintStudentId(student.id); setOpenDropdownId(null); }}
+                            >
+                              <QrCode size={15} color="#059669" /> Print ID Card
+                            </button>
+                            <button 
+                              className="dropdown-action-item" 
+                              onClick={() => handleRegenerateCredentials(student.parentIdentityUserId!, fullName)}
+                              disabled={generatingId === student.parentIdentityUserId || !student.parentIdentityUserId}
+                            >
+                              <KeyRound size={15} color="#D97706" /> Parent Credentials
+                            </button>
+                            <div className="dropdown-divider" />
+                            <button 
+                              className="dropdown-action-item danger" 
+                              onClick={() => handleDelete(student.id, fullName)}
+                            >
+                              <Trash2 size={15} /> Delete Student
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      ) : (
+        /* GRID CARDS VIEW */
+        <div className="students-grid-wrapper" ref={dropdownRef}>
+          {filteredStudents.map(student => {
+            const fullName = `${student.firstName} ${student.surname}`;
+            const isDropdownOpen = openDropdownId === student.id;
 
+            return (
+              <div key={student.id} className="student-card-item">
+                <div className="student-card-header">
+                  <div className="student-profile-cell">
+                    <div className="student-avatar" style={{ width: '46px', height: '46px', fontSize: '1rem' }}>
+                      {getStudentInitials(student)}
+                    </div>
+                    <div className="student-name-box">
+                      <span className="student-full-name" style={{ fontSize: '1rem' }}>{fullName}</span>
+                      <span style={{ fontSize: '0.78rem', color: '#64748B', fontFamily: 'monospace' }}>
+                        {student.registrationNumber || 'Pending Reg'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="action-dropdown-container">
+                    <button 
+                      className="btn-action-dots"
+                      onClick={() => setOpenDropdownId(isDropdownOpen ? null : student.id)}
+                    >
+                      <MoreVertical size={18} />
+                    </button>
+
+                    {isDropdownOpen && (
+                      <div className="action-dropdown-menu">
+                        <button 
+                          className="dropdown-action-item" 
+                          onClick={() => { setViewingStudent(student); setOpenDropdownId(null); }}
+                        >
+                          <Eye size={15} color="#3B82F6" /> View Full Profile
+                        </button>
+                        <button 
+                          className="dropdown-action-item" 
+                          onClick={() => { setEditingStudent(student); setOpenDropdownId(null); }}
+                        >
+                          <Edit3 size={15} color="#000080" /> Edit Details
+                        </button>
+                        <button 
+                          className="dropdown-action-item" 
+                          onClick={() => { setPrintStudentId(student.id); setOpenDropdownId(null); }}
+                        >
+                          <QrCode size={15} color="#059669" /> Print ID Card
+                        </button>
+                        <button 
+                          className="dropdown-action-item" 
+                          onClick={() => handleRegenerateCredentials(student.parentIdentityUserId!, fullName)}
+                          disabled={generatingId === student.parentIdentityUserId || !student.parentIdentityUserId}
+                        >
+                          <KeyRound size={15} color="#D97706" /> Parent Credentials
+                        </button>
+                        <div className="dropdown-divider" />
+                        <button 
+                          className="dropdown-action-item danger" 
+                          onClick={() => handleDelete(student.id, fullName)}
+                        >
+                          <Trash2 size={15} /> Delete Student
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontWeight: 700, background: '#F1F5F9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.82rem' }}>
+                    {student.className || 'Unassigned'}
+                  </span>
+                  <span className={`clearance-pill ${student.isCleared ? 'cleared' : 'not-cleared'}`}>
+                    {student.isCleared ? 'Cleared' : 'Not Cleared'}
+                  </span>
+                </div>
+
+                <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.82rem' }}>
+                  {student.parentEmail && (
+                    <span style={{ color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Mail size={14} color="#94A3B8" /> {student.parentEmail}
+                    </span>
+                  )}
+                  {student.parentPhoneNumber && (
+                    <span style={{ color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Phone size={14} color="#94A3B8" /> {student.parentPhoneNumber}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* VIEW FULL STUDENT PROFILE MODAL */}
+      {viewingStudent && (
+        <div className="modal-overlay">
+          <div className="modal-content glass-panel" style={{ maxWidth: '540px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0F172A' }}>Student Record Details</h2>
+              <button onClick={() => setViewingStudent(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748B' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#F8FAFC', padding: '1.25rem', borderRadius: '14px', marginBottom: '1.25rem' }}>
+              <div className="student-avatar" style={{ width: '56px', height: '56px', fontSize: '1.2rem' }}>
+                {getStudentInitials(viewingStudent)}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+                  {viewingStudent.firstName} {viewingStudent.surname}
+                </span>
+                <span style={{ fontSize: '0.85rem', color: '#64748B', fontFamily: 'monospace' }}>
+                  Reg: {viewingStudent.registrationNumber || 'Pending'}
+                </span>
+                {viewingStudent.otherNames && (
+                  <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>{viewingStudent.otherNames}</span>
+                )}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ background: '#F8FAFC', padding: '0.85rem', borderRadius: '10px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block' }}>Class</span>
+                <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A' }}>{viewingStudent.className || 'Unassigned'}</span>
+              </div>
+
+              <div style={{ background: '#F8FAFC', padding: '0.85rem', borderRadius: '10px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block' }}>Department Track</span>
+                <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A' }}>{viewingStudent.departmentTrack || 'General'}</span>
+              </div>
+
+              <div style={{ background: '#F8FAFC', padding: '0.85rem', borderRadius: '10px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block' }}>Clearance Status</span>
+                <span className={`clearance-pill ${viewingStudent.isCleared ? 'cleared' : 'not-cleared'}`} style={{ marginTop: '0.25rem' }}>
+                  {viewingStudent.isCleared ? 'Cleared' : 'Not Cleared'}
+                </span>
+              </div>
+
+              <div style={{ background: '#F8FAFC', padding: '0.85rem', borderRadius: '10px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block' }}>Account Status</span>
+                <span className={`status-pill ${viewingStudent.status === 'Active' ? 'active' : 'inactive'}`} style={{ marginTop: '0.25rem' }}>
+                  {viewingStudent.status || 'Active'}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginBottom: '1.5rem' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '0.65rem' }}>
+                Parent / Guardian Contact
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.9rem' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#334155' }}>
+                  <Mail size={16} color="#64748B" /> {viewingStudent.parentEmail || 'No email provided'}
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#334155' }}>
+                  <Phone size={16} color="#64748B" /> {viewingStudent.parentPhoneNumber || 'No phone provided'}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => setViewingStudent(null)}
+              >
+                Close
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={() => {
+                  setEditingStudent(viewingStudent);
+                  setViewingStudent(null);
+                }}
+              >
+                Edit Student Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ID CARD PRINT MODAL */}
       {printStudentId && (
         <IdCardPrintModal 
           studentId={printStudentId} 
@@ -369,6 +733,7 @@ export default function Students() {
         />
       )}
 
+      {/* EDIT STUDENT MODAL */}
       {editingStudent && (
         <EditStudentModal
           student={editingStudent}
@@ -380,6 +745,7 @@ export default function Students() {
         />
       )}
 
+      {/* ADMIT NEW STUDENT MODAL */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content glass-panel large-modal">
@@ -407,13 +773,15 @@ export default function Students() {
                 </div>
 
                 <div className="form-group">
-                  <label>Surname</label>
-                  <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
                   <label>First Name</label>
                   <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
                 </div>
+
+                <div className="form-group">
+                  <label>Surname</label>
+                  <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required />
+                </div>
+
                 <div className="form-group full-width">
                   <label>Other Names</label>
                   <input type="text" name="otherNames" value={formData.otherNames} onChange={handleInputChange} />
@@ -444,43 +812,45 @@ export default function Students() {
         </div>
       )}
 
+      {/* REGENERATE PARENT CREDENTIALS MODAL */}
       {showCredsModal && credsData && (
         <div className="modal-overlay">
           <div className="modal-content glass-panel">
             <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '1rem', marginBottom: '1rem' }}>
-                <h2 style={{ margin: 0, color: '#10b981' }}>Parent Credentials Regenerated!</h2>
-                <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
+              <h2 style={{ margin: 0, color: '#10b981' }}>Parent Credentials Regenerated!</h2>
+              <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
             </div>
             
             <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>Username / Email</label>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
-                </div>
-                <div>
-                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>New Password</label>
-                    <div style={{ fontSize: '1.4rem', fontWeight: 'bold', letterSpacing: '2px', color: '#60a5fa' }}>{credsData.password}</div>
-                </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>Username / Email</label>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
+              </div>
+              <div>
+                <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>New Password</label>
+                <div style={{ fontSize: '1.4rem', fontWeight: 'bold', letterSpacing: '2px', color: '#60a5fa' }}>{credsData.password}</div>
+              </div>
             </div>
 
             {credsData.emailQueued ? (
-                <div className="alert-success" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
-                    ✅ A welcome email containing these credentials has also been queued for delivery.
-                </div>
+              <div className="alert-success" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                ✅ A welcome email containing these credentials has also been queued for delivery.
+              </div>
             ) : (
-                <div className="alert-warning" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
-                    ⚠️ No email was sent because this parent does not have a real email address on file. You MUST copy this password and send it to them manually.
-                </div>
+              <div className="alert-warning" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
+                ⚠️ No email was sent because this parent does not have a real email address on file. You MUST copy this password and send it to them manually.
+              </div>
             )}
 
             <div className="modal-actions" style={{ justifyContent: 'flex-end' }}>
-                <button type="button" className="btn btn-primary" onClick={() => setShowCredsModal(false)}>
-                    I have copied the password
-                </button>
+              <button type="button" className="btn btn-primary" onClick={() => setShowCredsModal(false)}>
+                I have copied the password
+              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }
