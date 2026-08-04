@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../services/api';
 import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
-import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus } from 'lucide-react';
+import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical } from 'lucide-react';
 
 
 interface TeacherItem {
@@ -24,6 +24,21 @@ interface TeacherItem {
 export default function Teachers() {
   const { showAlert, showConfirm } = useDialog();
   const queryClient = useQueryClient();
+
+  // View Switcher & Dropdown State
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdownId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // TanStack Query for Server State (Vatebra Enterprise Standard 5.4)
   const { data: teachers = [], isLoading: loading, error: queryError } = useQuery<TeacherItem[]>({
@@ -287,17 +302,36 @@ export default function Teachers() {
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
             </select>
+
+            {/* View Mode Switcher Toggle */}
+            <div className="view-mode-toggle">
+              <button 
+                className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+                onClick={() => setViewMode('table')}
+                title="Table View"
+              >
+                <List size={16} /> Table View
+              </button>
+              <button 
+                className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                title="Grid View"
+              >
+                <LayoutGrid size={16} /> Grid Cards
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="table-container">
-          {loading ? (
-            <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B', fontWeight: 500 }}>Loading staff roster...</div>
-          ) : filteredTeachers.length === 0 ? (
-            <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
-              {teachers.length === 0 ? 'No staff members onboarded yet.' : 'No staff members match your active search and filters.'}
-            </div>
-          ) : (
+        {loading ? (
+          <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B', fontWeight: 500 }}>Loading staff roster...</div>
+        ) : filteredTeachers.length === 0 ? (
+          <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+            {teachers.length === 0 ? 'No staff members onboarded yet.' : 'No staff members match your active search and filters.'}
+          </div>
+        ) : viewMode === 'table' ? (
+          /* TABLE VIEW */
+          <div className="table-container" ref={dropdownRef}>
             <table className="executive-table">
               <thead>
                 <tr>
@@ -305,118 +339,249 @@ export default function Teachers() {
                   <th>Contact Information</th>
                   <th>Designated Role</th>
                   <th>Account Status</th>
-                  <th>Actions</th>
+                  <th style={{ textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map(teacher => (
-                  <tr key={teacher.id}>
-                    <td>
-                      <div className="staff-profile-cell">
-                        {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' ? (
-                          <img 
-                            src={teacher.avatarUrl} 
-                            alt="Avatar" 
-                            className="staff-avatar" 
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=0F172A&color=fff&rounded=true&bold=true`;
-                            }}
-                          />
-                        ) : (
-                          <img 
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.surname || '') + ' ' + (teacher.firstName || ''))}&background=0F172A&color=fff&rounded=true&bold=true`}
-                            alt="Avatar" 
-                            className="staff-avatar" 
-                          />
-                        )}
-                        <div className="staff-names">
-                          <span className="staff-primary-name">{teacher.title ? `${teacher.title} ` : ''}{teacher.surname} {teacher.firstName}</span>
-                          <span className="staff-secondary-name">{teacher.otherNames || 'Staff Member'}</span>
+                {filteredTeachers.map(teacher => {
+                  const fullName = `${teacher.title ? teacher.title + ' ' : ''}${teacher.firstName} ${teacher.surname}`;
+                  const isDropdownOpen = openDropdownId === teacher.id;
+
+                  return (
+                    <tr key={teacher.id}>
+                      <td>
+                        <div className="staff-profile-cell">
+                          {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' ? (
+                            <img 
+                              src={teacher.avatarUrl} 
+                              alt="Avatar" 
+                              className="staff-avatar" 
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`;
+                              }}
+                            />
+                          ) : (
+                            <img 
+                              src={`https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`}
+                              alt="Avatar" 
+                              className="staff-avatar" 
+                            />
+                          )}
+                          <div className="staff-names">
+                            <span className="staff-primary-name">{fullName}</span>
+                            <span className="staff-secondary-name">{teacher.otherNames || 'Staff Member'}</span>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="contact-cell">
-                        <div className="contact-row">
-                          <Mail size={13} color="#64748B" />
-                          <span>{teacher.email || 'No email specified'}</span>
+                      </td>
+                      <td>
+                        <div className="contact-cell">
+                          <div className="contact-row">
+                            <Mail size={13} color="#64748B" />
+                            <span>{teacher.email || 'No email specified'}</span>
+                          </div>
+                          <div className="contact-row phone-row">
+                            <Phone size={13} />
+                            <span>{teacher.phoneNumber || 'No phone recorded'}</span>
+                          </div>
                         </div>
-                        <div className="contact-row phone-row">
-                          <Phone size={13} />
-                          <span>{teacher.phoneNumber || 'No phone recorded'}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}>
-                        {teacher.role || 'Staff'}
-                      </span>
-                    </td>
-                    <td>
-                      {teacher.isActive ? (
-                        <span className="status-pill status-active">
-                          <span className="status-dot"></span>
-                          <span>Active</span>
+                      </td>
+                      <td>
+                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}>
+                          {teacher.role || 'Staff'}
                         </span>
-                      ) : (
-                        <span className="status-pill status-inactive">
-                          <span className="status-dot-inactive"></span>
-                          <span>Inactive</span>
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <div className="actions-group">
-                        <button 
-                          className="action-btn action-btn-blue" 
-                          title="Regenerate credentials & trigger email notification"
-                          onClick={() => handleRegenerateCredentials(teacher.identityUserId!, `${teacher.surname} ${teacher.firstName}`)}
-                          disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
-                        >
-                          <Key size={13} />
-                          <span>{generatingId === teacher.identityUserId ? 'Generating...' : 'Credentials'}</span>
-                        </button>
-                        <button 
-                          className="action-btn action-btn-neutral" 
-                          title="Edit staff clearance & role details"
-                          onClick={() => handleEditClick(teacher)}
-                        >
-                          <Edit2 size={13} />
-                          <span>Edit</span>
-                        </button>
+                      </td>
+                      <td>
                         {teacher.isActive ? (
-                          <button 
-                            className="action-icon-btn action-icon-amber" 
-                            title="Temporarily suspend access"
-                            onClick={() => handleRemove(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
-                          >
-                            <Power size={15} />
-                          </button>
+                          <span className="status-pill status-active">
+                            <span className="status-dot"></span>
+                            <span>Active</span>
+                          </span>
                         ) : (
-                          <button 
-                            className="action-icon-btn action-icon-green" 
-                            title="Restore staff system access"
-                            onClick={() => handleActivate(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
-                          >
-                            <Power size={15} />
-                          </button>
+                          <span className="status-pill status-inactive">
+                            <span className="status-dot-inactive"></span>
+                            <span>Inactive</span>
+                          </span>
                         )}
-                        <button 
-                          className="action-icon-btn action-icon-red" 
-                          title="Permanently delete staff record"
-                          onClick={() => handleDelete(teacher.id, `${teacher.surname} ${teacher.firstName}`)}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <div className="action-dropdown-container">
+                          <button 
+                            className="btn-action-dots"
+                            onClick={() => setOpenDropdownId(isDropdownOpen ? null : teacher.id)}
+                          >
+                            <MoreVertical size={18} />
+                          </button>
+
+                          {isDropdownOpen && (
+                            <div className="action-dropdown-menu">
+                              <button 
+                                className="dropdown-action-item" 
+                                onClick={() => {
+                                  setOpenDropdownId(null);
+                                  handleRegenerateCredentials(teacher.identityUserId!, fullName);
+                                }}
+                                disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                              >
+                                <Key size={15} color="#2563EB" /> Credentials
+                              </button>
+                              <button 
+                                className="dropdown-action-item" 
+                                onClick={() => {
+                                  setOpenDropdownId(null);
+                                  handleEditClick(teacher);
+                                }}
+                              >
+                                <Edit2 size={15} color="#000080" /> Edit Details
+                              </button>
+                              <button 
+                                className="dropdown-action-item" 
+                                onClick={() => {
+                                  setOpenDropdownId(null);
+                                  if (teacher.isActive) {
+                                    handleRemove(teacher.id, fullName);
+                                  } else {
+                                    handleActivate(teacher.id, fullName);
+                                  }
+                                }}
+                              >
+                                <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} /> 
+                                {teacher.isActive ? 'Suspend Access' : 'Activate Access'}
+                              </button>
+                              <div className="dropdown-divider" />
+                              <button 
+                                className="dropdown-action-item danger" 
+                                onClick={() => {
+                                  setOpenDropdownId(null);
+                                  handleDelete(teacher.id, fullName);
+                                }}
+                              >
+                                <Trash2 size={15} /> Delete Staff
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
-          )}
-        </div>
+          </div>
+        ) : (
+          /* GRID CARDS VIEW */
+          <div className="staff-grid-wrapper" ref={dropdownRef}>
+            {filteredTeachers.map(teacher => {
+              const fullName = `${teacher.title ? teacher.title + ' ' : ''}${teacher.firstName} ${teacher.surname}`;
+              const isDropdownOpen = openDropdownId === teacher.id;
+
+              return (
+                <div key={teacher.id} className="staff-card-item">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <img 
+                        src={teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' 
+                          ? teacher.avatarUrl 
+                          : `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`} 
+                        alt="Avatar" 
+                        className="staff-avatar" 
+                        style={{ width: '46px', height: '46px' }}
+                      />
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>{fullName}</h3>
+                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`} style={{ marginTop: '0.25rem', display: 'inline-block' }}>
+                          {teacher.role || 'Staff'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="action-dropdown-container">
+                      <button 
+                        className="btn-action-dots"
+                        onClick={() => setOpenDropdownId(isDropdownOpen ? null : teacher.id)}
+                      >
+                        <MoreVertical size={18} />
+                      </button>
+
+                      {isDropdownOpen && (
+                        <div className="action-dropdown-menu">
+                          <button 
+                            className="dropdown-action-item" 
+                            onClick={() => {
+                              setOpenDropdownId(null);
+                              handleRegenerateCredentials(teacher.identityUserId!, fullName);
+                            }}
+                            disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                          >
+                            <Key size={15} color="#2563EB" /> Credentials
+                          </button>
+                          <button 
+                            className="dropdown-action-item" 
+                            onClick={() => {
+                              setOpenDropdownId(null);
+                              handleEditClick(teacher);
+                            }}
+                          >
+                            <Edit2 size={15} color="#000080" /> Edit Details
+                          </button>
+                          <button 
+                            className="dropdown-action-item" 
+                            onClick={() => {
+                              setOpenDropdownId(null);
+                              if (teacher.isActive) {
+                                handleRemove(teacher.id, fullName);
+                              } else {
+                                handleActivate(teacher.id, fullName);
+                              }
+                            }}
+                          >
+                            <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} /> 
+                            {teacher.isActive ? 'Suspend Access' : 'Activate Access'}
+                          </button>
+                          <div className="dropdown-divider" />
+                          <button 
+                            className="dropdown-action-item danger" 
+                            onClick={() => {
+                              setOpenDropdownId(null);
+                              handleDelete(teacher.id, fullName);
+                            }}
+                          >
+                            <Trash2 size={15} /> Delete Staff
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Mail size={14} color="#64748B" />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{teacher.email || 'No email recorded'}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Phone size={14} color="#64748B" />
+                      <span>{teacher.phoneNumber || 'No phone recorded'}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {teacher.isActive ? (
+                      <span className="status-pill status-active">
+                        <span className="status-dot"></span>
+                        <span>Active</span>
+                      </span>
+                    ) : (
+                      <span className="status-pill status-inactive">
+                        <span className="status-dot-inactive"></span>
+                        <span>Inactive</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="desk-footer">
           <span>Showing <strong>{filteredTeachers.length}</strong> of <strong>{teachers.length}</strong> registered staff members</span>

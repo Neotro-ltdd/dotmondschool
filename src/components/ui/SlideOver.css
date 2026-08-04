@@ -54,13 +54,15 @@
 
 /* Header */
 .slideover-header {
-  padding: 24px;
-  border-bottom: 1px solid #E3E7EF;
+  padding: 1.35rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background-color: #FAFCFE;
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, #030712 100%);
+  color: #FFFFFF;
+  flex-shrink: 0;
 }
 
 .slideover-title-group {
@@ -72,30 +74,35 @@
 .slideover-title {
   margin: 0;
   font-size: 1.25rem;
-  font-weight: 700;
-  color: #10203F;
+  font-weight: 800;
+  color: #FFFFFF;
   letter-spacing: -0.015em;
   font-family: 'Inter', sans-serif;
 }
 
 .slideover-subtitle {
   margin: 0;
-  font-size: 0.875rem;
-  color: #5B6B85;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.4;
 }
 
 .slideover-close-btn {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: #5B6B85;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  color: #FFFFFF;
   cursor: pointer;
   padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
+}
+
+.slideover-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
 }
 
 .slideover-close-btn:hover {
