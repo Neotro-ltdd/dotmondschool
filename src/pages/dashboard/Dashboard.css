@@ -315,8 +315,9 @@
 /* ════════ CHARTS & WIDGETS SECTION ════════ */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .chart-card {
@@ -328,6 +329,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   border: 1px solid #E2E8F0;
   transition: box-shadow 0.2s ease;
+  min-width: 0;
 }
 
 .chart-card:hover {

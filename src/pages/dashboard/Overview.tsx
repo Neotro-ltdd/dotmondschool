@@ -370,7 +370,7 @@ export default function Overview() {
                     <span>Daily Rate</span>
                   </div>
                   <div style={{ height: 260, marginTop: '10px' }}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                       <LineChart data={principalData.attendanceTrend}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                         <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
@@ -388,7 +388,7 @@ export default function Overview() {
                     <span>Financial Metrics</span>
                   </div>
                   <div style={{ height: 260, marginTop: '10px' }}>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                       <PieChart>
                         <Pie
                           data={principalData.feeData}
@@ -527,7 +527,7 @@ export default function Overview() {
                     <span>Distribution</span>
                   </div>
                   {accountantData?.feePaymentMetrics && accountantData.feePaymentMetrics.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={280}>
+                    <ResponsiveContainer width="100%" height={280} minWidth={0} minHeight={0}>
                       <PieChart>
                         <Pie data={accountantData.feePaymentMetrics} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={90} label>
                           {accountantData.feePaymentMetrics.map((entry: any, index: number) => (
@@ -547,7 +547,7 @@ export default function Overview() {
                     <span>Channels</span>
                   </div>
                   {accountantData?.revenueByMethod && accountantData.revenueByMethod.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={280}>
+                    <ResponsiveContainer width="100%" height={280} minWidth={0} minHeight={0}>
                       <PieChart>
                         <Pie data={accountantData.revenueByMethod} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={90} label>
                           {accountantData.revenueByMethod.map((entry: any, index: number) => (
@@ -851,7 +851,7 @@ export default function Overview() {
               </div>
               
               <div style={{ height: 260, position: 'relative' }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <PieChart>
                     <Pie 
                       data={[
@@ -910,7 +910,7 @@ export default function Overview() {
               </div>
               
               <div style={{ height: 260 }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <BarChart 
                     data={[{ name: 'Active Infrastructure', Classes: adminData?.metrics?.totalClasses || 14, Subjects: adminData?.metrics?.totalSubjects || 118 }]}
                     margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
