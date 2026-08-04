@@ -210,10 +210,10 @@ export default function ProfileSettings() {
       {/* ════════ TOP HERO BANNER & AVATAR ════════ */}
       <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', marginBottom: '1.5rem' }}>
         
-        {/* Banner header background - School Primary Navy Gradient */}
+        {/* Banner header background - School Primary Navy matching Dashboard Banner */}
         <div style={{
           height: '160px',
-          background: 'linear-gradient(135deg, #0A192F 0%, #000080 50%, #1E3A8A 100%)',
+          background: 'var(--primary-color, #000080)',
           position: 'relative',
           padding: '0 2rem'
         }}>
@@ -271,7 +271,7 @@ export default function ProfileSettings() {
                   <div style={{
                     width: '100%',
                     height: '100%',
-                    background: 'linear-gradient(135deg, #000080 0%, #1E3A8A 100%)',
+                    background: 'var(--primary-color, #000080)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
