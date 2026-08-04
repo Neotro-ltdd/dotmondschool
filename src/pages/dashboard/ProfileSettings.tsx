@@ -729,108 +729,214 @@ export default function ProfileSettings() {
 
       {/* ════════ TAB CONTENT 3: PROFILE IMAGE ════════ */}
       {activeTab === 'avatar' && (
-        <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', maxWidth: '650px', margin: '0 auto' }}>
+        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           
-          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Camera style={{ color: '#000080' }} />
-              Profile Picture Management
+          <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1.25rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Camera style={{ color: '#000080' }} size={24} />
+              Profile Picture Management 📸
             </h3>
-            <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>
-              Upload and preview your official profile avatar displayed across student report cards and staff records.
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.88rem', color: '#64748B' }}>
+              Upload and preview your official profile avatar displayed across student report cards, grade sheets, and staff records.
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', background: '#F8FAFC', padding: '2rem', borderRadius: '14px', border: '2px dashed #CBD5E1' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'stretch' }}>
             
-            {/* Avatar Preview (140px) */}
-            <div style={{ position: 'relative', width: '140px', height: '140px' }}>
-              {currentAvatarUrl && !avatarLoadError ? (
-                <img 
-                  src={currentAvatarUrl} 
-                  alt="Avatar Preview" 
-                  onError={() => setAvatarLoadError(true)}
-                  style={{ width: '140px', height: '140px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.1)' }} 
-                />
-              ) : (
-                <div style={{ width: '140px', height: '140px', borderRadius: '50%', background: 'linear-gradient(135deg, #000080 0%, #1E3A8A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '3rem', fontWeight: 800, border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.1)' }}>
-                  {firstName ? firstName[0].toUpperCase() : '👤'}
-                </div>
-              )}
-
-              {avatarPreview && (
-                <span style={{ position: 'absolute', bottom: -6, left: '50%', transform: 'translateX(-50%)', background: '#2563EB', color: '#fff', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '12px', textTransform: 'uppercase' }}>
-                  New Preview
-                </span>
-              )}
-            </div>
-
-            <div style={{ textAlign: 'center' }}>
-              <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>
-                {avatarFile ? avatarFile.name : (profile.avatarUrl ? 'Current Profile Image' : 'No Picture Set')}
+            {/* Left Column: File Dropzone / Chooser */}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Upload size={14} style={{ color: '#000080' }} />
+                Upload Profile Picture File
               </h4>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
-                {avatarFile 
-                  ? `Selected size: ${(avatarFile.size / 1024).toFixed(1)} KB.` 
-                  : 'Supported formats: PNG, JPG, or WEBP (Max 5MB)'}
-              </p>
-            </div>
 
-            <input 
-              type="file" 
-              ref={avatarInputRef}
-              accept="image/png, image/jpeg, image/webp" 
-              style={{ display: 'none' }} 
-              onChange={e => {
-                if (e.target.files && e.target.files.length > 0) {
-                  setAvatarFile(e.target.files[0]);
-                  setAvatarLoadError(false);
-                }
-              }} 
-            />
-
-            <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-              <button 
-                type="button" 
-                className="btn btn-outline" 
+              <div 
                 onClick={() => avatarInputRef.current?.click()}
-                disabled={avatarUploading}
-                style={{ flex: 1, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                style={{
+                  flex: 1,
+                  minHeight: '260px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '1rem',
+                  background: avatarFile ? '#F0FDF4' : '#F8FAFC',
+                  borderRadius: '14px',
+                  border: avatarFile ? '2px dashed #10B981' : '2px dashed #CBD5E1',
+                  padding: '2rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center'
+                }}
               >
-                <Upload size={16} />
-                {avatarFile ? 'Change File' : 'Choose Image'}
-              </button>
+                <input 
+                  type="file" 
+                  ref={avatarInputRef}
+                  accept="image/png, image/jpeg, image/webp" 
+                  style={{ display: 'none' }} 
+                  onChange={e => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setAvatarFile(e.target.files[0]);
+                      setAvatarLoadError(false);
+                    }
+                  }} 
+                />
 
-              <button 
-                type="button"
-                className="btn btn-primary" 
-                onClick={() => {
-                  if (!avatarFile) {
-                    avatarInputRef.current?.click();
-                  } else {
-                    handleUploadAvatar();
-                  }
-                }} 
-                disabled={avatarUploading}
-                style={{ flex: 1.4, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem' }}
-              >
-                {avatarUploading ? 'Uploading...' : 'Save Profile Picture'}
-              </button>
+                {avatarFile ? (
+                  <>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={28} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                        New Image Selected
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
+                        Supports PNG, JPG, or WEBP (Max size: 5MB)
+                      </p>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        avatarInputRef.current?.click();
+                      }}
+                      style={{ marginTop: '0.5rem', padding: '0.55rem 1.25rem', fontSize: '0.85rem', fontWeight: 700 }}
+                    >
+                      <Upload size={14} />
+                      Choose Different File
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EFF6FF', color: '#000080', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Camera size={26} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                        Click to Browse Image File
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
+                        Upload a clear headshot photo (300×300px recommended)
+                      </p>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-outline"
+                      style={{ marginTop: '0.5rem', padding: '0.55rem 1.25rem', fontSize: '0.85rem', fontWeight: 700, borderColor: '#000080', color: '#000080' }}
+                    >
+                      Select Image...
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
 
-            {avatarFile && (
-              <button 
-                type="button"
-                onClick={() => {
-                  setAvatarFile(null);
-                  if (avatarInputRef.current) avatarInputRef.current.value = '';
-                }} 
-                disabled={avatarUploading}
-                style={{ background: 'transparent', border: 'none', color: '#EF4444', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-              >
-                <X size={14} /> Discard selected file
-              </button>
-            )}
+            {/* Right Column: Live Picture Preview & Action Card */}
+            <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: avatarFile ? '#10B981' : '#3B82F6' }}></span>
+                    {avatarFile ? 'New Image Preview' : 'Current Active Picture'}
+                  </span>
+
+                  {avatarFile ? (
+                    <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '0.75rem', fontWeight: 800, padding: '3px 10px', borderRadius: '12px' }}>
+                      Ready to Save
+                    </span>
+                  ) : currentAvatarUrl ? (
+                    <span style={{ background: '#EFF6FF', color: '#1E3A8A', fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}>
+                      Active Avatar
+                    </span>
+                  ) : (
+                    <span style={{ background: '#F1F5F9', color: '#64748B', fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}>
+                      Default Avatar
+                    </span>
+                  )}
+                </div>
+
+                {/* Avatar Display Frame */}
+                <div style={{
+                  width: '100%',
+                  height: '170px',
+                  background: '#F8FAFC',
+                  borderRadius: '12px',
+                  border: '1px solid #E2E8F0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '1rem'
+                }}>
+                  {currentAvatarUrl && !avatarLoadError ? (
+                    <img 
+                      src={currentAvatarUrl} 
+                      alt="Avatar Preview" 
+                      onError={() => setAvatarLoadError(true)}
+                      style={{ width: '130px', height: '130px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }} 
+                    />
+                  ) : (
+                    <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'linear-gradient(135deg, #000080 0%, #1E3A8A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '3rem', fontWeight: 800, border: '4px solid #ffffff', boxShadow: '0 6px 16px rgba(0,0,0,0.12)' }}>
+                      {firstName ? firstName[0].toUpperCase() : '👤'}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected File Details Box */}
+                {avatarFile && (
+                  <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', background: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0F172A', display: 'block', wordBreak: 'break-all' }}>
+                        {avatarFile.name}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                        {(avatarFile.size / 1024).toFixed(1)} KB
+                      </span>
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setAvatarFile(null);
+                        if (avatarInputRef.current) avatarInputRef.current.value = '';
+                      }}
+                      style={{ background: 'transparent', border: 'none', color: '#DC2626', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <X size={15} /> Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons Row */}
+              <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setAvatarFile(null);
+                    if (avatarInputRef.current) avatarInputRef.current.value = '';
+                  }}
+                  disabled={avatarUploading || !avatarFile}
+                  style={{ padding: '0.65rem 1.25rem', fontSize: '0.88rem' }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleUploadAvatar}
+                  disabled={avatarUploading || !avatarFile}
+                  style={{ padding: '0.65rem 1.5rem', fontWeight: 700, fontSize: '0.88rem' }}
+                >
+                  <Check size={16} />
+                  {avatarUploading ? 'Uploading...' : 'Save Profile Picture'}
+                </button>
+              </div>
+
+            </div>
 
           </div>
 
@@ -839,101 +945,218 @@ export default function ProfileSettings() {
 
       {/* ════════ TAB CONTENT 4: SIGNATURE ════════ */}
       {activeTab === 'signature' && (
-        <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', maxWidth: '650px', margin: '0 auto' }}>
+        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '2rem', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           
-          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <FileSignature style={{ color: '#000080' }} />
-              Official Digital Signature
+          <div style={{ marginBottom: '1.75rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1.25rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <FileSignature style={{ color: '#000080' }} size={24} />
+              Official E-Signature Management ✍️
             </h3>
-            <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>
-              Upload your official authorization signature used for digitally stamping report sheets and receipts.
+            <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.88rem', color: '#64748B' }}>
+              View your existing uploaded signature or upload a new signature image on a plain white background for authorized E-Memos, report cards, and vouchers.
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', background: '#F8FAFC', padding: '2rem', borderRadius: '14px', border: '2px dashed #CBD5E1' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'stretch' }}>
             
-            {/* Signature Preview Frame */}
-            <div style={{ width: '100%', height: '120px', background: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', padding: '1rem' }}>
-              {currentSignatureUrl && !signatureLoadError ? (
-                <img 
-                  src={currentSignatureUrl} 
-                  alt="Official Signature" 
-                  onError={() => setSignatureLoadError(true)}
-                  style={{ maxWidth: '280px', maxHeight: '95px', objectFit: 'contain' }} 
-                />
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', color: '#94A3B8' }}>
-                  <FileSignature size={32} />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>No Signature Asset Recorded</span>
-                </div>
-              )}
-              {signaturePreview && (
-                <span style={{ position: 'absolute', top: 8, right: 8, background: '#10B981', color: '#fff', fontSize: '0.65rem', fontWeight: 800, padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase' }}>
-                  New Preview
-                </span>
-              )}
-            </div>
+            {/* Left Column: Upload Signature File Dropzone */}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Upload size={14} style={{ color: '#000080' }} />
+                Upload Signature File
+              </h4>
 
-            <p style={{ fontSize: '0.82rem', color: '#64748B', margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
-              Upload a clear image of your signature on a clean white or transparent background (PNG recommended).
-            </p>
-
-            <input 
-              type="file" 
-              ref={signatureInputRef}
-              accept="image/png, image/jpeg, image/webp" 
-              style={{ display: 'none' }} 
-              onChange={e => {
-                if (e.target.files && e.target.files.length > 0) {
-                  setSignatureFile(e.target.files[0]);
-                  setSignatureLoadError(false);
-                }
-              }} 
-            />
-
-            <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-              <button 
-                type="button" 
-                className="btn btn-outline" 
+              <div 
                 onClick={() => signatureInputRef.current?.click()}
-                disabled={signatureUploading}
-                style={{ flex: 1, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                style={{
+                  flex: 1,
+                  minHeight: '260px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '1rem',
+                  background: signatureFile ? '#F0FDF4' : '#F8FAFC',
+                  borderRadius: '14px',
+                  border: signatureFile ? '2px dashed #10B981' : '2px dashed #CBD5E1',
+                  padding: '2rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center'
+                }}
               >
-                <Upload size={16} />
-                {signatureFile ? 'Change Signature' : 'Select Signature File'}
-              </button>
+                <input 
+                  type="file" 
+                  ref={signatureInputRef}
+                  accept="image/png, image/jpeg, image/webp, image/svg+xml" 
+                  style={{ display: 'none' }} 
+                  onChange={e => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setSignatureFile(e.target.files[0]);
+                      setSignatureLoadError(false);
+                    }
+                  }} 
+                />
 
-              <button 
-                type="button"
-                className="btn btn-primary" 
-                onClick={() => {
-                  if (!signatureFile) {
-                    signatureInputRef.current?.click();
-                  } else {
-                    handleUploadSignature();
-                  }
-                }} 
-                disabled={signatureUploading}
-                style={{ flex: 1.4, padding: '0.75rem', fontWeight: 700, fontSize: '0.9rem' }}
-              >
-                {signatureUploading ? 'Saving Asset...' : 'Save Signature'}
-              </button>
+                {signatureFile ? (
+                  <>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#DCFCE7', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={28} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                        New Signature Selected
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
+                        Supports PNG, JPG, JPEG or SVG (Max size: 5MB)
+                      </p>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        signatureInputRef.current?.click();
+                      }}
+                      style={{ marginTop: '0.5rem', padding: '0.55rem 1.25rem', fontSize: '0.85rem', fontWeight: 700 }}
+                    >
+                      <Upload size={14} />
+                      Choose Different File
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EFF6FF', color: '#000080', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Upload size={26} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                        Click to Browse Signature File
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
+                        Upload a clear scan on a plain white or transparent background
+                      </p>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-outline"
+                      style={{ marginTop: '0.5rem', padding: '0.55rem 1.25rem', fontSize: '0.85rem', fontWeight: 700, borderColor: '#000080', color: '#000080' }}
+                    >
+                      Select Signature Image...
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
 
-            {signatureFile && (
-              <button 
-                type="button"
-                onClick={() => {
-                  setSignatureFile(null);
-                  if (signatureInputRef.current) signatureInputRef.current.value = '';
-                }} 
-                disabled={signatureUploading}
-                style={{ background: 'transparent', border: 'none', color: '#EF4444', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-              >
-                <X size={14} /> Discard selected file
-              </button>
-            )}
+            {/* Right Column: Live Preview & Action Card */}
+            <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: signatureFile ? '#10B981' : '#3B82F6' }}></span>
+                    {signatureFile ? 'New Signature Preview' : 'Current Active Signature'}
+                  </span>
+
+                  {signatureFile ? (
+                    <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '0.75rem', fontWeight: 800, padding: '3px 10px', borderRadius: '12px' }}>
+                      Ready to Save
+                    </span>
+                  ) : currentSignatureUrl ? (
+                    <span style={{ background: '#EFF6FF', color: '#1E3A8A', fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}>
+                      Active Asset
+                    </span>
+                  ) : (
+                    <span style={{ background: '#FEF2F2', color: '#991B1B', fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}>
+                      No Signature
+                    </span>
+                  )}
+                </div>
+
+                {/* Inner Signature Display Grid Box */}
+                <div style={{
+                  width: '100%',
+                  height: '170px',
+                  background: '#FFFFFF',
+                  backgroundImage: 'radial-gradient(#CBD5E1 1px, transparent 1px)',
+                  backgroundSize: '16px 16px',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '1.25rem',
+                  overflow: 'hidden'
+                }}>
+                  {currentSignatureUrl && !signatureLoadError ? (
+                    <img 
+                      src={currentSignatureUrl} 
+                      alt="Signature Asset" 
+                      onError={() => setSignatureLoadError(true)}
+                      style={{ maxWidth: '100%', maxHeight: '130px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} 
+                    />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#94A3B8' }}>
+                      <FileSignature size={36} />
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748B' }}>No Signature Asset Recorded</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Selected File Details Box */}
+                {signatureFile && (
+                  <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', background: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0F172A', display: 'block', wordBreak: 'break-all' }}>
+                        {signatureFile.name}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                        {(signatureFile.size / 1024).toFixed(1)} KB
+                      </span>
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setSignatureFile(null);
+                        if (signatureInputRef.current) signatureInputRef.current.value = '';
+                      }}
+                      style={{ background: 'transparent', border: 'none', color: '#DC2626', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <X size={15} /> Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons Row */}
+              <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setSignatureFile(null);
+                    if (signatureInputRef.current) signatureInputRef.current.value = '';
+                  }}
+                  disabled={signatureUploading || !signatureFile}
+                  style={{ padding: '0.65rem 1.25rem', fontSize: '0.88rem' }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleUploadSignature}
+                  disabled={signatureUploading || !signatureFile}
+                  style={{ padding: '0.65rem 1.5rem', fontWeight: 700, fontSize: '0.88rem' }}
+                >
+                  <Check size={16} />
+                  {signatureUploading ? 'Uploading...' : 'Save & Upload Signature'}
+                </button>
+              </div>
+
+            </div>
 
           </div>
 
