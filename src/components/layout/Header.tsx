@@ -95,7 +95,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
               padding: '0.5rem',
               display: 'flex',
               alignItems: 'center',
-              justify-content: 'center',
+              justifyContent: 'center',
               borderRadius: '8px',
               transition: 'all 0.2s ease',
               marginLeft: '0.5rem'
