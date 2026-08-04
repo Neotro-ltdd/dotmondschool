@@ -225,10 +225,43 @@ export default function PromotionManagement() {
     }
   });
 
+  const handleCurrentClassChange = (newClassId: string) => {
+    setSelectedClassId(newClassId);
+    if (!newClassId) {
+      setTargetClassId('');
+      return;
+    }
+    const currentClass = classes.find(c => c.id === newClassId);
+    if (currentClass) {
+      if (targetClassId === newClassId) {
+        setTargetClassId('');
+      }
+      const name = currentClass.name.trim();
+      const match = name.match(/(\d+)/);
+      if (match) {
+        const currentNum = parseInt(match[0], 10);
+        const nextNum = currentNum + 1;
+        const predictedName = name.replace(String(currentNum), String(nextNum)).toLowerCase();
+        const nextClass = classes.find(c => c.name.trim().toLowerCase() === predictedName);
+        if (nextClass && nextClass.id !== newClassId) {
+          setTargetClassId(nextClass.id);
+          return;
+        }
+      }
+      if (targetClassId === newClassId) {
+        setTargetClassId('');
+      }
+    }
+  };
+
   const handleGenerateList = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedClassId || !nextSession) {
       showNotification('Please select a current class and specify the target academic session.', 'warning', 'Missing Selection');
+      return;
+    }
+    if (targetClassId && selectedClassId === targetClassId) {
+      showNotification('Target class cannot be identical to the current class! Promoting a student to their current class (e.g., JSS 1 to JSS 1) is logically invalid.', 'error', 'Invalid Target Class');
       return;
     }
     generateBatchMutation.mutate({
@@ -383,7 +416,7 @@ export default function PromotionManagement() {
           <div className='filter-bar glass-panel' style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: '20px' }}>
             <div style={{ flex: 1, minWidth: '150px' }}>
               <label>Current Class *</label>
-              <select className='filter-select' value={selectedClassId} onChange={e => setSelectedClassId(e.target.value)} required>
+              <select className='filter-select' value={selectedClassId} onChange={e => handleCurrentClassChange(e.target.value)} required>
                 <option value=''>Select Class...</option>
                 {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -395,10 +428,10 @@ export default function PromotionManagement() {
             </div>
 
             <div style={{ flex: 1, minWidth: '150px' }}>
-              <label>Target Class</label>
+              <label>Target Class *</label>
               <select className='filter-select' value={targetClassId} onChange={e => setTargetClassId(e.target.value)}>
-                <option value=''>-- Graduating (Leave Empty) --</option>
-                {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                <option value=''>-- Select Target Class (Leave Empty ONLY if Graduating) --</option>
+                {!classesLoading && classes.filter(c => c.id !== selectedClassId).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
 
