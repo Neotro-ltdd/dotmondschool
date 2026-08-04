@@ -70,19 +70,23 @@ export default function TermSetup() {
     
     try {
       setSaving(true);
-      const computedStatus = isHoliday ? 'Holiday' : (isActive ? 'Active' : 'SessionEnded');
+      const isHolidayOrMTB = isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
+      const computedStatus = isHolidayOrMTB 
+        ? (term === 'MTB (Mid Term Break)' || term === 'MTB' ? 'MTB' : 'Holiday') 
+        : (isActive ? 'Active' : 'SessionEnded');
+
       await api.post('/setup/terms', {
         session,
         term,
         nextTermResumptionDate: resumptionDate,
-        isActive,
-        isHoliday,
+        isActive: true,
+        isHoliday: isHolidayOrMTB,
         status: computedStatus,
         caWeightFirst,
         caWeightSecond,
         examWeight
       });
-      showAlert('Term setup saved successfully! System status updated.');
+      showAlert(`Term setup saved successfully! Portal operational status set to "${term}".`);
     } catch (err: any) {
       showAlert(err.message || 'Failed to save term setup.');
     } finally {
@@ -124,13 +128,31 @@ export default function TermSetup() {
                 <label className="form-label" style={{ fontWeight: 700, color: '#334155' }}>Term</label>
                 <select 
                   value={term} 
-                  onChange={(e) => setTerm(e.target.value)} 
+                  onChange={(e) => {
+                    const selectedTerm = e.target.value;
+                    setTerm(selectedTerm);
+                    if (selectedTerm === 'Holiday') {
+                      setIsHoliday(true);
+                      setIsActive(false);
+                      setStatus('Holiday');
+                    } else if (selectedTerm === 'MTB (Mid Term Break)' || selectedTerm === 'MTB') {
+                      setIsHoliday(true);
+                      setIsActive(false);
+                      setStatus('MTB');
+                    } else {
+                      setIsHoliday(false);
+                      setIsActive(true);
+                      setStatus('Active');
+                    }
+                  }} 
                   className="form-control"
                   style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                 >
                   <option value="First Term">First Term</option>
                   <option value="Second Term">Second Term</option>
                   <option value="Third Term">Third Term</option>
+                  <option value="Holiday">Holiday</option>
+                  <option value="MTB (Mid Term Break)">MTB (Mid Term Break)</option>
                 </select>
               </div>
             </div>

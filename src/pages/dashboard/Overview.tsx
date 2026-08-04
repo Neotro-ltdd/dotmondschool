@@ -65,6 +65,8 @@ export default function Overview() {
   const { userRole, userName, userTitle } = useAuth();
   const { schoolName } = useTenant();
   const { session, term, isHoliday } = useActiveTerm();
+  const isHolidayMode = isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
+  const displayTerm = term === 'MTB (Mid Term Break)' || term === 'MTB' ? 'Mid Term Break (MTB)' : term;
   const [showActivityLog, setShowActivityLog] = React.useState(false);
   
   const [accountantData, setAccountantData] = React.useState<any>(null);
@@ -203,11 +205,11 @@ export default function Overview() {
             {todayDate}
           </div>
 
-          <div className="banner-status-pill" style={isHoliday ? { background: 'rgba(245, 158, 11, 0.25)', color: '#FDE68A', border: '1px solid rgba(253, 230, 138, 0.4)' } : {}}>
-            {isHoliday ? (
-              <>🌴 {session} Session • Holiday / Session Ended</>
+          <div className="banner-status-pill" style={isHolidayMode ? { background: 'rgba(245, 158, 11, 0.25)', color: '#FDE68A', border: '1px solid rgba(253, 230, 138, 0.4)' } : {}}>
+            {isHolidayMode ? (
+              <>🌴 {session} Session • {displayTerm}</>
             ) : (
-              <><Sparkles size={14} /> {session} Session • Active {term}</>
+              <><Sparkles size={14} /> {session} Session • Active {displayTerm}</>
             )}
           </div>
         </div>
@@ -776,12 +778,12 @@ export default function Overview() {
             />
             <StatCard 
               label="CURRENT TERM STATUS" 
-              value={adminData?.metrics?.currentTermStatus || "Third Term - Active"} 
+              value={adminData?.metrics?.currentTermStatus || `${session} ${displayTerm}`} 
               icon={Calendar} 
               topColor="#F59E0B"
               iconBg="#FEF3C7" iconColor="#D97706" 
-              trendTag={{ text: 'Session 2025/2026', type: 'positive' }}
-              subText="Termly Results Staging"
+              trendTag={{ text: isHolidayMode ? '🌴 Holiday / Closed' : `Session ${session}`, type: isHolidayMode ? 'warning' : 'positive' }}
+              subText="Termly Operational Status"
             />
           </div>
 
