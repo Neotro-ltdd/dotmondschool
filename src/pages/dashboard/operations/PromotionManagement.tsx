@@ -62,7 +62,7 @@ interface ReportData {
 
 export default function PromotionManagement() {
   const queryClient = useQueryClient();
-  const { showConfirm } = useDialog();
+  const { showConfirm, showPrompt } = useDialog();
   const year = new Date().getFullYear();
   
   // Tab State
@@ -567,8 +567,17 @@ export default function PromotionManagement() {
                               <button
                                 type='button'
                                 className='btn btn-primary btn-sm'
-                                onClick={() => {
-                                  const customEmail = window.prompt("Enter an email address to receive this student's test HTML promotion notification (or leave empty to send to the student's parent email on record):", "");
+                                onClick={async () => {
+                                  const customEmail = await showPrompt(
+                                    "Enter an email address to receive this student's test HTML promotion notification (or leave empty to send directly to the parent email on record):",
+                                    { 
+                                      title: "Send Test Notification", 
+                                      confirmText: "Send Test", 
+                                      cancelText: "Cancel",
+                                      placeholder: "e.g. parent@example.com", 
+                                      type: "info" 
+                                    }
+                                  );
                                   if (customEmail !== null) {
                                     promoteSingleMutation.mutate({ recommendationId: rec.recommendationId, customRecipientEmail: customEmail.trim() || undefined });
                                   }

@@ -6,11 +6,14 @@ interface DialogOptions {
   type?: 'info' | 'success' | 'warning' | 'danger';
   confirmText?: string;
   cancelText?: string;
+  defaultValue?: string;
+  placeholder?: string;
 }
 
 interface DialogContextType {
   showAlert: (message: ReactNode, options?: DialogOptions) => Promise<void>;
   showConfirm: (message: ReactNode, options?: DialogOptions) => Promise<boolean>;
+  showPrompt: (message: ReactNode, options?: DialogOptions) => Promise<string | null>;
 }
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
@@ -26,19 +29,22 @@ export const useDialog = () => {
 interface DialogState {
   isOpen: boolean;
   isConfirm: boolean;
+  isPrompt: boolean;
   message: ReactNode;
   options: DialogOptions;
-  resolve: (value: boolean | any) => void;
+  resolve: (value: any) => void;
 }
 
 export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [dialog, setDialog] = useState<DialogState | null>(null);
+  const [promptValue, setPromptValue] = useState('');
 
   const showAlert = (message: ReactNode, options?: DialogOptions): Promise<void> => {
     return new Promise((resolve) => {
       setDialog({
         isOpen: true,
         isConfirm: false,
+        isPrompt: false,
         message,
         options: options || {},
         resolve: () => resolve()
@@ -51,6 +57,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setDialog({
         isOpen: true,
         isConfirm: true,
+        isPrompt: false,
         message,
         options: options || {},
         resolve
@@ -58,15 +65,35 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   };
 
-  const handleClose = (value: boolean) => {
+  const showPrompt = (message: ReactNode, options?: DialogOptions): Promise<string | null> => {
+    setPromptValue(options?.defaultValue || '');
+    return new Promise((resolve) => {
+      setDialog({
+        isOpen: true,
+        isConfirm: false,
+        isPrompt: true,
+        message,
+        options: options || {},
+        resolve
+      });
+    });
+  };
+
+  const handleClose = (value: any) => {
     if (dialog) {
-      dialog.resolve(value);
+      if (dialog.isPrompt && value === true) {
+        dialog.resolve(promptValue);
+      } else if (dialog.isPrompt && value === false) {
+        dialog.resolve(null);
+      } else {
+        dialog.resolve(value);
+      }
       setDialog(null);
     }
   };
 
   return (
-    <DialogContext.Provider value={{ showAlert, showConfirm }}>
+    <DialogContext.Provider value={{ showAlert, showConfirm, showPrompt }}>
       {children}
       
       {dialog?.isOpen && (
@@ -95,16 +122,52 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 </span>
               </div>
               <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem' }}>
-                {dialog.options.title || (dialog.isConfirm ? 'Confirm Action' : 'Notice')}
+                {dialog.options.title || (dialog.isConfirm ? 'Confirm Action' : dialog.isPrompt ? 'Input Required' : 'Notice')}
               </h3>
             </div>
             
-            <p style={{ color: '#475569', lineHeight: '1.6', marginBottom: '1.5rem', fontSize: '1rem' }}>
+            <div style={{ color: '#475569', lineHeight: '1.6', marginBottom: '1.5rem', fontSize: '1rem' }}>
               {dialog.message}
-            </p>
+            </div>
+
+            {dialog.isPrompt && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <input
+                  type="text"
+                  value={promptValue}
+                  onChange={(e) => setPromptValue(e.target.value)}
+                  placeholder={dialog.options.placeholder || "Enter value..."}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box',
+                    color: '#1e293b'
+                  }}
+                  onFocus={e => {
+                    e.currentTarget.style.borderColor = '#2563eb';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+                  }}
+                  onBlur={e => {
+                    e.currentTarget.style.borderColor = '#cbd5e1';
+                    e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleClose(true);
+                    if (e.key === 'Escape') handleClose(false);
+                  }}
+                  autoFocus
+                />
+              </div>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-              {dialog.isConfirm && (
+              {(dialog.isConfirm || dialog.isPrompt) && (
                 <button 
                   onClick={() => handleClose(false)}
                   style={{
