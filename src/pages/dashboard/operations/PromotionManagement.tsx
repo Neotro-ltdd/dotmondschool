@@ -225,6 +225,20 @@ export default function PromotionManagement() {
     }
   });
 
+  const promoteSingleMutation = useMutation({
+    mutationFn: async (payload: { recommendationId: string; customRecipientEmail?: string }) => {
+      return await api.post('/academics/promotion/promote-single', payload);
+    },
+    onSuccess: (data: any) => {
+      showNotification(data?.message || data?.Message || 'Student promoted and email sent successfully.', 'success', 'Single Promotion & Email Test');
+      queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
+      queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+    },
+    onError: (err: any) => {
+      showNotification(err.message || 'Failed to promote student or send email.', 'error', 'Promotion Error');
+    }
+  });
+
   const handleCurrentClassChange = (newClassId: string) => {
     setSelectedClassId(newClassId);
     if (!newClassId) {
@@ -518,7 +532,7 @@ export default function PromotionManagement() {
                         <th>Annual Avg</th>
                         <th>System Rec.</th>
                         <th>Final Decision</th>
-                        {batchReport.status !== 'Approved' && <th>Actions</th>}
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -543,13 +557,29 @@ export default function PromotionManagement() {
                               )}
                             </div>
                           </td>
-                          {batchReport.status !== 'Approved' && (
-                            <td>
-                              <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <Edit3 size={14} /> Edit Status
+                          <td>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                              {batchReport.status !== 'Approved' && (
+                                <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <Edit3 size={14} /> Edit Status
+                                </button>
+                              )}
+                              <button
+                                type='button'
+                                className='btn btn-primary btn-sm'
+                                onClick={() => {
+                                  const customEmail = window.prompt("Enter an email address to receive this student's test HTML promotion notification (or leave empty to send to the student's parent email on record):", "");
+                                  if (customEmail !== null) {
+                                    promoteSingleMutation.mutate({ recommendationId: rec.recommendationId, customRecipientEmail: customEmail.trim() || undefined });
+                                  }
+                                }}
+                                disabled={promoteSingleMutation.isPending}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}
+                              >
+                                ⚡ Test Promote & Email
                               </button>
-                            </td>
-                          )}
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
