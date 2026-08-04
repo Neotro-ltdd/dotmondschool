@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
+import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import '../students/Management.css';
 
 interface ClassItem {
@@ -88,7 +89,7 @@ export default function PromotionManagement() {
   // --- CLASS PROMOTION STATE ---
   const [selectedClassId, setSelectedClassId] = useState('');
   const [targetClassId, setTargetClassId] = useState('');
-  const [nextSession, setNextSession] = useState(`${year}/${year + 1}`);
+  const { session: nextSession, setSession: setNextSession } = useActiveTerm();
   const [minScore, setMinScore] = useState<number>(50);
   const [batchId, setBatchId] = useState<string | null>(null);
 
@@ -437,8 +438,12 @@ export default function PromotionManagement() {
             </div>
             
             <div style={{ flex: 1, minWidth: '150px' }}>
-              <label>Next Session *</label>
-              <input type='text' className='filter-select' placeholder='e.g. 2026/2027' value={nextSession} onChange={e => setNextSession(e.target.value)} required />
+              <label>Session:</label>
+              <select className='filter-select' value={nextSession} onChange={e => setNextSession(e.target.value)} required>
+                <option value={`${year}/${year + 1}`}>{`${year}/${year + 1}`}</option>
+                <option value={`${year - 1}/${year}`}>{`${year - 1}/${year}`}</option>
+                <option value={`${year - 2}/${year - 1}`}>{`${year - 2}/${year - 1}`}</option>
+              </select>
             </div>
 
             <div style={{ flex: 1, minWidth: '150px' }}>
