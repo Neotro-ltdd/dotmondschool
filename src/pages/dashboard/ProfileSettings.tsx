@@ -214,16 +214,37 @@ export default function ProfileSettings() {
         <div style={{
           height: '160px',
           background: 'linear-gradient(135deg, #0A192F 0%, #000080 50%, #1E3A8A 100%)',
-          position: 'relative'
-        }} />
+          position: 'relative',
+          padding: '0 2rem'
+        }}>
+          {/* User Name in Crisp White Ink sitting directly on the bottom line inside the blue banner */}
+          <div style={{
+            position: 'absolute',
+            bottom: '0.75rem',
+            left: '185px',
+            right: '2rem',
+            zIndex: 2
+          }}>
+            <h1 style={{
+              margin: 0,
+              fontSize: '1.85rem',
+              fontWeight: 900,
+              color: '#ffffff',
+              letterSpacing: '-0.02em',
+              textShadow: '0 2px 8px rgba(0, 0, 0, 0.4)'
+            }}>
+              {fullName}
+            </h1>
+          </div>
+        </div>
 
         {/* Profile Card Main Info Row */}
         <div style={{ padding: '0 2rem 1.5rem 2rem', position: 'relative' }}>
           
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
             
-            {/* Left: Avatar + Name + Badges */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1.5rem', marginTop: '-70px' }}>
+            {/* Left: Avatar + Badges */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.5rem', marginTop: '-70px' }}>
               
               {/* Overlapping Circle Avatar (Enlarged to 140px) */}
               <div style={{
@@ -235,7 +256,8 @@ export default function ProfileSettings() {
                 boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                 background: '#ffffff',
                 overflow: 'hidden',
-                flexShrink: 0
+                flexShrink: 0,
+                zIndex: 3
               }}>
                 {currentAvatarUrl && !avatarLoadError ? (
                   <img 
@@ -261,21 +283,17 @@ export default function ProfileSettings() {
                 )}
               </div>
 
-              {/* Name & Subtitles (Shifted down with padding-top: 1.25rem) */}
-              <div style={{ paddingTop: '1.25rem', paddingBottom: '0.25rem' }}>
-                <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em' }}>
-                  {fullName}
-                </h1>
-                
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+              {/* Subtitles & Badges (Positioned on white surface below blue banner) */}
+              <div style={{ paddingTop: '1rem', paddingBottom: '0.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                   {/* Primary Role Badge (School Navy Theme) */}
-                  <span style={{ background: '#EFF6FF', color: '#1E3A8A', border: '1px solid #BFDBFE', fontSize: '0.8rem', fontWeight: 700, padding: '3px 12px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ background: '#EFF6FF', color: '#1E3A8A', border: '1px solid #BFDBFE', fontSize: '0.8rem', fontWeight: 700, padding: '4px 14px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                     <Shield size={14} />
                     {userRole || 'User'}
                   </span>
 
                   {/* Joined Date Badge */}
-                  <span style={{ background: '#F8FAFC', color: '#475569', border: '1px solid #E2E8F0', fontSize: '0.8rem', fontWeight: 600, padding: '3px 12px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ background: '#F8FAFC', color: '#475569', border: '1px solid #E2E8F0', fontSize: '0.8rem', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                     <Calendar size={14} />
                     Joined: {profile.createdDate ? new Date(profile.createdDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Active Staff'}
                   </span>
@@ -285,7 +303,7 @@ export default function ProfileSettings() {
             </div>
 
             {/* Right: Quick Action Pill */}
-            <div style={{ paddingBottom: '0.5rem' }}>
+            <div style={{ paddingTop: '1rem' }}>
               <span style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <Sparkles size={14} style={{ color: '#EAB308' }} />
                 Account Status: <strong style={{ color: '#166534' }}>Verified</strong>
