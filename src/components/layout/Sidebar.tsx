@@ -81,9 +81,11 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
 
   const getUserInitials = () => {
     if (!userName) return 'US';
-    const parts = userName.trim().split(' ');
+    const titles = ['mr', 'mrs', 'ms', 'dr', 'prof', 'rev', 'engr', 'chief', 'elder', 'deacon', 'deaconess', 'pastor'];
+    const parts = userName.trim().split(' ').filter(p => !titles.includes(p.toLowerCase().replace(/[.,]/g, '')));
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return userName.slice(0, 2).toUpperCase();
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return 'US';
   };
 
   return (

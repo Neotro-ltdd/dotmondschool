@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (overrideName) {
                     setUserName(overrideName);
                 } else if (firstName || lastName) {
-                    const fullName = `${lastName} ${firstName}`.trim();
+                    const fullName = `${firstName} ${lastName}`.trim();
                     setUserName(finalTitle ? `${finalTitle} ${fullName}` : fullName);
                 } else if (email) {
                     const namePart = email.split('@')[0];
@@ -141,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         let baseName = '';
         if (data.firstName !== undefined && data.lastName !== undefined) {
-            baseName = `${data.lastName} ${data.firstName}`.trim();
+            baseName = `${data.firstName} ${data.lastName}`.trim();
         } else {
             baseName = userName;
             if (userTitle && baseName.startsWith(userTitle)) {
