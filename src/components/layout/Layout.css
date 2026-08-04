@@ -237,6 +237,11 @@
   color: var(--text-secondary);
 }
 
+.logout-header-btn:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+
 /* Dashboard Content */
 .dashboard-content {
   flex: 1;

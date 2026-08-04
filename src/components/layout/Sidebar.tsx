@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { api } from '../../services/api';
@@ -298,14 +299,17 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
             )}
           </>
         )}
-      </nav>
 
-      <div className="sidebar-footer">
-        <button className="nav-item btn-logout" onClick={handleLogout}>
-          <span className="nav-icon">🚪</span>
-          Logout
-        </button>
-      </div>
+        <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255, 255, 255, 0.5)', padding: '0.5rem 1rem 0.25rem' }}>
+            ACCOUNT
+          </div>
+          <NavLink to="/dashboard/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <span className="nav-icon" style={{ display: 'inline-flex', alignItems: 'center' }}><User size={18} /></span>
+            My Profile
+          </NavLink>
+        </div>
+      </nav>
     </aside>
   );
 }
