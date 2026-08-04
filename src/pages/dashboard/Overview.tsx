@@ -27,11 +27,11 @@ import {
 import SlideOver from '../../components/ui/SlideOver';
 import './Dashboard.css';
 
-// Chart Color Palette
-const feeColors = ['#10B981', '#F43F5E'];
-const COLORS = ['#000080', '#10B981', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899'];
+// Official School Brand Color Palette
+const feeColors = ['#000080', '#3B82F6'];
+const COLORS = ['#000080', '#1E40AF', '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD'];
 
-const StatCard = ({ label, value, icon: Icon, topColor = '#000080', iconBg = '#EFF6FF', iconColor = '#000080', trendTag, subText }: any) => (
+const StatCard = ({ label, value, icon: Icon, topColor = 'var(--primary-color, #000080)', iconBg = '#EFF6FF', iconColor = 'var(--primary-color, #000080)', trendTag, subText }: any) => (
   <div className="stat-card-executive">
     <div className="stat-top-bar" style={{ backgroundColor: topColor }} />
     
@@ -284,8 +284,8 @@ export default function Overview() {
                   label="TEACHING & ACADEMIC STAFF" 
                   value={principalData.metrics.totalTeachers} 
                   icon={Users} 
-                  topColor="#8B5CF6"
-                  iconBg="#F3E8FF" iconColor="#7C3AED" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: '● Verified', type: 'positive' }}
                   subText="Allocated Faculty"
                 />
@@ -293,8 +293,8 @@ export default function Overview() {
                   label="DAILY AVERAGE ATTENDANCE" 
                   value={`${principalData.metrics.averageAttendance}%`} 
                   icon={CheckCircle} 
-                  topColor="#10B981"
-                  iconBg="#DCFCE7" iconColor="#15803D" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: '● Live Today', type: 'positive' }}
                   subText="Gate & Class Audit"
                 />
@@ -302,8 +302,8 @@ export default function Overview() {
                   label="PENDING APPROVALS" 
                   value={principalData.metrics.pendingApprovals} 
                   icon={AlertCircle} 
-                  topColor="#F59E0B"
-                  iconBg="#FEF3C7" iconColor="#D97706" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: principalData.metrics.pendingApprovals > 0 ? 'Requires Action' : 'Cleared', type: principalData.metrics.pendingApprovals > 0 ? 'negative' : 'positive' }}
                   subText="Result Broadsheets"
                 />
@@ -323,7 +323,7 @@ export default function Overview() {
 
                 <div className="shortcuts-grid">
                   <Link to="/dashboard/approvals" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                    <div className="shortcut-icon">
                       <CheckCircle size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -333,7 +333,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/reports" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                    <div className="shortcut-icon">
                       <Award size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -343,7 +343,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/teachers" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                    <div className="shortcut-icon">
                       <Users size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -353,7 +353,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/students" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                    <div className="shortcut-icon">
                       <GraduationCap size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -433,8 +433,8 @@ export default function Overview() {
                   label="TOTAL TUITION COLLECTED" 
                   value={accountantData ? formatCurrency(accountantData.totalCollected) : '---'} 
                   icon={CheckCircle} 
-                  topColor="#10B981"
-                  iconBg="#DCFCE7" iconColor="#15803D" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: '● Verified', type: 'positive' }}
                   subText="Term Payments Reconciled"
                 />
@@ -442,8 +442,8 @@ export default function Overview() {
                   label="TOTAL OUTSTANDING FEES" 
                   value={accountantData ? formatCurrency(accountantData.totalUnpaid) : '---'} 
                   icon={AlertCircle} 
-                  topColor="#EF4444"
-                  iconBg="#FEE2E2" iconColor="#B91C1C" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: 'Pending Balance', type: 'negative' }}
                   subText="Uncollected Billing"
                 />
@@ -451,8 +451,8 @@ export default function Overview() {
                   label="HIGHEST UNPAID CLASS" 
                   value={accountantData?.highestUnpaidClass?.name || '---'} 
                   icon={Users} 
-                  topColor="#F59E0B"
-                  iconBg="#FEF3C7" iconColor="#D97706" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: `${accountantData?.highestUnpaidClass?.percentage || 0}% Unpaid`, type: 'negative' }}
                   subText="Class Billing Priority"
                 />
@@ -460,8 +460,8 @@ export default function Overview() {
                   label="PENDING VERIFICATIONS" 
                   value={accountantData?.pendingVerifications || 0} 
                   icon={FileText} 
-                  topColor="#3B82F6"
-                  iconBg="#EFF6FF" iconColor="#1D4ED8" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                   trendTag={{ text: 'Bank Uploads', type: 'positive' }}
                   subText="Online Receipts Staged"
                 />
@@ -481,7 +481,7 @@ export default function Overview() {
 
                 <div className="shortcuts-grid">
                   <Link to="/dashboard/finance/verifications" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                    <div className="shortcut-icon">
                       <CheckCircle size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -491,7 +491,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/finance/pos" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                    <div className="shortcut-icon">
                       <CreditCard size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -501,7 +501,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/operations/manual-clearance" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                    <div className="shortcut-icon">
                       <ShieldCheck size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -511,7 +511,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/finance/ledger" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                    <div className="shortcut-icon">
                       <FileText size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -574,7 +574,7 @@ export default function Overview() {
           {loading ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
               <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-              <p>Loading teacher overview...</p>
+              <p>Loading teacher workstation metrics...</p>
             </div>
           ) : teacherData && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -594,8 +594,8 @@ export default function Overview() {
                       label="TODAY'S ATTENDANCE" 
                       value={`${teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%`} 
                       icon={CheckCircle} 
-                      topColor="#10B981"
-                      iconBg="#DCFCE7" iconColor="#15803D" 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
                       trendTag={{ text: `Present: ${teacherData.classTeacherMetrics.attendanceToday.present}`, type: 'positive' }}
                       subText="Daily Gate & Register"
                     />
@@ -603,8 +603,8 @@ export default function Overview() {
                       label="PENDING EVALUATION REMARKS" 
                       value={teacherData.classTeacherMetrics.pendingRemarks} 
                       icon={FileText} 
-                      topColor="#F59E0B"
-                      iconBg="#FEF3C7" iconColor="#D97706" 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
                       trendTag={{ text: teacherData.classTeacherMetrics.pendingRemarks > 0 ? 'Action Needed' : 'Completed', type: 'neutral' }}
                       subText="Affective & Psychomotor"
                     />
@@ -617,16 +617,16 @@ export default function Overview() {
                       label="SUBJECT ALLOCATIONS" 
                       value={teacherData.subjectTeacherMetrics.totalAllocations} 
                       icon={BookOpen} 
-                      topColor="#8B5CF6"
-                      iconBg="#F3E8FF" iconColor="#7C3AED" 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
                       subText="Allocated Subjects"
                     />
                     <StatCard 
                       label="TOTAL STUDENTS TAUGHT" 
                       value={teacherData.subjectTeacherMetrics.totalStudents} 
                       icon={GraduationCap} 
-                      topColor="#EC4899"
-                      iconBg="#FCE7F3" iconColor="#BE185D" 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
                       subText="Across All Assigned Arm Classes"
                     />
                   </>
@@ -647,7 +647,7 @@ export default function Overview() {
 
                 <div className="shortcuts-grid">
                   <Link to="/dashboard/teacher/attendance" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                    <div className="shortcut-icon">
                       <CheckCircle size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -657,7 +657,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/teacher/assessment" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                    <div className="shortcut-icon">
                       <FileText size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -667,7 +667,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/teacher/my-class" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                    <div className="shortcut-icon">
                       <Users size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -677,7 +677,7 @@ export default function Overview() {
                   </Link>
 
                   <Link to="/dashboard/teacher/results" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                    <div className="shortcut-icon">
                       <Award size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -714,22 +714,22 @@ export default function Overview() {
                   label="PRINTED ID CARDS" 
                   value={vendorData.printedCards} 
                   icon={CheckCircle} 
-                  topColor="#10B981"
-                  iconBg="#DCFCE7" iconColor="#15803D" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                 />
                 <StatCard 
                   label="PENDING ID CARDS" 
                   value={vendorData.pendingCards} 
                   icon={AlertCircle} 
-                  topColor="#F59E0B"
-                  iconBg="#FEF3C7" iconColor="#D97706" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
                 />
               </div>
 
               <div className="quick-shortcuts-section">
                 <div className="shortcuts-grid">
                   <Link to="/dashboard/vendor-hub" className="shortcut-card">
-                    <div className="shortcut-icon" style={{ background: '#000080' }}>
+                    <div className="shortcut-icon">
                       <Printer size={20} />
                     </div>
                     <div className="shortcut-info">
@@ -762,8 +762,8 @@ export default function Overview() {
               label="TOTAL STAFF & FACULTY" 
               value={adminData?.metrics?.totalStaff || "19"} 
               icon={Users} 
-              topColor="#8B5CF6"
-              iconBg="#F3E8FF" iconColor="#7C3AED" 
+              topColor="#000080"
+              iconBg="#EFF6FF" iconColor="#000080" 
               trendTag={{ text: '● 100% Active', type: 'positive' }}
               subText="Teaching & Administrative"
             />
@@ -771,8 +771,8 @@ export default function Overview() {
               label="CLASSES & SUBJECTS" 
               value={adminData ? `${adminData.metrics.totalClasses} / ${adminData.metrics.totalSubjects}` : "14 / 118"} 
               icon={LayoutDashboard} 
-              topColor="#10B981"
-              iconBg="#DCFCE7" iconColor="#15803D" 
+              topColor="#000080"
+              iconBg="#EFF6FF" iconColor="#000080" 
               trendTag={{ text: '● Operational', type: 'positive' }}
               subText="Academic Infrastructure"
             />
@@ -780,8 +780,8 @@ export default function Overview() {
               label="CURRENT TERM STATUS" 
               value={adminData?.metrics?.currentTermStatus || `${session} ${displayTerm}`} 
               icon={Calendar} 
-              topColor="#F59E0B"
-              iconBg="#FEF3C7" iconColor="#D97706" 
+              topColor="#000080"
+              iconBg="#EFF6FF" iconColor="#000080" 
               trendTag={{ text: isHolidayMode ? '🌴 Holiday / Closed' : `Session ${session}`, type: isHolidayMode ? 'warning' : 'positive' }}
               subText="Termly Operational Status"
             />
@@ -801,7 +801,7 @@ export default function Overview() {
 
             <div className="shortcuts-grid">
               <Link to="/dashboard/students" className="shortcut-card">
-                <div className="shortcut-icon" style={{ background: '#000080' }}>
+                <div className="shortcut-icon">
                   <GraduationCap size={20} />
                 </div>
                 <div className="shortcut-info">
@@ -811,7 +811,7 @@ export default function Overview() {
               </Link>
 
               <Link to="/dashboard/teachers" className="shortcut-card">
-                <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                <div className="shortcut-icon">
                   <Users size={20} />
                 </div>
                 <div className="shortcut-info">
@@ -821,7 +821,7 @@ export default function Overview() {
               </Link>
 
               <Link to="/dashboard/operations/result-management" className="shortcut-card">
-                <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                <div className="shortcut-icon">
                   <Award size={20} />
                 </div>
                 <div className="shortcut-info">
@@ -831,7 +831,7 @@ export default function Overview() {
               </Link>
 
               <Link to="/dashboard/finance/verifications" className="shortcut-card">
-                <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                <div className="shortcut-icon">
                   <CreditCard size={20} />
                 </div>
                 <div className="shortcut-info">
