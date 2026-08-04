@@ -745,16 +745,35 @@ export default function Students() {
         />
       )}
 
-      {/* ADMIT NEW STUDENT MODAL */}
+      {/* SLIDE-OVER DRAWER FORM FOR ADMIT NEW STUDENT */}
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content glass-panel large-modal">
-            <h2>Admit New Student</h2>
-            <form onSubmit={handleCreate} className="modal-form">
-              <div className="form-grid">
-                <div className="form-group full-width">
-                  <label>Assign to Class</label>
-                  <select name="classId" value={formData.classId} onChange={handleInputChange} required>
+        <div className="student-slideover-backdrop" onClick={() => setShowModal(false)}>
+          <div className="student-slideover-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="student-slideover-header">
+              <div>
+                <h2 className="student-slideover-title">Admit New Student</h2>
+                <p className="student-slideover-subtitle">Fill in student bio-data and parent contact information</p>
+              </div>
+              <button className="btn-close-slideover" onClick={() => setShowModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div className="student-slideover-body">
+                {/* Class Assignment */}
+                <div className="form-group">
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                    Assign to Class <span style={{ color: '#E11D48' }}>*</span>
+                  </label>
+                  <select 
+                    name="classId" 
+                    value={formData.classId} 
+                    onChange={handleInputChange} 
+                    required
+                    className="select-filter-input"
+                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                  >
                     <option value="">-- Select Class --</option>
                     {classes.map(cls => (
                       <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
@@ -762,47 +781,113 @@ export default function Students() {
                   </select>
                 </div>
 
-                <div className="form-group full-width">
-                  <label>Department / Track (For Senior Students)</label>
-                  <select name="departmentTrack" value={formData.departmentTrack} onChange={handleInputChange}>
-                    <option value="General">General (Junior / Primary)</option>
+                {/* Department Track */}
+                <div className="form-group">
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                    Department / Track (For Senior Secondary)
+                  </label>
+                  <select 
+                    name="departmentTrack" 
+                    value={formData.departmentTrack} 
+                    onChange={handleInputChange}
+                    className="select-filter-input"
+                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                  >
+                    <option value="General">General (Junior / Primary / Nursery)</option>
                     <option value="Science">Science</option>
                     <option value="Arts">Arts</option>
                     <option value="Commercial">Commercial</option>
                   </select>
                 </div>
 
-                <div className="form-group">
-                  <label>First Name</label>
-                  <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group">
+                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                      First Name <span style={{ color: '#E11D48' }}>*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      name="firstName" 
+                      value={formData.firstName} 
+                      onChange={handleInputChange} 
+                      required 
+                      placeholder="e.g. Olufunke"
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                      Surname <span style={{ color: '#E11D48' }}>*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      name="surname" 
+                      value={formData.surname} 
+                      onChange={handleInputChange} 
+                      required 
+                      placeholder="e.g. Ikang"
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
-                  <label>Surname</label>
-                  <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required />
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                    Other Names
+                  </label>
+                  <input 
+                    type="text" 
+                    name="otherNames" 
+                    value={formData.otherNames} 
+                    onChange={handleInputChange} 
+                    placeholder="e.g. Elizabeth"
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                  />
                 </div>
 
-                <div className="form-group full-width">
-                  <label>Other Names</label>
-                  <input type="text" name="otherNames" value={formData.otherNames} onChange={handleInputChange} />
-                </div>
-                
-                <div className="form-group full-width section-divider">
-                  <h3>Parent / Guardian Info</h3>
-                </div>
+                <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '1rem' }}>
+                    Parent / Guardian Info
+                  </span>
 
-                <div className="form-group">
-                  <label>Parent Phone Number</label>
-                  <input type="tel" name="parentPhoneNumber" value={formData.parentPhoneNumber} onChange={handleInputChange} required />
-                </div>
-                <div className="form-group">
-                  <label>Parent Email Address (Optional)</label>
-                  <input type="email" name="parentEmail" value={formData.parentEmail} onChange={handleInputChange} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div className="form-group">
+                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                        Parent Phone Number <span style={{ color: '#E11D48' }}>*</span>
+                      </label>
+                      <input 
+                        type="tel" 
+                        name="parentPhoneNumber" 
+                        value={formData.parentPhoneNumber} 
+                        onChange={handleInputChange} 
+                        required 
+                        placeholder="08012345678"
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                        Parent Email Address (Optional)
+                      </label>
+                      <input 
+                        type="email" 
+                        name="parentEmail" 
+                        value={formData.parentEmail} 
+                        onChange={handleInputChange} 
+                        placeholder="parent@example.com"
+                        style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="modal-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
+              <div className="student-slideover-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>
+                  Cancel
+                </button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
                   {submitting ? 'Admitting...' : 'Admit Student'}
                 </button>
