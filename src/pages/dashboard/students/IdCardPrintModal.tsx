@@ -127,11 +127,17 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   <div className="front-logo-placeholder"></div>
                 )}
                 <div className="front-header-text">
-                  <div className="front-school-title">{schoolProfile?.schoolName?.toUpperCase() || ''}</div>
-                  <div className="front-school-subtitle">{schoolProfile?.address || 'Lekki, Lagos, Nigeria'}</div>
+                  <div className="front-school-title">DOTMOND</div>
+                  <div className="front-school-subtitle">PRIMARY &amp; SECONDARY SCHOOL</div>
+                  <div className="front-school-address">{schoolProfile?.address || 'Happyland Estate, Ajah, Lagos'}</div>
                 </div>
               </div>
+              <div className="front-header-line"></div>
               
+              <div className="front-subheader-row">
+                <div className="student-id-badge">STUDENT ID</div>
+              </div>
+
               <div className="front-body">
                 <div className="portrait-frame">
                   {idCardData.passportUrl ? (
@@ -141,15 +147,26 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   )}
                 </div>
               </div>
-              
+
               <div className="front-angled-block">
                 <div className="student-name">{idCardData.fullName.toUpperCase()}</div>
                 <div className="student-details-grid">
-                  <div className="detail-label">ADMISSION NO:</div>
-                  <div className="detail-value">{idCardData.registrationNumber}</div>
-                  <div className="detail-label">SECTION:</div>
-                  <div className="detail-value">{idCardData.section}</div>
+                  <div className="detail-row">
+                    <span className="detail-label">Admission No: </span>
+                    <span className="detail-value">{idCardData.registrationNumber}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Section: </span>
+                    <span className="detail-value">{idCardData.section}</span>
+                  </div>
                 </div>
+              </div>
+
+              <div className="front-red-bar"></div>
+              
+              <div className="front-footer-strip">
+                <span>VALID</span>
+                <span>{idCardData.validPeriod}</span>
               </div>
             </div>
           </div>
@@ -158,39 +175,45 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           <div className="id-card-wrapper">
             <div className="id-card back-card">
               <div className="back-header">
-                <div className="back-title">ATTENDANCE SYSTEM</div>
+                {schoolProfile?.logoUrl ? (
+                  <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" className="back-logo" />
+                ) : (
+                  <div className="back-logo-placeholder"></div>
+                )}
+                <div className="back-header-text">
+                  <div className="back-school-title">DOTMOND SCHOOL</div>
+                  <div className="back-school-subtitle">Attendance &amp; Identification System</div>
+                </div>
               </div>
-              
+              <div className="back-header-line"></div>
+
               <div className="back-body">
-                <div className="qr-container-large">
-                  <img
-                    src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
-                    alt="Student QR Code"
-                  />
-                </div>
-                
-                <div className="scan-instruction-large">SCAN TO CLOCK IN</div>
-                
-                <div className="encoded-id-pill">
-                  {idCardData.registrationNumber}
-                </div>
-                
-                <div className="back-divider-line"></div>
-                
                 <div className="instruction-text">
-                  This card is the property of <strong>{schoolProfile?.schoolName}</strong>.<br/>
-                  If found, please return to the school office.<br/>
-                  Unauthorised use is strictly prohibited.
+                  This card is the property of Dotmond Primary &amp; Secondary School. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
                 </div>
-                
+                <div className="back-divider-line"></div>
+
+                <div className="qr-section">
+                  <div className="scan-instruction-large">SCAN TO CLOCK IN</div>
+                  <div className="qr-container-large">
+                    <img
+                      src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
+                      alt="Student QR Code"
+                    />
+                  </div>
+                  <div className="encoded-id-pill">
+                    ENCODED ID: {idCardData.registrationNumber}
+                  </div>
+                </div>
+
                 <div className="signature-section">
                   <div className="signature-line"></div>
                   <div className="signature-label">Authorised Signature</div>
                 </div>
               </div>
-              
-              <div className="back-footer">
-                <div className="validity">VALID: {idCardData.validPeriod}</div>
+
+              <div className="back-footer-bar">
+                Powered by NEOTRO ATTENDANCE SYSTEM
               </div>
             </div>
           </div>
