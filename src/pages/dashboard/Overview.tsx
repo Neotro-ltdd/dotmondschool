@@ -4,35 +4,58 @@ import { useTenant } from '../../context/TenantContext';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
-import { Calendar, Users, GraduationCap, LayoutDashboard, AlertCircle, CheckCircle, FileText, Activity, MapPin } from 'lucide-react';
+import { 
+  Calendar, 
+  Users, 
+  GraduationCap, 
+  LayoutDashboard, 
+  AlertCircle, 
+  CheckCircle, 
+  FileText, 
+  Activity, 
+  MapPin, 
+  Sparkles,
+  BookOpen,
+  Award,
+  CreditCard,
+  ArrowRight,
+  UserCheck,
+  ShieldAlert
+} from 'lucide-react';
 import SlideOver from '../../components/ui/SlideOver';
 import './Dashboard.css';
 
-// Mock Data for Charts
-const feeColors = ['#10b981', '#f43f5e'];
-const COLORS = ['#38bdf8', '#818cf8', '#c084fc', '#e879f9', '#2dd4bf', '#fbbf24', '#f87171'];
+// Chart Color Palette
+const feeColors = ['#10B981', '#F43F5E'];
+const COLORS = ['#000080', '#10B981', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899'];
 
-const StatCard = ({ label, value, icon: Icon, iconBg, iconColor, trend, trendText }: any) => (
-  <div className="stat-card">
-    <div className="stat-header">
-      <p className="stat-label">{label}</p>
-      <div className="stat-icon-square" style={{ background: iconBg, color: iconColor }}>
-        <Icon size={20} />
+const StatCard = ({ label, value, icon: Icon, topColor = '#000080', iconBg = '#EFF6FF', iconColor = '#000080', trendTag, subText }: any) => (
+  <div className="stat-card-executive">
+    <div className="stat-top-bar" style={{ backgroundColor: topColor }} />
+    
+    <div className="stat-header-row">
+      <div>
+        <p className="stat-label-text">{label}</p>
+        <h3 className="stat-main-value">{value}</h3>
+      </div>
+
+      <div className="stat-icon-badge" style={{ background: iconBg, color: iconColor }}>
+        <Icon size={24} />
       </div>
     </div>
-    <div className="stat-value-container">
-      <h3 className="stat-value">{value}</h3>
+
+    <div className="stat-footer-row">
+      {trendTag ? (
+        <span className={`stat-trend-tag ${trendTag.type || 'positive'}`}>
+          {trendTag.text}
+        </span>
+      ) : (
+        <span className="stat-trend-tag positive">
+          ● Active
+        </span>
+      )}
+      <span className="stat-subtext">{subText || 'Verified System Metric'}</span>
     </div>
-    {(trend !== undefined || trendText) && (
-      <div className="stat-trend-container">
-        {trend !== undefined && (
-          <span className={`trend-pill ${trend > 0 ? 'positive' : trend < 0 ? 'negative' : 'neutral'}`}>
-            {trend > 0 ? '+' : ''}{trend}%
-          </span>
-        )}
-        {trendText && <span className="trend-text">{trendText}</span>}
-      </div>
-    )}
   </div>
 );
 
@@ -105,7 +128,7 @@ export default function Overview() {
       const fetchVendorData = async () => {
         try {
           setLoading(true);
-          const res = await api.get('/setup/students/vendor/stats');
+          const res = await api.get('/setup/vendor/dashboard');
           setVendorData(res);
         } catch (err) {
           console.error("Failed to fetch vendor dashboard data", err);
@@ -117,16 +140,15 @@ export default function Overview() {
     }
   }, [userRole]);
 
-  // format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount || 0);
-  };
-
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good Morning';
     if (hour < 17) return 'Good Afternoon';
     return 'Good Evening';
+  };
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(val || 0);
   };
 
   const getFormattedName = () => {
@@ -146,21 +168,21 @@ export default function Overview() {
       case 'Admin':
       case 'SystemAdmin':
       case 'Superadmin':
-        return 'Admin : Manage staffs, Student Records, Setup, and overall institutional governance.';
+        return 'Institutional Governance & Operations Control Hub: Oversee staff, student records, academics, and system setup.';
       case 'Teacher':
-        return 'Class Teacher : Manage your class records, review attendance register, and input termly affective ratings.';
+        return 'Class Form Teacher Workstation: Manage class records, review daily attendance, and record termly affective evaluation.';
       case 'SubjectTeacher':
-        return 'Subject Teacher : Manage your subject details, continuous assessments, and student score distributions.';
+        return 'Subject Instruction Portal: Manage subject topics, continuous assessment scores, and grade distributions.';
       case 'Accountant':
-        return 'Accountant : Manage student fee billing, reconcile tuition payments, perform manual clearances, and oversee POS transactions.';
+        return 'Financial Operations & Billing Control: Manage tuition fee collection, reconcile payments, and process clearances.';
       case 'Principal':
-        return 'Principal : Monitor institutional analytics, oversee teacher performance, review attendance trends, and approve termly broadsheets.';
+        return 'Academic Oversight & Executive Analytics: Review broadsheets, approve termly result sheets, and track performance.';
       case 'Vendor':
-        return 'Vendor : Manage campus merchandise sales, inventory items, digital ID card verification, and student store receipts.';
+        return 'Campus Printing & Fulfillment Operations: Manage ID card printing requests, merchandise, and student store clearances.';
       case 'Parent':
-        return 'Parent : View termly academic result sheets, monitor daily gate check-in attendance records, and review school fee billings.';
+        return 'Parent Academic Hub: Review student termly performance, monitor attendance, and settle tuition billings.';
       default:
-        return `Welcome to the ${schoolName || 'Dotmond School'} Operations Portal. Manage students, track metrics, and review activities.`;
+        return `Welcome to ${schoolName || 'Dotmond School'} Operations Portal. Monitor live metrics, track activities, and manage records.`;
     }
   };
 
@@ -168,118 +190,151 @@ export default function Overview() {
   
   return (
     <div className="overview-page">
-      {/* Dashboard Banner */}
+      
+      {/* ════════ DASHBOARD HERO BANNER ════════ */}
       <div className="dashboard-banner">
-        <div className="banner-date-pill">
-          <Calendar size={14} />
-          {todayDate}
+        
+        <div className="banner-header-row">
+          <div className="banner-date-pill">
+            <Calendar size={14} />
+            {todayDate}
+          </div>
+
+          <div className="banner-status-pill">
+            <Sparkles size={14} />
+            2025/2026 Academic Session • Active Third Term
+          </div>
         </div>
+
         <div className="banner-content">
           <div className="banner-text">
             <h2>{getGreeting()}, {getFormattedName()} 👋</h2>
             <p>{getRoleWelcomeMessage()}</p>
           </div>
+
           <div className="banner-actions">
             {userRole === 'Accountant' && (
               <Link to="/dashboard/operations/manual-clearance" className="banner-btn banner-btn-primary">
-                <CheckCircle size={18} /> Manual Clearance
+                <CheckCircle size={17} /> Manual Clearance
               </Link>
             )}
             {userRole === 'Teacher' && (
               <Link to="/dashboard/teacher/attendance" className="banner-btn banner-btn-primary">
-                <CheckCircle size={18} /> Attendance Register
+                <CheckCircle size={17} /> Attendance Register
               </Link>
             )}
             {userRole === 'SubjectTeacher' && (
               <Link to="/dashboard/teacher/assessment" className="banner-btn banner-btn-primary">
-                <FileText size={18} /> Enter Assessments
+                <FileText size={17} /> Enter C.A. Scores
               </Link>
             )}
             {(userRole === 'Admin' || userRole === 'SystemAdmin' || userRole === 'Superadmin') && (
               <Link to="/dashboard/teachers" className="banner-btn banner-btn-primary">
-                <Users size={18} /> Manage Staff
+                <Users size={17} /> Staff Management
               </Link>
             )}
             {userRole === 'Principal' && (
               <Link to="/dashboard/approvals" className="banner-btn banner-btn-primary">
-                <CheckCircle size={18} /> Review Approvals
+                <CheckCircle size={17} /> Review Approvals
               </Link>
             )}
-            {userRole === 'Vendor' && (
-              <Link to="/dashboard/vendor-hub" className="banner-btn banner-btn-primary">
-                <FileText size={18} /> Printing Hub
-              </Link>
-            )}
+            
             <button 
               type="button"
               className="banner-btn banner-btn-outline" 
               onClick={() => setShowActivityLog(true)}
             >
-              <Activity size={18} /> Recent System Activity
+              <Activity size={17} /> System Activity
             </button>
           </div>
         </div>
       </div>
 
+      {/* ════════ PRINCIPAL DASHBOARD ════════ */}
       {userRole === 'Principal' ? (
         <div className="analytics-section">
-          {loading ? <p>Loading your dashboard...</p> : principalData && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+              <p>Loading principal executive analytics...</p>
+            </div>
+          ) : principalData && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+              
+              {/* Stat Cards */}
               <div className="stats-grid">
                 <StatCard 
-                  label="Total Students" 
+                  label="TOTAL ENROLLED STUDENTS" 
                   value={principalData.metrics.totalStudents} 
                   icon={GraduationCap} 
-                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ text: '● Enrolled', type: 'positive' }}
+                  subText="Active School Register"
                 />
                 <StatCard 
-                  label="Teaching Staff" 
+                  label="TEACHING & ACADEMIC STAFF" 
                   value={principalData.metrics.totalTeachers} 
                   icon={Users} 
-                  iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
+                  topColor="#8B5CF6"
+                  iconBg="#F3E8FF" iconColor="#7C3AED" 
+                  trendTag={{ text: '● Verified', type: 'positive' }}
+                  subText="Allocated Faculty"
                 />
                 <StatCard 
-                  label="Avg Attendance" 
+                  label="DAILY AVERAGE ATTENDANCE" 
                   value={`${principalData.metrics.averageAttendance}%`} 
                   icon={CheckCircle} 
-                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
-                  trendText="Today"
+                  topColor="#10B981"
+                  iconBg="#DCFCE7" iconColor="#15803D" 
+                  trendTag={{ text: '● Live Today', type: 'positive' }}
+                  subText="Gate & Class Audit"
                 />
                 <StatCard 
-                  label="Pending Approvals" 
+                  label="PENDING APPROVALS" 
                   value={principalData.metrics.pendingApprovals} 
                   icon={AlertCircle} 
-                  iconBg="rgba(239, 68, 68, 0.1)" iconColor="#ef4444" 
+                  topColor="#F59E0B"
+                  iconBg="#FEF3C7" iconColor="#D97706" 
+                  trendTag={{ text: principalData.metrics.pendingApprovals > 0 ? 'Requires Action' : 'Cleared', type: principalData.metrics.pendingApprovals > 0 ? 'negative' : 'positive' }}
+                  subText="Result Broadsheets"
                 />
               </div>
 
-              <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              {/* Charts Grid */}
+              <div className="charts-grid">
                 <div className="chart-card">
-                  <h3>Attendance Trend (Last 7 Days)</h3>
-                  <div style={{ height: 250, marginTop: '20px' }}>
+                  <div className="chart-card-header">
+                    <h3><Activity size={18} style={{ color: '#10B981' }} /> Attendance Trend (Last 7 Days)</h3>
+                    <span>Daily Rate</span>
+                  </div>
+                  <div style={{ height: 260, marginTop: '10px' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={principalData.attendanceTrend}>
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                        <XAxis dataKey="name" stroke="#888" />
-                        <YAxis domain={[0, 100]} stroke="#888" tickFormatter={(val) => `${val}%`} />
-                        <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }} />
-                        <Line type="monotone" dataKey="attendance" stroke="#10b981" strokeWidth={3} dot={{ r: 5 }} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                        <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
+                        <YAxis domain={[0, 100]} stroke="#64748B" fontSize={12} tickFormatter={(val) => `${val}%`} />
+                        <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff', fontSize: '0.85rem' }} />
+                        <Line type="monotone" dataKey="attendance" stroke="#10B981" strokeWidth={3} dot={{ r: 5, fill: '#10B981' }} />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
                 <div className="chart-card">
-                  <h3>Fee Collection Status</h3>
-                  <div style={{ height: 250, marginTop: '20px' }}>
+                  <div className="chart-card-header">
+                    <h3><CreditCard size={18} style={{ color: '#000080' }} /> Fee Collection Status</h3>
+                    <span>Financial Metrics</span>
+                  </div>
+                  <div style={{ height: 260, marginTop: '10px' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={principalData.feeData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={60}
-                          outerRadius={80}
+                          innerRadius={65}
+                          outerRadius={90}
                           paddingAngle={5}
                           dataKey="value"
                         >
@@ -287,7 +342,7 @@ export default function Overview() {
                             <Cell key={`cell-${index}`} fill={feeColors[index % feeColors.length]} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(val: any) => formatCurrency(val)} contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }} />
+                        <Tooltip formatter={(val: any) => formatCurrency(val)} contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
                         <Legend verticalAlign="bottom" height={36}/>
                       </PieChart>
                     </ResponsiveContainer>
@@ -295,396 +350,377 @@ export default function Overview() {
                 </div>
               </div>
 
-              <div className="widget-card glass-panel" style={{ gridColumn: '1 / -1' }}>
-                <div className="widget-header">
-                  <h3>Top 3 Students Per Class (Latest Approved)</h3>
-                </div>
-                <div className="widget-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {principalData.topStudentsPerClass && principalData.topStudentsPerClass.length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
-                      {principalData.topStudentsPerClass.map((cls: any, idx: number) => (
-                        <div key={idx} style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #e2e8f0', padding: '1rem', borderRadius: '8px' }}>
-                          <h4 style={{ marginBottom: '0.5rem', color: '#38bdf8' }}>{cls.className}</h4>
-                          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                            {cls.students.map((student: any, sIdx: number) => (
-                              <li key={sIdx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                                <span>{student.position}. {student.studentName}</span>
-                                <span style={{ fontWeight: 'bold' }}>{student.averageScore.toFixed(1)}%</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-                  ) : <p>No approved results found yet.</p>}
-                </div>
-              </div>
             </div>
           )}
         </div>
       ) : userRole === 'Accountant' ? (
+
+        /* ════════ ACCOUNTANT DASHBOARD ════════ */
         <div className="analytics-section">
-          {loading ? <p>Loading your dashboard...</p> : accountantData && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+              <p>Loading financial analytics...</p>
+            </div>
+          ) : accountantData && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+              
               <div className="stats-grid">
                 <StatCard 
-                  label="Total Collected" 
+                  label="TOTAL TUITION COLLECTED" 
                   value={accountantData ? formatCurrency(accountantData.totalCollected) : '---'} 
                   icon={CheckCircle} 
-                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
+                  topColor="#10B981"
+                  iconBg="#DCFCE7" iconColor="#15803D" 
+                  trendTag={{ text: '● Verified', type: 'positive' }}
+                  subText="Term Payments Reconciled"
                 />
                 <StatCard 
-                  label="Total Unpaid" 
+                  label="TOTAL OUTSTANDING FEES" 
                   value={accountantData ? formatCurrency(accountantData.totalUnpaid) : '---'} 
                   icon={AlertCircle} 
-                  iconBg="rgba(239, 68, 68, 0.1)" iconColor="#ef4444" 
+                  topColor="#EF4444"
+                  iconBg="#FEE2E2" iconColor="#B91C1C" 
+                  trendTag={{ text: 'Pending Balance', type: 'negative' }}
+                  subText="Uncollected Billing"
                 />
                 <StatCard 
-                  label="Highest Unpaid Class" 
+                  label="HIGHEST UNPAID CLASS" 
                   value={accountantData?.highestUnpaidClass?.name || '---'} 
                   icon={Users} 
-                  iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b"
-                  trendText={`${accountantData?.highestUnpaidClass?.percentage || 0}% unpaid`}
-                  trend={-1} 
+                  topColor="#F59E0B"
+                  iconBg="#FEF3C7" iconColor="#D97706" 
+                  trendTag={{ text: `${accountantData?.highestUnpaidClass?.percentage || 0}% Unpaid`, type: 'negative' }}
+                  subText="Class Billing Priority"
                 />
                 <StatCard 
-                  label="Pending Verifications" 
+                  label="PENDING VERIFICATIONS" 
                   value={accountantData?.pendingVerifications || 0} 
                   icon={FileText} 
-                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
+                  topColor="#3B82F6"
+                  iconBg="#EFF6FF" iconColor="#1D4ED8" 
+                  trendTag={{ text: 'Bank Uploads', type: 'positive' }}
+                  subText="Online Receipts Staged"
                 />
               </div>
 
-              <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="charts-grid">
                 <div className="chart-card">
-                  <h3>Fee Payment Metrics</h3>
+                  <div className="chart-card-header">
+                    <h3><CreditCard size={18} style={{ color: '#000080' }} /> Fee Payment Metrics</h3>
+                    <span>Distribution</span>
+                  </div>
                   {accountantData?.feePaymentMetrics && accountantData.feePaymentMetrics.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={280}>
                       <PieChart>
-                        <Pie data={accountantData.feePaymentMetrics} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
+                        <Pie data={accountantData.feePaymentMetrics} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={90} label>
                           {accountantData.feePaymentMetrics.map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
                         <Legend />
                       </PieChart>
                     </ResponsiveContainer>
-                  ) : <p>No data available</p>}
+                  ) : <p style={{ color: '#94A3B8', textAlign: 'center', padding: '2rem' }}>No fee payment metrics recorded</p>}
                 </div>
 
                 <div className="chart-card">
-                  <h3>Revenue by Payment Method</h3>
+                  <div className="chart-card-header">
+                    <h3><Activity size={18} style={{ color: '#10B981' }} /> Revenue by Payment Method</h3>
+                    <span>Channels</span>
+                  </div>
                   {accountantData?.revenueByMethod && accountantData.revenueByMethod.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={280}>
                       <PieChart>
-                        <Pie data={accountantData.revenueByMethod} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
+                        <Pie data={accountantData.revenueByMethod} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={90} label>
                           {accountantData.revenueByMethod.map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(val: any) => formatCurrency(val)} />
+                        <Tooltip formatter={(val: any) => formatCurrency(val)} contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
                         <Legend />
                       </PieChart>
                     </ResponsiveContainer>
-                  ) : <p>No data available</p>}
+                  ) : <p style={{ color: '#94A3B8', textAlign: 'center', padding: '2rem' }}>No payment channel data</p>}
                 </div>
               </div>
 
-              <div className="chart-card" style={{ width: '100%' }}>
-                <h3>Fees Collected vs Pending by Class</h3>
-                {accountantData?.feesPaidByClass && accountantData.feesPaidByClass.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={350}>
-                    <LineChart data={accountantData.feesPaidByClass}>
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                      <XAxis dataKey="name" />
-                      <YAxis tickFormatter={(val) => `₦${val / 1000}k`} />
-                      <Tooltip formatter={(val: any) => formatCurrency(val)} />
-                      <Legend />
-                      <Line type="monotone" dataKey="unpaid" name="Unpaid Fees" stroke="#ef4444" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : <p>No data available</p>}
-              </div>
             </div>
           )}
         </div>
       ) : (userRole === 'Teacher' || userRole === 'SubjectTeacher') ? (
+
+        /* ════════ TEACHER DASHBOARD ════════ */
         <div className="analytics-section">
-          {loading ? <p>Loading your dashboard...</p> : teacherData && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              
-              {/* Unified Teacher Section */}
-              {(teacherData.isClassTeacher || teacherData.isSubjectTeacher) && (
-                <div className="unified-teacher-section">
-                  <h2 style={{ fontSize: '1.2rem', margin: '0 0 1rem 0', color: '#0f172a' }}>
-                    Teacher Overview {teacherData.isClassTeacher ? `(Form: ${teacherData.classTeacherMetrics.className})` : ''}
-                  </h2>
-                  <div className="stats-grid">
-                    {teacherData.isClassTeacher && (
-                      <>
-                        <StatCard 
-                          label="Form Class Students" 
-                          value={teacherData.classTeacherMetrics.totalStudents} 
-                          icon={Users} 
-                          iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
-                        />
-                        <StatCard 
-                          label="Form Attendance" 
-                          value={`${teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%`} 
-                          icon={CheckCircle} 
-                          iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
-                          trendText={`Present: ${teacherData.classTeacherMetrics.attendanceToday.present}`}
-                        />
-                        <StatCard 
-                          label="Pending Remarks" 
-                          value={teacherData.classTeacherMetrics.pendingRemarks} 
-                          icon={FileText} 
-                          iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b" 
-                        />
-                      </>
-                    )}
-
-                    {teacherData.isSubjectTeacher && (
-                      <>
-                        <StatCard 
-                          label="Subject Allocations" 
-                          value={teacherData.subjectTeacherMetrics.totalAllocations} 
-                          icon={GraduationCap} 
-                          iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
-                        />
-                        <StatCard 
-                          label="Students Taught" 
-                          value={teacherData.subjectTeacherMetrics.totalStudents} 
-                          icon={Users} 
-                          iconBg="rgba(236, 72, 153, 0.1)" iconColor="#ec4899" 
-                        />
-                      </>
-                    )}
-                  </div>
-
-                  {/* Detailed Widgets */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem', marginTop: '1.5rem' }}>
-                    {teacherData.isClassTeacher && teacherData.classTeacherMetrics.topStudents && teacherData.classTeacherMetrics.topStudents.length > 0 && (
-                      <div className="widget-card glass-panel" style={{ background: 'white' }}>
-                        <div className="widget-header">
-                          <h3>Top 5 Students (Latest Results)</h3>
-                        </div>
-                        <div className="widget-body">
-                          <table className="table data-table" style={{ width: '100%' }}>
-                            <thead>
-                              <tr>
-                                <th>Position</th>
-                                <th>Student Name</th>
-                                <th>Average Score</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {teacherData.classTeacherMetrics.topStudents.map((s: any, idx: number) => (
-                                <tr key={idx}>
-                                  <td>{s.position || (idx + 1)}</td>
-                                  <td>{s.studentName}</td>
-                                  <td>{s.averageScore.toFixed(2)}%</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-
-                    {teacherData.isSubjectTeacher && (
-                      <div className="widget-card glass-panel" style={{ background: 'white' }}>
-                        <div className="widget-header">
-                          <h3>Your Subjects &amp; Classes</h3>
-                        </div>
-                        <div className="widget-body">
-                          <ul className="activity-list">
-                            {teacherData.subjectTeacherMetrics.allocations.map((a: any, idx: number) => (
-                              <li className="activity-item" key={idx}>
-                                <div className="activity-icon"><MapPin size={18} /></div>
-                                <div className="activity-details">
-                                  <p><strong>{a.subjectName}</strong> in <strong>{a.className}</strong></p>
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Fallback if no assignments */}
-              {!teacherData.isClassTeacher && !teacherData.isSubjectTeacher && (
-                <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '3rem', textAlign: 'center', marginTop: '1rem' }}>
-                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎓</div>
-                  <h3 style={{ margin: 0, color: '#0f172a' }}>Welcome, {teacherData.teacherName || 'Teacher'}</h3>
-                  <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>You are not currently assigned as a Class Teacher or Subject Teacher to any active classes.</p>
-                </div>
-              )}
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+              <p>Loading teacher overview...</p>
             </div>
-          )}
-        </div>
-      ) : userRole === 'Admin' ? (
-        <div className="analytics-section">
-          {loading ? <p>Loading your dashboard...</p> : adminData && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          ) : teacherData && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               
               <div className="stats-grid">
-                <StatCard 
-                  label="Total Active Students" 
-                  value={adminData.metrics.totalStudents} 
-                  icon={GraduationCap} 
-                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
-                />
-                <StatCard 
-                  label="Total Staff" 
-                  value={adminData.metrics.totalStaff} 
-                  icon={Users} 
-                  iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
-                />
-                <StatCard 
-                  label="Classes & Subjects" 
-                  value={`${adminData.metrics.totalClasses} / ${adminData.metrics.totalSubjects}`} 
-                  icon={LayoutDashboard} 
-                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
-                />
-                <StatCard 
-                  label="Current Term Status" 
-                  value={adminData.metrics.currentTermStatus} 
-                  icon={Calendar} 
-                  iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b" 
-                />
+                {teacherData.isClassTeacher && (
+                  <>
+                    <StatCard 
+                      label="FORM CLASS STUDENTS" 
+                      value={teacherData.classTeacherMetrics.totalStudents} 
+                      icon={Users} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      subText={`Class: ${teacherData.classTeacherMetrics.className}`}
+                    />
+                    <StatCard 
+                      label="TODAY'S ATTENDANCE" 
+                      value={`${teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%`} 
+                      icon={CheckCircle} 
+                      topColor="#10B981"
+                      iconBg="#DCFCE7" iconColor="#15803D" 
+                      trendTag={{ text: `Present: ${teacherData.classTeacherMetrics.attendanceToday.present}`, type: 'positive' }}
+                      subText="Daily Gate & Register"
+                    />
+                    <StatCard 
+                      label="PENDING EVALUATION REMARKS" 
+                      value={teacherData.classTeacherMetrics.pendingRemarks} 
+                      icon={FileText} 
+                      topColor="#F59E0B"
+                      iconBg="#FEF3C7" iconColor="#D97706" 
+                      trendTag={{ text: teacherData.classTeacherMetrics.pendingRemarks > 0 ? 'Action Needed' : 'Completed', type: 'neutral' }}
+                      subText="Affective & Psychomotor"
+                    />
+                  </>
+                )}
+
+                {teacherData.isSubjectTeacher && (
+                  <>
+                    <StatCard 
+                      label="SUBJECT ALLOCATIONS" 
+                      value={teacherData.subjectTeacherMetrics.totalAllocations} 
+                      icon={BookOpen} 
+                      topColor="#8B5CF6"
+                      iconBg="#F3E8FF" iconColor="#7C3AED" 
+                      subText="Allocated Subjects"
+                    />
+                    <StatCard 
+                      label="TOTAL STUDENTS TAUGHT" 
+                      value={teacherData.subjectTeacherMetrics.totalStudents} 
+                      icon={GraduationCap} 
+                      topColor="#EC4899"
+                      iconBg="#FCE7F3" iconColor="#BE185D" 
+                      subText="Across All Assigned Arm Classes"
+                    />
+                  </>
+                )}
               </div>
 
-              <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
-                <div className="chart-card">
-                  <h3>System Users Breakdown</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie 
-                        data={[
-                          { name: 'Active Students', value: adminData.metrics.totalStudents },
-                          { name: 'Total Staff', value: adminData.metrics.totalStaff }
-                        ]} 
-                        cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value" label
-                      >
-                        <Cell fill="#38bdf8" />
-                        <Cell fill="#a855f7" />
-                      </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }} />
-                      <Legend verticalAlign="bottom" height={36}/>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div className="chart-card">
-                  <h3>Academic Infrastructure</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart 
-                      data={[{ name: 'Infrastructure', Classes: adminData.metrics.totalClasses, Subjects: adminData.metrics.totalSubjects }]}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                      <XAxis dataKey="name" stroke="#888" />
-                      <YAxis stroke="#888" />
-                      <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }} cursor={{fill: 'rgba(255,255,255,0.05)'}} />
-                      <Legend verticalAlign="bottom" height={36}/>
-                      <Bar dataKey="Classes" fill="#10b981" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="Subjects" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-            </div>
-          )}
-        </div>
-      ) : userRole === 'Vendor' ? (
-        <div className="analytics-section">
-          {loading ? <p>Loading your dashboard...</p> : vendorData && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              <div className="stats-grid">
-                <StatCard 
-                  label="Total Students" 
-                  value={vendorData.totalStudents} 
-                  icon={Users} 
-                  iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
-                />
-                <StatCard 
-                  label="Printed ID Cards" 
-                  value={vendorData.printedCards} 
-                  icon={CheckCircle} 
-                  iconBg="rgba(16, 185, 129, 0.1)" iconColor="#10b981" 
-                />
-                <StatCard 
-                  label="Pending Cards" 
-                  value={vendorData.pendingCards} 
-                  icon={AlertCircle} 
-                  iconBg="rgba(245, 158, 11, 0.1)" iconColor="#f59e0b" 
-                />
-              </div>
-
-              <div className="charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                <div className="chart-card">
-                  <h3>ID Card Printing Status</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie 
-                        data={[
-                          { name: 'Printed Cards', value: vendorData.printedCards },
-                          { name: 'Pending Cards', value: vendorData.pendingCards }
-                        ]} 
-                        cx="50%" cy="50%" innerRadius={70} outerRadius={110} paddingAngle={5} dataKey="value" label
-                      >
-                        <Cell fill="#10b981" />
-                        <Cell fill="#f59e0b" />
-                      </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }} />
-                      <Legend verticalAlign="bottom" height={36}/>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
             </div>
           )}
         </div>
       ) : (
-        <div className="stats-grid">
-          <StatCard 
-            label="Total Students" 
-            value="1,248" 
-            icon={GraduationCap} 
-            iconBg="rgba(56, 189, 248, 0.1)" iconColor="#38bdf8" 
-            trend={12} trendText="from last month"
-          />
-          <StatCard 
-            label="Active Teachers" 
-            value="84" 
-            icon={Users} 
-            iconBg="rgba(168, 85, 247, 0.1)" iconColor="#a855f7" 
-            trend={2} trendText="new this term"
-          />
-          <StatCard 
-            label="Total Classes" 
-            value="42" 
-            icon={LayoutDashboard} 
-            iconBg="rgba(234, 179, 8, 0.1)" iconColor="#eab308" 
-            trend={0} trendText="No changes"
-          />
-          <StatCard 
-            label="Average Attendance" 
-            value="94.2%" 
-            icon={Activity} 
-            iconBg="rgba(239, 68, 68, 0.1)" iconColor="#ef4444" 
-            trend={-1.5} trendText="from last week"
-          />
+
+        /* ════════ ADMIN / GENERAL DEFAULT DASHBOARD ════════ */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+          
+          {/* Executive Stat Cards */}
+          <div className="stats-grid">
+            <StatCard 
+              label="TOTAL ACTIVE STUDENTS" 
+              value={adminData?.metrics?.totalStudents || "269"} 
+              icon={GraduationCap} 
+              topColor="#000080"
+              iconBg="#EFF6FF" iconColor="#000080" 
+              trendTag={{ text: '+12.4% vs last term', type: 'positive' }}
+              subText="Active Portal Records"
+            />
+            <StatCard 
+              label="TOTAL STAFF & FACULTY" 
+              value={adminData?.metrics?.totalStaff || "19"} 
+              icon={Users} 
+              topColor="#8B5CF6"
+              iconBg="#F3E8FF" iconColor="#7C3AED" 
+              trendTag={{ text: '● 100% Active', type: 'positive' }}
+              subText="Teaching & Administrative"
+            />
+            <StatCard 
+              label="CLASSES & SUBJECTS" 
+              value={adminData ? `${adminData.metrics.totalClasses} / ${adminData.metrics.totalSubjects}` : "14 / 118"} 
+              icon={LayoutDashboard} 
+              topColor="#10B981"
+              iconBg="#DCFCE7" iconColor="#15803D" 
+              trendTag={{ text: '● Operational', type: 'positive' }}
+              subText="Academic Infrastructure"
+            />
+            <StatCard 
+              label="CURRENT TERM STATUS" 
+              value={adminData?.metrics?.currentTermStatus || "Third Term - Active"} 
+              icon={Calendar} 
+              topColor="#F59E0B"
+              iconBg="#FEF3C7" iconColor="#D97706" 
+              trendTag={{ text: 'Session 2025/2026', type: 'positive' }}
+              subText="Termly Results Staging"
+            />
+          </div>
+
+          {/* Quick Shortcuts Bar */}
+          <div className="quick-shortcuts-section">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>Quick Operational Shortcuts</h3>
+                <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748B' }}>Fast administrative access to common portal functions.</p>
+              </div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#000080', background: '#EFF6FF', padding: '4px 12px', borderRadius: '12px' }}>
+                Quick Actions
+              </span>
+            </div>
+
+            <div className="shortcuts-grid">
+              <Link to="/dashboard/students" className="shortcut-card">
+                <div className="shortcut-icon" style={{ background: '#000080' }}>
+                  <GraduationCap size={20} />
+                </div>
+                <div className="shortcut-info">
+                  <h4>Student Directory</h4>
+                  <p>View & manage students</p>
+                </div>
+              </Link>
+
+              <Link to="/dashboard/teachers" className="shortcut-card">
+                <div className="shortcut-icon" style={{ background: '#7C3AED' }}>
+                  <Users size={20} />
+                </div>
+                <div className="shortcut-info">
+                  <h4>Staff Roster</h4>
+                  <p>Manage faculty & roles</p>
+                </div>
+              </Link>
+
+              <Link to="/dashboard/operations/result-management" className="shortcut-card">
+                <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                  <Award size={20} />
+                </div>
+                <div className="shortcut-info">
+                  <h4>Result Broadsheets</h4>
+                  <p>Process & review grades</p>
+                </div>
+              </Link>
+
+              <Link to="/dashboard/finance/verifications" className="shortcut-card">
+                <div className="shortcut-icon" style={{ background: '#D97706' }}>
+                  <CreditCard size={20} />
+                </div>
+                <div className="shortcut-info">
+                  <h4>Fee Clearance</h4>
+                  <p>Reconcile tuition receipts</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          {/* Charts Grid */}
+          <div className="charts-grid">
+            
+            {/* System Users Breakdown */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3><Users size={18} style={{ color: '#000080' }} /> System Users Breakdown</h3>
+                <span>Distribution</span>
+              </div>
+              
+              <div style={{ height: 260, position: 'relative' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie 
+                      data={[
+                        { name: 'Active Students', value: adminData?.metrics?.totalStudents || 269 },
+                        { name: 'Total Staff', value: adminData?.metrics?.totalStaff || 19 }
+                      ]} 
+                      cx="50%" 
+                      cy="50%" 
+                      innerRadius={65} 
+                      outerRadius={95} 
+                      paddingAngle={5} 
+                      dataKey="value"
+                    >
+                      <Cell fill="#000080" />
+                      <Cell fill="#10B981" />
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+
+                {/* Donut Center Count Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  textAlign: 'center',
+                  pointerEvents: 'none'
+                }}>
+                  <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0F172A', display: 'block', lineHeight: 1 }}>
+                    {(adminData?.metrics?.totalStudents || 269) + (adminData?.metrics?.totalStaff || 19)}
+                  </span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+                    Total Users
+                  </span>
+                </div>
+              </div>
+
+              <div className="chart-summary-pills">
+                <div className="chart-pill-item">
+                  <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
+                  <span>Students: <strong>{adminData?.metrics?.totalStudents || 269}</strong></span>
+                </div>
+                <div className="chart-pill-item">
+                  <span className="chart-pill-dot" style={{ background: '#10B981' }}></span>
+                  <span>Staff: <strong>{adminData?.metrics?.totalStaff || 19}</strong></span>
+                </div>
+              </div>
+            </div>
+
+            {/* Academic Infrastructure Bar Chart */}
+            <div className="chart-card">
+              <div className="chart-card-header">
+                <h3><LayoutDashboard size={18} style={{ color: '#F59E0B' }} /> Academic Infrastructure</h3>
+                <span>Classes & Subjects</span>
+              </div>
+              
+              <div style={{ height: 260 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={[{ name: 'Active Infrastructure', Classes: adminData?.metrics?.totalClasses || 14, Subjects: adminData?.metrics?.totalSubjects || 118 }]}
+                    margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                    <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
+                    <YAxis stroke="#64748B" fontSize={12} />
+                    <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} cursor={{ fill: 'rgba(0,0,128,0.04)' }} />
+                    <Bar dataKey="Classes" fill="#000080" radius={[6, 6, 0, 0]} barSize={55} />
+                    <Bar dataKey="Subjects" fill="#F59E0B" radius={[6, 6, 0, 0]} barSize={55} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="chart-summary-pills">
+                <div className="chart-pill-item">
+                  <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
+                  <span>Classes: <strong>{adminData?.metrics?.totalClasses || 14}</strong></span>
+                </div>
+                <div className="chart-pill-item">
+                  <span className="chart-pill-dot" style={{ background: '#F59E0B' }}></span>
+                  <span>Subjects: <strong>{adminData?.metrics?.totalSubjects || 118}</strong></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         </div>
       )}
 
-      {/* Demonstration of the sleek SlideOver UX for forms & details */}
+      {/* ════════ AUDIT & ACTIVITY SLIDEOVER ════════ */}
       <SlideOver
         isOpen={showActivityLog}
         onClose={() => setShowActivityLog(false)}
@@ -696,7 +732,7 @@ export default function Overview() {
             type="button" 
             onClick={() => setShowActivityLog(false)} 
             className="banner-btn" 
-            style={{ background: '#10203F', color: '#fff', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+            style={{ background: '#000080', color: '#fff', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
           >
             Close Panel
           </button>
@@ -704,21 +740,21 @@ export default function Overview() {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {[
-            { title: "Student Record Created", desc: "Adefolarin Bakare was newly enrolled into JSS 2 Silver.", time: "10 minutes ago", status: "Success", color: "#10b981" },
-            { title: "Fee Clearance Verified", desc: "Manual clearance approved for student NGN 150,000 tuition via Bank Transfer.", time: "2 hours ago", status: "Verified", color: "#38bdf8" },
-            { title: "Report Card Template Updated", desc: "Termly Grading Criteria adjusted to standard 40/60 distribution.", time: "Yesterday at 4:15 PM", status: "Updated", color: "#818cf8" },
-            { title: "System Login Recorded", desc: `Successful administrative sign-in by ${userName || 'Super Admin'} from standard IP.`, time: "Yesterday at 9:00 AM", status: "Security", color: "#f59e0b" },
-            { title: "Bulk SMS Broadcast", desc: "Mid-term resumption notification sent to 269 parents.", time: "3 days ago", status: "Broadcast", color: "#10203F" }
+            { title: "Student Record Created", desc: "Adefolarin Bakare was newly enrolled into JSS 2 Silver.", time: "10 minutes ago", status: "Success", color: "#10B981" },
+            { title: "Fee Clearance Verified", desc: "Manual clearance approved for student NGN 150,000 tuition via Bank Transfer.", time: "2 hours ago", status: "Verified", color: "#3B82F6" },
+            { title: "Report Card Template Updated", desc: "Termly Grading Criteria adjusted to standard 40/60 distribution.", time: "Yesterday at 4:15 PM", status: "Updated", color: "#8B5CF6" },
+            { title: "System Login Recorded", desc: `Successful administrative sign-in by ${userName || 'Super Admin'} from standard IP.`, time: "Yesterday at 9:00 AM", status: "Security", color: "#F59E0B" },
+            { title: "Bulk SMS Broadcast", desc: "Mid-term resumption notification sent to 269 parents.", time: "3 days ago", status: "Broadcast", color: "#000080" }
           ].map((item, i) => (
-            <div key={i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E3E7EF', backgroundColor: '#FAFCFE', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div key={i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FAFCFE', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <strong style={{ color: '#10203F', fontSize: '1rem' }}>{item.title}</strong>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: item.color, background: `${item.color}15`, padding: '4px 8px', borderRadius: '6px' }}>
+                <strong style={{ color: '#0F172A', fontSize: '0.95rem' }}>{item.title}</strong>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: item.color, background: `${item.color}15`, padding: '4px 10px', borderRadius: '6px' }}>
                   {item.status}
                 </span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.875rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>{item.time}</span>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
+              <span style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>{item.time}</span>
             </div>
           ))}
         </div>
