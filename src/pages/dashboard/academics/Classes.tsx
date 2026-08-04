@@ -303,16 +303,16 @@ export default function Classes() {
         </div>
 
         {/* View Switcher Toggle */}
-        <div className="view-switcher-container">
+        <div className="view-mode-toggle">
           <button 
-            className={`view-btn ${viewMode === 'table' ? 'active' : ''}`}
+            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
             title="Table View"
           >
             <List size={16} /> Table View
           </button>
           <button 
-            className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
             title="Grid View"
           >
