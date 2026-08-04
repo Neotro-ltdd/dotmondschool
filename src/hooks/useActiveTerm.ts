@@ -56,3 +56,11 @@ export function useActiveTerm() {
 
   return { session, term, setSession, setTerm, isHoliday, setIsHoliday, status, setStatus, loading };
 }
+
+export function invalidateActiveTermCache() {
+  cachedSession = '';
+  cachedTerm = '';
+  cachedIsHoliday = false;
+  cachedStatus = 'Active';
+  fetchPromise = null;
+}

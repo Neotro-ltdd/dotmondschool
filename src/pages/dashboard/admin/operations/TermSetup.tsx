@@ -1,4 +1,4 @@
-import { useActiveTerm } from '../../../../hooks/useActiveTerm';
+import { useActiveTerm, invalidateActiveTermCache } from '../../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import '../SystemOperations.css';
@@ -86,6 +86,7 @@ export default function TermSetup() {
         caWeightSecond,
         examWeight
       });
+      invalidateActiveTermCache();
       showAlert(`Term setup saved successfully! Portal operational status set to "${term}".`);
     } catch (err: any) {
       showAlert(err.message || 'Failed to save term setup.');
