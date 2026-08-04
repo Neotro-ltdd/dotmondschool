@@ -1,0 +1,315 @@
+/* ════════ EXECUTIVE SUBJECT ALLOCATIONS STYLES ════════ */
+.allocations-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding-bottom: 2.5rem;
+}
+
+.allocations-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.allocations-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.allocations-page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748B);
+  margin-top: 0.25rem;
+}
+
+/* Metrics Banner */
+.allocations-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.allocations-metric-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.allocations-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.allocations-metric-card .metric-info-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.allocations-metric-card .metric-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748B;
+}
+
+.allocations-metric-card .metric-number {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin-top: 0.25rem;
+  line-height: 1;
+}
+
+.allocations-metric-card .metric-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.allocations-metric-card .metric-icon-badge.classes {
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+.allocations-metric-card .metric-icon-badge.subjects {
+  background: #F3E8FF;
+  color: #6B21A8;
+}
+
+.allocations-metric-card .metric-icon-badge.assigned {
+  background: #ECFDF5;
+  color: #047857;
+}
+
+.allocations-metric-card .metric-icon-badge.unassigned {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+/* Controls Bar */
+.subject-alloc-controls-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.subject-alloc-search-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.subject-alloc-search-box {
+  position: relative;
+  min-width: 240px;
+  flex: 1;
+}
+
+.subject-alloc-search-box input {
+  width: 100%;
+  padding: 0.6rem 0.85rem 0.6rem 2.4rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #0F172A;
+  background: #F8FAFC;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.subject-alloc-search-box input:focus {
+  border-color: var(--primary-color, #000080);
+  background: #FFFFFF;
+}
+
+.subject-alloc-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+}
+
+/* Table Area */
+.subject-alloc-table-wrapper {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.executive-subject-alloc-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.executive-subject-alloc-table th {
+  background: #F8FAFC;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.executive-subject-alloc-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #1E293B;
+}
+
+.executive-subject-alloc-table tr:hover td {
+  background: #F8FAFC;
+}
+
+/* Grid Cards View */
+.subject-alloc-grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.subject-alloc-grid-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.subject-alloc-grid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ════════ SLIDE-OVER DRAWER PANEL FOR SUBJECT ALLOCATIONS ════════ */
+.subject-alloc-slideover-backdrop {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeInBackdrop 0.25s ease forwards;
+}
+
+.subject-alloc-slideover-panel {
+  width: 100%;
+  max-width: 460px;
+  height: calc(100vh - 72px);
+  max-height: calc(100vh - 72px);
+  background: #FFFFFF;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: slideInFromRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.subject-alloc-slideover-header {
+  padding: 1.35rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, #030712 100%);
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.subject-alloc-slideover-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.subject-alloc-slideover-subtitle {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.2rem;
+}
+
+.subject-alloc-slideover-header .btn-close-slideover {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  padding: 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.subject-alloc-slideover-header .btn-close-slideover:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+}
+
+.subject-alloc-slideover-body {
+  padding: 1.5rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.subject-alloc-slideover-footer {
+  padding: 1.15rem 1.5rem;
+  border-top: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
