@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
+import { useActiveTerm } from '../../hooks/useActiveTerm';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
@@ -63,6 +64,7 @@ const StatCard = ({ label, value, icon: Icon, topColor = '#000080', iconBg = '#E
 export default function Overview() {
   const { userRole, userName, userTitle } = useAuth();
   const { schoolName } = useTenant();
+  const { session, term, isHoliday } = useActiveTerm();
   const [showActivityLog, setShowActivityLog] = React.useState(false);
   
   const [accountantData, setAccountantData] = React.useState<any>(null);
@@ -201,9 +203,12 @@ export default function Overview() {
             {todayDate}
           </div>
 
-          <div className="banner-status-pill">
-            <Sparkles size={14} />
-            2025/2026 Academic Session • Active Third Term
+          <div className="banner-status-pill" style={isHoliday ? { background: 'rgba(245, 158, 11, 0.25)', color: '#FDE68A', border: '1px solid rgba(253, 230, 138, 0.4)' } : {}}>
+            {isHoliday ? (
+              <>🌴 {session} Session • Holiday / Session Ended</>
+            ) : (
+              <><Sparkles size={14} /> {session} Session • Active {term}</>
+            )}
           </div>
         </div>
 
