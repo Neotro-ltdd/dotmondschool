@@ -217,10 +217,10 @@ export default function ProfileSettings() {
           position: 'relative',
           padding: '0 2rem'
         }}>
-          {/* User Name in Crisp White Ink sitting directly on the bottom line inside the blue banner */}
+          {/* User Name in Crisp White Ink sitting directly inside the blue banner */}
           <div style={{
             position: 'absolute',
-            bottom: '0.75rem',
+            bottom: '1rem',
             left: '185px',
             right: '2rem',
             zIndex: 2
@@ -239,18 +239,19 @@ export default function ProfileSettings() {
         </div>
 
         {/* Profile Card Main Info Row */}
-        <div style={{ padding: '0 2rem 1.5rem 2rem', position: 'relative' }}>
+        <div style={{ padding: '0 2rem 1.25rem 2rem', position: 'relative' }}>
           
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
             
             {/* Left: Avatar + Badges */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.5rem', marginTop: '-70px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
               
-              {/* Overlapping Circle Avatar (Enlarged to 140px) */}
+              {/* Overlapping Circle Avatar (Enlarged to 140px, negative margin applied only to avatar) */}
               <div style={{
                 position: 'relative',
                 width: '140px',
                 height: '140px',
+                marginTop: '-70px',
                 borderRadius: '50%',
                 border: '4px solid #ffffff',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
@@ -283,8 +284,8 @@ export default function ProfileSettings() {
                 )}
               </div>
 
-              {/* Subtitles & Badges (Positioned on white surface below blue banner) */}
-              <div style={{ paddingTop: '1rem', paddingBottom: '0.25rem' }}>
+              {/* Subtitles & Badges (Positioned 100% on white surface below blue banner) */}
+              <div style={{ paddingTop: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                   {/* Primary Role Badge (School Navy Theme) */}
                   <span style={{ background: '#EFF6FF', color: '#1E3A8A', border: '1px solid #BFDBFE', fontSize: '0.8rem', fontWeight: 700, padding: '4px 14px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
@@ -303,7 +304,7 @@ export default function ProfileSettings() {
             </div>
 
             {/* Right: Quick Action Pill */}
-            <div style={{ paddingTop: '1rem' }}>
+            <div style={{ paddingTop: '0.75rem' }}>
               <span style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <Sparkles size={14} style={{ color: '#EAB308' }} />
                 Account Status: <strong style={{ color: '#166534' }}>Verified</strong>
