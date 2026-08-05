@@ -56,11 +56,14 @@ import VendorHub from './pages/dashboard/vendor/VendorHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import './App.css';
 
+import { ThemeProvider } from './context/ThemeContext';
+
 function App() {
   return (
-    <TenantProvider>
-      <AuthProvider>
-        <DialogProvider>
+    <ThemeProvider>
+      <TenantProvider>
+        <AuthProvider>
+          <DialogProvider>
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -136,6 +139,7 @@ function App() {
         </DialogProvider>
       </AuthProvider>
     </TenantProvider>
+    </ThemeProvider>
   );
 }
 

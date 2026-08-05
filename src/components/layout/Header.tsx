@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, Sun, Moon } from 'lucide-react';
 import { API_ROOT } from '../../services/api';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
   const { userName, userRole, userAvatar, userTitle, logout } = useAuth();
+  const { theme, toggleTheme, isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
   
@@ -54,9 +56,23 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
       </div>
       
       <div className="header-actions">
-        <button className="icon-btn notification-btn">
+        <button className="icon-btn notification-btn" title="Notifications">
           <span className="icon">🔔</span>
           <span className="badge">3</span>
+        </button>
+
+        {/* Dark / Light Theme Mode Switcher beside Profile */}
+        <button 
+          onClick={toggleTheme} 
+          className="theme-toggle-btn"
+          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          aria-label="Toggle theme mode"
+        >
+          {isDarkMode ? (
+            <Sun size={19} className="theme-icon sun" />
+          ) : (
+            <Moon size={19} className="theme-icon moon" />
+          )}
         </button>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
