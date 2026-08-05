@@ -26,7 +26,8 @@ import {
   ChevronRight,
   UserCheck,
   UserX,
-  Award
+  Award,
+  Trash2
 } from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
@@ -236,6 +237,21 @@ export default function PromotionManagement() {
     },
     onError: (err: any) => {
       showNotification(err.message || 'Failed to override student decision.', 'error', 'Update Error');
+    }
+  });
+
+  const deleteBatchMutation = useMutation({
+    mutationFn: async (targetBatchId: string) => {
+      return await api.delete(`/academics/promotion/batch/${targetBatchId}`);
+    },
+    onSuccess: () => {
+      showNotification('Promotion batch deleted successfully.', 'success', 'Batch Deleted');
+      queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
+      queryClient.invalidateQueries({ queryKey: ['promotionReport'] });
+      queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+    },
+    onError: (err: any) => {
+      showNotification(err.message || 'Failed to delete promotion batch.', 'error', 'Delete Error');
     }
   });
 
@@ -938,41 +954,65 @@ export default function PromotionManagement() {
                   </tr>
                 </thead>
                 <tbody>
-                  {promotionBatches.map((batch: any) => (
-                    <tr key={batch.id}>
-                      <td>
-                        <div className="batch-transition-cell">
-                          <span className="batch-class-name">{batch.className}</span>
-                          <ChevronRight size={16} className="transition-arrow" />
-                          <span className="batch-target-name">{batch.targetClassName || 'Graduating Senior Class'}</span>
-                        </div>
-                      </td>
-                      <td><span className="reg-badge">{batch.session}</span></td>
-                      <td>{new Date(batch.dateCreated).toLocaleDateString()}</td>
-                      <td>
-                        <span className={`status-pill ${batch.isApproved ? 'active' : 'inactive'}`}>
-                          {batch.isApproved ? 'Approved & Executed' : 'Pending / Reverted'}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        {batch.isApproved && (
-                          <button 
-                            className="btn-revoke-batch"
-                            onClick={async () => {
-                              const confirmRevert = await showConfirm(
-                                `Are you sure you want to revoke and unlock promotions for ${batch.className}? Students will be returned to their previous class placement.`,
-                                { title: 'Confirm Promotion Reversal', type: 'warning' }
-                              );
-                              if (confirmRevert) revertBatchMutation.mutate(batch.id);
-                            }}
-                            disabled={revertBatchMutation.isPending}
-                          >
-                            <RotateCcw size={14} /> Revoke Batch
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {promotionBatches.map((batch: any) => {
+                    const rawDate = batch.createdAt || batch.dateCreated || batch.approvedAt;
+                    const formattedDate = rawDate && !isNaN(new Date(rawDate).getTime()) 
+                      ? new Date(rawDate).toLocaleDateString() 
+                      : 'N/A';
+                    const isApproved = batch.isApproved || batch.status === 'Approved';
+
+                    return (
+                      <tr key={batch.id}>
+                        <td>
+                          <div className="batch-transition-cell">
+                            <span className="batch-class-name">{batch.className}</span>
+                            <ChevronRight size={16} className="transition-arrow" />
+                            <span className="batch-target-name">{batch.targetClassName || batch.nextClassName || 'Graduating Senior Class'}</span>
+                          </div>
+                        </td>
+                        <td><span className="reg-badge">{batch.session}</span></td>
+                        <td>{formattedDate}</td>
+                        <td>
+                          <span className={`status-pill ${isApproved ? 'active' : 'inactive'}`}>
+                            {isApproved ? 'Approved & Executed' : 'Pending / Reverted'}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                            {isApproved && (
+                              <button 
+                                className="btn-revoke-batch"
+                                onClick={async () => {
+                                  const confirmRevert = await showConfirm(
+                                    `Are you sure you want to revoke and unlock promotions for ${batch.className}? Students will be returned to their previous class placement.`,
+                                    { title: 'Confirm Promotion Reversal', type: 'warning' }
+                                  );
+                                  if (confirmRevert) revertBatchMutation.mutate(batch.id);
+                                }}
+                                disabled={revertBatchMutation.isPending}
+                              >
+                                <RotateCcw size={14} /> Revoke Batch
+                              </button>
+                            )}
+
+                            <button 
+                              className="btn-delete-batch"
+                              onClick={async () => {
+                                const confirmDelete = await showConfirm(
+                                  `Are you sure you want to permanently delete the promotion batch for ${batch.className}? This action cannot be undone.`,
+                                  { title: 'Confirm Batch Deletion', type: 'warning', confirmText: 'Delete Batch', cancelText: 'Cancel' }
+                                );
+                                if (confirmDelete) deleteBatchMutation.mutate(batch.id);
+                              }}
+                              disabled={deleteBatchMutation.isPending}
+                            >
+                              <Trash2 size={14} /> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}

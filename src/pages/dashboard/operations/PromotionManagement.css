@@ -755,6 +755,26 @@
   border-color: #FDA4AF;
 }
 
+.btn-delete-batch {
+  border: 1px solid #FECDD3;
+  color: #DC2626;
+  background: #FEF2F2;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-batch:hover {
+  background: #FEE2E2;
+  border-color: #FCA5A5;
+}
+
 /* Modal Styling */
 .promo-modal-backdrop {
   position: fixed;
