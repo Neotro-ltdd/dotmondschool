@@ -143,12 +143,20 @@ export default function Classes() {
     setShowModal(true);
   };
 
+  // Helper to clean up teacher names and remove literal 'undefined' or 'null'
+  const formatTeacherName = (name: string | null | undefined) => {
+    if (!name) return null;
+    const cleaned = name.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').trim();
+    return cleaned.length > 0 ? cleaned : null;
+  };
+
   // Helper for teacher avatar initials
-  const getTeacherInitials = (name: string) => {
-    if (!name) return 'NA';
-    const parts = name.trim().split(' ');
+  const getTeacherInitials = (name: string | null | undefined) => {
+    const cleanName = formatTeacherName(name);
+    if (!cleanName) return 'NA';
+    const parts = cleanName.trim().split(/\s+/);
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return parts[0].substring(0, 2).toUpperCase();
+    return cleanName.substring(0, 2).toUpperCase();
   };
 
   // Sorting hierarchy
@@ -372,17 +380,17 @@ export default function Classes() {
                       )}
                     </td>
                     <td>
-                      <span style={{ fontFamily: 'monospace', fontWeight: 600, color: '#475569' }}>
+                      <span className="class-session-pill">
                         {cls.session}
                       </span>
                     </td>
                     <td>
-                      {cls.classTeacherName ? (
+                      {formatTeacherName(cls.classTeacherName) ? (
                         <div className="teacher-profile-cell">
                           <div className="teacher-avatar">
                             {getTeacherInitials(cls.classTeacherName)}
                           </div>
-                          <span className="teacher-name-title">{cls.classTeacherName}</span>
+                          <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
                         </div>
                       ) : (
                         <span className="unassigned-warning-pill">
@@ -487,12 +495,12 @@ export default function Classes() {
                   <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '0.5rem' }}>
                     Form Teacher
                   </span>
-                  {cls.classTeacherName ? (
+                  {formatTeacherName(cls.classTeacherName) ? (
                     <div className="teacher-profile-cell">
                       <div className="teacher-avatar">
                         {getTeacherInitials(cls.classTeacherName)}
                       </div>
-                      <span className="teacher-name-title">{cls.classTeacherName}</span>
+                      <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
                     </div>
                   ) : (
                     <span className="unassigned-warning-pill">

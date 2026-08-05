@@ -161,11 +161,18 @@ export default function ClassAllocations() {
     }
   };
 
-  const getTeacherInitials = (name: string) => {
-    if (!name) return 'TR';
-    const parts = name.trim().split(' ');
+  const formatTeacherName = (name: string | null | undefined) => {
+    if (!name) return null;
+    const cleaned = name.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').trim();
+    return cleaned.length > 0 ? cleaned : null;
+  };
+
+  const getTeacherInitials = (name: string | null | undefined) => {
+    const cleanName = formatTeacherName(name);
+    if (!cleanName) return 'TR';
+    const parts = cleanName.trim().split(/\s+/);
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return name.slice(0, 2).toUpperCase();
+    return cleanName.slice(0, 2).toUpperCase();
   };
 
   return (
@@ -315,12 +322,12 @@ export default function ClassAllocations() {
                     </span>
                   </td>
                   <td>
-                    {cls.classTeacherName ? (
+                    {formatTeacherName(cls.classTeacherName) ? (
                       <div className="teacher-profile-cell">
                         <div className="teacher-avatar">
                           {getTeacherInitials(cls.classTeacherName)}
                         </div>
-                        <span className="teacher-name-title">{cls.classTeacherName}</span>
+                        <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
                       </div>
                     ) : (
                       <span className="unassigned-warning-pill">
@@ -329,17 +336,17 @@ export default function ClassAllocations() {
                     )}
                   </td>
                   <td>
-                    <span className={`status-pill ${cls.classTeacherName ? 'active' : 'inactive'}`}>
-                      {cls.classTeacherName ? 'Assigned' : 'Needs Teacher'}
+                    <span className={`status-pill ${formatTeacherName(cls.classTeacherName) ? 'active' : 'inactive'}`}>
+                      {formatTeacherName(cls.classTeacherName) ? 'Assigned' : 'Needs Teacher'}
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <button 
-                      className={`btn-assign-action ${cls.classTeacherName ? 'change' : 'new'}`}
+                      className={`btn-assign-action ${formatTeacherName(cls.classTeacherName) ? 'change' : 'new'}`}
                       onClick={() => openAssignModal(cls)}
                     >
                       <UserPlus size={15} />
-                      {cls.classTeacherName ? 'Change Teacher' : 'Assign Teacher'}
+                      {formatTeacherName(cls.classTeacherName) ? 'Change Teacher' : 'Assign Teacher'}
                     </button>
                   </td>
                 </tr>
@@ -357,8 +364,8 @@ export default function ClassAllocations() {
                   <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>{cls.name}</h3>
                   <span style={{ fontSize: '0.8rem', color: '#64748B' }}>{cls.level}</span>
                 </div>
-                <span className={`status-pill ${cls.classTeacherName ? 'active' : 'inactive'}`}>
-                  {cls.classTeacherName ? 'Assigned' : 'Needs Teacher'}
+                <span className={`status-pill ${formatTeacherName(cls.classTeacherName) ? 'active' : 'inactive'}`}>
+                  {formatTeacherName(cls.classTeacherName) ? 'Assigned' : 'Needs Teacher'}
                 </span>
               </div>
 
@@ -366,12 +373,12 @@ export default function ClassAllocations() {
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '0.5rem' }}>
                   Form Teacher
                 </span>
-                {cls.classTeacherName ? (
+                {formatTeacherName(cls.classTeacherName) ? (
                   <div className="teacher-profile-cell">
                     <div className="teacher-avatar">
                       {getTeacherInitials(cls.classTeacherName)}
                     </div>
-                    <span className="teacher-name-title">{cls.classTeacherName}</span>
+                    <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
                   </div>
                 ) : (
                   <span className="unassigned-warning-pill">

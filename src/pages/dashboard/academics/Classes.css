@@ -249,6 +249,59 @@
   background: #F8FAFC;
 }
 
+.class-session-pill {
+  display: inline-block;
+  background: #F1F5F9;
+  color: #334155;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 1px solid #CBD5E1;
+}
+
+.teacher-profile-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.teacher-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, #1E40AF 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 128, 0.15);
+}
+
+.teacher-name-title {
+  font-weight: 700;
+  color: #0F172A;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.unassigned-warning-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid #FDE68A;
+}
+
 .student-count-badge {
   display: inline-flex;
   align-items: center;
