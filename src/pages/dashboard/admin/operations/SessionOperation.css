@@ -107,7 +107,7 @@
 /* Workspace Grid */
 .sessionop-workspace-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
 }
 
@@ -145,8 +145,8 @@
   border: none;
   font-weight: 800;
   font-size: 0.92rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 10px;
+  padding: 0.8rem 1.25rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(0, 0, 128, 0.2);
@@ -174,8 +174,8 @@
   border: none;
   font-weight: 800;
   font-size: 0.92rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 10px;
+  padding: 0.8rem 1.25rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
@@ -184,4 +184,22 @@
 .btn-process-archive:hover {
   background: #B45309;
   transform: translateY(-1px);
+}
+
+.btn-process-archive:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 2-Year Threshold Policy Box */
+.archive-policy-card {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 12px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
 }
