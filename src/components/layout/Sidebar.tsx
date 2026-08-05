@@ -35,6 +35,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isSuperAdmin = userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
+
   // Accordion Group States
   const [isUserRoleOpen, setIsUserRoleOpen] = useState(false);
   const [isClassStudentOpen, setIsClassStudentOpen] = useState(false);
@@ -215,7 +217,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 2. CLASS & STUDENT MANAGEMENT */}
-                {userRole !== 'Accountant' && (
+                {userRole !== 'Accountant' && !isSuperAdmin && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isClassStudentOpen ? 'open' : ''}`} 
@@ -251,7 +253,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 3. SUBJECT MANAGEMENT */}
-                {userRole !== 'Accountant' && (
+                {userRole !== 'Accountant' && !isSuperAdmin && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isSubjectOpen ? 'open' : ''}`} 
@@ -339,7 +341,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
-                {userRole !== 'Accountant' && (
+                {userRole !== 'Accountant' && !isSuperAdmin && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`} 
