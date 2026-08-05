@@ -14,8 +14,22 @@ import {
   Printer, 
   Receipt,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  History,
+  FileText
 } from 'lucide-react';
+
+interface PosReceipt {
+  id: string;
+  invoiceId: string;
+  receiptNumber: string;
+  amountPaid: number;
+  date: string;
+  session: string;
+  term: string;
+  method: string;
+  remarks: string;
+}
 
 interface PosStudent {
   id: string;
@@ -23,6 +37,7 @@ interface PosStudent {
   registrationNumber: string;
   className: string;
   invoices: any[];
+  receipts?: PosReceipt[];
 }
 
 export default function PointOfSale() {
@@ -142,6 +157,12 @@ export default function PointOfSale() {
     return name.slice(0, 2).toUpperCase() || 'ST';
   };
 
+  const openReceipt = (invoiceId: string) => {
+    if (invoiceId) {
+      window.open(`/dashboard/finance/receipt/${invoiceId}`, '_blank');
+    }
+  };
+
   return (
     <div className="pos-page-container">
       {/* Page Header */}
@@ -225,6 +246,9 @@ export default function PointOfSale() {
             {searchResults.map(student => {
               const pendingInvoices = getSortedPendingInvoices(student);
               const totalDebt = pendingInvoices.reduce((acc, inv) => acc + (inv.balance || 0), 0);
+              const totalPaid = (student.invoices || []).reduce((acc, inv) => acc + (inv.amountPaid || 0), 0);
+              const receipts = student.receipts || [];
+              const latestReceipt = receipts.length > 0 ? receipts[0] : null;
 
               return (
                 <div 
@@ -245,6 +269,7 @@ export default function PointOfSale() {
                     </div>
                   </div>
 
+                  {/* Debt Summary */}
                   <div className="pos-debt-summary">
                     <span>Pending Invoices: <strong>{pendingInvoices.length}</strong></span>
                     {totalDebt > 0 ? (
@@ -253,6 +278,37 @@ export default function PointOfSale() {
                       <span className="pos-no-debt">Cleared (₦0)</span>
                     )}
                   </div>
+
+                  {/* Prior Payment & Receipt Badge if student paid part-payment previously */}
+                  {(totalPaid > 0 || receipts.length > 0) && (
+                    <div className="pos-previous-receipts-box" onClick={e => e.stopPropagation()}>
+                      <div className="pos-previous-receipt-head">
+                        <span>💳 Prior Payments Recorded</span>
+                        <span style={{ fontWeight: 900 }}>₦{totalPaid.toLocaleString()}</span>
+                      </div>
+
+                      {latestReceipt ? (
+                        <button 
+                          type="button" 
+                          className="btn-view-previous-receipt"
+                          onClick={() => openReceipt(latestReceipt.invoiceId)}
+                        >
+                          <Printer size={13} /> View Receipt #{latestReceipt.receiptNumber}
+                        </button>
+                      ) : (student.invoices || []).some(i => i.amountPaid > 0) ? (
+                        <button 
+                          type="button" 
+                          className="btn-view-previous-receipt"
+                          onClick={() => {
+                            const paidInv = (student.invoices || []).find(i => i.amountPaid > 0);
+                            if (paidInv) openReceipt(paidInv.id);
+                          }}
+                        >
+                          <Printer size={13} /> View Latest Payment Receipt
+                        </button>
+                      ) : null}
+                    </div>
+                  )}
 
                   <button type="button" className="btn-record-payment">
                     <Receipt size={16} /> Record Payment <ArrowRight size={14} />
@@ -315,9 +371,7 @@ export default function PointOfSale() {
                   <button 
                     className="btn-pos-search" 
                     style={{ width: '100%', justifyContent: 'center' }}
-                    onClick={() => {
-                      window.open(`/dashboard/finance/receipt/${receiptData.invoiceId}`, '_blank');
-                    }}
+                    onClick={() => openReceipt(receiptData.invoiceId)}
                   >
                     <Printer size={18} /> View / Print Official Receipt
                   </button>
@@ -336,6 +390,61 @@ export default function PointOfSale() {
               ) : (
                 /* Record Payment Form */
                 <form id="posPaymentForm" onSubmit={handleDirectPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  
+                  {/* Previous Receipts & Payments History Section if Student Paid Before */}
+                  {((selectedStudent.receipts && selectedStudent.receipts.length > 0) || (selectedStudent.invoices || []).some(i => i.amountPaid > 0)) && (
+                    <div className="pos-history-section">
+                      <div className="pos-history-title">
+                        <span><History size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} /> Prior Payment Records</span>
+                        <span style={{ fontSize: '0.78rem', color: '#047857', background: '#ECFDF5', padding: '0.15rem 0.5rem', borderRadius: '6px' }}>Part-Payments Logged</span>
+                      </div>
+
+                      {(selectedStudent.receipts && selectedStudent.receipts.length > 0) ? (
+                        selectedStudent.receipts.map(rec => (
+                          <div key={rec.id} className="pos-history-item">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                              <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>Receipt #{rec.receiptNumber}</strong>
+                              <span style={{ fontSize: '0.78rem', color: '#64748B' }}>{rec.session} ({rec.term}) • {rec.date}</span>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.9rem' }}>₦{rec.amountPaid.toLocaleString()}</span>
+                              <button 
+                                type="button" 
+                                className="btn-view-previous-receipt"
+                                onClick={() => openReceipt(rec.invoiceId)}
+                                title="Print Official Receipt"
+                              >
+                                <Printer size={13} /> Print
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        (selectedStudent.invoices || []).filter(i => i.amountPaid > 0).map(inv => (
+                          <div key={inv.id} className="pos-history-item">
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                              <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>{inv.session} - {inv.term}</strong>
+                              <span style={{ fontSize: '0.78rem', color: '#64748B' }}>Status: {inv.paymentStatus}</span>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.9rem' }}>Paid ₦{inv.amountPaid.toLocaleString()}</span>
+                              <button 
+                                type="button" 
+                                className="btn-view-previous-receipt"
+                                onClick={() => openReceipt(inv.id)}
+                                title="Print Official Receipt"
+                              >
+                                <Printer size={13} /> Receipt
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+
                   <div style={{ background: '#EFF6FF', padding: '1rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.85rem', color: '#1E40AF', display: 'flex', gap: '0.6rem' }}>
                     <ShieldCheck size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
                     <div>
