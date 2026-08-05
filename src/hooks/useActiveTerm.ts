@@ -29,7 +29,9 @@ export function useActiveTerm() {
       fetchPromise = api.get('/setup/school-profile')
         .then(data => {
           if (data.currentSession) cachedSession = data.currentSession;
-          if (data.currentTerm) cachedTerm = data.currentTerm;
+          if (data.currentTerm) {
+            cachedTerm = (data.currentTerm === 'Holiday' || data.isHoliday) ? 'First Term' : data.currentTerm;
+          }
           if (data.isHoliday !== undefined) cachedIsHoliday = data.isHoliday;
           if (data.status) cachedStatus = data.status;
         })
