@@ -103,13 +103,13 @@ export default function FinanceFeeBuilder() {
   const [saving, setSaving] = useState(false);
 
   const detectApplicability = (name: string, app?: string): FeeApplicability => {
-    if (app && ['Compulsory', 'SectionalTransition', 'NewIntakeOnly', 'Optional'].includes(app)) {
+    if (app && ['SectionalTransition', 'NewIntakeOnly', 'Optional'].includes(app)) {
       return app as FeeApplicability;
     }
-    const lower = name.toLowerCase();
-    if (lower.includes('registration form')) return 'NewIntakeOnly';
-    if (lower.includes('uniform') || lower.includes('sport wear')) return 'SectionalTransition';
-    if (lower.includes('optional') || lower.includes('party') || lower.includes('excursion')) return 'Optional';
+    const lower = (name || '').toLowerCase();
+    if (lower.includes('registration form') || lower.includes('registration')) return 'NewIntakeOnly';
+    if (lower.includes('uniform') || lower.includes('sport wear') || lower.includes('sportwear')) return 'SectionalTransition';
+    if (lower.includes('optional') || lower.includes('party') || lower.includes('excursion') || lower.includes('christmas')) return 'Optional';
     return 'Compulsory';
   };
 
@@ -739,102 +739,184 @@ export default function FinanceFeeBuilder() {
         </div>
       )}
 
-      {/* POP-UP BREAKDOWN MODAL DIALOG (EXECUTIVE REVAMP) */}
-      {showBreakdownModal && selectedTemplateForBreakdown && (
-        <div className="fee-modal-overlay" onClick={() => setShowBreakdownModal(false)}>
-          <div className="fee-modal-container" onClick={e => e.stopPropagation()}>
-            {/* Top Bar with Title and Close X Button */}
-            <div className="fee-modal-top-bar">
-              <div className="fee-modal-header">
-                <h3 className="fee-modal-title">
-                  Fee Breakdown: {selectedTemplateForBreakdown.className}
-                </h3>
-                <span className="fee-modal-subtitle-pill">
-                  <Building2 size={13} /> {term} • {session}
+      {/* POP-UP BREAKDOWN MODAL DIALOG (WITH ACCURATE SEGMENT CARDS & TAGS) */}
+      {showBreakdownModal && selectedTemplateForBreakdown && (() => {
+        const modalItems = selectedTemplateForBreakdown.items || [];
+        const modalCompulsory = modalItems
+          .filter(i => detectApplicability(i.name, i.applicability) === 'Compulsory')
+          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+        const modalTransition = modalItems
+          .filter(i => detectApplicability(i.name, i.applicability) === 'SectionalTransition')
+          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+        const modalNewIntake = modalItems
+          .filter(i => detectApplicability(i.name, i.applicability) === 'NewIntakeOnly')
+          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+        const modalOptional = modalItems
+          .filter(i => detectApplicability(i.name, i.applicability) === 'Optional')
+          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+        const modalContinuingTotal = modalCompulsory;
+        const modalSectionalTotal = modalCompulsory + modalTransition;
+        const modalDirectNewIntakeTotal = modalCompulsory + modalTransition + modalNewIntake;
+        const modalMaxTotal = modalDirectNewIntakeTotal + modalOptional;
+
+        return (
+          <div className="fee-modal-overlay" onClick={() => setShowBreakdownModal(false)}>
+            <div className="fee-modal-container" onClick={e => e.stopPropagation()}>
+              {/* Top Bar with Title and Close X Button */}
+              <div className="fee-modal-top-bar">
+                <div className="fee-modal-header">
+                  <h3 className="fee-modal-title">
+                    Fee Breakdown: {selectedTemplateForBreakdown.className}
+                  </h3>
+                  <span className="fee-modal-subtitle-pill">
+                    <Building2 size={13} /> {term} • {session}
+                  </span>
+                </div>
+
+                <button 
+                  type="button" 
+                  className="btn-modal-close-icon"
+                  onClick={() => setShowBreakdownModal(false)}
+                  title="Close modal"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Executive Segment Cards Stack (Matching Second Image) */}
+              <div className="fee-segment-stack">
+                {/* 1. Continuing Student */}
+                <div className="fee-segment-card continuing">
+                  <div className="fee-segment-card-header">
+                    <span className="fee-segment-name">📌 Continuing Student Fee</span>
+                    <span className="fee-segment-amount" style={{ color: '#1E40AF' }}>
+                      ₦{modalContinuingTotal.toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="fee-segment-desc">
+                    In-section promotions (e.g. JSS 1 → JSS 2). Excludes uniforms/sportswear.
+                  </span>
+                </div>
+
+                {/* 2. Sectional Entry */}
+                <div className="fee-segment-card sectional">
+                  <div className="fee-segment-card-header">
+                    <span className="fee-segment-name">🎓 Sectional Entry Fee</span>
+                    <span className="fee-segment-amount" style={{ color: '#047857' }}>
+                      ₦{modalSectionalTotal.toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="fee-segment-desc">
+                    Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1). Includes uniforms & sportswear, excludes Registration Form.
+                  </span>
+                </div>
+
+                {/* 3. Direct New Intake */}
+                <div className="fee-segment-card direct">
+                  <div className="fee-segment-card-header">
+                    <span className="fee-segment-name">🆕 Direct New Intake Fee</span>
+                    <span className="fee-segment-amount" style={{ color: '#B45309' }}>
+                      ₦{modalDirectNewIntakeTotal.toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="fee-segment-desc">
+                    Direct new admissions into any class. Includes Registration Form, Uniforms & Sportswear.
+                  </span>
+                </div>
+
+                {/* 4. Optional Add-ons */}
+                <div className="fee-segment-card optional">
+                  <div className="fee-segment-card-header">
+                    <span className="fee-segment-name">🌟 Optional Add-ons Total</span>
+                    <span className="fee-segment-amount" style={{ color: '#4F46E5' }}>
+                      ₦{modalOptional.toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="fee-segment-desc">
+                    Opt-in items (e.g. Christmas Party ₦{modalOptional.toLocaleString()}). Opted by parents or accountant.
+                  </span>
+                </div>
+              </div>
+
+              {/* Total Fee Range Banner */}
+              <div className="fee-range-banner">
+                <span className="fee-range-label">TOTAL FEE RANGE FOR CLASS</span>
+                <span className="fee-range-val">
+                  ₦{modalContinuingTotal.toLocaleString()} – ₦{modalMaxTotal.toLocaleString()}
                 </span>
               </div>
 
-              <button 
-                type="button" 
-                className="btn-modal-close-icon"
-                onClick={() => setShowBreakdownModal(false)}
-                title="Close modal"
-              >
-                <X size={18} />
-              </button>
-            </div>
+              {/* Executive Itemized Table Card */}
+              <div className="fee-modal-breakdown-card">
+                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>
+                  Itemized Component Breakdown ({modalItems.length} Items)
+                </h4>
+                <table className="fee-modal-table">
+                  <thead>
+                    <tr>
+                      <th>Fee Component & Tag</th>
+                      <th style={{ textAlign: 'right' }}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {modalItems.map((item, idx) => {
+                      const appTag = detectApplicability(item.name, item.applicability);
+                      return (
+                        <tr key={idx}>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                              <span style={{ fontWeight: 700, color: '#0F172A' }}>{item.name}</span>
+                              {appTag === 'Compulsory' && (
+                                <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>📌 Compulsory</span>
+                              )}
+                              {appTag === 'SectionalTransition' && (
+                                <span style={{ background: '#ECFDF5', color: '#047857', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🎓 Level Entry</span>
+                              )}
+                              {appTag === 'NewIntakeOnly' && (
+                                <span style={{ background: '#FFFBEB', color: '#B45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🆕 Direct Intake</span>
+                              )}
+                              {appTag === 'Optional' && (
+                                <span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🌟 Optional</span>
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                            ₦{Number(item.amount).toLocaleString()}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* Executive Itemized Table Card */}
-            <div className="fee-modal-breakdown-card">
-              <table className="fee-modal-table">
-                <thead>
-                  <tr>
-                    <th>Fee Component & Tag</th>
-                    <th style={{ textAlign: 'right' }}>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(selectedTemplateForBreakdown.items || []).map((item, idx) => {
-                    const appTag = detectApplicability(item.name, item.applicability);
-                    return (
-                      <tr key={idx}>
-                        <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: 700, color: '#0F172A' }}>{item.name}</span>
-                            {appTag === 'Compulsory' && (
-                              <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>📌 Compulsory</span>
-                            )}
-                            {appTag === 'SectionalTransition' && (
-                              <span style={{ background: '#ECFDF5', color: '#047857', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🎓 Level Entry</span>
-                            )}
-                            {appTag === 'NewIntakeOnly' && (
-                              <span style={{ background: '#FFFBEB', color: '#B45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🆕 Direct Intake</span>
-                            )}
-                            {appTag === 'Optional' && (
-                              <span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🌟 Optional</span>
-                            )}
-                          </div>
-                        </td>
-                        <td style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
-                          ₦{Number(item.amount).toLocaleString()}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+              {/* Footer Action Buttons */}
+              <div className="fee-modal-footer-actions">
+                <button 
+                  type="button"
+                  className="btn-select-all-family"
+                  onClick={() => window.print()}
+                  style={{ padding: '0.6rem 1.1rem', fontSize: '0.85rem' }}
+                >
+                  <Printer size={15} style={{ marginRight: '5px' }} /> Print Fee Breakdown
+                </button>
 
-            {/* Total Fee Banner */}
-            <div className="fee-modal-total-banner">
-              <span className="fee-modal-total-label">Total Official Term Fee</span>
-              <span className="fee-modal-total-amount">
-                ₦{selectedTemplateForBreakdown.totalAmount.toLocaleString()}
-              </span>
-            </div>
-
-            {/* Footer Action Buttons */}
-            <div className="fee-modal-footer-actions">
-              <button 
-                type="button"
-                className="btn-select-all-family"
-                onClick={() => window.print()}
-                style={{ padding: '0.6rem 1.1rem', fontSize: '0.85rem' }}
-              >
-                <Printer size={15} style={{ marginRight: '5px' }} /> Print Fee Breakdown
-              </button>
-
-              <button 
-                type="button"
-                className="btn-modal-close-blue"
-                onClick={() => setShowBreakdownModal(false)}
-              >
-                Close
-              </button>
+                <button 
+                  type="button"
+                  className="btn-modal-close-blue"
+                  onClick={() => setShowBreakdownModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* TAB 3: CHRISTMAS PARTY GIFT RECIPIENTS REPORT */}
       {activeTab === 'gifts' && (
