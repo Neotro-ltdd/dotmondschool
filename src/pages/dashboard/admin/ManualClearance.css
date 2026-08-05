@@ -1,0 +1,236 @@
+/* ════════ EXECUTIVE MANUAL FEE CLEARANCE STYLES ════════ */
+.clearance-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding-bottom: 2.5rem;
+}
+
+.clearance-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.clearance-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.clearance-page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748B);
+  margin-top: 0.25rem;
+}
+
+/* Operational Override Warning Banner */
+.clearance-override-banner {
+  background: #FFF1F2;
+  border: 1px solid #FECDD3;
+  border-left: 5px solid #E11D48;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: #9F1239;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Metrics Banner */
+.clearance-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.clearance-metric-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clearance-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.clearance-metric-card .metric-info-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.clearance-metric-card .metric-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748B;
+}
+
+.clearance-metric-card .metric-number {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin-top: 0.25rem;
+  line-height: 1;
+}
+
+.clearance-metric-card .metric-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.clearance-metric-card .metric-icon-badge.students {
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+.clearance-metric-card .metric-icon-badge.cleared {
+  background: #ECFDF5;
+  color: #047857;
+}
+
+.clearance-metric-card .metric-icon-badge.pending {
+  background: #FFF1F2;
+  color: #BE123C;
+}
+
+.clearance-metric-card .metric-icon-badge.session {
+  background: #F3E8FF;
+  color: #6B21A8;
+}
+
+/* Controls Bar */
+.clearance-controls-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.clearance-search-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.clearance-search-box {
+  position: relative;
+  min-width: 240px;
+  flex: 1;
+}
+
+.clearance-search-box input {
+  width: 100%;
+  padding: 0.6rem 0.85rem 0.6rem 2.4rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #0F172A;
+  background: #F8FAFC;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.clearance-search-box input:focus {
+  border-color: var(--primary-color, #000080);
+  background: #FFFFFF;
+}
+
+.clearance-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+}
+
+/* Table Area */
+.clearance-table-wrapper {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.executive-clearance-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.executive-clearance-table th {
+  background: #F8FAFC;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.executive-clearance-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #1E293B;
+}
+
+.executive-clearance-table tr:hover td {
+  background: #F8FAFC;
+}
+
+/* Grid Cards View */
+.clearance-grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.clearance-grid-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.clearance-grid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}

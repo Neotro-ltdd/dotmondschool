@@ -1,0 +1,208 @@
+/* ════════ EXECUTIVE GRADING RULES STYLES ════════ */
+.grading-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding-bottom: 2.5rem;
+}
+
+.grading-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.grading-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.grading-page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748B);
+  margin-top: 0.25rem;
+}
+
+/* Metrics Banner */
+.grading-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.grading-metric-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grading-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.grading-metric-card .metric-info-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.grading-metric-card .metric-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748B;
+}
+
+.grading-metric-card .metric-number {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #0F172A;
+  margin-top: 0.25rem;
+  line-height: 1;
+}
+
+.grading-metric-card .metric-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.grading-metric-card .metric-icon-badge.bands {
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+.grading-metric-card .metric-icon-badge.max {
+  background: #ECFDF5;
+  color: #047857;
+}
+
+.grading-metric-card .metric-icon-badge.pass {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.grading-metric-card .metric-icon-badge.scheme {
+  background: #F3E8FF;
+  color: #6B21A8;
+}
+
+/* Card Container */
+.grading-card-wrapper {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.executive-grading-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.executive-grading-table th {
+  background: #F8FAFC;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.executive-grading-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+}
+
+.grading-table-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #0F172A;
+  background: #F8FAFC;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.grading-table-input:focus {
+  border-color: var(--primary-color, #000080);
+  background: #FFFFFF;
+}
+
+.btn-add-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px dashed #CBD5E1;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.btn-add-rule:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.btn-save-grading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--primary-color, #000080);
+  color: #FFFFFF;
+  border: none;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 128, 0.2);
+}
+
+.btn-save-grading:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-save-grading:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
