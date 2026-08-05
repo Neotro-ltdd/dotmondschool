@@ -428,44 +428,54 @@ export default function Overview() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               
-              <div className="stats-grid">
-                <StatCard 
-                  label="TOTAL TUITION COLLECTED" 
-                  value={accountantData ? formatCurrency(accountantData.totalCollected) : '---'} 
-                  icon={CheckCircle} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: '● Verified', type: 'positive' }}
-                  subText="Term Payments Reconciled"
-                />
-                <StatCard 
-                  label="TOTAL OUTSTANDING FEES" 
-                  value={accountantData ? formatCurrency(accountantData.totalUnpaid) : '---'} 
-                  icon={AlertCircle} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: 'Pending Balance', type: 'negative' }}
-                  subText="Uncollected Billing"
-                />
-                <StatCard 
-                  label="HIGHEST UNPAID CLASS" 
-                  value={accountantData?.highestUnpaidClass?.name || '---'} 
-                  icon={Users} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: `${accountantData?.highestUnpaidClass?.percentage || 0}% Unpaid`, type: 'negative' }}
-                  subText="Class Billing Priority"
-                />
-                <StatCard 
-                  label="PENDING VERIFICATIONS" 
-                  value={accountantData?.pendingVerifications || 0} 
-                  icon={FileText} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: 'Bank Uploads', type: 'positive' }}
-                  subText="Online Receipts Staged"
-                />
-              </div>
+              {(() => {
+                const collected = accountantData?.totalCollected || 0;
+                const unpaid = accountantData?.totalUnpaid || 0;
+                const totalBilled = collected + unpaid;
+                const collectionRate = totalBilled > 0 ? ((collected / totalBilled) * 100).toFixed(1) : '0.0';
+                const unpaidRate = totalBilled > 0 ? ((unpaid / totalBilled) * 100).toFixed(1) : '100.0';
+
+                return (
+                  <div className="stats-grid">
+                    <StatCard 
+                      label="TUITION COLLECTION RATE" 
+                      value={`${collectionRate}%`} 
+                      icon={CheckCircle} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      trendTag={{ text: '● Verified Collection', type: 'positive' }}
+                      subText="Payment Progress over Overall Billing"
+                    />
+                    <StatCard 
+                      label="UNCOLLECTED BALANCE RATE" 
+                      value={`${unpaidRate}%`} 
+                      icon={AlertCircle} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      trendTag={{ text: 'Pending Balance', type: 'negative' }}
+                      subText="Outstanding Billing Percentage"
+                    />
+                    <StatCard 
+                      label="HIGHEST UNPAID CLASS" 
+                      value={accountantData?.highestUnpaidClass?.name || '---'} 
+                      icon={Users} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      trendTag={{ text: `${accountantData?.highestUnpaidClass?.percentage || 0}% Unpaid`, type: 'negative' }}
+                      subText="Class Billing Priority"
+                    />
+                    <StatCard 
+                      label="PENDING VERIFICATIONS" 
+                      value={accountantData?.pendingVerifications || 0} 
+                      icon={FileText} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      trendTag={{ text: 'Bank Uploads', type: 'positive' }}
+                      subText="Online Receipts Staged"
+                    />
+                  </div>
+                );
+              })()}
 
               {/* Accountant Shortcuts */}
               <div className="quick-shortcuts-section">
