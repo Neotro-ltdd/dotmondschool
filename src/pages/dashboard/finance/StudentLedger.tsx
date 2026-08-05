@@ -246,7 +246,9 @@ export default function StudentLedger() {
 
               <div className="ledger-student-list">
                 {ledgerResults.map(student => {
-                  const studentDebt = (student.invoices || []).reduce((acc, inv) => {
+                  const invoices = student.invoices || [];
+                  const hasInvoices = invoices.length > 0;
+                  const studentDebt = invoices.reduce((acc, inv) => {
                     const due = Number(inv.amountDue ?? 0);
                     const paid = Number(inv.amountPaid ?? 0);
                     return acc + Math.max(0, due - paid);
@@ -276,8 +278,12 @@ export default function StudentLedger() {
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 900, color: studentDebt > 0 ? '#DC2626' : '#16A34A' }}>
-                          {studentDebt > 0 ? `₦${studentDebt.toLocaleString()}` : 'Cleared'}
+                        <span style={{ 
+                          fontSize: '0.8rem', 
+                          fontWeight: 900, 
+                          color: !hasInvoices ? '#64748B' : studentDebt > 0 ? '#DC2626' : '#16A34A' 
+                        }}>
+                          {!hasInvoices ? 'No Invoice' : studentDebt > 0 ? `₦${studentDebt.toLocaleString()}` : 'Cleared'}
                         </span>
                       </div>
                     </div>
