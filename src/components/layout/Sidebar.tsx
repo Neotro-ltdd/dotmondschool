@@ -399,6 +399,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                           <NavLink to="/dashboard/finance/ledger" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Student Ledger
                           </NavLink>
+                          <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            Financial Reports Hub
+                          </NavLink>
                           <NavLink to="/dashboard/operations/manual-clearance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Manual Clearance
                           </NavLink>

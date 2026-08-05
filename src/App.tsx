@@ -18,6 +18,7 @@ import OnlineVerifications from './pages/dashboard/finance/OnlineVerifications';
 import PointOfSale from './pages/dashboard/finance/PointOfSale';
 import ProxyPaymentUpload from './pages/dashboard/finance/ProxyPaymentUpload';
 import StudentLedger from './pages/dashboard/finance/StudentLedger';
+import FinancialReportsHub from './pages/dashboard/finance/FinancialReportsHub';
 import ReceiptViewer from './pages/dashboard/finance/ReceiptViewer';
 import FinanceAssets from './pages/dashboard/finance-setup/FinanceAssets';
 import FinanceFeeBuilder from './pages/dashboard/finance-setup/FinanceFeeBuilder';
@@ -93,6 +94,7 @@ function App() {
               <Route path="pos" element={<PointOfSale />} />
               <Route path="proxy-upload" element={<ProxyPaymentUpload />} />
               <Route path="ledger" element={<StudentLedger />} />
+              <Route path="reports" element={<FinancialReportsHub />} />
               <Route path="receipt/:paymentId" element={<ReceiptViewer />} />
             </Route>
             <Route path="finance-setup">
