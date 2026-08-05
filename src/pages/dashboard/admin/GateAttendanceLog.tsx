@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../../services/api';
-import '../students/Management.css';
+import './GateAttendanceLog.css';
+import { 
+  Scan, 
+  UserCheck, 
+  Clock, 
+  LogOut, 
+  Search, 
+  RefreshCw, 
+  List, 
+  LayoutGrid, 
+  Calendar 
+} from 'lucide-react';
 
 interface GateLog {
   studentId: string;
@@ -28,10 +39,11 @@ const GateAttendanceLog: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
   
-  // New Filters
+  // Filters & View Controls
   const [filterSearch, setFilterSearch] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const fetchClasses = async () => {
     try {
@@ -62,6 +74,13 @@ const GateAttendanceLog: React.FC = () => {
     fetchLogs();
   }, [filterDate]);
 
+  const getStudentInitials = (name: string) => {
+    if (!name) return 'ST';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return parts[0].substring(0, 2).toUpperCase();
+  };
+
   let filteredLogs = logs;
   if (filterSearch) {
     const searchLower = filterSearch.toLowerCase();
@@ -77,37 +96,97 @@ const GateAttendanceLog: React.FC = () => {
     filteredLogs = filteredLogs.filter(s => s.classId === filterClassId);
   }
 
-  // Generate options for classes based on selected level
   const classOptions = filterLevel ? classes.filter(c => c.level === filterLevel) : classes;
 
+  // Metrics
+  const totalScans = logs.length;
+  const presentCount = logs.filter(l => l.clockInTime && !l.clockOutTime).length;
+  const lateCount = logs.filter(l => l.status?.toLowerCase().includes('late')).length;
+  const departedCount = logs.filter(l => !!l.clockOutTime).length;
+
   return (
-    <div className="management-page">
-      <div className="page-header">
+    <div className="gate-page-container">
+      {/* Page Header */}
+      <div className="gate-page-header">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gate Attendance Logs</h1>
-          <p className="text-sm text-gray-500">View real-time scans from the gatekeepers</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <h1 className="gate-page-title">Gate Attendance Logs</h1>
+            <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '0.2rem 0.65rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span className="status-dot"></span> Live Gate Feed
+            </span>
+          </div>
+          <p className="gate-page-subtitle">Real-time gatekeeper scans, barcode check-ins, and student arrival/departure timestamps</p>
+        </div>
+
+        <button className="btn-refresh-feed" onClick={fetchLogs} disabled={loading}>
+          <RefreshCw size={16} className={loading ? 'spin' : ''} />
+          {loading ? 'Refreshing Logs...' : 'Refresh Live Feed'}
+        </button>
+      </div>
+
+      {/* KPI Metrics Banner */}
+      <div className="gate-metrics-grid">
+        <div className="gate-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Total Scans Logged</span>
+            <span className="metric-number">{totalScans}</span>
+          </div>
+          <div className="metric-icon-badge scans">
+            <Scan size={24} />
+          </div>
+        </div>
+
+        <div className="gate-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">On Campus (Timed In)</span>
+            <span className="metric-number">{presentCount}</span>
+          </div>
+          <div className="metric-icon-badge present">
+            <UserCheck size={24} />
+          </div>
+        </div>
+
+        <div className="gate-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Late Arrivals</span>
+            <span className="metric-number" style={{ color: '#B45309' }}>{lateCount}</span>
+          </div>
+          <div className="metric-icon-badge late">
+            <Clock size={24} />
+          </div>
+        </div>
+
+        <div className="gate-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Departed (Timed Out)</span>
+            <span className="metric-number">{departedCount}</span>
+          </div>
+          <div className="metric-icon-badge departed">
+            <LogOut size={24} />
+          </div>
         </div>
       </div>
 
-      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '200px' }}>
-          <label>Search Student:</label>
-          <input 
-            type="text" 
-            value={filterSearch} 
-            onChange={(e) => setFilterSearch(e.target.value)} 
-            className="filter-select" 
-            placeholder="Name or Reg. Number..."
-          />
-        </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Filter by Level:</label>
+      {/* Controls Card */}
+      <div className="gate-controls-card">
+        <div className="gate-search-group">
+          <div className="gate-search-box">
+            <Search className="gate-search-icon" size={16} />
+            <input 
+              type="text" 
+              placeholder="Search by student name or reg. number..."
+              value={filterSearch}
+              onChange={(e) => setFilterSearch(e.target.value)}
+            />
+          </div>
+
+          {/* Level Filter */}
           <select 
+            className="select-filter-input"
             value={filterLevel} 
-            onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} 
-            className="filter-select"
+            onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }}
           >
-            <option value="">All Levels</option>
+            <option value="">All Academic Levels</option>
             <option value="Senior Secondary">Senior Secondary</option>
             <option value="Junior Secondary">Junior Secondary</option>
             <option value="Primary">Primary</option>
@@ -119,78 +198,165 @@ const GateAttendanceLog: React.FC = () => {
             <option value="Nursery 1">Nursery 1</option>
             <option value="Kindergarten">Kindergarten</option>
           </select>
-        </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Filter by Class:</label>
+
+          {/* Class Filter */}
           <select 
+            className="select-filter-input"
             value={filterClassId} 
-            onChange={(e) => setFilterClassId(e.target.value)} 
-            className="filter-select"
+            onChange={(e) => setFilterClassId(e.target.value)}
           >
             <option value="">All Classes</option>
             {classOptions.map(cls => (
-              <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
+              <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section || ''}`}</option>
             ))}
           </select>
+
+          {/* Date Picker Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Calendar size={16} color="#64748B" />
+            <input 
+              type="date" 
+              className="select-filter-input" 
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              style={{ padding: '0.6rem 0.85rem' }}
+            />
+          </div>
         </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label>Date (Old Records):</label>
-          <input 
-            type="date" 
-            className="filter-select" 
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
-          />
+
+        {/* View Switcher Toggle */}
+        <div className="view-mode-toggle">
+          <button 
+            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => setViewMode('table')}
+            title="Table View"
+          >
+            <List size={16} /> Table View
+          </button>
+          <button 
+            className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+          >
+            <LayoutGrid size={16} /> Grid Cards
+          </button>
         </div>
       </div>
 
-      <div className="table-container glass-panel">
-        {loading ? (
-          <div className="loading-text">Loading logs...</div>
-        ) : (
-          <table className="data-table">
+      {/* Main Content Area */}
+      {loading ? (
+        <div className="gate-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+          Fetching real-time gate logs...
+        </div>
+      ) : filteredLogs.length === 0 ? (
+        <div className="gate-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+          No gate attendance records found for {filterDate}.
+        </div>
+      ) : viewMode === 'table' ? (
+        /* TABLE VIEW */
+        <div className="gate-table-wrapper">
+          <table className="executive-gate-table">
             <thead>
               <tr>
-                <th>Student</th>
-                <th>Class</th>
+                <th>Student Name</th>
+                <th>Registration No.</th>
+                <th>Class Room</th>
                 <th>Time In</th>
                 <th>Time Out</th>
-                <th>Status</th>
+                <th>Gate Status</th>
               </tr>
             </thead>
             <tbody>
-              {filteredLogs.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="empty-text">
-                    No attendance records found.
+              {filteredLogs.map(log => (
+                <tr key={log.studentId}>
+                  <td>
+                    <div className="teacher-profile-cell">
+                      <div className="teacher-avatar">
+                        {getStudentInitials(log.studentName)}
+                      </div>
+                      <span className="teacher-name-title">{log.studentName}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.85rem' }}>
+                      {log.registrationNumber || 'N/A'}
+                    </span>
+                  </td>
+                  <td>
+                    <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700 }}>
+                      {log.className || 'Unassigned'}
+                    </span>
+                  </td>
+                  <td>
+                    {log.clockInTime ? (
+                      <span style={{ fontWeight: 800, color: '#047857', background: '#ECFDF5', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.82rem' }}>
+                        {new Date(log.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#94A3B8' }}>-</span>
+                    )}
+                  </td>
+                  <td>
+                    {log.clockOutTime ? (
+                      <span style={{ fontWeight: 800, color: '#1E40AF', background: '#EFF6FF', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.82rem' }}>
+                        {new Date(log.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#94A3B8' }}>-</span>
+                    )}
+                  </td>
+                  <td>
+                    <span className={`status-pill ${log.status === 'Present' || log.clockInTime ? 'active' : 'inactive'}`}>
+                      <span className={log.status === 'Present' || log.clockInTime ? 'status-dot' : 'status-dot-inactive'}></span>
+                      {log.status || (log.clockInTime ? 'Timed In' : 'Absent')}
+                    </span>
                   </td>
                 </tr>
-              ) : (
-                filteredLogs.map((log) => (
-                  <tr key={log.studentId}>
-                    <td>
-                      <strong>{log.studentName}</strong>
-                      <div className="text-muted text-sm">{log.registrationNumber}</div>
-                    </td>
-                    <td><span className="badge badge-info">{log.className}</span></td>
-                    <td>
-                      {log.clockInTime ? new Date(log.clockInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-'}
-                    </td>
-                    <td>
-                      {log.clockOutTime ? new Date(log.clockOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-'}
-                    </td>
-                    <td>
-                      <span className={`badge ${log.status === 'Present' ? 'badge-success' : 'badge-secondary'}`}>
-                        {log.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      ) : (
+        /* GRID CARDS VIEW */
+        <div className="gate-grid-wrapper">
+          {filteredLogs.map(log => (
+            <div key={log.studentId} className="gate-grid-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="teacher-profile-cell">
+                  <div className="teacher-avatar">
+                    {getStudentInitials(log.studentName)}
+                  </div>
+                  <div>
+                    <span className="teacher-name-title" style={{ fontSize: '1.05rem' }}>{log.studentName}</span>
+                    <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginTop: '0.1rem' }}>
+                      {log.registrationNumber || 'No Reg. ID'}
+                    </span>
+                  </div>
+                </div>
+
+                <span className={`status-pill ${log.status === 'Present' || log.clockInTime ? 'active' : 'inactive'}`}>
+                  {log.status || (log.clockInTime ? 'Timed In' : 'Absent')}
+                </span>
+              </div>
+
+              <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, background: '#EFF6FF', color: '#1E40AF', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                  {log.className || 'Unassigned'}
+                </span>
+
+                <div style={{ textAlign: 'right', fontSize: '0.8rem' }}>
+                  <span style={{ display: 'block', color: '#047857', fontWeight: 800 }}>
+                    In: {log.clockInTime ? new Date(log.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                  </span>
+                  <span style={{ display: 'block', color: '#1E40AF', fontWeight: 800, marginTop: '0.1rem' }}>
+                    Out: {log.clockOutTime ? new Date(log.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
