@@ -266,14 +266,14 @@ export default function Overview() {
               <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
               <p>Loading principal executive analytics...</p>
             </div>
-          ) : principalData && (
+          ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               
               {/* Stat Cards */}
               <div className="stats-grid">
                 <StatCard 
                   label="TOTAL ENROLLED STUDENTS" 
-                  value={principalData.metrics.totalStudents} 
+                  value={principalData?.metrics?.totalStudents ?? 0} 
                   icon={GraduationCap} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
@@ -282,7 +282,7 @@ export default function Overview() {
                 />
                 <StatCard 
                   label="TEACHING & ACADEMIC STAFF" 
-                  value={principalData.metrics.totalTeachers} 
+                  value={principalData?.metrics?.totalTeachers ?? 0} 
                   icon={Users} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
@@ -291,7 +291,7 @@ export default function Overview() {
                 />
                 <StatCard 
                   label="DAILY AVERAGE ATTENDANCE" 
-                  value={`${principalData.metrics.averageAttendance}%`} 
+                  value={`${principalData?.metrics?.averageAttendance ?? 0}%`} 
                   icon={CheckCircle} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
@@ -300,11 +300,11 @@ export default function Overview() {
                 />
                 <StatCard 
                   label="PENDING APPROVALS" 
-                  value={principalData.metrics.pendingApprovals} 
+                  value={principalData?.metrics?.pendingApprovals ?? 0} 
                   icon={AlertCircle} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: principalData.metrics.pendingApprovals > 0 ? 'Requires Action' : 'Cleared', type: principalData.metrics.pendingApprovals > 0 ? 'negative' : 'positive' }}
+                  trendTag={{ text: (principalData?.metrics?.pendingApprovals ?? 0) > 0 ? 'Requires Action' : 'Cleared', type: (principalData?.metrics?.pendingApprovals ?? 0) > 0 ? 'negative' : 'positive' }}
                   subText="Result Broadsheets"
                 />
               </div>
@@ -425,7 +425,7 @@ export default function Overview() {
               <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
               <p>Loading financial analytics...</p>
             </div>
-          ) : accountantData && (
+          ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               
               <div className="stats-grid">
@@ -576,61 +576,44 @@ export default function Overview() {
               <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
               <p>Loading teacher workstation metrics...</p>
             </div>
-          ) : teacherData && (
+          ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               
               <div className="stats-grid">
-                {teacherData.isClassTeacher && (
-                  <>
-                    <StatCard 
-                      label="FORM CLASS STUDENTS" 
-                      value={teacherData.classTeacherMetrics.totalStudents} 
-                      icon={Users} 
-                      topColor="#000080"
-                      iconBg="#EFF6FF" iconColor="#000080" 
-                      subText={`Class: ${teacherData.classTeacherMetrics.className}`}
-                    />
-                    <StatCard 
-                      label="TODAY'S ATTENDANCE" 
-                      value={`${teacherData.classTeacherMetrics.attendanceToday.percentage || 0}%`} 
-                      icon={CheckCircle} 
-                      topColor="#000080"
-                      iconBg="#EFF6FF" iconColor="#000080" 
-                      trendTag={{ text: `Present: ${teacherData.classTeacherMetrics.attendanceToday.present}`, type: 'positive' }}
-                      subText="Daily Gate & Register"
-                    />
-                    <StatCard 
-                      label="PENDING EVALUATION REMARKS" 
-                      value={teacherData.classTeacherMetrics.pendingRemarks} 
-                      icon={FileText} 
-                      topColor="#000080"
-                      iconBg="#EFF6FF" iconColor="#000080" 
-                      trendTag={{ text: teacherData.classTeacherMetrics.pendingRemarks > 0 ? 'Action Needed' : 'Completed', type: 'neutral' }}
-                      subText="Affective & Psychomotor"
-                    />
-                  </>
-                )}
-
-                {teacherData.isSubjectTeacher && (
-                  <>
-                    <StatCard 
-                      label="SUBJECT ALLOCATIONS" 
-                      value={teacherData.subjectTeacherMetrics.totalAllocations} 
-                      icon={BookOpen} 
-                      topColor="#000080"
-                      iconBg="#EFF6FF" iconColor="#000080" 
-                      subText="Allocated Subjects"
-                    />
-                    <StatCard 
-                      label="TOTAL STUDENTS TAUGHT" 
-                      value={teacherData.subjectTeacherMetrics.totalStudents} 
-                      icon={GraduationCap} 
-                      topColor="#000080"
-                      iconBg="#EFF6FF" iconColor="#000080" 
-                      subText="Across All Assigned Arm Classes"
-                    />
-                  </>
-                )}
+                <StatCard 
+                  label="FORM CLASS STUDENTS" 
+                  value={teacherData?.classTeacherMetrics?.totalStudents ?? (teacherData?.totalStudents || 0)} 
+                  icon={Users} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  subText={teacherData?.classTeacherMetrics?.className ? `Class: ${teacherData.classTeacherMetrics.className}` : "Form Class Register"}
+                />
+                <StatCard 
+                  label="TODAY'S ATTENDANCE" 
+                  value={`${teacherData?.classTeacherMetrics?.attendanceToday?.percentage ?? (teacherData?.attendancePercentage || 0)}%`} 
+                  icon={CheckCircle} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ text: `Present: ${teacherData?.classTeacherMetrics?.attendanceToday?.present ?? 0}`, type: 'positive' }}
+                  subText="Daily Gate & Register"
+                />
+                <StatCard 
+                  label="PENDING EVALUATION REMARKS" 
+                  value={teacherData?.classTeacherMetrics?.pendingRemarks ?? 0} 
+                  icon={FileText} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ text: (teacherData?.classTeacherMetrics?.pendingRemarks ?? 0) > 0 ? 'Action Needed' : 'Completed', type: 'neutral' }}
+                  subText="Affective & Psychomotor"
+                />
+                <StatCard 
+                  label="SUBJECT ALLOCATIONS" 
+                  value={teacherData?.subjectTeacherMetrics?.totalAllocations ?? (teacherData?.totalAllocations || 0)} 
+                  icon={BookOpen} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  subText="Assigned Subjects"
+                />
               </div>
 
               {/* Teacher Shortcuts */}
@@ -700,26 +683,26 @@ export default function Overview() {
               <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
               <p>Loading vendor print dashboard...</p>
             </div>
-          ) : vendorData && (
+          ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               <div className="stats-grid">
                 <StatCard 
                   label="TOTAL REGISTERED STUDENTS" 
-                  value={vendorData.totalStudents} 
+                  value={vendorData?.totalStudents ?? 0} 
                   icon={Users} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
                 />
                 <StatCard 
                   label="PRINTED ID CARDS" 
-                  value={vendorData.printedCards} 
+                  value={vendorData?.printedCards ?? 0} 
                   icon={CheckCircle} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
                 />
                 <StatCard 
                   label="PENDING ID CARDS" 
-                  value={vendorData.pendingCards} 
+                  value={vendorData?.pendingCards ?? 0} 
                   icon={AlertCircle} 
                   topColor="#000080"
                   iconBg="#EFF6FF" iconColor="#000080" 
