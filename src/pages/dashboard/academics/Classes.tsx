@@ -146,17 +146,26 @@ export default function Classes() {
   // Helper to clean up teacher names and remove literal 'undefined' or 'null'
   const formatTeacherName = (name: string | null | undefined) => {
     if (!name) return null;
-    const cleaned = name.replace(/\bundefined\b/gi, '').replace(/\bnull\b/gi, '').trim();
+    const cleaned = name
+      .replace(/undefined/gi, '')
+      .replace(/null/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
     return cleaned.length > 0 ? cleaned : null;
   };
 
-  // Helper for teacher avatar initials
+  // Helper for teacher avatar initials (Strict 2 characters max)
   const getTeacherInitials = (name: string | null | undefined) => {
     const cleanName = formatTeacherName(name);
     if (!cleanName) return 'NA';
-    const parts = cleanName.trim().split(/\s+/);
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return cleanName.substring(0, 2).toUpperCase();
+    const parts = cleanName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      const first = parts[0][0] || '';
+      const second = parts[1][0] || '';
+      const initials = `${first}${second}`.toUpperCase();
+      return initials.slice(0, 2) || 'NA';
+    }
+    return cleanName.slice(0, 2).toUpperCase() || 'NA';
   };
 
   // Sorting hierarchy

@@ -270,6 +270,8 @@
 .teacher-avatar {
   width: 36px;
   height: 36px;
+  min-width: 36px;
+  max-width: 36px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-color, #000080) 0%, #1E40AF 100%);
   color: #FFFFFF;
@@ -279,6 +281,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
   box-shadow: 0 2px 6px rgba(0, 0, 128, 0.15);
 }
 
