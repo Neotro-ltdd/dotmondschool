@@ -53,6 +53,8 @@ export default function OnlineVerifications() {
   const [isApproved, setIsApproved] = useState(true);
   const [verifiedAmount, setVerifiedAmount] = useState<number>(0);
   const [remarks, setRemarks] = useState('');
+  const [excludeOptional, setExcludeOptional] = useState(false);
+  const [optionalDeduction, setOptionalDeduction] = useState<number>(0);
   const [processing, setProcessing] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
 
@@ -77,6 +79,8 @@ export default function OnlineVerifications() {
     setIsApproved(true);
     setVerifiedAmount(payment.balance || payment.amountDue || 0);
     setRemarks(payment.remarks || 'Bank credit verified by Accountant.');
+    setExcludeOptional(false);
+    setOptionalDeduction(0);
     setReceiptData(null);
     setShowDrawer(true);
   };
@@ -92,7 +96,8 @@ export default function OnlineVerifications() {
         isApproved,
         verifiedAmount: isApproved ? verifiedAmount : 0,
         remarks,
-        allocatedInvoiceId: selectedPayment.invoiceId || null
+        allocatedInvoiceId: selectedPayment.invoiceId || null,
+        excludedOptionalDeduction: excludeOptional ? optionalDeduction : 0
       });
 
       if (isApproved) {
@@ -414,17 +419,38 @@ export default function OnlineVerifications() {
 
                   {/* Verified Amount */}
                   {isApproved && (
-                    <div className="verify-form-group">
-                      <label>Verified Amount Received (₦) *</label>
-                      <input 
-                        type="number" 
-                        min="1" 
-                        value={verifiedAmount} 
-                        onChange={(e) => setVerifiedAmount(Number(e.target.value))}
-                        className="select-filter-input"
-                        required 
-                      />
-                    </div>
+                    <>
+                      <div className="verify-form-group">
+                        <label>Verified Amount Received (₦) *</label>
+                        <input 
+                          type="number" 
+                          min="1" 
+                          value={verifiedAmount} 
+                          onChange={(e) => setVerifiedAmount(Number(e.target.value))}
+                          className="select-filter-input"
+                          required 
+                        />
+                      </div>
+
+                      {/* Optional Item Exclusion Checkbox */}
+                      <div style={{ background: '#FEF3C7', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #FDE68A', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 800, color: '#B45309' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={excludeOptional}
+                            onChange={(e) => {
+                              setExcludeOptional(e.target.checked);
+                              if (e.target.checked) setOptionalDeduction(10000);
+                              else setOptionalDeduction(0);
+                            }}
+                          />
+                          <span>🎁 Exclude Optional Item (e.g. Christmas Party ₦10,000)</span>
+                        </label>
+                        <span style={{ fontSize: '0.78rem', color: '#78350F' }}>
+                          Check this if parent paid for compulsory fees but excluded optional items. Approves invoice without querying parent.
+                        </span>
+                      </div>
+                    </>
                   )}
 
                   {/* Remarks */}

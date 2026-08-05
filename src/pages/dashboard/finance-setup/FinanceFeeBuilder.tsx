@@ -5,25 +5,28 @@ import './FinanceFeeBuilder.css';
 import { useDialog } from '../../../context/DialogContext';
 import { 
   Wrench, 
-  FileText, 
   Plus, 
   Trash2, 
   Save, 
   Building2, 
   Copy, 
-  CheckCircle2, 
   Printer, 
   BarChart3, 
-  Sparkles,
-  Search,
   Filter,
   DollarSign,
-  PieChart
+  PieChart,
+  Gift,
+  Search,
+  CheckCircle2,
+  Tag
 } from 'lucide-react';
+
+type FeeApplicability = 'Compulsory' | 'SectionalTransition' | 'NewIntakeOnly' | 'Optional';
 
 interface FeeTemplateItem {
   name: string;
   amount: number;
+  applicability: FeeApplicability;
 }
 
 interface FeeTemplateReport {
@@ -33,13 +36,28 @@ interface FeeTemplateReport {
   level: string;
   section: string;
   totalAmount: number;
-  items?: { id: string; name: string; amount: number }[];
+  items?: { id: string; name: string; amount: number; applicability?: string }[];
+}
+
+interface GiftRecipient {
+  id: string;
+  receiptNumber: string;
+  studentId: string;
+  studentName: string;
+  registrationNumber: string;
+  className: string;
+  parentEmail: string;
+  parentPhone: string;
+  amountPaid: number;
+  datePaid: string;
+  optedInItem: string;
+  status: string;
 }
 
 export default function FinanceFeeBuilder() {
   const { showAlert } = useDialog();
 
-  const [activeTab, setActiveTab] = useState<'builder' | 'report'>('builder');
+  const [activeTab, setActiveTab] = useState<'builder' | 'report' | 'gifts'>('builder');
   const [classes, setClasses] = useState<any[]>([]);
   
   // Form State
@@ -47,11 +65,16 @@ export default function FinanceFeeBuilder() {
   const [classId, setClassId] = useState('');
   
   const [feeItems, setFeeItems] = useState<FeeTemplateItem[]>([
-    { name: 'Tuition Fees', amount: 0 },
-    { name: 'PTA Fees', amount: 0 },
-    { name: 'Technology Fees', amount: 0 },
-    { name: 'Uniform Fees', amount: 0 },
-    { name: 'Books', amount: 0 }
+    { name: 'Tuition Fees', amount: 0, applicability: 'Compulsory' },
+    { name: 'Development Fees', amount: 0, applicability: 'Compulsory' },
+    { name: 'Registration Form', amount: 0, applicability: 'NewIntakeOnly' },
+    { name: 'Security ID / Resource Mat', amount: 0, applicability: 'Compulsory' },
+    { name: 'Lesson Fees', amount: 0, applicability: 'Compulsory' },
+    { name: 'Notebook', amount: 0, applicability: 'Compulsory' },
+    { name: 'Textbook', amount: 0, applicability: 'Compulsory' },
+    { name: 'Uniform', amount: 0, applicability: 'SectionalTransition' },
+    { name: 'Sport Wear', amount: 0, applicability: 'SectionalTransition' },
+    { name: 'Christmas Party (Optional)', amount: 0, applicability: 'Optional' }
   ]);
   
   // Batch copy targets
@@ -62,8 +85,24 @@ export default function FinanceFeeBuilder() {
   const [reportTemplates, setReportTemplates] = useState<FeeTemplateReport[]>([]);
   const [reportLoading, setReportLoading] = useState(false);
 
+  // Gift List tab state
+  const [giftRecipients, setGiftRecipients] = useState<GiftRecipient[]>([]);
+  const [giftLoading, setGiftLoading] = useState(false);
+  const [giftSearchQuery, setGiftSearchQuery] = useState('');
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const detectApplicability = (name: string, app?: string): FeeApplicability => {
+    if (app && ['Compulsory', 'SectionalTransition', 'NewIntakeOnly', 'Optional'].includes(app)) {
+      return app as FeeApplicability;
+    }
+    const lower = name.toLowerCase();
+    if (lower.includes('registration form')) return 'NewIntakeOnly';
+    if (lower.includes('uniform') || lower.includes('sport wear')) return 'SectionalTransition';
+    if (lower.includes('optional') || lower.includes('party') || lower.includes('excursion')) return 'Optional';
+    return 'Compulsory';
+  };
 
   useEffect(() => {
     fetchClasses();
@@ -95,7 +134,11 @@ export default function FinanceFeeBuilder() {
       const data: FeeTemplateReport[] = await api.get(`/finance/setup/fee-templates?session=${session}&term=${term}`);
       const match = data.find(t => t.classId === classId);
       if (match && match.items && match.items.length > 0) {
-        setFeeItems(match.items.map(i => ({ name: i.name, amount: i.amount })));
+        setFeeItems(match.items.map(i => ({
+          name: i.name,
+          amount: Number(i.amount) || 0,
+          applicability: detectApplicability(i.name, i.applicability)
+        })));
       }
     } catch (err) {
       // Ignore if no existing template
@@ -115,30 +158,56 @@ export default function FinanceFeeBuilder() {
     }
   };
 
-  useEffect(() => {
-    if (activeTab === 'report') {
-      fetchReportData();
+  // Load Christmas Party Gift Recipients
+  const fetchGiftRecipients = async () => {
+    setGiftLoading(true);
+    try {
+      const data: GiftRecipient[] = await api.get(`/finance/reports/optional-fees?session=${session}&term=${term}&item=Christmas Party`);
+      setGiftRecipients(data || []);
+    } catch (err) {
+      console.error("Failed to load gift recipients:", err);
+    } finally {
+      setGiftLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'report') fetchReportData();
+    if (activeTab === 'gifts') fetchGiftRecipients();
   }, [activeTab, session, term]);
 
-  const handleAddItem = () => {
-    setFeeItems([...feeItems, { name: '', amount: 0 }]);
+  const handleAddItem = (presetName?: string, presetApp?: FeeApplicability) => {
+    setFeeItems([
+      ...feeItems, 
+      { 
+        name: presetName || '', 
+        amount: 0, 
+        applicability: presetApp || (presetName ? detectApplicability(presetName) : 'Compulsory') 
+      }
+    ]);
   };
 
   const handleRemoveItem = (index: number) => {
     setFeeItems(feeItems.filter((_, i) => i !== index));
   };
 
-  const handleItemChange = (index: number, field: 'name' | 'amount', value: string | number) => {
+  const handleItemChange = (index: number, field: 'name' | 'amount' | 'applicability', value: any) => {
     const newItems = [...feeItems];
-    newItems[index] = { ...newItems[index], [field]: value as never };
+    newItems[index] = { ...newItems[index], [field]: value };
     setFeeItems(newItems);
   };
 
   const handleSaveFeeTemplate = async () => {
     if (!classId) return showAlert('Please select a target class');
     
-    const validItems = feeItems.filter(i => i.name.trim() !== '' && i.amount >= 0);
+    const validItems = feeItems
+      .filter(i => i.name.trim() !== '' && i.amount >= 0)
+      .map(i => ({
+        name: i.name.trim(),
+        amount: Number(i.amount) || 0,
+        applicability: i.applicability
+      }));
+
     if (validItems.length === 0) return showAlert('Please provide at least one valid fee item.');
 
     setSaving(true);
@@ -182,7 +251,27 @@ export default function FinanceFeeBuilder() {
     }
   };
 
-  const totalAmount = feeItems.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  // Categorized Segment Calculations
+  const compulsoryTotal = feeItems
+    .filter(i => i.applicability === 'Compulsory')
+    .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+  const transitionTotal = feeItems
+    .filter(i => i.applicability === 'SectionalTransition')
+    .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+  const newIntakeOnlyTotal = feeItems
+    .filter(i => i.applicability === 'NewIntakeOnly')
+    .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+  const optionalTotal = feeItems
+    .filter(i => i.applicability === 'Optional')
+    .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+  const continuingStudentTotal = compulsoryTotal;
+  const sectionalTransitionTotal = compulsoryTotal + transitionTotal;
+  const directNewIntakeTotal = compulsoryTotal + transitionTotal + newIntakeOnlyTotal;
+  const grandTotal = directNewIntakeTotal + optionalTotal;
 
   // Metrics calculation for Report tab
   const totalClassesCount = classes.length;
@@ -192,6 +281,17 @@ export default function FinanceFeeBuilder() {
   
   const sortedByFee = [...reportTemplates].sort((a, b) => b.totalAmount - a.totalAmount);
   const highestFeeTemplate = sortedByFee.length > 0 ? sortedByFee[0] : null;
+
+  // Filter gift recipients
+  const filteredGiftRecipients = giftRecipients.filter(r => {
+    const q = giftSearchQuery.toLowerCase();
+    return (
+      r.studentName.toLowerCase().includes(q) ||
+      r.registrationNumber.toLowerCase().includes(q) ||
+      r.className.toLowerCase().includes(q) ||
+      r.parentEmail.toLowerCase().includes(q)
+    );
+  });
 
   if (loading) {
     return (
@@ -212,7 +312,7 @@ export default function FinanceFeeBuilder() {
             <Wrench size={28} color="#000080" />
             Class Fee Structure Builder & Report Hub
           </h1>
-          <p className="builder-page-subtitle">Configure official itemized term fees per class and generate institutional fee summary reports</p>
+          <p className="builder-page-subtitle">Configure itemized term fees per student segment and generate Christmas Party gift recipient reports</p>
         </div>
       </div>
 
@@ -224,11 +324,19 @@ export default function FinanceFeeBuilder() {
         >
           <Wrench size={16} /> Fee Structure Builder
         </button>
+
         <button 
           className={`builder-tab-button ${activeTab === 'report' ? 'active' : ''}`}
           onClick={() => setActiveTab('report')}
         >
-          <BarChart3 size={16} /> Fee Structure Report & Matrix ({configuredCount}/{totalClassesCount} Configured)
+          <BarChart3 size={16} /> Fee Report Matrix ({configuredCount}/{totalClassesCount})
+        </button>
+
+        <button 
+          className={`builder-tab-button ${activeTab === 'gifts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('gifts')}
+        >
+          <Gift size={16} color="#B45309" /> 🎁 Christmas Party Gift Recipients ({giftRecipients.length})
         </button>
       </div>
 
@@ -241,7 +349,7 @@ export default function FinanceFeeBuilder() {
                 🛠️ Itemized Fee Configuration Workspace
               </h2>
               <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                Set up official itemized term fee breakdown for target class.
+                Tag fee items by student segment (Compulsory, Sectional Entry, Direct New Intake, Optional Add-on).
               </span>
             </div>
 
@@ -328,58 +436,117 @@ export default function FinanceFeeBuilder() {
             </div>
           )}
 
+          {/* Preset Quick Add Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', background: '#EFF6FF', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.82rem' }}>
+            <strong style={{ color: '#1E40AF', marginRight: '4px' }}>⚡ Quick Add Presets:</strong>
+            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Tuition Fees', 'Compulsory')}>+ Tuition</button>
+            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Development Fees', 'Compulsory')}>+ Development</button>
+            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Uniform', 'SectionalTransition')}>+ Uniform (Sectional Entry)</button>
+            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Sport Wear', 'SectionalTransition')}>+ Sport Wear (Sectional Entry)</button>
+            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Registration Form', 'NewIntakeOnly')}>+ Registration (Direct Intake)</button>
+            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Christmas Party (Optional)', 'Optional')}>+ Party (Optional)</button>
+          </div>
+
           {/* Fee Breakdown Container */}
           <div className="fee-breakdown-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>
-                Itemized Fee Components Breakdown
+                Itemized Fee Breakdown ({feeItems.length} Fields)
               </h3>
-              <button className="btn-select-all-family" onClick={handleAddItem}>
+              <button className="btn-select-all-family" onClick={() => handleAddItem()}>
                 <Plus size={14} style={{ marginRight: '4px' }} /> Add Custom Fee Field
               </button>
             </div>
 
-            {feeItems.map((item, index) => (
-              <div key={index} className="fee-row-item">
-                <div style={{ flex: 2 }}>
-                  <input 
-                    type="text" 
-                    className="select-filter-input" 
-                    placeholder="Fee Item Name (e.g. Tuition, PTA, Excursion)" 
-                    value={item.name} 
-                    onChange={e => handleItemChange(index, 'name', e.target.value)}
-                  />
-                </div>
-                <div style={{ flex: 1, position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: '#64748B' }}>₦</span>
-                  <input 
-                    type="number" 
-                    className="select-filter-input" 
-                    style={{ paddingLeft: '2.4rem' }}
-                    placeholder="0.00" 
-                    min="0"
-                    value={item.amount || ''} 
-                    onChange={e => handleItemChange(index, 'amount', Number(e.target.value))}
-                  />
-                </div>
-                <button 
-                  className="btn-remove-fee-row" 
-                  onClick={() => handleRemoveItem(index)}
-                  title="Remove item"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
+            {feeItems.map((item, index) => {
+              const currentApp = item.applicability || detectApplicability(item.name);
+              return (
+                <div key={index} className="fee-row-item">
+                  {/* Item Name */}
+                  <div>
+                    <input 
+                      type="text" 
+                      className="select-filter-input" 
+                      placeholder="Fee Field Name (e.g. Tuition, Uniform, Party)" 
+                      value={item.name} 
+                      onChange={e => handleItemChange(index, 'name', e.target.value)}
+                    />
+                  </div>
 
-            {/* Total Calculation Row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', paddingTop: '1rem', borderTop: '2px dashed #CBD5E1' }}>
-              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
-                Total Official Term Fee:
-              </span>
-              <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#000080' }}>
-                ₦{totalAmount.toLocaleString()}
-              </span>
+                  {/* Applicability Category */}
+                  <div>
+                    <select 
+                      className="select-filter-input"
+                      style={{ fontSize: '0.8rem', fontWeight: 700 }}
+                      value={currentApp}
+                      onChange={e => handleItemChange(index, 'applicability', e.target.value as FeeApplicability)}
+                    >
+                      <option value="Compulsory">📌 Compulsory (All Students)</option>
+                      <option value="SectionalTransition">🎓 Sectional Entry (Pry 1, JSS 1, SS 1)</option>
+                      <option value="NewIntakeOnly">🆕 Direct New Intake Only</option>
+                      <option value="Optional">🌟 Optional Add-on (Opt-in)</option>
+                    </select>
+                  </div>
+
+                  {/* Amount Input */}
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: '#64748B' }}>₦</span>
+                    <input 
+                      type="number" 
+                      className="select-filter-input" 
+                      style={{ paddingLeft: '2.4rem' }}
+                      placeholder="0.00" 
+                      min="0"
+                      value={item.amount || ''} 
+                      onChange={e => handleItemChange(index, 'amount', Number(e.target.value))}
+                    />
+                  </div>
+
+                  {/* Remove Button */}
+                  <button 
+                    className="btn-remove-fee-row" 
+                    onClick={() => handleRemoveItem(index)}
+                    title="Remove item"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              );
+            })}
+
+            {/* Categorized Calculation Breakdown Cards */}
+            <div className="fee-summary-breakdown-grid">
+              <div className="fee-summary-card returning">
+                <span className="fee-summary-title">📌 Continuing Student Fee</span>
+                <span className="fee-summary-amount" style={{ color: '#1E40AF' }}>
+                  ₦{continuingStudentTotal.toLocaleString()}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>In-section promotions (e.g. JSS 1 → JSS 2)</span>
+              </div>
+
+              <div className="fee-summary-card new-intake">
+                <span className="fee-summary-title">🎓 Sectional Entry Fee</span>
+                <span className="fee-summary-amount" style={{ color: '#047857' }}>
+                  ₦{sectionalTransitionTotal.toLocaleString()}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1)</span>
+              </div>
+
+              <div className="fee-summary-card new-intake" style={{ borderLeftColor: '#B45309' }}>
+                <span className="fee-summary-title">🆕 Direct New Intake Fee</span>
+                <span className="fee-summary-amount" style={{ color: '#B45309' }}>
+                  ₦{directNewIntakeTotal.toLocaleString()}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Direct new admissions (Includes Registration Form)</span>
+              </div>
+
+              <div className="fee-summary-card grand">
+                <span className="fee-summary-title">🌟 Optional Add-ons Total</span>
+                <span className="fee-summary-amount" style={{ color: '#000080' }}>
+                  ₦{optionalTotal.toLocaleString()}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: '#1E40AF' }}>Opt-in items (e.g. Christmas Party ₦{optionalTotal.toLocaleString()})</span>
+              </div>
             </div>
           </div>
 
@@ -547,6 +714,130 @@ export default function FinanceFeeBuilder() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* TAB 3: CHRISTMAS PARTY GIFT RECIPIENTS REPORT */}
+      {activeTab === 'gifts' && (
+        <div className="builder-card-wrapper">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Gift size={22} color="#B45309" /> 🎁 Christmas Party Gift Recipients List
+              </h2>
+              <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
+                Confirmed list of students whose parents paid for the Christmas Party for gift package preparation.
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <button 
+                className="btn-select-all-family" 
+                onClick={() => window.print()}
+                style={{ padding: '0.5rem 0.85rem', fontSize: '0.82rem' }}
+              >
+                <Printer size={14} style={{ marginRight: '4px' }} /> Print Gift Preparation List
+              </button>
+            </div>
+          </div>
+
+          {/* Session & Term Filter Bar */}
+          <div style={{ display: 'flex', gap: '1rem', background: '#FEF3C7', padding: '1rem', borderRadius: '12px', border: '1px solid #FDE68A', alignItems: 'center' }}>
+            <Filter size={18} color="#B45309" />
+            <div style={{ display: 'flex', gap: '1rem', flex: 1 }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase' }}>Academic Session</label>
+                <input type="text" className="select-filter-input" value={session} onChange={e => setSession(e.target.value)} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase' }}>Academic Term</label>
+                <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
+                  <option value="First Term">First Term</option>
+                  <option value="Second Term">Second Term</option>
+                  <option value="Third Term">Third Term</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ position: 'relative', width: '220px' }}>
+              <Search style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} size={14} />
+              <input 
+                type="text" 
+                className="select-filter-input" 
+                style={{ paddingLeft: '2.2rem' }}
+                placeholder="Search student..."
+                value={giftSearchQuery}
+                onChange={e => setGiftSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {giftLoading ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#64748B' }}>
+              Loading Christmas party gift recipients...
+            </div>
+          ) : filteredGiftRecipients.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#F8FAFC', borderRadius: '12px', border: '1px border-dashed #CBD5E1', color: '#64748B' }}>
+              <Gift size={42} color="#94A3B8" style={{ marginBottom: '0.75rem' }} />
+              <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>No Gift Recipients Found</h3>
+              <p style={{ fontSize: '0.88rem', marginTop: '0.4rem' }}>
+                No students found with confirmed Christmas Party payments for {session} ({term}).
+              </p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table className="executive-fee-report-table">
+                <thead>
+                  <tr>
+                    <th>Recipient Student</th>
+                    <th>Class</th>
+                    <th>Receipt Number</th>
+                    <th>Amount Paid</th>
+                    <th>Date Paid</th>
+                    <th>Parent Contact</th>
+                    <th style={{ textAlign: 'right' }}>Gift Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredGiftRecipients.map(r => (
+                    <tr key={r.id}>
+                      <td>
+                        <strong style={{ fontSize: '0.95rem', color: '#0F172A', display: 'block' }}>{r.studentName}</strong>
+                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>Reg: {r.registrationNumber}</span>
+                      </td>
+
+                      <td style={{ fontWeight: 800, color: '#0F172A' }}>
+                        {r.className}
+                      </td>
+
+                      <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>
+                        {r.receiptNumber}
+                      </td>
+
+                      <td style={{ color: '#047857', fontWeight: 800 }}>
+                        ₦{r.amountPaid.toLocaleString()}
+                      </td>
+
+                      <td style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                        {r.datePaid}
+                      </td>
+
+                      <td>
+                        <div style={{ fontSize: '0.85rem', color: '#0F172A' }}>{r.parentEmail}</div>
+                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>{r.parentPhone}</span>
+                      </td>
+
+                      <td style={{ textAlign: 'right' }}>
+                        <span className="status-pill active" style={{ background: '#FEF3C7', color: '#B45309', border: '1px solid #FDE68A' }}>
+                          🎁 Confirmed (Prepare Gift)
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>
