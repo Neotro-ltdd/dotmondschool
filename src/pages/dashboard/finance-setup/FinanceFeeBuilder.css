@@ -141,6 +141,20 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
+/* 2-Column Split Workspace Layout Grid */
+.fee-builder-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .fee-builder-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .fee-breakdown-container {
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
@@ -152,9 +166,16 @@
 }
 
 .fee-row-item {
-  display: flex;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 220px 140px 42px;
+  gap: 0.75rem;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .fee-row-item {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .btn-remove-fee-row {
@@ -175,6 +196,139 @@
 .btn-remove-fee-row:hover {
   background: #DC2626;
   color: #FFFFFF;
+}
+
+/* Right Sticky Executive Summary Sidebar */
+.fee-summary-sidebar-card {
+  position: sticky;
+  top: 1.5rem;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.fee-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border-bottom: 1px solid #F1F5F9;
+  padding-bottom: 0.85rem;
+}
+
+.fee-sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fee-sidebar-subtitle {
+  font-size: 0.8rem;
+  color: #64748B;
+}
+
+/* Segment Breakdown Cards Stack */
+.fee-segment-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.fee-segment-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-left: 4px solid #3B82F6;
+  border-radius: 12px;
+  padding: 0.95rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: transform 0.15s ease;
+}
+
+.fee-segment-card:hover {
+  transform: translateY(-1px);
+}
+
+.fee-segment-card.continuing {
+  border-left-color: #2563EB;
+  background: #EFF6FF;
+}
+
+.fee-segment-card.sectional {
+  border-left-color: #059669;
+  background: #ECFDF5;
+}
+
+.fee-segment-card.direct {
+  border-left-color: #D97706;
+  background: #FFFBEB;
+}
+
+.fee-segment-card.optional {
+  border-left-color: #4F46E5;
+  background: #EEF2FF;
+}
+
+.fee-segment-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fee-segment-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fee-segment-amount {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0F172A;
+}
+
+.fee-segment-desc {
+  font-size: 0.74rem;
+  color: #64748B;
+  line-height: 1.3;
+}
+
+.fee-range-banner {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
+}
+
+.fee-range-label {
+  font-size: 0.72rem;
+  fontWeight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+}
+
+.fee-range-val {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #F8FAFC;
 }
 
 /* Report Table */
@@ -219,7 +373,8 @@
 
 /* Dark Mode Overrides */
 body[data-theme='dark'] .builder-metric-card,
-body[data-theme='dark'] .builder-card-wrapper {
+body[data-theme='dark'] .builder-card-wrapper,
+body[data-theme='dark'] .fee-summary-sidebar-card {
   background-color: #1E293B !important;
   border-color: #334155 !important;
   color: #F1F5F9 !important;
@@ -227,7 +382,8 @@ body[data-theme='dark'] .builder-card-wrapper {
 
 body[data-theme='dark'] .fee-breakdown-container,
 body[data-theme='dark'] .executive-fee-report-table th,
-body[data-theme='dark'] .batch-copy-card {
+body[data-theme='dark'] .batch-copy-card,
+body[data-theme='dark'] .fee-segment-card {
   background-color: #0F172A !important;
   border-color: #334155 !important;
   color: #F8FAFC !important;

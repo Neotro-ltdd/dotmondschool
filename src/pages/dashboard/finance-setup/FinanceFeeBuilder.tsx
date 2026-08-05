@@ -18,7 +18,9 @@ import {
   Gift,
   Search,
   CheckCircle2,
-  Tag
+  Tag,
+  Calculator,
+  Info
 } from 'lucide-react';
 
 type FeeApplicability = 'Compulsory' | 'SectionalTransition' | 'NewIntakeOnly' | 'Optional';
@@ -271,7 +273,7 @@ export default function FinanceFeeBuilder() {
   const continuingStudentTotal = compulsoryTotal;
   const sectionalTransitionTotal = compulsoryTotal + transitionTotal;
   const directNewIntakeTotal = compulsoryTotal + transitionTotal + newIntakeOnlyTotal;
-  const grandTotal = directNewIntakeTotal + optionalTotal;
+  const maxPossibleFee = directNewIntakeTotal + optionalTotal;
 
   // Metrics calculation for Report tab
   const totalClassesCount = classes.length;
@@ -340,225 +342,276 @@ export default function FinanceFeeBuilder() {
         </button>
       </div>
 
-      {/* TAB 1: FEE STRUCTURE BUILDER */}
+      {/* TAB 1: FEE STRUCTURE BUILDER (2-COLUMN SPLIT WORKSPACE) */}
       {activeTab === 'builder' && (
-        <div className="builder-card-wrapper">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
-                🛠️ Itemized Fee Configuration Workspace
-              </h2>
-              <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                Tag fee items by student segment (Compulsory, Sectional Entry, Direct New Intake, Optional Add-on).
+        <div className="fee-builder-workspace-grid">
+          {/* LEFT WORKSPACE COLUMN (65% Width) */}
+          <div className="builder-card-wrapper">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
+                  🛠️ Itemized Fee Configuration Workspace
+                </h2>
+                <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
+                  Set up itemized term fees and tag applicability by student segment.
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <button 
+                  type="button" 
+                  className="btn-select-all-family" 
+                  onClick={() => setShowBatchCopy(!showBatchCopy)}
+                  style={{ padding: '0.5rem 0.85rem', fontSize: '0.82rem' }}
+                >
+                  <Copy size={14} style={{ marginRight: '4px' }} /> Copy Structure to Other Classes
+                </button>
+              </div>
+            </div>
+
+            {/* Session, Term & Target Class Selector Bar */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', background: '#F8FAFC', padding: '1.1rem', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
+              <div className="verify-form-group">
+                <label>Academic Session</label>
+                <input 
+                  type="text" 
+                  className="select-filter-input" 
+                  value={session} 
+                  onChange={e => setSession(e.target.value)} 
+                  required 
+                />
+              </div>
+
+              <div className="verify-form-group">
+                <label>Academic Term</label>
+                <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
+                  <option value="First Term">First Term</option>
+                  <option value="Second Term">Second Term</option>
+                  <option value="Third Term">Third Term</option>
+                </select>
+              </div>
+
+              <div className="verify-form-group">
+                <label>Target Class *</label>
+                <select className="select-filter-input" value={classId} onChange={e => setClassId(e.target.value)}>
+                  {classes.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.level} {c.name} {c.section}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Optional Batch Copy Section */}
+            {showBatchCopy && (
+              <div className="batch-copy-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ fontSize: '0.88rem', color: '#1E40AF' }}>
+                    <Copy size={15} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                    Batch Copy Fee Structure:
+                  </strong>
+                  <span style={{ fontSize: '0.78rem', color: '#1E40AF' }}>
+                    Select additional classes to apply this exact fee breakdown to
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.4rem', marginTop: '0.5rem' }}>
+                  {classes.filter(c => c.id !== classId).map(c => {
+                    const isChecked = copyTargetClassIds.includes(c.id);
+                    return (
+                      <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', cursor: 'pointer', background: '#FFFFFF', padding: '0.3rem 0.5rem', borderRadius: '6px', border: '1px solid #BFDBFE' }}>
+                        <input 
+                          type="checkbox" 
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) {
+                              setCopyTargetClassIds(prev => prev.filter(id => id !== c.id));
+                            } else {
+                              setCopyTargetClassIds(prev => [...prev, c.id]);
+                            }
+                          }}
+                        />
+                        <span>{c.level} {c.name} {c.section}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Preset Quick Add Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', background: '#EFF6FF', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.8rem' }}>
+              <strong style={{ color: '#1E40AF', marginRight: '4px' }}>⚡ Presets:</strong>
+              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Tuition Fees', 'Compulsory')}>+ Tuition</button>
+              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Development Fees', 'Compulsory')}>+ Development</button>
+              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Uniform', 'SectionalTransition')}>+ Uniform</button>
+              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Sport Wear', 'SectionalTransition')}>+ Sport Wear</button>
+              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Registration Form', 'NewIntakeOnly')}>+ Registration</button>
+              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Christmas Party (Optional)', 'Optional')}>+ Party</button>
+            </div>
+
+            {/* Fee Breakdown Container */}
+            <div className="fee-breakdown-container">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                  Itemized Fee Components Breakdown ({feeItems.length} Items)
+                </h3>
+                <button className="btn-select-all-family" onClick={() => handleAddItem()}>
+                  <Plus size={14} style={{ marginRight: '4px' }} /> Add Custom Fee Field
+                </button>
+              </div>
+
+              {feeItems.map((item, index) => {
+                const currentApp = item.applicability || detectApplicability(item.name);
+                return (
+                  <div key={index} className="fee-row-item">
+                    {/* Item Name */}
+                    <div>
+                      <input 
+                        type="text" 
+                        className="select-filter-input" 
+                        placeholder="Fee Name (e.g. Tuition, Uniform, Party)" 
+                        value={item.name} 
+                        onChange={e => handleItemChange(index, 'name', e.target.value)}
+                      />
+                    </div>
+
+                    {/* Applicability Category */}
+                    <div>
+                      <select 
+                        className="select-filter-input"
+                        style={{ fontSize: '0.78rem', fontWeight: 700 }}
+                        value={currentApp}
+                        onChange={e => handleItemChange(index, 'applicability', e.target.value as FeeApplicability)}
+                      >
+                        <option value="Compulsory">📌 Compulsory (All Students)</option>
+                        <option value="SectionalTransition">🎓 Sectional Entry (Pry 1, JSS 1, SS 1)</option>
+                        <option value="NewIntakeOnly">🆕 Direct New Intake Only</option>
+                        <option value="Optional">🌟 Optional Add-on (Opt-in)</option>
+                      </select>
+                    </div>
+
+                    {/* Amount Input */}
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: '#64748B', fontSize: '0.85rem' }}>₦</span>
+                      <input 
+                        type="number" 
+                        className="select-filter-input" 
+                        style={{ paddingLeft: '2.2rem' }}
+                        placeholder="0.00" 
+                        min="0"
+                        value={item.amount || ''} 
+                        onChange={e => handleItemChange(index, 'amount', Number(e.target.value))}
+                      />
+                    </div>
+
+                    {/* Remove Button */}
+                    <button 
+                      className="btn-remove-fee-row" 
+                      onClick={() => handleRemoveItem(index)}
+                      title="Remove item"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                );
+              })}
+
+              <div style={{ paddingTop: '0.5rem' }}>
+                <button className="btn-select-all-family" style={{ width: '100%', justifyContent: 'center', padding: '0.65rem' }} onClick={() => handleAddItem()}>
+                  <Plus size={14} style={{ marginRight: '6px' }} /> Add Another Fee Line Item
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDEBAR COLUMN (35% Width - Sticky Executive Summary) */}
+          <div className="fee-summary-sidebar-card">
+            <div className="fee-sidebar-header">
+              <h3 className="fee-sidebar-title">
+                <Calculator size={20} color="#000080" />
+                Executive Fee Summary
+              </h3>
+              <span className="fee-sidebar-subtitle">
+                Live calculation breakdown per student segment
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <button 
-                type="button" 
-                className="btn-select-all-family" 
-                onClick={() => setShowBatchCopy(!showBatchCopy)}
-                style={{ padding: '0.5rem 0.85rem', fontSize: '0.82rem' }}
-              >
-                <Copy size={14} style={{ marginRight: '4px' }} /> Copy Structure to Other Classes
-              </button>
-            </div>
-          </div>
-
-          {/* Session, Term & Target Class Selector Bar */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', background: '#F8FAFC', padding: '1.25rem', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
-            <div className="verify-form-group">
-              <label>Academic Session</label>
-              <input 
-                type="text" 
-                className="select-filter-input" 
-                value={session} 
-                onChange={e => setSession(e.target.value)} 
-                required 
-              />
-            </div>
-
-            <div className="verify-form-group">
-              <label>Academic Term</label>
-              <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
-                <option value="First Term">First Term</option>
-                <option value="Second Term">Second Term</option>
-                <option value="Third Term">Third Term</option>
-              </select>
-            </div>
-
-            <div className="verify-form-group">
-              <label>Target Class *</label>
-              <select className="select-filter-input" value={classId} onChange={e => setClassId(e.target.value)}>
-                {classes.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.level} {c.name} {c.section}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Optional Batch Copy Section */}
-          {showBatchCopy && (
-            <div className="batch-copy-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <strong style={{ fontSize: '0.9rem', color: '#1E40AF' }}>
-                  <Copy size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
-                  Batch Copy Fee Structure:
-                </strong>
-                <span style={{ fontSize: '0.78rem', color: '#1E40AF' }}>
-                  Select additional classes to apply this exact fee breakdown to
-                </span>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem', marginTop: '0.5rem' }}>
-                {classes.filter(c => c.id !== classId).map(c => {
-                  const isChecked = copyTargetClassIds.includes(c.id);
-                  return (
-                    <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', cursor: 'pointer', background: '#FFFFFF', padding: '0.35rem 0.6rem', borderRadius: '6px', border: '1px solid #BFDBFE' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={isChecked}
-                        onChange={() => {
-                          if (isChecked) {
-                            setCopyTargetClassIds(prev => prev.filter(id => id !== c.id));
-                          } else {
-                            setCopyTargetClassIds(prev => [...prev, c.id]);
-                          }
-                        }}
-                      />
-                      <span>{c.level} {c.name} {c.section}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Preset Quick Add Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', background: '#EFF6FF', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.82rem' }}>
-            <strong style={{ color: '#1E40AF', marginRight: '4px' }}>⚡ Quick Add Presets:</strong>
-            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Tuition Fees', 'Compulsory')}>+ Tuition</button>
-            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Development Fees', 'Compulsory')}>+ Development</button>
-            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Uniform', 'SectionalTransition')}>+ Uniform (Sectional Entry)</button>
-            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Sport Wear', 'SectionalTransition')}>+ Sport Wear (Sectional Entry)</button>
-            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Registration Form', 'NewIntakeOnly')}>+ Registration (Direct Intake)</button>
-            <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Christmas Party (Optional)', 'Optional')}>+ Party (Optional)</button>
-          </div>
-
-          {/* Fee Breakdown Container */}
-          <div className="fee-breakdown-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>
-                Itemized Fee Breakdown ({feeItems.length} Fields)
-              </h3>
-              <button className="btn-select-all-family" onClick={() => handleAddItem()}>
-                <Plus size={14} style={{ marginRight: '4px' }} /> Add Custom Fee Field
-              </button>
-            </div>
-
-            {feeItems.map((item, index) => {
-              const currentApp = item.applicability || detectApplicability(item.name);
-              return (
-                <div key={index} className="fee-row-item">
-                  {/* Item Name */}
-                  <div>
-                    <input 
-                      type="text" 
-                      className="select-filter-input" 
-                      placeholder="Fee Field Name (e.g. Tuition, Uniform, Party)" 
-                      value={item.name} 
-                      onChange={e => handleItemChange(index, 'name', e.target.value)}
-                    />
-                  </div>
-
-                  {/* Applicability Category */}
-                  <div>
-                    <select 
-                      className="select-filter-input"
-                      style={{ fontSize: '0.8rem', fontWeight: 700 }}
-                      value={currentApp}
-                      onChange={e => handleItemChange(index, 'applicability', e.target.value as FeeApplicability)}
-                    >
-                      <option value="Compulsory">📌 Compulsory (All Students)</option>
-                      <option value="SectionalTransition">🎓 Sectional Entry (Pry 1, JSS 1, SS 1)</option>
-                      <option value="NewIntakeOnly">🆕 Direct New Intake Only</option>
-                      <option value="Optional">🌟 Optional Add-on (Opt-in)</option>
-                    </select>
-                  </div>
-
-                  {/* Amount Input */}
-                  <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: '#64748B' }}>₦</span>
-                    <input 
-                      type="number" 
-                      className="select-filter-input" 
-                      style={{ paddingLeft: '2.4rem' }}
-                      placeholder="0.00" 
-                      min="0"
-                      value={item.amount || ''} 
-                      onChange={e => handleItemChange(index, 'amount', Number(e.target.value))}
-                    />
-                  </div>
-
-                  {/* Remove Button */}
-                  <button 
-                    className="btn-remove-fee-row" 
-                    onClick={() => handleRemoveItem(index)}
-                    title="Remove item"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+            {/* Segment Breakdown Cards Stack */}
+            <div className="fee-segment-stack">
+              {/* 1. Continuing Student */}
+              <div className="fee-segment-card continuing">
+                <div className="fee-segment-card-header">
+                  <span className="fee-segment-name">📌 Continuing Student Fee</span>
+                  <span className="fee-segment-amount" style={{ color: '#1E40AF' }}>
+                    ₦{continuingStudentTotal.toLocaleString()}
+                  </span>
                 </div>
-              );
-            })}
-
-            {/* Categorized Calculation Breakdown Cards */}
-            <div className="fee-summary-breakdown-grid">
-              <div className="fee-summary-card returning">
-                <span className="fee-summary-title">📌 Continuing Student Fee</span>
-                <span className="fee-summary-amount" style={{ color: '#1E40AF' }}>
-                  ₦{continuingStudentTotal.toLocaleString()}
+                <span className="fee-segment-desc">
+                  In-section promotions (e.g. JSS 1 → JSS 2). Excludes uniforms/sportswear.
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>In-section promotions (e.g. JSS 1 → JSS 2)</span>
               </div>
 
-              <div className="fee-summary-card new-intake">
-                <span className="fee-summary-title">🎓 Sectional Entry Fee</span>
-                <span className="fee-summary-amount" style={{ color: '#047857' }}>
-                  ₦{sectionalTransitionTotal.toLocaleString()}
+              {/* 2. Sectional Entry */}
+              <div className="fee-segment-card sectional">
+                <div className="fee-segment-card-header">
+                  <span className="fee-segment-name">🎓 Sectional Entry Fee</span>
+                  <span className="fee-segment-amount" style={{ color: '#047857' }}>
+                    ₦{sectionalTransitionTotal.toLocaleString()}
+                  </span>
+                </div>
+                <span className="fee-segment-desc">
+                  Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1). Includes uniforms & sportswear, excludes Registration Form.
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1)</span>
               </div>
 
-              <div className="fee-summary-card new-intake" style={{ borderLeftColor: '#B45309' }}>
-                <span className="fee-summary-title">🆕 Direct New Intake Fee</span>
-                <span className="fee-summary-amount" style={{ color: '#B45309' }}>
-                  ₦{directNewIntakeTotal.toLocaleString()}
+              {/* 3. Direct New Intake */}
+              <div className="fee-segment-card direct">
+                <div className="fee-segment-card-header">
+                  <span className="fee-segment-name">🆕 Direct New Intake Fee</span>
+                  <span className="fee-segment-amount" style={{ color: '#B45309' }}>
+                    ₦{directNewIntakeTotal.toLocaleString()}
+                  </span>
+                </div>
+                <span className="fee-segment-desc">
+                  Direct new admissions into any class. Includes Registration Form, Uniforms & Sportswear.
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Direct new admissions (Includes Registration Form)</span>
               </div>
 
-              <div className="fee-summary-card grand">
-                <span className="fee-summary-title">🌟 Optional Add-ons Total</span>
-                <span className="fee-summary-amount" style={{ color: '#000080' }}>
-                  ₦{optionalTotal.toLocaleString()}
+              {/* 4. Optional Add-ons */}
+              <div className="fee-segment-card optional">
+                <div className="fee-segment-card-header">
+                  <span className="fee-segment-name">🌟 Optional Add-ons Total</span>
+                  <span className="fee-segment-amount" style={{ color: '#4F46E5' }}>
+                    ₦{optionalTotal.toLocaleString()}
+                  </span>
+                </div>
+                <span className="fee-segment-desc">
+                  Opt-in items (e.g. Christmas Party ₦{optionalTotal.toLocaleString()}). Opted by parents or accountant.
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#1E40AF' }}>Opt-in items (e.g. Christmas Party ₦{optionalTotal.toLocaleString()})</span>
               </div>
             </div>
-          </div>
 
-          <button 
-            className="btn-proxy-search" 
-            style={{ width: '100%', justifyContent: 'center', padding: '0.95rem', fontSize: '1.05rem' }} 
-            onClick={handleSaveFeeTemplate}
-            disabled={saving}
-          >
-            <Save size={20} />
-            {saving ? 'Saving Fee Configuration...' : 'Save Fee Configuration'}
-          </button>
+            {/* Total Range Banner */}
+            <div className="fee-range-banner">
+              <span className="fee-range-label">TOTAL FEE RANGE FOR CLASS</span>
+              <span className="fee-range-val">
+                ₦{continuingStudentTotal.toLocaleString()} – ₦{maxPossibleFee.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Primary Action Save Button */}
+            <button 
+              className="btn-proxy-search" 
+              style={{ width: '100%', justifyContent: 'center', padding: '0.95rem', fontSize: '1.05rem', marginTop: '0.25rem' }} 
+              onClick={handleSaveFeeTemplate}
+              disabled={saving}
+            >
+              <Save size={20} />
+              {saving ? 'Saving Fee Configuration...' : 'Save Fee Configuration'}
+            </button>
+          </div>
         </div>
       )}
 
