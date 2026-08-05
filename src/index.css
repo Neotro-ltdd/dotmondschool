@@ -65,12 +65,14 @@ body[data-theme='dark'] .sessionop-metric-card,
 body[data-theme='dark'] .grading-metric-card,
 body[data-theme='dark'] .clearance-metric-card,
 body[data-theme='dark'] .gate-metric-card,
+body[data-theme='dark'] .promo-metric-card,
 body[data-theme='dark'] .subjects-controls-card,
 body[data-theme='dark'] .subject-alloc-controls-card,
 body[data-theme='dark'] .result-controls-card,
 body[data-theme='dark'] .review-controls-card,
 body[data-theme='dark'] .clearance-controls-card,
 body[data-theme='dark'] .gate-controls-card,
+body[data-theme='dark'] .promo-controls-card,
 body[data-theme='dark'] .subjects-table-wrapper,
 body[data-theme='dark'] .subject-alloc-table-wrapper,
 body[data-theme='dark'] .result-workspace-card,
@@ -81,11 +83,16 @@ body[data-theme='dark'] .sessionop-single-workspace,
 body[data-theme='dark'] .grading-card-wrapper,
 body[data-theme='dark'] .clearance-table-wrapper,
 body[data-theme='dark'] .gate-table-wrapper,
+body[data-theme='dark'] .promo-table-wrapper,
+body[data-theme='dark'] .promo-tabs-container,
+body[data-theme='dark'] .promo-empty-placeholder,
+body[data-theme='dark'] .promo-modal-panel,
 body[data-theme='dark'] .subject-grid-card,
 body[data-theme='dark'] .subject-alloc-grid-card,
 body[data-theme='dark'] .review-grid-card,
 body[data-theme='dark'] .clearance-grid-card,
-body[data-theme='dark'] .gate-grid-card {
+body[data-theme='dark'] .gate-grid-card,
+body[data-theme='dark'] .promo-grid-card {
   background-color: #1E293B !important;
   border-color: #334155 !important;
   color: #F1F5F9 !important;
@@ -100,10 +107,14 @@ body[data-theme='dark'] .sessionop-page-title,
 body[data-theme='dark'] .grading-page-title,
 body[data-theme='dark'] .clearance-page-title,
 body[data-theme='dark'] .gate-page-title,
+body[data-theme='dark'] .promo-page-title,
 body[data-theme='dark'] .metric-number,
 body[data-theme='dark'] .termsetup-card-title,
 body[data-theme='dark'] .sessionop-card-title,
-body[data-theme='dark'] .teacher-name-title {
+body[data-theme='dark'] .teacher-name-title,
+body[data-theme='dark'] .promo-table-title,
+body[data-theme='dark'] .card-student-name,
+body[data-theme='dark'] .promo-modal-title {
   color: #F8FAFC !important;
 }
 
@@ -112,7 +123,8 @@ body[data-theme='dark'] .executive-subject-alloc-table th,
 body[data-theme='dark'] .executive-review-table th,
 body[data-theme='dark'] .executive-clearance-table th,
 body[data-theme='dark'] .executive-gate-table th,
-body[data-theme='dark'] .executive-grading-table th {
+body[data-theme='dark'] .executive-grading-table th,
+body[data-theme='dark'] .executive-promo-table th {
   background-color: #0F172A !important;
   color: #94A3B8 !important;
   border-bottom-color: #334155 !important;

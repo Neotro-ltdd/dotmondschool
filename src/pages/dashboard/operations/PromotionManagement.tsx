@@ -15,12 +15,23 @@ import {
   Edit3,
   RotateCcw,
   Eye,
-  History
+  History,
+  ShieldAlert,
+  PlayCircle,
+  LayoutGrid,
+  List,
+  BookOpen,
+  Calendar,
+  Percent,
+  ChevronRight,
+  UserCheck,
+  UserX,
+  Award
 } from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
-import '../students/Management.css';
+import './PromotionManagement.css';
 
 interface ClassItem {
   id: string;
@@ -63,13 +74,14 @@ interface ReportData {
 
 export default function PromotionManagement() {
   const queryClient = useQueryClient();
-  const { showConfirm, showPrompt } = useDialog();
+  const { showConfirm } = useDialog();
   const year = new Date().getFullYear();
   
-  // Tab State
+  // Tab & View States
   const [activeTab, setActiveTab] = useState<'promotion' | 'report' | 'history'>('promotion');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
-  // Notification Toast State (Slide from right)
+  // Notification Toast State
   const [notification, setNotification] = useState<{
     isOpen: boolean;
     title?: string;
@@ -114,7 +126,7 @@ export default function PromotionManagement() {
   });
 
   // 2. Fetch Report (By Batch ID for Class Promotion Tab)
-  const { data: batchReport, isLoading: batchReportLoading, isRefetching: batchRefetching } = useQuery<ReportData>({
+  const { data: batchReport, isLoading: batchReportLoading } = useQuery<ReportData>({
     queryKey: ['promotionReport', batchId],
     queryFn: async () => {
       if (!batchId) return null;
@@ -125,7 +137,7 @@ export default function PromotionManagement() {
   });
 
   // 3. Fetch Report (By Class ID for Promotion Report Tab)
-  const { data: classReport, isLoading: classReportLoading, isRefetching: classRefetching } = useQuery<ReportData>({
+  const { data: classReport, isLoading: classReportLoading } = useQuery<ReportData>({
     queryKey: ['promotionReportByClass', reportClassId],
     queryFn: async () => {
       if (!reportClassId) return null;
@@ -133,7 +145,7 @@ export default function PromotionManagement() {
         const res = await api.get(`/reports/academics/promotions/class/${reportClassId}/latest`);
         return res;
       } catch (err: any) {
-        if (err.response?.status === 404) return null; // No batch exists yet
+        if (err.response?.status === 404) return null;
         throw err;
       }
     },
@@ -142,7 +154,7 @@ export default function PromotionManagement() {
   });
 
   // 4. Fetch All Promotion Batches for Approved & Historical Lists Tab
-  const { data: promotionBatches, isLoading: batchesLoading } = useQuery<any[]>({
+  const { data: promotionBatches = [], isLoading: batchesLoading } = useQuery<any[]>({
     queryKey: ['allPromotionBatches'],
     queryFn: async () => {
       return await api.get('/academics/promotion/batches');
@@ -158,6 +170,7 @@ export default function PromotionManagement() {
     onSuccess: (data) => {
       if (data.batchId) {
         setBatchId(data.batchId);
+        showNotification('Promotion evaluation generated successfully! Review student decisions below.', 'success', 'List Generated');
       }
     },
     onError: (err: any) => {
@@ -168,7 +181,7 @@ export default function PromotionManagement() {
           'warning',
           'Promotion Already Executed',
           {
-            label: 'View Approved Promotions',
+            label: 'View Approved Batches',
             onClick: () => setActiveTab('history')
           }
         );
@@ -200,7 +213,7 @@ export default function PromotionManagement() {
       return await api.post('/academics/promotion/revert', { batchId: idToUse });
     },
     onSuccess: () => {
-      showNotification('Promotion list successfully revoked & unlocked! You can now edit student decisions or regenerate.', 'success', 'Batch Unlocked');
+      showNotification('Promotion batch successfully revoked & unlocked! You can now edit student decisions or regenerate.', 'success', 'Batch Unlocked');
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
@@ -223,20 +236,6 @@ export default function PromotionManagement() {
     },
     onError: (err: any) => {
       showNotification(err.message || 'Failed to override student decision.', 'error', 'Update Error');
-    }
-  });
-
-  const promoteSingleMutation = useMutation({
-    mutationFn: async (payload: { recommendationId: string; customRecipientEmail?: string }) => {
-      return await api.post('/academics/promotion/promote-single', payload);
-    },
-    onSuccess: (data: any) => {
-      showNotification(data?.message || data?.Message || 'Student promoted and email sent successfully.', 'success', 'Single Promotion & Email Test');
-      queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
-      queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
-    },
-    onError: (err: any) => {
-      showNotification(err.message || 'Failed to promote student or send email.', 'error', 'Promotion Error');
     }
   });
 
@@ -276,7 +275,7 @@ export default function PromotionManagement() {
       return;
     }
     if (targetClassId && selectedClassId === targetClassId) {
-      showNotification('Target class cannot be identical to the current class! Promoting a student to their current class (e.g., JSS 1 to JSS 1) is logically invalid.', 'error', 'Invalid Target Class');
+      showNotification('Target class cannot be identical to current class! Promoting a student to their current class is logically invalid.', 'error', 'Invalid Target Class');
       return;
     }
     generateBatchMutation.mutate({
@@ -290,7 +289,7 @@ export default function PromotionManagement() {
   const handleApprove = async () => {
     if (!batchId) return;
     const confirmed = await showConfirm(
-      'Are you sure you want to approve and execute these promotions? This action is permanent and will move students to their new target classes.',
+      'Are you sure you want to approve and execute these promotions? This action is permanent and will transition students to their target classes.',
       {
         title: 'Confirm Promotion Execution',
         type: 'warning',
@@ -313,7 +312,7 @@ export default function PromotionManagement() {
   const handleOverrideSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!overrideReason.trim()) {
-      showNotification('Please provide a reason for overriding this decision for audit logs.', 'warning', 'Reason Required');
+      showNotification('Please provide an explicit reason note for overriding this decision for audit logs.', 'warning', 'Reason Required');
       return;
     }
     overrideMutation.mutate({
@@ -325,7 +324,7 @@ export default function PromotionManagement() {
 
   const exportToCSV = (records: StudentRecord[], className: string) => {
     if (!records || records.length === 0) return;
-    const headers = ['S/N', 'Student Name', 'Registration Number', 'Annual Average', 'System Recommendation', 'Final Decision'];
+    const headers = ['S/N', 'Student Name', 'Registration Number', 'Annual Average (%)', 'System Recommendation', 'Final Decision'];
     const rows = records.map((r, i) => [
       i + 1,
       `"${r.studentName}"`,
@@ -344,6 +343,13 @@ export default function PromotionManagement() {
     link.remove();
   };
 
+  const getStudentInitials = (name: string) => {
+    if (!name) return 'ST';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return parts[0].substring(0, 2).toUpperCase();
+  };
+
   // Filtering for Class Promotion Tab
   const promoFilteredRecords = batchReport?.records.filter(r => 
     r.studentName.toLowerCase().includes(promoSearchQuery.toLowerCase()) || 
@@ -358,571 +364,667 @@ export default function PromotionManagement() {
   });
 
   return (
-    <div className='management-page'>
-      
+    <div className="promo-page-container">
+      <SlideNotification 
+        isOpen={notification.isOpen}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
+        action={notification.action}
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+      />
+
       {/* Page Header */}
-      <div className='page-header'>
+      <div className="promo-page-header">
         <div>
-          <h1 className='page-title'>
-            <GraduationCap className='me-2' size={28} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+          <h1 className="promo-page-title">
+            <GraduationCap size={28} color="var(--primary-color, #000080)" />
             Student Promotion Management
           </h1>
-          <p className='page-subtitle'>Generate lists, review recommendations, and export reports.</p>
+          <p className="promo-page-subtitle">Configure grade thresholds, generate class transition rosters, review overrides, and execute annual promotions</p>
+        </div>
+
+        {activeTab === 'promotion' && batchReport && (
+          <button className="btn-execute-promo-header" onClick={handleApprove} disabled={approveBatchMutation.isPending}>
+            <CheckCircle size={18} />
+            {approveBatchMutation.isPending ? 'Executing...' : 'Execute & Approve Batch'}
+          </button>
+        )}
+
+        {activeTab === 'report' && classReport && (
+          <button className="btn-execute-promo-header" onClick={() => exportToCSV(reportFilteredRecords || [], classReport.class)}>
+            <Download size={18} />
+            Export CSV Report
+          </button>
+        )}
+      </div>
+
+      {/* Metric Cards Banner (Matching Reference 4-Card Blueprint) */}
+      <div className="promo-metrics-grid">
+        <div className="promo-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">PROMOTED STUDENTS</span>
+            <span className="metric-number">
+              {batchReport?.summary.promotableCount ?? classReport?.summary.promotableCount ?? 0}
+            </span>
+          </div>
+          <div className="metric-icon-badge promoted">
+            <CheckCircle size={22} />
+          </div>
+        </div>
+
+        <div className="promo-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">GRADUATING SENIORS</span>
+            <span className="metric-number">
+              {batchReport?.summary.graduatingCount ?? classReport?.summary.graduatingCount ?? 0}
+            </span>
+          </div>
+          <div className="metric-icon-badge graduated">
+            <Award size={22} />
+          </div>
+        </div>
+
+        <div className="promo-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">HELD BACK / REVIEW</span>
+            <span className="metric-number" style={{ color: '#B45309' }}>
+              {batchReport?.summary.heldBackCount ?? classReport?.summary.heldBackCount ?? 0}
+            </span>
+          </div>
+          <div className="metric-icon-badge heldback">
+            <AlertTriangle size={22} />
+          </div>
+        </div>
+
+        <div className="promo-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">EXECUTIVE OVERRIDES</span>
+            <span className="metric-number" style={{ color: '#6B21A8' }}>
+              {batchReport?.summary.overridesCount ?? classReport?.summary.overridesCount ?? 0}
+            </span>
+          </div>
+          <div className="metric-icon-badge overrides">
+            <Edit3 size={22} />
+          </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className='tabs-container' style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--color-border)' }}>
+      {/* Top Executive Navigation Tabs */}
+      <div className="promo-tabs-container">
         <button 
-          className={`tab-btn ${activeTab === 'promotion' ? 'active' : ''}`}
+          className={`promo-tab-btn ${activeTab === 'promotion' ? 'active' : ''}`}
           onClick={() => setActiveTab('promotion')}
-          style={{ 
-            padding: '10px 20px', 
-            background: 'none', 
-            border: 'none', 
-            borderBottom: activeTab === 'promotion' ? '2px solid #3b82f6' : '2px solid transparent',
-            color: activeTab === 'promotion' ? '#3b82f6' : 'var(--color-text-light)',
-            fontWeight: activeTab === 'promotion' ? 'bold' : 'normal',
-            cursor: 'pointer'
-          }}
         >
-          Class Promotion (Execute)
+          <PlayCircle size={17} /> Class Promotion (Execute)
         </button>
         <button 
-          className={`tab-btn ${activeTab === 'report' ? 'active' : ''}`}
+          className={`promo-tab-btn ${activeTab === 'report' ? 'active' : ''}`}
           onClick={() => setActiveTab('report')}
-          style={{ 
-            padding: '10px 20px', 
-            background: 'none', 
-            border: 'none', 
-            borderBottom: activeTab === 'report' ? '2px solid #3b82f6' : '2px solid transparent',
-            color: activeTab === 'report' ? '#3b82f6' : 'var(--color-text-light)',
-            fontWeight: activeTab === 'report' ? 'bold' : 'normal',
-            cursor: 'pointer'
-          }}
         >
-          Promotion Report (View &amp; Export)
+          <FileText size={17} /> Promotion Report (View & Export)
         </button>
         <button 
-          className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
+          className={`promo-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
-          style={{ 
-            padding: '10px 20px', 
-            background: 'none', 
-            border: 'none', 
-            borderBottom: activeTab === 'history' ? '2px solid #3b82f6' : '2px solid transparent',
-            color: activeTab === 'history' ? '#3b82f6' : 'var(--color-text-light)',
-            fontWeight: activeTab === 'history' ? 'bold' : 'normal',
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}
         >
-          <History size={16} /> Approved Promotions (Revoke &amp; Revert)
+          <History size={17} /> Approved Promotions (Revoke & Revert)
         </button>
       </div>
 
       {/* =========================================
-          TAB 1: CLASS PROMOTION
+          TAB 1: CLASS PROMOTION (EXECUTE)
           ========================================= */}
       {activeTab === 'promotion' && (
-        <div className='slide-in'>
-          <div className='filter-bar glass-panel' style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: '20px' }}>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label>Current Class *</label>
-              <select className='filter-select' value={selectedClassId} onChange={e => handleCurrentClassChange(e.target.value)} required>
-                <option value=''>Select Class...</option>
-                {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-            
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label>Session:</label>
-              <select className='filter-select' value={nextSession} onChange={e => setNextSession(e.target.value)} required>
-                <option value={`${year}/${year + 1}`}>{`${year}/${year + 1}`}</option>
-                <option value={`${year - 1}/${year}`}>{`${year - 1}/${year}`}</option>
-                <option value={`${year - 2}/${year - 1}`}>{`${year - 2}/${year - 1}`}</option>
-              </select>
+        <div className="promo-tab-content">
+          {/* Executive Form Controls Card */}
+          <div className="promo-controls-card">
+            <div className="promo-controls-header">
+              <div className="promo-controls-title">
+                <BookOpen size={18} color="var(--primary-color, #000080)" />
+                <span>Promotion Parameters & Transition Configuration</span>
+              </div>
+              <span className="promo-controls-badge">Step 1 of 2</span>
             </div>
 
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label>Target Class *</label>
-              <select className='filter-select' value={targetClassId} onChange={e => setTargetClassId(e.target.value)}>
-                <option value=''>-- Select Target Class (Leave Empty ONLY if Graduating) --</option>
-                {!classesLoading && classes.filter(c => c.id !== selectedClassId).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-
-            <div style={{ flex: '0 0 100px' }}>
-              <label>Min Score</label>
-              <input type='number' className='filter-select' value={minScore} onChange={e => setMinScore(Number(e.target.value))} min='0' max='100' required />
-            </div>
-
-            <div style={{ flex: '0 0 auto' }}>
-              <button type='button' className='btn btn-primary' onClick={handleGenerateList} disabled={generateBatchMutation.isPending} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '42px' }}>
-                {generateBatchMutation.isPending ? 'Generating...' : <><ArrowRightCircle size={18} /> Generate List</>}
-              </button>
-            </div>
-          </div>
-
-          {(batchReportLoading || batchRefetching) && (
-            <div className='table-container glass-panel' style={{ textAlign: 'center', padding: '40px' }}>
-              <p className='loading-text'>Loading promotion data...</p>
-            </div>
-          )}
-
-          {batchReport && !(batchReportLoading || batchRefetching) && (
-            <div className='slide-in'>
-              <div className='table-container glass-panel' style={{ marginBottom: '20px', padding: '20px' }}>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
-                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                      <div style={{ padding: '15px', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', borderLeft: '4px solid #3b82f6', minWidth: '120px' }}>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#3b82f6' }}>{batchReport.summary.totalStudents}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Total</div>
-                      </div>
-                      <div style={{ padding: '15px', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', borderLeft: '4px solid #10b981', minWidth: '120px' }}>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{batchReport.summary.promotableCount}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Promotable</div>
-                      </div>
-                      <div style={{ padding: '15px', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', borderLeft: '4px solid #ef4444', minWidth: '120px' }}>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>{batchReport.summary.heldBackCount}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-light)', textTransform: 'uppercase' }}>Held Back</div>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-end' }}>
-                      <div style={{ minWidth: '200px' }}>
-                        <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-light)', marginBottom: '5px' }}>Search Student</label>
-                        <input type='text' className='filter-select' placeholder='Name or Reg No...' value={promoSearchQuery} onChange={(e) => setPromoSearchQuery(e.target.value)} style={{ width: '100%' }} />
-                      </div>
-                      {batchReport.status !== 'Approved' && (
-                        <button className='btn btn-success' onClick={handleApprove} disabled={approveBatchMutation.isPending} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#10b981', color: 'white', border: 'none', height: '42px' }}>
-                          {approveBatchMutation.isPending ? 'Processing...' : <><CheckCircle size={20} /> Approve &amp; Execute</>}
-                        </button>
-                      )}
-                      {batchReport.status === 'Approved' && (
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                          <span className='badge badge-success' style={{ backgroundColor: '#10b981', padding: '10px 15px', fontSize: '14px', height: '42px', display: 'flex', alignItems: 'center' }}>
-                            <CheckCircle size={18} style={{ marginRight: '5px' }} /> Approved &amp; Executed
-                          </span>
-                          <button
-                            type='button'
-                            className='btn btn-secondary'
-                            onClick={() => {
-                              if (window.confirm('Are you sure you want to unlock this promotion list? Students will temporarily return to their original classes so you can edit status decisions and re-approve.')) {
-                                revertBatchMutation.mutate(batchReport.batchId || batchId || undefined);
-                              }
-                            }}
-                            disabled={revertBatchMutation.isPending}
-                            style={{ height: '42px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-alt)', fontWeight: 600, color: 'var(--color-text)' }}
-                          >
-                            <Edit3 size={16} style={{ color: '#f59e0b' }} /> {revertBatchMutation.isPending ? 'Unlocking...' : 'Unlock & Re-open for Editing'}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                 </div>
+            <form onSubmit={handleGenerateList} className="promo-form-grid">
+              <div className="promo-form-group">
+                <label>Current Class *</label>
+                <div className="promo-input-wrapper">
+                  <BookOpen className="field-icon" size={16} />
+                  <select className="promo-select-input" value={selectedClassId} onChange={e => handleCurrentClassChange(e.target.value)} required>
+                    <option value="">Select Current Class...</option>
+                    {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
               </div>
 
-              <div className='table-container glass-panel'>
-                {promoFilteredRecords?.length === 0 ? (
-                  <p className='empty-text'>No students found.</p>
-                ) : (
-                  <table className='data-table'>
-                    <thead>
-                      <tr>
-                        <th>S/N</th>
-                        <th>Student</th>
-                        <th>Annual Avg</th>
-                        <th>System Rec.</th>
-                        <th>Final Decision</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {promoFilteredRecords?.map((rec, idx) => (
-                        <tr key={rec.recommendationId}>
-                          <td>{idx + 1}</td>
-                          <td>
-                            <strong>{rec.studentName}</strong>
-                            <div className='text-muted text-sm'>{rec.registrationNumber}</div>
-                          </td>
-                          <td>
-                            <span className={`badge ${rec.annualAverage >= minScore ? 'badge-success' : 'badge-danger'}`} style={{ backgroundColor: rec.annualAverage >= minScore ? '#10b981' : '#ef4444', color: 'white' }}>
-                              {rec.annualAverage.toFixed(2)}%
-                            </span>
-                          </td>
-                          <td><span className='text-muted'>{rec.systemRecommendation}</span></td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <strong>{rec.finalDecision}</strong>
-                              {rec.hasOverride && (
-                                <span className='badge badge-warning' title={`Edited by ${rec.overrideDetails?.principal}: ${rec.overrideDetails?.reason}`} style={{ cursor: 'help', backgroundColor: '#f59e0b', color: 'white', fontSize: '11px', padding: '2px 6px', borderRadius: '4px' }}>Manually Edited</span>
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                              {batchReport.status !== 'Approved' && (
-                                <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                  <Edit3 size={14} /> Edit Status
-                                </button>
-                              )}
-                              <button
-                                type='button'
-                                className='btn btn-primary btn-sm'
-                                onClick={async () => {
-                                  const customEmail = await showPrompt(
-                                    "Enter an email address to receive this student's test HTML promotion notification (or leave empty to send directly to the parent email on record):",
-                                    { 
-                                      title: "Send Test Notification", 
-                                      confirmText: "Send Test", 
-                                      cancelText: "Cancel",
-                                      placeholder: "e.g. parent@example.com", 
-                                      type: "info" 
-                                    }
-                                  );
-                                  if (customEmail !== null) {
-                                    promoteSingleMutation.mutate({ recommendationId: rec.recommendationId, customRecipientEmail: customEmail.trim() || undefined });
-                                  }
-                                }}
-                                disabled={promoteSingleMutation.isPending}
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}
-                              >
-                                ⚡ Test Promote & Email
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+              <div className="promo-form-group">
+                <label>Target Academic Session *</label>
+                <div className="promo-input-wrapper">
+                  <Calendar className="field-icon" size={16} />
+                  <select className="promo-select-input" value={nextSession} onChange={e => setNextSession(e.target.value)} required>
+                    <option value={`${year}/${year + 1}`}>{`${year}/${year + 1}`}</option>
+                    <option value={`${year - 1}/${year}`}>{`${year - 1}/${year}`}</option>
+                    <option value={`${year - 2}/${year - 1}`}>{`${year - 2}/${year - 1}`}</option>
+                  </select>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
 
-      {/* =========================================
-          TAB 2: PROMOTION REPORT
-          ========================================= */}
-      {activeTab === 'report' && (
-        <div className='slide-in'>
-          <div className='filter-bar glass-panel' style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: '20px' }}>
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <label>Select Class for Report *</label>
-              <select className='filter-select' value={reportClassId} onChange={e => setReportClassId(e.target.value)}>
-                <option value=''>Choose a class...</option>
-                {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-            
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label>Filter by Status</label>
-              <select className='filter-select' value={reportStatusFilter} onChange={e => setReportStatusFilter(e.target.value)}>
-                <option value='All'>All Students</option>
-                <option value='Promotable'>Promotable</option>
-                <option value='Held Back'>Held Back</option>
-                <option value='Graduating'>Graduating</option>
-                <option value='Withdrawn'>Withdrawn</option>
-              </select>
-            </div>
+              <div className="promo-form-group">
+                <label>Target Class (Destination)</label>
+                <div className="promo-input-wrapper">
+                  <GraduationCap className="field-icon" size={16} />
+                  <select className="promo-select-input" value={targetClassId} onChange={e => setTargetClassId(e.target.value)}>
+                    <option value="">-- Graduating Class (Leave Empty if Graduating) --</option>
+                    {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+              </div>
 
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <label>Search Student</label>
-              <input type='text' className='filter-select' placeholder='Name or Reg No...' value={reportSearchQuery} onChange={e => setReportSearchQuery(e.target.value)} />
-            </div>
+              <div className="promo-form-group" style={{ maxWidth: '160px' }}>
+                <label>Pass Score (%) *</label>
+                <div className="promo-input-wrapper">
+                  <Percent className="field-icon" size={16} />
+                  <input 
+                    type="number" 
+                    className="promo-select-input" 
+                    value={minScore} 
+                    onChange={e => setMinScore(Number(e.target.value))}
+                    min={0}
+                    max={100}
+                    required
+                  />
+                </div>
+              </div>
 
-            <div style={{ flex: '0 0 auto' }}>
-              <button 
-                type='button' 
-                className='btn btn-success' 
-                onClick={() => exportToCSV(reportFilteredRecords || [], classReport?.class || 'Class')}
-                disabled={!classReport || reportFilteredRecords?.length === 0}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '42px', backgroundColor: '#10b981', color: 'white', border: 'none' }}
-              >
-                <Download size={18} /> Export CSV
+              <button className="btn-generate-promo" type="submit" disabled={generateBatchMutation.isPending}>
+                <ArrowRightCircle size={18} />
+                {generateBatchMutation.isPending ? 'Generating Roster...' : 'Generate Promotion List'}
               </button>
-            </div>
+            </form>
           </div>
 
-          {(classReportLoading || classRefetching) && (
-            <div className='table-container glass-panel' style={{ textAlign: 'center', padding: '40px' }}>
-              <p className='loading-text'>Loading report data...</p>
+          {/* Promotion Candidate List Table & Cards Container */}
+          {batchReportLoading ? (
+            <div className="promo-table-wrapper loading-box">
+              <div className="spinner" />
+              <span>Evaluating annual scores and generating candidate recommendations...</span>
             </div>
-          )}
-
-          {!classReportLoading && reportClassId && !classReport && (
-            <div className='table-container glass-panel' style={{ textAlign: 'center', padding: '40px' }}>
-              <AlertTriangle size={48} style={{ color: '#f59e0b', marginBottom: '15px' }} />
-              <h3 style={{ margin: '0 0 10px 0', color: 'var(--color-text)' }}>No Promotion List Found</h3>
-              <p className='text-muted'>A promotion list has not been generated for this class yet. Please go to the <strong>Class Promotion</strong> tab to generate it first.</p>
-            </div>
-          )}
-
-          {classReport && !(classReportLoading || classRefetching) && (
-            <div className='table-container glass-panel slide-in'>
-              <div style={{ padding: '20px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          ) : batchReport ? (
+            <div className="promo-table-wrapper">
+              <div className="promo-table-toolbar">
                 <div>
-                  <h3 style={{ margin: 0, color: 'var(--color-text)' }}>{classReport.class} — Promotion Report</h3>
-                  <p className='text-muted' style={{ margin: '5px 0 0 0', fontSize: '14px' }}>Session: {classReport.session} | Target: {classReport.nextClass}</p>
-                </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                  <span className={`badge ${classReport.status === 'Approved' ? 'badge-success' : 'badge-warning'}`} style={{ backgroundColor: classReport.status === 'Approved' ? '#10b981' : '#f59e0b', color: 'white', padding: '8px 12px', fontSize: '14px' }}>
-                    Status: {classReport.status === 'Approved' ? 'Executed' : 'Draft / Pending'}
+                  <h3 className="promo-table-title">
+                    Promotion Candidate List — {batchReport.class} <ChevronRight size={16} inline-block /> {batchReport.nextClass || 'Graduating Class'}
+                  </h3>
+                  <span className="promo-table-subtitle">
+                    Generated on {new Date(batchReport.dateCreated).toLocaleDateString()} • Session {batchReport.session}
                   </span>
-                  {classReport.status === 'Approved' && classReport.batchId && (
-                    <button
-                      type='button'
-                      className='btn btn-secondary'
-                      onClick={() => {
-                        if (window.confirm('Are you sure you want to unlock and revert this promotion list? Students will temporarily return to their original class rosters so you can edit status decisions.')) {
-                          revertBatchMutation.mutate(classReport.batchId);
-                        }
-                      }}
-                      disabled={revertBatchMutation.isPending}
-                      style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-alt)', fontWeight: 600, color: 'var(--color-text)' }}
+                </div>
+
+                <div className="promo-toolbar-actions">
+                  <div className="promo-search-box">
+                    <Search className="promo-search-icon" size={15} />
+                    <input 
+                      type="text" 
+                      placeholder="Search student name or reg..."
+                      value={promoSearchQuery}
+                      onChange={e => setPromoSearchQuery(e.target.value)}
+                    />
+                  </div>
+
+                  {/* View Toggle matching reference design */}
+                  <div className="promo-view-toggle">
+                    <button 
+                      className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+                      onClick={() => setViewMode('table')}
+                      title="Table View"
                     >
-                      <Edit3 size={15} style={{ color: '#f59e0b' }} /> {revertBatchMutation.isPending ? 'Unlocking...' : 'Unlock for Editing'}
+                      <List size={15} /> Table View
                     </button>
-                  )}
+                    <button 
+                      className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                      onClick={() => setViewMode('grid')}
+                      title="Grid Cards"
+                    >
+                      <LayoutGrid size={15} /> Grid Cards
+                    </button>
+                  </div>
+
+                  <button className="btn-save-grading" onClick={handleApprove} disabled={approveBatchMutation.isPending}>
+                    <CheckCircle size={18} />
+                    {approveBatchMutation.isPending ? 'Executing...' : 'Execute & Approve Promotions'}
+                  </button>
                 </div>
               </div>
 
-              {reportFilteredRecords?.length === 0 ? (
-                <p className='empty-text' style={{ padding: '40px' }}>No students match the current filters.</p>
-              ) : (
-                <table className='data-table'>
+              {viewMode === 'table' ? (
+                <table className="executive-promo-table">
                   <thead>
                     <tr>
-                      <th>S/N</th>
-                      <th>Student</th>
-                      <th>Reg No.</th>
-                      <th>Annual Avg</th>
-                      <th>System Rec.</th>
-                      <th>Final Decision</th>
-                      {classReport.status !== 'Approved' && <th>Actions</th>}
+                      <th>STUDENT NAME</th>
+                      <th>REGISTRATION NO.</th>
+                      <th>ANNUAL AVERAGE</th>
+                      <th>SYSTEM RECOMMENDATION</th>
+                      <th>FINAL DECISION</th>
+                      <th style={{ textAlign: 'center' }}>ACTIONS</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {reportFilteredRecords?.map((rec, idx) => (
-                      <tr key={rec.recommendationId}>
-                        <td>{idx + 1}</td>
-                        <td><strong>{rec.studentName}</strong></td>
-                        <td className='text-muted'>{rec.registrationNumber}</td>
-                        <td>{rec.annualAverage.toFixed(2)}%</td>
-                        <td>{rec.systemRecommendation}</td>
-                        <td>
-                          <strong>{rec.finalDecision}</strong>
-                          {rec.hasOverride && <span style={{ marginLeft: '8px', fontSize: '11px', color: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', padding: '2px 6px', borderRadius: '4px', fontWeight: '500' }}>Manually Edited</span>}
-                        </td>
-                        {classReport.status !== 'Approved' && (
+                    {promoFilteredRecords && promoFilteredRecords.length > 0 ? (
+                      promoFilteredRecords.map(rec => (
+                        <tr key={rec.recommendationId}>
                           <td>
-                            <button className='btn btn-secondary btn-sm' onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                              <Edit3 size={14} /> Edit Status
+                            <div className="teacher-profile-cell">
+                              <div className="teacher-avatar">
+                                {getStudentInitials(rec.studentName)}
+                              </div>
+                              <div className="student-info-col">
+                                <span className="teacher-name-title">{rec.studentName}</span>
+                                {rec.hasOverride && <span className="override-badge-sub">Overridden</span>}
+                              </div>
+                            </div>
+                          </td>
+                          <td><span className="reg-badge">{rec.registrationNumber}</span></td>
+                          <td>
+                            <div className="score-pill-box">
+                              <span className={`score-badge ${rec.annualAverage >= minScore ? 'pass' : 'fail'}`}>
+                                {rec.annualAverage.toFixed(2)}%
+                              </span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className={`status-pill ${rec.systemRecommendation === 'Promotable' ? 'active' : rec.systemRecommendation === 'Graduating' ? 'info' : 'inactive'}`}>
+                              {rec.systemRecommendation}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : 'inactive'}`}>
+                              {rec.finalDecision}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <button 
+                              className="btn-action-override"
+                              onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                            >
+                              <Edit3 size={14} />
+                              Override
                             </button>
                           </td>
-                        )}
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="empty-table-cell">
+                          No matching student records found for "{promoSearchQuery}".
+                        </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
+              ) : (
+                <div className="promo-grid-wrapper">
+                  {promoFilteredRecords && promoFilteredRecords.length > 0 ? (
+                    promoFilteredRecords.map(rec => (
+                      <div className="promo-grid-card" key={rec.recommendationId}>
+                        <div className="card-top-header">
+                          <div className="teacher-avatar">
+                            {getStudentInitials(rec.studentName)}
+                          </div>
+                          <div>
+                            <span className="card-student-name">{rec.studentName}</span>
+                            <span className="card-reg-no">{rec.registrationNumber}</span>
+                          </div>
+                        </div>
+
+                        <div className="card-metrics-row">
+                          <div className="card-metric-col">
+                            <span className="card-metric-lbl">Annual Avg</span>
+                            <span className={`score-badge ${rec.annualAverage >= minScore ? 'pass' : 'fail'}`}>
+                              {rec.annualAverage.toFixed(2)}%
+                            </span>
+                          </div>
+
+                          <div className="card-metric-col">
+                            <span className="card-metric-lbl">Final Decision</span>
+                            <span className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : 'inactive'}`}>
+                              {rec.finalDecision}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="card-footer-actions">
+                          <span className="system-rec-lbl">System: {rec.systemRecommendation}</span>
+                          <button 
+                            className="btn-action-override"
+                            onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                          >
+                            <Edit3 size={14} /> Override
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="empty-grid-box">No matching student records found.</div>
+                  )}
+                </div>
               )}
+            </div>
+          ) : (
+            <div className="promo-empty-placeholder">
+              <div className="empty-icon-circle">
+                <GraduationCap size={36} color="var(--primary-color, #000080)" />
+              </div>
+              <h3>No Promotion Batch Selected</h3>
+              <p>Select a current class above and click <strong>Generate Promotion List</strong> to initiate student transition evaluations.</p>
             </div>
           )}
         </div>
       )}
 
       {/* =========================================
-          TAB 3: APPROVED & HISTORICAL PROMOTIONS (REVERT / REVOKE)
+          TAB 2: PROMOTION REPORT (VIEW & EXPORT)
           ========================================= */}
-      {activeTab === 'history' && (
-        <div className='tab-pane slide-in'>
-          <div className='glass-panel' style={{ padding: '20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <h3 style={{ margin: 0, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <History size={22} className='text-primary' /> Approved Promotions &amp; Batch History
-              </h3>
-              <p className='text-muted' style={{ margin: '5px 0 0 0', fontSize: '14px' }}>
-                View all generated and executed promotion lists across classes and sessions. Revoke or revert approved promotions when adjustments or re-generation are required.
-              </p>
+      {activeTab === 'report' && (
+        <div className="promo-tab-content">
+          <div className="promo-controls-card">
+            <div className="promo-controls-header">
+              <div className="promo-controls-title">
+                <FileText size={18} color="var(--primary-color, #000080)" />
+                <span>Class Promotion Audit & Export Controls</span>
+              </div>
             </div>
-            <button type='button' className='btn btn-secondary btn-sm' onClick={() => queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] })}>
-              Refresh List
-            </button>
+
+            <div className="promo-controls-row">
+              <div className="promo-form-group" style={{ flex: 1, minWidth: '220px' }}>
+                <label>Select Class *</label>
+                <div className="promo-input-wrapper">
+                  <BookOpen className="field-icon" size={16} />
+                  <select className="promo-select-input" value={reportClassId} onChange={e => setReportClassId(e.target.value)}>
+                    <option value="">-- Choose Class to Audit --</option>
+                    {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="promo-form-group" style={{ flex: 1, minWidth: '200px' }}>
+                <label>Status Filter</label>
+                <div className="promo-input-wrapper">
+                  <Filter className="field-icon" size={16} />
+                  <select className="promo-select-input" value={reportStatusFilter} onChange={e => setReportStatusFilter(e.target.value)}>
+                    <option value="All">All Decisions</option>
+                    <option value="Promotable">Promotable</option>
+                    <option value="Repeat">Repeat / Hold Back</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="promo-search-box" style={{ flex: 1.2, minWidth: '240px' }}>
+                <Search className="promo-search-icon" size={15} />
+                <input 
+                  type="text" 
+                  placeholder="Search student name or reg..."
+                  value={reportSearchQuery}
+                  onChange={e => setReportSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {classReport && (
+                <button 
+                  className="btn-add-rule" 
+                  onClick={() => exportToCSV(reportFilteredRecords || [], classReport.class)}
+                  style={{ height: '42px', marginTop: 'auto' }}
+                >
+                  <Download size={16} /> Export CSV Report
+                </button>
+              )}
+            </div>
           </div>
 
-          {batchesLoading ? (
-            <div className='glass-panel' style={{ padding: '40px', textAlign: 'center' }}>
-              <p className='text-muted'>Loading promotion lists and approval history...</p>
+          {classReportLoading ? (
+            <div className="promo-table-wrapper loading-box">
+              <div className="spinner" />
+              <span>Fetching promotion audit records for class...</span>
             </div>
-          ) : !promotionBatches || promotionBatches.length === 0 ? (
-            <div className='glass-panel' style={{ padding: '50px', textAlign: 'center' }}>
-              <AlertTriangle size={36} className='text-warning' style={{ margin: '0 auto 15px auto', opacity: 0.8, color: '#f59e0b' }} />
-              <h4 style={{ margin: '0 0 8px 0', color: 'var(--color-text)' }}>No Promotion Lists Found</h4>
-              <p className='text-muted' style={{ maxWidth: '400px', margin: '0 auto' }}>You haven't generated or approved any promotion lists for any class or session yet.</p>
+          ) : classReport ? (
+            <div className="promo-table-wrapper">
+              <div className="promo-table-toolbar">
+                <div>
+                  <h3 className="promo-table-title">
+                    Latest Approved Promotion Report — {classReport.class}
+                  </h3>
+                  <span className="promo-table-subtitle">
+                    Session {classReport.session} • Total Students: {classReport.summary.totalStudents}
+                  </span>
+                </div>
+
+                <div className="promo-view-toggle">
+                  <button 
+                    className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+                    onClick={() => setViewMode('table')}
+                  >
+                    <List size={15} /> Table View
+                  </button>
+                  <button 
+                    className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <LayoutGrid size={15} /> Grid Cards
+                  </button>
+                </div>
+              </div>
+
+              {viewMode === 'table' ? (
+                <table className="executive-promo-table">
+                  <thead>
+                    <tr>
+                      <th>STUDENT NAME</th>
+                      <th>REGISTRATION NO.</th>
+                      <th>ANNUAL AVERAGE</th>
+                      <th>SYSTEM RECOMMENDATION</th>
+                      <th>FINAL DECISION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportFilteredRecords && reportFilteredRecords.length > 0 ? (
+                      reportFilteredRecords.map(rec => (
+                        <tr key={rec.recommendationId}>
+                          <td>
+                            <div className="teacher-profile-cell">
+                              <div className="teacher-avatar">
+                                {getStudentInitials(rec.studentName)}
+                              </div>
+                              <span className="teacher-name-title">{rec.studentName}</span>
+                            </div>
+                          </td>
+                          <td><span className="reg-badge">{rec.registrationNumber}</span></td>
+                          <td><strong>{rec.annualAverage.toFixed(2)}%</strong></td>
+                          <td><span className="status-pill active">{rec.systemRecommendation}</span></td>
+                          <td><span className="status-pill active">{rec.finalDecision}</span></td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="empty-table-cell">No matching promotion records found.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="promo-grid-wrapper">
+                  {reportFilteredRecords && reportFilteredRecords.length > 0 ? (
+                    reportFilteredRecords.map(rec => (
+                      <div className="promo-grid-card" key={rec.recommendationId}>
+                        <div className="card-top-header">
+                          <div className="teacher-avatar">
+                            {getStudentInitials(rec.studentName)}
+                          </div>
+                          <div>
+                            <span className="card-student-name">{rec.studentName}</span>
+                            <span className="card-reg-no">{rec.registrationNumber}</span>
+                          </div>
+                        </div>
+                        <div className="card-metrics-row">
+                          <div className="card-metric-col">
+                            <span className="card-metric-lbl">Annual Avg</span>
+                            <span className="score-badge pass">{rec.annualAverage.toFixed(2)}%</span>
+                          </div>
+                          <div className="card-metric-col">
+                            <span className="card-metric-lbl">Final Decision</span>
+                            <span className="status-pill active">{rec.finalDecision}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="empty-grid-box">No matching promotion records found.</div>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
-            <div className='table-container glass-panel'>
-              <table className='data-table'>
+            <div className="promo-empty-placeholder">
+              <div className="empty-icon-circle">
+                <FileText size={36} color="var(--primary-color, #000080)" />
+              </div>
+              <h3>No Class Selected</h3>
+              <p>Select a class from the dropdown above to inspect historical promotion reports and export CSV summaries.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* =========================================
+          TAB 3: APPROVED PROMOTIONS (REVOKE & REVERT)
+          ========================================= */}
+      {activeTab === 'history' && (
+        <div className="promo-tab-content">
+          <div className="promo-table-wrapper">
+            <div className="promo-table-toolbar">
+              <div>
+                <h3 className="promo-table-title">
+                  Executed & Approved Promotion Batches
+                </h3>
+                <span className="promo-table-subtitle">
+                  Audit log of historical promotion executions with options to revoke and revert class transitions
+                </span>
+              </div>
+            </div>
+
+            {batchesLoading ? (
+              <div className="loading-box">
+                <div className="spinner" />
+                <span>Loading historical batch audit logs...</span>
+              </div>
+            ) : promotionBatches.length === 0 ? (
+              <div className="promo-empty-placeholder" style={{ border: 'none' }}>
+                <div className="empty-icon-circle">
+                  <History size={36} color="var(--primary-color, #000080)" />
+                </div>
+                <h3>No Historical Batches Found</h3>
+                <p>There are no executed promotion batches recorded in the database yet.</p>
+              </div>
+            ) : (
+              <table className="executive-promo-table">
                 <thead>
                   <tr>
-                    <th>S/N</th>
-                    <th>Session</th>
-                    <th>Current Class</th>
-                    <th>Target Class</th>
-                    <th>Min Score</th>
-                    <th>Students</th>
-                    <th>Status</th>
-                    <th>Actions (Revoke / View)</th>
+                    <th>CLASS TRANSITION</th>
+                    <th>ACADEMIC SESSION</th>
+                    <th>EXECUTION DATE</th>
+                    <th>STATUS</th>
+                    <th style={{ textAlign: 'center' }}>ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {promotionBatches.map((b: any, idx: number) => (
-                    <tr key={b.id}>
-                      <td>{idx + 1}</td>
-                      <td><strong>{b.session}</strong></td>
-                      <td><span style={{ fontWeight: 600, color: 'var(--color-text)' }}>{b.className}</span></td>
-                      <td><span className='badge badge-primary' style={{ backgroundColor: '#3b82f6', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>{b.nextClassName}</span></td>
-                      <td>{b.minimumPromotionScore}%</td>
+                  {promotionBatches.map((batch: any) => (
+                    <tr key={batch.id}>
                       <td>
-                        <strong>{b.totalStudents} total</strong>
-                        <span className='text-muted text-sm' style={{ display: 'block', fontSize: '11px' }}>
-                          {b.promotedCount} Promotable, {b.heldBackCount} Held Back
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`badge ${b.status === 'Approved' ? 'badge-success' : 'badge-warning'}`} style={{ backgroundColor: b.status === 'Approved' ? '#10b981' : '#f59e0b', color: 'white', padding: '5px 10px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          {b.status === 'Approved' && <CheckCircle size={13} />}
-                          {b.status === 'Approved' ? 'Approved & Executed' : 'Draft / Pending'}
-                        </span>
-                        {b.approvedBy && <span className='text-muted' style={{ display: 'block', fontSize: '11px', marginTop: '4px' }}>By: {b.approvedBy}</span>}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <button
-                            type='button'
-                            className='btn btn-secondary btn-sm'
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '6px 10px', borderRadius: '6px' }}
-                            onClick={() => {
-                              if (b.classId) {
-                                setReportClassId(b.classId);
-                              }
-                              setBatchId(b.id);
-                              setActiveTab('report');
-                            }}
-                          >
-                            <Eye size={14} /> View List
-                          </button>
-
-                          {b.status === 'Approved' ? (
-                            <button
-                              type='button'
-                              className='btn btn-secondary btn-sm'
-                              disabled={revertBatchMutation.isPending}
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.4)', backgroundColor: 'rgba(239, 68, 68, 0.08)', fontWeight: 600, padding: '6px 12px', borderRadius: '6px' }}
-                              onClick={async () => {
-                                const confirmed = await showConfirm(
-                                  <span>
-                                    Are you sure you want to <strong>REVOKE / REVERT</strong> the approved promotion list for <strong>{b.className} ({b.session})</strong>?
-                                    <br /><br />
-                                    This will safely transition all affected students back to their original <strong>{b.className}</strong> roster and unlock the promotion list immediately so you can modify decisions or generate anew.
-                                  </span>,
-                                  {
-                                    title: 'Revoke & Revert Promotion',
-                                    type: 'danger',
-                                    confirmText: 'Revoke List',
-                                    cancelText: 'Cancel'
-                                  }
-                                );
-                                if (confirmed) {
-                                  revertBatchMutation.mutate(b.id);
-                                }
-                              }}
-                            >
-                              <RotateCcw size={15} /> Revoke &amp; Revert
-                            </button>
-                          ) : (
-                            <button
-                              type='button'
-                              className='btn btn-primary btn-sm'
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: 600 }}
-                              onClick={() => {
-                                if (b.classId) setSelectedClassId(b.classId);
-                                setBatchId(b.id);
-                                setActiveTab('promotion');
-                              }}
-                            >
-                              Resume &amp; Execute
-                            </button>
-                          )}
+                        <div className="batch-transition-cell">
+                          <span className="batch-class-name">{batch.className}</span>
+                          <ChevronRight size={16} className="transition-arrow" />
+                          <span className="batch-target-name">{batch.targetClassName || 'Graduating Senior Class'}</span>
                         </div>
+                      </td>
+                      <td><span className="reg-badge">{batch.session}</span></td>
+                      <td>{new Date(batch.dateCreated).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`status-pill ${batch.isApproved ? 'active' : 'inactive'}`}>
+                          {batch.isApproved ? 'Approved & Executed' : 'Pending / Reverted'}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {batch.isApproved && (
+                          <button 
+                            className="btn-revoke-batch"
+                            onClick={async () => {
+                              const confirmRevert = await showConfirm(
+                                `Are you sure you want to revoke and unlock promotions for ${batch.className}? Students will be returned to their previous class placement.`,
+                                { title: 'Confirm Promotion Reversal', type: 'warning' }
+                              );
+                              if (confirmRevert) revertBatchMutation.mutate(batch.id);
+                            }}
+                            disabled={revertBatchMutation.isPending}
+                          >
+                            <RotateCcw size={14} /> Revoke Batch
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
-      {/* Override / Edit Decision Modal */}
+      {/* OVERRIDE MODAL */}
       {showOverrideModal && (
-        <div className='modal-overlay'>
-          <div className='modal-content glass-panel'>
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <Edit3 size={22} style={{ color: '#3b82f6' }} /> Edit Promotion Decision
-            </h2>
-            <p className='text-muted text-sm' style={{ marginBottom: '1.5rem', lineHeight: '1.4' }}>
-              Modify this student's academic status for the upcoming session. All administrative changes are recorded in the audit log.
-            </p>
-            <form onSubmit={handleOverrideSubmit} className='modal-form'>
-              <div className='form-group full-width'>
-                <label>New Decision Status</label>
-                <select name='overrideDecision' value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)} required style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--color-border)', borderRadius: '6px', backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)' }}>
-                  <option value='Promotable'>Promotable (Promote to Next Class)</option>
-                  <option value='Held Back'>Held Back (Repeat Current Class)</option>
-                  <option value='Withdrawn'>Withdrawn (Leaving School / Deactivated)</option>
-                  <option value='Graduating'>Graduating (Complete &amp; Archive)</option>
-                </select>
+        <div className="promo-modal-backdrop">
+          <div className="promo-modal-panel">
+            <div className="promo-modal-header">
+              <h3 className="promo-modal-title">Override Student Decision</h3>
+              <button className="btn-close-modal" onClick={() => setShowOverrideModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleOverrideSubmit} className="promo-modal-body">
+              <div className="promo-form-group">
+                <label>Override Decision *</label>
+                <div className="promo-input-wrapper">
+                  <UserCheck className="field-icon" size={16} />
+                  <select className="promo-select-input" value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)}>
+                    <option value="Promotable">Promotable</option>
+                    <option value="Repeat">Repeat / Hold Back</option>
+                  </select>
+                </div>
               </div>
-              <div className='form-group full-width' style={{ marginTop: '1rem' }}>
-                <label>Reason for Decision Adjustment *</label>
-                <textarea rows={3} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} placeholder='e.g. Approved by Academic Board / Parental request / Special consideration...' required style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--color-border)', borderRadius: '6px', backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)' }}></textarea>
+
+              <div className="promo-form-group">
+                <label>Audit Reason Note *</label>
+                <textarea 
+                  className="promo-textarea-input" 
+                  rows={4} 
+                  placeholder="Provide an explicit reason for overriding this recommendation for audit logging..."
+                  value={overrideReason}
+                  onChange={e => setOverrideReason(e.target.value)}
+                  required
+                />
               </div>
-              <div className='modal-actions' style={{ marginTop: '1.5rem' }}>
-                <button type='button' className='btn btn-secondary' onClick={() => setShowOverrideModal(false)}>Cancel</button>
-                <button type='submit' className='btn btn-primary' disabled={overrideMutation.isPending} style={{ backgroundColor: '#3b82f6', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 20px', borderRadius: '6px', fontWeight: 600 }}>
-                  {overrideMutation.isPending ? 'Saving Decision...' : 'Save Decision'}
+
+              <div className="promo-modal-footer">
+                <button type="button" className="btn-modal-cancel" onClick={() => setShowOverrideModal(false)}>Cancel</button>
+                <button type="submit" className="btn-save-grading" disabled={overrideMutation.isPending}>
+                  {overrideMutation.isPending ? 'Saving...' : 'Save Override'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      <style>{`
-        .slide-in {
-          animation: slideIn 0.3s ease-out forwards;
-        }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
-      {/* Slide-from-right Notification Toast */}
-      <SlideNotification
-        isOpen={notification.isOpen}
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
-        title={notification.title}
-        message={notification.message}
-        type={notification.type}
-        action={notification.action}
-      />
     </div>
   );
 }
