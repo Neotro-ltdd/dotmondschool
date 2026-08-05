@@ -246,7 +246,11 @@ export default function StudentLedger() {
 
               <div className="ledger-student-list">
                 {ledgerResults.map(student => {
-                  const studentDebt = (student.invoices || []).reduce((acc, inv) => acc + Math.max(0, inv.amountDue - inv.amountPaid), 0);
+                  const studentDebt = (student.invoices || []).reduce((acc, inv) => {
+                    const due = Number(inv.amountDue ?? 0);
+                    const paid = Number(inv.amountPaid ?? 0);
+                    return acc + Math.max(0, due - paid);
+                  }, 0);
                   const isSelected = selectedStudentIds.includes(student.id);
 
                   return (
