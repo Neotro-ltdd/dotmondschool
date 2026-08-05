@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   Tag,
   Calculator,
-  Info
+  Info,
+  X
 } from 'lucide-react';
 
 type FeeApplicability = 'Compulsory' | 'SectionalTransition' | 'NewIntakeOnly' | 'Optional';
@@ -83,9 +84,15 @@ export default function FinanceFeeBuilder() {
   const [copyTargetClassIds, setCopyTargetClassIds] = useState<string[]>([]);
   const [showBatchCopy, setShowBatchCopy] = useState(false);
 
-  // Report tab state
+  // Report & Matrix tab state
   const [reportTemplates, setReportTemplates] = useState<FeeTemplateReport[]>([]);
   const [reportLoading, setReportLoading] = useState(false);
+  const [filterLevel, setFilterLevel] = useState('All Levels');
+  const [filterClass, setFilterClass] = useState('All Classes');
+
+  // Breakdown Modal state
+  const [showBreakdownModal, setShowBreakdownModal] = useState(false);
+  const [selectedTemplateForBreakdown, setSelectedTemplateForBreakdown] = useState<FeeTemplateReport | null>(null);
 
   // Gift List tab state
   const [giftRecipients, setGiftRecipients] = useState<GiftRecipient[]>([]);
@@ -275,14 +282,16 @@ export default function FinanceFeeBuilder() {
   const directNewIntakeTotal = compulsoryTotal + transitionTotal + newIntakeOnlyTotal;
   const maxPossibleFee = directNewIntakeTotal + optionalTotal;
 
-  // Metrics calculation for Report tab
-  const totalClassesCount = classes.length;
-  const configuredCount = reportTemplates.length;
-  const totalFeesSum = reportTemplates.reduce((acc, t) => acc + (t.totalAmount || 0), 0);
-  const averageFee = configuredCount > 0 ? totalFeesSum / configuredCount : 0;
-  
-  const sortedByFee = [...reportTemplates].sort((a, b) => b.totalAmount - a.totalAmount);
-  const highestFeeTemplate = sortedByFee.length > 0 ? sortedByFee[0] : null;
+  // Unique Levels & Classes for Filtering
+  const uniqueLevels = Array.from(new Set(classes.map(c => c.level))).filter(Boolean);
+  const uniqueClassNames = Array.from(new Set(classes.map(c => c.name))).filter(Boolean);
+
+  // Filtered Templates for Class Fees Matrix
+  const filteredReportTemplates = reportTemplates.filter(t => {
+    const levelMatch = filterLevel === 'All Levels' || t.level === filterLevel;
+    const classMatch = filterClass === 'All Classes' || t.className.toLowerCase().includes(filterClass.toLowerCase());
+    return levelMatch && classMatch;
+  });
 
   // Filter gift recipients
   const filteredGiftRecipients = giftRecipients.filter(r => {
@@ -314,7 +323,7 @@ export default function FinanceFeeBuilder() {
             <Wrench size={28} color="#000080" />
             Class Fee Structure Builder & Report Hub
           </h1>
-          <p className="builder-page-subtitle">Configure itemized term fees per student segment and generate Christmas Party gift recipient reports</p>
+          <p className="builder-page-subtitle">Configure official itemized term fees per class segment and view institutional fee breakdowns</p>
         </div>
       </div>
 
@@ -331,7 +340,7 @@ export default function FinanceFeeBuilder() {
           className={`builder-tab-button ${activeTab === 'report' ? 'active' : ''}`}
           onClick={() => setActiveTab('report')}
         >
-          <BarChart3 size={16} /> Fee Report Matrix ({configuredCount}/{totalClassesCount})
+          <BarChart3 size={16} /> Class Fees Matrix ({reportTemplates.length}/{classes.length})
         </button>
 
         <button 
@@ -615,99 +624,67 @@ export default function FinanceFeeBuilder() {
         </div>
       )}
 
-      {/* TAB 2: FEE STRUCTURE REPORT & MATRIX */}
+      {/* TAB 2: CLASS FEES MATRIX & POPUP BREAKDOWN */}
       {activeTab === 'report' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* KPI Metrics Banner */}
-          <div className="builder-metrics-grid">
-            <div className="builder-metric-card">
-              <div className="metric-info-box">
-                <span className="metric-label">CONFIGURED CLASSES</span>
-                <span className="metric-number">{configuredCount} / {totalClassesCount} Classes</span>
-              </div>
-              <div className="metric-icon-badge classes">
-                <Building2 size={24} />
-              </div>
-            </div>
-
-            <div className="builder-metric-card">
-              <div className="metric-info-box">
-                <span className="metric-label">AVERAGE CLASS FEE</span>
-                <span className="metric-number" style={{ color: '#047857' }}>
-                  ₦{averageFee.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </span>
-              </div>
-              <div className="metric-icon-badge average">
-                <DollarSign size={24} />
-              </div>
-            </div>
-
-            <div className="builder-metric-card">
-              <div className="metric-info-box">
-                <span className="metric-label">HIGHEST CLASS FEE</span>
-                <span className="metric-number" style={{ fontSize: '1.25rem', color: '#B45309' }}>
-                  {highestFeeTemplate ? `₦${highestFeeTemplate.totalAmount.toLocaleString()} (${highestFeeTemplate.className})` : 'N/A'}
-                </span>
-              </div>
-              <div className="metric-icon-badge highest">
-                <PieChart size={24} />
-              </div>
-            </div>
-          </div>
-
-          {/* Report Table Card */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div className="builder-card-wrapper">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>
+                Class Fees
+              </h2>
+              <span style={{ fontSize: '0.88rem', color: '#64748B' }}>
+                View official fee configurations by class.
+              </span>
+            </div>
+
+            {/* Filter Bar (Level, Class, Session, Term) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', background: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0', alignItems: 'center' }}>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
-                  📊 Institutional Fee Structure Report ({session} - {term})
-                </h2>
-                <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                  Comprehensive breakdown of fee structures configured for each class.
-                </span>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Filter by Level:</label>
+                <select className="select-filter-input" value={filterLevel} onChange={e => setFilterLevel(e.target.value)}>
+                  <option value="All Levels">All Levels</option>
+                  {uniqueLevels.map(lvl => (
+                    <option key={lvl} value={lvl}>{lvl}</option>
+                  ))}
+                </select>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                <button 
-                  className="btn-select-all-family" 
-                  onClick={() => window.print()}
-                  style={{ padding: '0.5rem 0.85rem', fontSize: '0.82rem' }}
-                >
-                  <Printer size={14} style={{ marginRight: '4px' }} /> Print Report
-                </button>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Filter by Class:</label>
+                <select className="select-filter-input" value={filterClass} onChange={e => setFilterClass(e.target.value)}>
+                  <option value="All Classes">All Classes</option>
+                  {uniqueClassNames.map(cls => (
+                    <option key={cls} value={cls}>{cls}</option>
+                  ))}
+                </select>
               </div>
-            </div>
 
-            {/* Session & Term Filter Bar */}
-            <div style={{ display: 'flex', gap: '1rem', background: '#F8FAFC', padding: '1rem', borderRadius: '12px', border: '1px solid #E2E8F0', alignItems: 'center' }}>
-              <Filter size={18} color="#000080" />
-              <div style={{ display: 'flex', gap: '1rem', flex: 1 }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Filter Session</label>
-                  <input type="text" className="select-filter-input" value={session} onChange={e => setSession(e.target.value)} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Filter Term</label>
-                  <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
-                    <option value="First Term">First Term</option>
-                    <option value="Second Term">Second Term</option>
-                    <option value="Third Term">Third Term</option>
-                  </select>
-                </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Session:</label>
+                <input type="text" className="select-filter-input" value={session} onChange={e => setSession(e.target.value)} />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Term:</label>
+                <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
+                  <option value="First Term">First Term</option>
+                  <option value="Second Term">Second Term</option>
+                  <option value="Third Term">Third Term</option>
+                </select>
               </div>
             </div>
 
-            {/* Report Table */}
+            {/* Class Fees Table */}
             {reportLoading ? (
               <div style={{ textAlign: 'center', padding: '3rem', color: '#64748B' }}>
-                Loading fee structure report matrix...
+                Loading class fees matrix...
               </div>
-            ) : reportTemplates.length === 0 ? (
+            ) : filteredReportTemplates.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#F8FAFC', borderRadius: '12px', border: '1px border-dashed #CBD5E1', color: '#64748B' }}>
                 <Building2 size={42} color="#94A3B8" style={{ marginBottom: '0.75rem' }} />
-                <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>No Fee Structures Configured</h3>
+                <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>No Fee Configurations Found</h3>
                 <p style={{ fontSize: '0.88rem', marginTop: '0.4rem' }}>
-                  No class fee structures found for {session} ({term}). Switch to the Fee Builder tab to configure fees.
+                  No fee templates configured matching selected filters for {session} ({term}).
                 </p>
               </div>
             ) : (
@@ -715,49 +692,41 @@ export default function FinanceFeeBuilder() {
                 <table className="executive-fee-report-table">
                   <thead>
                     <tr>
-                      <th>Class Level & Name</th>
-                      <th>Itemized Fee Components</th>
-                      <th>Total Official Fee</th>
-                      <th>Status</th>
-                      <th style={{ textAlign: 'right' }}>Action</th>
+                      <th>LEVEL</th>
+                      <th>CLASS</th>
+                      <th>SECTION</th>
+                      <th>TOTAL OFFICIAL FEE</th>
+                      <th style={{ textAlign: 'right' }}>ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {reportTemplates.map(t => (
+                    {filteredReportTemplates.map(t => (
                       <tr key={t.id}>
+                        <td style={{ color: '#64748B', fontWeight: 600 }}>
+                          {t.level || 'N/A'}
+                        </td>
+
                         <td style={{ fontWeight: 800, color: '#0F172A' }}>
                           {t.className}
                         </td>
 
-                        <td>
-                          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                            {(t.items || []).map((item, i) => (
-                              <span key={i} style={{ background: '#F1F5F9', color: '#334155', padding: '0.15rem 0.45rem', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 700 }}>
-                                {item.name}: ₦{item.amount.toLocaleString()}
-                              </span>
-                            ))}
-                          </div>
+                        <td style={{ color: '#64748B' }}>
+                          {t.section || 'General'}
                         </td>
 
-                        <td style={{ fontSize: '1.05rem', fontWeight: 900, color: '#000080' }}>
+                        <td style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A' }}>
                           ₦{t.totalAmount.toLocaleString()}
-                        </td>
-
-                        <td>
-                          <span className="status-pill active">
-                            Configured
-                          </span>
                         </td>
 
                         <td style={{ textAlign: 'right' }}>
                           <button 
-                            className="btn-select-all-family"
+                            className="btn-view-breakdown-navy"
                             onClick={() => {
-                              setClassId(t.classId);
-                              setActiveTab('builder');
+                              setSelectedTemplateForBreakdown(t);
+                              setShowBreakdownModal(true);
                             }}
                           >
-                            Edit Structure
+                            View Breakdown
                           </button>
                         </td>
                       </tr>
@@ -766,6 +735,53 @@ export default function FinanceFeeBuilder() {
                 </table>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* POP-UP BREAKDOWN MODAL DIALOG */}
+      {showBreakdownModal && selectedTemplateForBreakdown && (
+        <div className="fee-modal-overlay" onClick={() => setShowBreakdownModal(false)}>
+          <div className="fee-modal-container" onClick={e => e.stopPropagation()}>
+            <div className="fee-modal-header">
+              <h3 className="fee-modal-title">
+                Fee Breakdown: {selectedTemplateForBreakdown.className}
+              </h3>
+              <span className="fee-modal-subtitle">
+                {term} • {session}
+              </span>
+            </div>
+
+            <div className="fee-modal-breakdown-box">
+              <table className="fee-modal-table">
+                <thead>
+                  <tr>
+                    <th>Fee Item</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(selectedTemplateForBreakdown.items || []).map((item, idx) => (
+                    <tr key={idx}>
+                      <td>{item.name}</td>
+                      <td>₦{Number(item.amount).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  <tr className="fee-modal-total-row">
+                    <td>Total</td>
+                    <td>₦{selectedTemplateForBreakdown.totalAmount.toLocaleString()}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <button 
+              type="button"
+              className="btn-modal-close-blue"
+              onClick={() => setShowBreakdownModal(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
