@@ -19,7 +19,6 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
     navigate('/login');
   };
 
-  // Format role for display: e.g. "Principal" -> "Super Admin" (optional) or just use the exact role
   const displayRole = userRole === 'Principal' ? 'Super Admin' : userRole || 'User';
   
   const displayUserName = (() => {
@@ -34,7 +33,6 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
     return userName;
   })();
 
-  // Get initial for avatar
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
 
   const resolveAvatarUrl = (url?: string | null) => {
@@ -47,14 +45,12 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
 
   return (
     <header className="top-header glass-panel">
-      <div className="header-search">
+      <div className="header-left">
         {toggleSidebar && (
           <button className="mobile-menu-toggle" onClick={toggleSidebar} aria-label="Toggle menu">
             ☰
           </button>
         )}
-        <span className="search-icon">🔍</span>
-        <input type="text" placeholder="Search students, teachers..." className="search-input" />
       </div>
       
       <div className="header-actions">
@@ -97,11 +93,10 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: '8px',
-              transition: 'all 0.2s ease',
-              marginLeft: '0.5rem'
+              transition: 'all 0.2s ease'
             }}
           >
-            <LogOut size={18} />
+            <LogOut size={20} />
           </button>
         </div>
       </div>
