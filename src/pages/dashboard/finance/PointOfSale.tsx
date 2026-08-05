@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
-import './Finance.css';
+import './PointOfSale.css';
 import { useDialog } from '../../../context/DialogContext';
-
+import { 
+  CreditCard, 
+  Search, 
+  UserCheck, 
+  DollarSign, 
+  AlertCircle, 
+  CheckCircle2, 
+  X, 
+  Printer, 
+  Receipt,
+  ArrowRight,
+  ShieldCheck
+} from 'lucide-react';
 
 interface PosStudent {
   id: string;
@@ -19,6 +31,7 @@ export default function PointOfSale() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<PosStudent[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<PosStudent | null>(null);
+  const [showDrawer, setShowDrawer] = useState(false);
   
   const [targetInvoiceId, setTargetInvoiceId] = useState<string | 'new'>('new');
   const { session: posSession, term: posTerm, setSession: setPosSession, setTerm: setPosTerm } = useActiveTerm();
@@ -27,20 +40,13 @@ export default function PointOfSale() {
   const [directMethod, setDirectMethod] = useState('Cash');
   const [directRemarks, setDirectRemarks] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
-  const [financeSetup, setFinanceSetup] = useState<any>(null);
-
-  React.useEffect(() => {
-    // Fetch School Logo & Signatures for receipt template
-    api.get('/finance/setup')
-      .then(data => setFinanceSetup(data))
-      .catch(err => console.error(err));
-  }, []);
 
   // Helper to sort invoices oldest to newest
   const getSortedPendingInvoices = (student: PosStudent) => {
     const termsOrder: Record<string, number> = { 'First Term': 1, 'Second Term': 2, 'Third Term': 3 };
-    return student.invoices
+    return (student.invoices || [])
       .filter(i => i.paymentStatus !== 'Completed')
       .sort((a, b) => {
         if (a.session !== b.session) return a.session.localeCompare(b.session);
@@ -51,6 +57,8 @@ export default function PointOfSale() {
   const handleSelectStudent = (student: PosStudent) => {
     setSelectedStudent(student);
     setReceiptData(null);
+    setShowDrawer(true);
+    
     const pending = getSortedPendingInvoices(student);
     if (pending.length > 0) {
       const oldest = pending[0];
@@ -71,11 +79,13 @@ export default function PointOfSale() {
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     try {
+      setSearching(true);
       const data = await api.get(`/finance/student-ledger?q=${searchTerm}`);
       setSearchResults(data || []);
-      setSelectedStudent(null);
     } catch (err) {
-      console.error(err);
+      console.error("Search failed:", err);
+    } finally {
+      setSearching(false);
     }
   };
 
@@ -104,7 +114,7 @@ export default function PointOfSale() {
       }
       showAlert(msg);
       
-      // Setup receipt printing
+      // Setup receipt data for slide-over drawer completion state
       setReceiptData({
         studentName: selectedStudent.name,
         regNumber: selectedStudent.registrationNumber,
@@ -118,7 +128,7 @@ export default function PointOfSale() {
         invoiceId: data.invoiceId
       });
 
-      handleSearch(); // refresh
+      handleSearch(); // Refresh search pool
     } catch (err: any) {
       showAlert("Payment failed: " + (err.response?.data?.message || err.message));
     } finally {
@@ -126,214 +136,345 @@ export default function PointOfSale() {
     }
   };
 
+  const getStudentInitials = (name: string) => {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase() || 'ST';
+  };
+
   return (
-    <div className="finance-page">
-      <div className="page-header">
+    <div className="pos-page-container">
+      {/* Page Header */}
+      <div className="pos-page-header">
         <div>
-          <h1 className="page-title">Point of Sale (Direct Entry)</h1>
-          <p className="page-subtitle">Record direct payments via cash, POS, or transfer.</p>
+          <h1 className="pos-page-title">
+            <CreditCard size={28} color="#000080" />
+            Point of Sale (Direct Entry)
+          </h1>
+          <p className="pos-page-subtitle">Search student records to record direct fee payments via Cash, POS, or Transfer</p>
         </div>
       </div>
 
-      <div className="glass-panel fade-in" style={{ display: 'flex', gap: '2rem' }}>
-        <div style={{ flex: 1 }}>
-          <h2 className="section-title">Student Search</h2>
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', alignItems: 'center' }}>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6, fontSize: '1.2rem' }}>🔍</span>
-              <input 
-                type="text" 
-                style={{ 
-                  padding: '1rem 1rem 1rem 3.2rem', 
-                  width: '100%', 
-                  margin: 0,
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  background: 'rgba(0,0,0,0.2)',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-                placeholder="Search by Name or Reg No..." 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                onFocus={(e) => e.target.style.border = '1px solid var(--primary)'}
-                onBlur={(e) => e.target.style.border = '1px solid rgba(255,255,255,0.2)'}
-              />
-            </div>
-            <button 
-              className="btn btn-primary" 
-              style={{ 
-                margin: 0, 
-                padding: '1rem 2rem', 
-                whiteSpace: 'nowrap',
-                borderRadius: '12px',
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 15px rgba(var(--primary-rgb), 0.3)'
-              }} 
-              onClick={handleSearch}
-            >
-              Search
-            </button>
+      {/* KPI Metrics Banner */}
+      <div className="pos-metrics-grid">
+        <div className="pos-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">DIRECT ENTRY WORKFLOW</span>
+            <span className="metric-number">Instant POS</span>
           </div>
+          <div className="metric-icon-badge sales">
+            <CreditCard size={24} />
+          </div>
+        </div>
 
-          {searchResults.length > 0 && (
-            <div className="search-results" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {searchResults.map(student => (
+        <div className="pos-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">SUPPORTED METHODS</span>
+            <span className="metric-number" style={{ fontSize: '1.1rem' }}>Cash • POS • Transfer</span>
+          </div>
+          <div className="metric-icon-badge cash">
+            <DollarSign size={24} />
+          </div>
+        </div>
+
+        <div className="pos-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">SEARCH RESULT POOL</span>
+            <span className="metric-number">{searchResults.length} Students</span>
+          </div>
+          <div className="metric-icon-badge pending">
+            <UserCheck size={24} />
+          </div>
+        </div>
+      </div>
+
+      {/* Student Search Section */}
+      <div className="pos-search-card">
+        <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+          🔍 Student Lookup
+        </h2>
+        <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
+          Type student name or registration number below (e.g. <strong>Mary Agboke</strong> or <strong>DOTJSS2-002</strong>) and click Search or press Enter.
+        </p>
+
+        <div className="pos-search-bar-row">
+          <div className="pos-search-input-box">
+            <Search className="search-icon" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by Student Name or Reg No..." 
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+            />
+          </div>
+          <button className="btn-pos-search" onClick={handleSearch} disabled={searching}>
+            <Search size={16} />
+            {searching ? 'Searching...' : 'Search'}
+          </button>
+        </div>
+
+        {/* Results Container */}
+        {searchResults.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', background: '#F8FAFC', borderRadius: '12px', border: '1px border-dashed #CBD5E1', color: '#64748B' }}>
+            <p style={{ margin: 0, fontWeight: 700 }}>No student selected yet.</p>
+            <span style={{ fontSize: '0.82rem' }}>Enter student details above to display matching student profiles.</span>
+          </div>
+        ) : (
+          <div className="pos-students-grid">
+            {searchResults.map(student => {
+              const pendingInvoices = getSortedPendingInvoices(student);
+              const totalDebt = pendingInvoices.reduce((acc, inv) => acc + (inv.balance || 0), 0);
+
+              return (
                 <div 
                   key={student.id} 
-                  className={`kid-item ${selectedStudent?.id === student.id ? 'active' : ''}`}
+                  className="pos-student-card"
                   onClick={() => handleSelectStudent(student)}
-                  style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', cursor: 'pointer', border: selectedStudent?.id === student.id ? '1px solid var(--primary)' : '1px solid transparent' }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ 
-                      width: '40px', height: '40px', 
-                      borderRadius: '50%', 
-                      background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'white', fontWeight: 'bold', fontSize: '1.2rem'
-                    }}>
-                      {student.name.charAt(0)}
+                  <div className="pos-student-header">
+                    <div className="pos-student-avatar">
+                      {getStudentInitials(student.name)}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <strong style={{ fontSize: '1.1rem', color: 'var(--text-color)' }}>{student.name}</strong>
-                        <span className="badge badge-info" style={{ fontSize: '0.75rem' }}>{student.className}</span>
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                        Reg No: <strong>{student.registrationNumber}</strong>
+                    <div className="pos-student-info">
+                      <span className="pos-student-name">{student.name}</span>
+                      <div className="pos-student-meta">
+                        <span>Reg No: <strong>{student.registrationNumber}</strong></span>
+                        <span className="pos-class-badge">{student.className || 'N/A'}</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        <div style={{ flex: 1 }}>
-          <h2 className="section-title">Record Payment</h2>
-          {!selectedStudent ? (
-            <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
-              <p>Select a student from the left to capture and record payment.</p>
+                  <div className="pos-debt-summary">
+                    <span>Pending Invoices: <strong>{pendingInvoices.length}</strong></span>
+                    {totalDebt > 0 ? (
+                      <span className="pos-debt-amount">Owes ₦{totalDebt.toLocaleString()}</span>
+                    ) : (
+                      <span className="pos-no-debt">Cleared (₦0)</span>
+                    )}
+                  </div>
+
+                  <button type="button" className="btn-record-payment">
+                    <Receipt size={16} /> Record Payment <ArrowRight size={14} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* SLIDE-OVER DRAWER FOR RECORD PAYMENT FORM */}
+      {showDrawer && selectedStudent && (
+        <>
+          {/* Backdrop */}
+          <div className="pos-slideover-backdrop" onClick={() => setShowDrawer(false)} />
+
+          {/* Drawer Panel */}
+          <div className="pos-slideover-drawer">
+            {/* Drawer Header */}
+            <div className="pos-slideover-header">
+              <div className="pos-slideover-title-group">
+                <div className="pos-student-avatar">
+                  {getStudentInitials(selectedStudent.name)}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
+                    {selectedStudent.name}
+                  </h3>
+                  <div style={{ fontSize: '0.82rem', color: '#64748B', display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.15rem' }}>
+                    <span>Reg No: <strong>{selectedStudent.registrationNumber}</strong></span>
+                    <span className="pos-class-badge">{selectedStudent.className || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button className="pos-slideover-close-btn" onClick={() => setShowDrawer(false)}>
+                <X size={18} />
+              </button>
             </div>
-          ) : (
-            <form onSubmit={handleDirectPayment} style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '8px' }}>
-              <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                <h4>Billing Details for {selectedStudent.name}</h4>
-                
-                {getSortedPendingInvoices(selectedStudent).length > 0 && (
-                  <div className="form-group mt-2">
-                    <label style={{ color: 'var(--primary-light)' }}>Target Invoice (Auto-selects oldest debt)</label>
-                    <select 
-                      className="form-control" 
-                      value={targetInvoiceId} 
-                      onChange={e => {
-                        const val = e.target.value;
-                        setTargetInvoiceId(val);
-                        if (val !== 'new') {
-                          const inv = selectedStudent.invoices.find(i => i.id === val);
-                          if (inv) {
-                            setPosTerm(inv.term);
-                            setPosSession(inv.session);
-                            setPosAmountDue(inv.amountDue);
-                            setPosAmountPaid(inv.balance);
+
+            {/* Drawer Body */}
+            <div className="pos-slideover-body">
+              {receiptData ? (
+                /* Success Receipt Display */
+                <div style={{ textAlign: 'center', padding: '2rem 1rem', background: '#ECFDF5', borderRadius: '16px', border: '1px solid #A7F3D0' }}>
+                  <CheckCircle2 size={48} color="#047857" style={{ marginBottom: '0.75rem' }} />
+                  <h3 style={{ margin: 0, color: '#047857', fontWeight: 800 }}>Payment Recorded Successfully!</h3>
+                  <p style={{ fontSize: '0.88rem', color: '#065F46', marginTop: '0.4rem' }}>
+                    Official Receipt <strong>#{receiptData.receiptNo}</strong> has been issued for {receiptData.studentName}.
+                  </p>
+                  
+                  <div style={{ background: '#FFFFFF', padding: '1rem', borderRadius: '12px', border: '1px solid #CBD5E1', margin: '1.25rem 0', textAlign: 'left', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <div>Amount Paid: <strong>₦{receiptData.amountPaid.toLocaleString()}</strong></div>
+                    <div>Payment Method: <strong>{receiptData.method}</strong></div>
+                    <div>Academic Term: <strong>{receiptData.session} - {receiptData.term}</strong></div>
+                    <div>Issued Date: <strong>{receiptData.date}</strong></div>
+                  </div>
+
+                  <button 
+                    className="btn-pos-search" 
+                    style={{ width: '100%', justifyContent: 'center' }}
+                    onClick={() => {
+                      window.open(`/dashboard/finance/receipt/${receiptData.invoiceId}`, '_blank');
+                    }}
+                  >
+                    <Printer size={18} /> View / Print Official Receipt
+                  </button>
+
+                  <button 
+                    type="button"
+                    style={{ background: 'transparent', border: 'none', color: '#047857', fontWeight: 700, marginTop: '1rem', cursor: 'pointer', fontSize: '0.85rem' }}
+                    onClick={() => {
+                      setReceiptData(null);
+                      handleSelectStudent(selectedStudent);
+                    }}
+                  >
+                    + Record Another Payment for {selectedStudent.name}
+                  </button>
+                </div>
+              ) : (
+                /* Record Payment Form */
+                <form id="posPaymentForm" onSubmit={handleDirectPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  <div style={{ background: '#EFF6FF', padding: '1rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.85rem', color: '#1E40AF', display: 'flex', gap: '0.6rem' }}>
+                    <ShieldCheck size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      Recording payment for <strong>{selectedStudent.name}</strong>. Target invoice automatically selects the oldest pending balance.
+                    </div>
+                  </div>
+
+                  {/* Target Invoice Selector */}
+                  {getSortedPendingInvoices(selectedStudent).length > 0 && (
+                    <div className="pos-form-group">
+                      <label>Target Invoice (Auto-selects oldest debt)</label>
+                      <select 
+                        className="select-filter-input" 
+                        value={targetInvoiceId} 
+                        onChange={e => {
+                          const val = e.target.value;
+                          setTargetInvoiceId(val);
+                          if (val !== 'new') {
+                            const inv = selectedStudent.invoices.find(i => i.id === val);
+                            if (inv) {
+                              setPosTerm(inv.term);
+                              setPosSession(inv.session);
+                              setPosAmountDue(inv.amountDue);
+                              setPosAmountPaid(inv.balance);
+                            }
+                          } else {
+                            setPosAmountDue(0);
+                            setPosAmountPaid(0);
                           }
-                        } else {
-                          setPosAmountDue(0);
-                          setPosAmountPaid(0);
-                        }
-                      }}
-                    >
-                      {getSortedPendingInvoices(selectedStudent).map(inv => (
-                        <option key={inv.id} value={inv.id}>
-                          {inv.session} - {inv.term} (Owes ₦{inv.balance.toLocaleString()})
-                        </option>
-                      ))}
-                      <option value="new">+ Create Custom Charge (Override)</option>
+                        }}
+                      >
+                        {getSortedPendingInvoices(selectedStudent).map(inv => (
+                          <option key={inv.id} value={inv.id}>
+                            {inv.session} - {inv.term} (Owes ₦{inv.balance.toLocaleString()})
+                          </option>
+                        ))}
+                        <option value="new">+ Create Custom Charge (Override)</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Session & Term */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="pos-form-group">
+                      <label>Session</label>
+                      <input 
+                        type="text" 
+                        className="select-filter-input" 
+                        value={posSession} 
+                        onChange={e => setPosSession(e.target.value)} 
+                        required 
+                        disabled={targetInvoiceId !== 'new'} 
+                      />
+                    </div>
+                    <div className="pos-form-group">
+                      <label>Term</label>
+                      <select 
+                        className="select-filter-input" 
+                        value={posTerm} 
+                        onChange={e => setPosTerm(e.target.value)} 
+                        required 
+                        disabled={targetInvoiceId !== 'new'}
+                      >
+                        <option value="First Term">First Term</option>
+                        <option value="Second Term">Second Term</option>
+                        <option value="Third Term">Third Term</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Amounts */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="pos-form-group">
+                      <label>Total Fee Due (₦)</label>
+                      <input 
+                        type="number" 
+                        className="select-filter-input" 
+                        min="1" 
+                        value={posAmountDue} 
+                        onChange={e => setPosAmountDue(Number(e.target.value))} 
+                        required 
+                        disabled={targetInvoiceId !== 'new'} 
+                      />
+                    </div>
+
+                    <div className="pos-form-group">
+                      <label>Amount Received (₦) *</label>
+                      <input 
+                        type="number" 
+                        min="1" 
+                        max={targetInvoiceId !== 'new' ? posAmountDue : undefined} 
+                        value={posAmountPaid} 
+                        onChange={e => setPosAmountPaid(Number(e.target.value))}
+                        className="select-filter-input" 
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Payment Method */}
+                  <div className="pos-form-group">
+                    <label>Payment Method *</label>
+                    <select value={directMethod} onChange={e => setDirectMethod(e.target.value)} className="select-filter-input">
+                      <option value="Cash">Cash</option>
+                      <option value="POS">POS Terminal</option>
+                      <option value="Transfer">Bank Transfer</option>
                     </select>
                   </div>
-                )}
 
-                <div className="form-group mt-2">
-                  <label>Session</label>
-                  <input type="text" className="form-control" value={posSession} onChange={e => setPosSession(e.target.value)} required disabled={targetInvoiceId !== 'new'} />
-                </div>
-                <div className="form-group">
-                  <label>Term</label>
-                  <select className="form-control" value={posTerm} onChange={e => setPosTerm(e.target.value)} required disabled={targetInvoiceId !== 'new'}>
-                    <option value="First Term">First Term</option>
-                    <option value="Second Term">Second Term</option>
-                    <option value="Third Term">Third Term</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Total Fee For Term (Amount Due ₦)</label>
-                  <input type="number" className="form-control" min="1" value={posAmountDue} onChange={e => setPosAmountDue(Number(e.target.value))} required disabled={targetInvoiceId !== 'new'} />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Amount Received (₦)</label>
-                <input 
-                  type="number" 
-                  min="1" 
-                  max={targetInvoiceId !== 'new' ? posAmountDue : undefined} 
-                  value={posAmountPaid} 
-                  onChange={e => setPosAmountPaid(Number(e.target.value))}
-                  className="form-control" 
-                  required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Payment Method</label>
-                <select value={directMethod} onChange={e => setDirectMethod(e.target.value)} className="form-control">
-                  <option value="Cash">Cash</option>
-                  <option value="POS">POS Terminal</option>
-                  <option value="Transfer">Bank Transfer</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Remarks</label>
-                <input 
-                  type="text" 
-                  value={directRemarks} 
-                  onChange={e => setDirectRemarks(e.target.value)}
-                  className="form-control" 
-                  placeholder="E.g., Received by Mr. John"
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={processing}>
-                {processing ? "Processing..." : `Record ₦${posAmountPaid.toLocaleString()} Payment`}
-              </button>
-            </form>
-          )}
-
-          {receiptData && (
-            <div className="receipt-overlay fade-in" style={{ marginTop: '2rem', padding: '1.5rem', background: '#fff', color: '#000', borderRadius: '8px', border: '1px solid #ccc', textAlign: 'center' }}>
-              <h3 style={{ color: 'var(--primary-dark)', marginBottom: '1rem' }}>Payment Successfully Recorded</h3>
-              <p>Receipt #{receiptData.receiptNo} has been generated.</p>
-              
-              <button 
-                className="btn btn-primary" 
-                style={{ width: '100%', marginTop: '1.5rem', padding: '1rem', fontSize: '1.1rem', fontWeight: 'bold' }}
-                onClick={() => {
-                  window.open(`/dashboard/finance/receipt/${receiptData.invoiceId}`, '_blank');
-                }}
-              >
-                📄 View / Print Official Receipt
-              </button>
+                  {/* Remarks */}
+                  <div className="pos-form-group">
+                    <label>Remarks / Collector Notes</label>
+                    <input 
+                      type="text" 
+                      value={directRemarks} 
+                      onChange={e => setDirectRemarks(e.target.value)}
+                      className="select-filter-input" 
+                      placeholder="E.g., Received by Mrs. Olufunke Ikang"
+                    />
+                  </div>
+                </form>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+
+            {/* Drawer Footer */}
+            {!receiptData && (
+              <div className="pos-slideover-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowDrawer(false)} disabled={processing}>
+                  Cancel
+                </button>
+                <button form="posPaymentForm" type="submit" className="btn-pos-search" disabled={processing}>
+                  <Receipt size={18} />
+                  {processing ? "Processing..." : `Record ₦${posAmountPaid.toLocaleString()} Payment`}
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
