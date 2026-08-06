@@ -46,6 +46,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
   const [isFinanceOpen, setIsFinanceOpen] = useState(false);
   const [isFinanceSetupOpen, setIsFinanceSetupOpen] = useState(false);
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
 
   // Auto-expand accordion if current location is within that group
   useEffect(() => {
@@ -73,6 +74,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
     }
     if (path.includes('/dashboard/finance-setup/')) {
       setIsFinanceSetupOpen(true);
+    }
+    if (path.includes('/dashboard/reports') || path.includes('/dashboard/finance/reports')) {
+      setIsReportsOpen(true);
     }
   }, [location.pathname]);
 
@@ -399,9 +403,6 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                           <NavLink to="/dashboard/finance/ledger" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Student Ledger
                           </NavLink>
-                          <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                            Financial Reports Hub
-                          </NavLink>
                           <NavLink to="/dashboard/operations/manual-clearance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Manual Clearance
                           </NavLink>
@@ -440,10 +441,30 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 {/* 7. REPORTS & ANALYTICS */}
                 <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
 
-                <NavLink to="/dashboard/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><BarChart3 size={18} /></span>
-                  Reports & Analytics
-                </NavLink>
+                <div className="nav-group">
+                  <button 
+                    className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`} 
+                    onClick={() => setIsReportsOpen(!isReportsOpen)}
+                  >
+                    <span className="nav-icon-box"><BarChart3 size={18} /></span>
+                    Reports & Analytics
+                    <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                      {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </span>
+                  </button>
+                  {isReportsOpen && (
+                    <div className="submenu">
+                      {userRole !== 'Accountant' && (
+                        <NavLink to="/dashboard/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          Academic Reports
+                        </NavLink>
+                      )}
+                      <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        Financial Reports Hub
+                      </NavLink>
+                    </div>
+                  )}
+                </div>
 
                 {userRole !== 'Admin' && userRole !== 'Accountant' && (
                   <NavLink to="/dashboard/settings/school" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
