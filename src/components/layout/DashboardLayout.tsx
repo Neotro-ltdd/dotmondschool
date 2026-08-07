@@ -100,9 +100,6 @@ export default function DashboardLayout() {
               <span>
                 <strong>SCHOOL OPERATIONAL NOTICE:</strong> School is currently on Holiday / Inter-Term Break.
                 {resumptionDate ? ` Resumption date for ${session} (${term}) is ${resumptionDate}.` : ` Preparing for ${session} ${term}.`}
-                <span style={{ fontWeight: 500, marginLeft: '0.5rem', opacity: 0.9 }}>
-                  (Gate attendance tap-in & daily emails are paused. Online fee setup & payments remain live.)
-                </span>
               </span>
             </div>
           </div>
