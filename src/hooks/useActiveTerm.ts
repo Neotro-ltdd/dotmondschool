@@ -5,6 +5,7 @@ let cachedSession = '';
 let cachedTerm = '';
 let cachedIsHoliday = false;
 let cachedStatus = 'Active';
+let cachedResumptionDate = '';
 let isFetching = false;
 let fetchPromise: Promise<void> | null = null;
 
@@ -13,6 +14,7 @@ export function useActiveTerm() {
   const [term, setTerm] = useState<string>(cachedTerm || 'First Term');
   const [isHoliday, setIsHoliday] = useState<boolean>(cachedIsHoliday);
   const [status, setStatus] = useState<string>(cachedStatus);
+  const [resumptionDate, setResumptionDate] = useState<string>(cachedResumptionDate);
   const [loading, setLoading] = useState<boolean>(!cachedSession);
 
   useEffect(() => {
@@ -21,6 +23,7 @@ export function useActiveTerm() {
       setTerm(cachedTerm);
       setIsHoliday(cachedIsHoliday);
       setStatus(cachedStatus);
+      setResumptionDate(cachedResumptionDate);
       return;
     }
 
@@ -34,6 +37,7 @@ export function useActiveTerm() {
           }
           if (data.isHoliday !== undefined) cachedIsHoliday = data.isHoliday;
           if (data.status) cachedStatus = data.status;
+          if (data.resumptionDate) cachedResumptionDate = data.resumptionDate.split('T')[0];
         })
         .catch(err => {
           console.error('Failed to load active term', err);
@@ -41,6 +45,7 @@ export function useActiveTerm() {
           cachedTerm = 'First Term';
           cachedIsHoliday = false;
           cachedStatus = 'Active';
+          cachedResumptionDate = '';
         })
         .finally(() => {
           isFetching = false;
@@ -52,11 +57,12 @@ export function useActiveTerm() {
       setTerm(cachedTerm || 'First Term');
       setIsHoliday(cachedIsHoliday);
       setStatus(cachedStatus);
+      setResumptionDate(cachedResumptionDate);
       setLoading(false);
     });
   }, []);
 
-  return { session, term, setSession, setTerm, isHoliday, setIsHoliday, status, setStatus, loading };
+  return { session, term, setSession, setTerm, isHoliday, setIsHoliday, status, setStatus, resumptionDate, loading };
 }
 
 export function invalidateActiveTermCache() {
@@ -64,5 +70,6 @@ export function invalidateActiveTermCache() {
   cachedTerm = '';
   cachedIsHoliday = false;
   cachedStatus = 'Active';
+  cachedResumptionDate = '';
   fetchPromise = null;
 }

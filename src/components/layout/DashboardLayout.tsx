@@ -6,11 +6,13 @@ import { useAuth } from '../../context/AuthContext';
 import { api, API_ROOT } from '../../services/api';
 import './Layout.css';
 
+import { useActiveTerm } from '../../hooks/useActiveTerm';
+
 export default function DashboardLayout() {
   const { isAuthenticated, requiresPasswordChange, updateUserInfo } = useAuth();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { isHoliday, session, term, resumptionDate } = useActiveTerm();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -79,6 +81,32 @@ export default function DashboardLayout() {
           />
         )}
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+        {isHoliday && (
+          <div style={{
+            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+            color: '#78350F',
+            borderBottom: '1px solid #FCD34D',
+            padding: '0.65rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.84rem',
+            fontWeight: 700,
+            position: 'relative',
+            zIndex: 9
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '1.1rem' }}>🌴</span>
+              <span>
+                <strong>SCHOOL OPERATIONAL NOTICE:</strong> School is currently on Holiday / Inter-Term Break.
+                {resumptionDate ? ` Resumption date for ${session} (${term}) is ${resumptionDate}.` : ` Preparing for ${session} ${term}.`}
+                <span style={{ fontWeight: 500, marginLeft: '0.5rem', opacity: 0.9 }}>
+                  (Gate attendance tap-in & daily emails are paused. Online fee setup & payments remain live.)
+                </span>
+              </span>
+            </div>
+          </div>
+        )}
         <main className="dashboard-content" style={{ position: 'relative', zIndex: 1 }}>
           <Outlet />
         </main>
