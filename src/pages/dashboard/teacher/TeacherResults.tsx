@@ -1,4 +1,5 @@
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
@@ -74,14 +75,14 @@ export default function TeacherResults() {
   }, [filterSession, filterTerm]);
 
   return (
-    <div className="management-page">
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="management-page fade-in">
+      <div className="page-header">
         <div>
-          <h1 className="page-title">Review Class Results</h1>
-          <p className="page-subtitle">View and preview the compiled results for your assigned class.</p>
+          <h1 className="page-title">Class Broadsheet & Results</h1>
+          <p className="page-subtitle">Compile student assessment scores and submit for Admin Review.</p>
         </div>
-        {data?.batchId && (
-          <button className="btn btn-danger" onClick={handleReset} disabled={loading} style={{ backgroundColor: '#dc3545', color: 'white' }}>
+        {data?.results && data.results.length > 0 && (
+          <button className="btn btn-secondary" onClick={handleReset} style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>
             Reset Compilation
           </button>
         )}
@@ -91,9 +92,9 @@ export default function TeacherResults() {
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label>Session:</label>
           <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="filter-select">
-            <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
-            <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
-            <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
+            {getSessionOptions(filterSession).map((s: string) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
           </select>
         </div>
         <div style={{ flex: 1, minWidth: '150px' }}>

@@ -1,4 +1,5 @@
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './Reports.css';
@@ -85,7 +86,11 @@ export default function Reports() {
         <div className="report-controls">
           <div className="form-group">
             <label>Session</label>
-            <input type="text" value={session} onChange={(e) => setSession(e.target.value)} className="session-term-control" />
+            <select value={session} onChange={(e) => setSession(e.target.value)} className="session-term-control">
+              {getSessionOptions(session).map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
           <div className="form-group">
             <label>Term</label>

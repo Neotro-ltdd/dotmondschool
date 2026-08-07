@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../../../services/api';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import './ResultManagement.css';
 import { useDialog } from '../../../context/DialogContext';
 import { 
@@ -308,9 +309,9 @@ export default function ResultManagement() {
               onChange={(e) => setSession(e.target.value)}
               style={{ minWidth: '150px' }}
             >
-              <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
-              <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
-              <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
+              {getSessionOptions(session).map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
             </select>
           </div>
 

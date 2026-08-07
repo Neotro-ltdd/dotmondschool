@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useActiveTerm, invalidateActiveTermCache } from '../../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../../utils/sessionOptions';
 import { api } from '../../../../services/api';
 import './TermSetup.css';
 import { useDialog } from '../../../../context/DialogContext';
@@ -181,14 +182,16 @@ export default function TermSetup() {
               <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
                 Academic Session
               </label>
-              <input 
-                type="text" 
+              <select 
                 className="select-filter-input"
                 value={session} 
                 onChange={(e) => setSession(e.target.value)} 
-                placeholder="2025/2026" 
                 style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
-              />
+              >
+                {getSessionOptions(session).map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
             
             <div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import { useActiveTerm } from '../../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../../utils/sessionOptions';
 import './SessionOperation.css';
 import { useDialog } from '../../../../context/DialogContext';
 import { 
@@ -184,11 +185,9 @@ export default function SessionOperation() {
             onChange={(e) => setArchiveGraduationSession(e.target.value)}
             style={{ width: '100%', padding: '0.75rem', fontSize: '0.9rem', borderRadius: '10px' }}
           >
-            <option value="2023/2024">2023/2024 Cohort (2 Years Post-Graduation - Eligible for Archiving)</option>
-            <option value="2022/2023">2022/2023 Cohort (3 Years Post-Graduation - Eligible for Archiving)</option>
-            <option value="2021/2022">2021/2022 Cohort (4 Years Post-Graduation - Eligible for Archiving)</option>
-            <option value="2024/2025">2024/2025 Cohort (1 Year Post-Graduation - Active Retention Period)</option>
-            <option value="2025/2026">Current 2025/2026 Active Session (In Session)</option>
+            {getSessionOptions(archiveGraduationSession).map(s => (
+              <option key={s} value={s}>{s} Cohort</option>
+            ))}
           </select>
         </div>
 

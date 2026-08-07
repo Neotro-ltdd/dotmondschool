@@ -1,10 +1,10 @@
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import './TeacherAcademics.css';
 import '../students/Management.css';
 import { useDialog } from '../../../context/DialogContext';
-
 
 interface MySubject {
   id: string;
@@ -100,9 +100,9 @@ export default function Utilities() {
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: 'var(--text-light)', fontSize: '0.9rem' }}>Session:</label>
           <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="filter-select">
-            <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
-            <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
-            <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
+            {getSessionOptions(filterSession).map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
           </select>
         </div>
         <div style={{ flex: 1, minWidth: '150px' }}>

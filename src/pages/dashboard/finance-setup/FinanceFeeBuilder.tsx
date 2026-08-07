@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import './FinanceFeeBuilder.css';
 import { useDialog } from '../../../context/DialogContext';
 import { 
@@ -661,7 +662,11 @@ export default function FinanceFeeBuilder() {
 
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Session:</label>
-                <input type="text" className="select-filter-input" value={session} onChange={e => setSession(e.target.value)} />
+                <select className="select-filter-input" value={session} onChange={e => setSession(e.target.value)}>
+                  {getSessionOptions(session).map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -948,7 +953,11 @@ export default function FinanceFeeBuilder() {
             <div style={{ display: 'flex', gap: '1rem', flex: 1 }}>
               <div style={{ flex: 1 }}>
                 <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase' }}>Academic Session</label>
-                <input type="text" className="select-filter-input" value={session} onChange={e => setSession(e.target.value)} />
+                <select className="select-filter-input" value={session} onChange={e => setSession(e.target.value)}>
+                  {getSessionOptions(session).map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
               </div>
               <div style={{ flex: 1 }}>
                 <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase' }}>Academic Term</label>

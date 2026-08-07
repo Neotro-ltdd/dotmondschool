@@ -1,9 +1,9 @@
-import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
+import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import '../finance/Finance.css';
 import { useDialog } from '../../../context/DialogContext';
-
 
 interface FeeTemplateListDto {
   id: string;
@@ -26,45 +26,40 @@ interface FeeTemplateDetailDto {
 }
 
 export default function ClassFees() {
-  const { showAlert } = useDialog();
-
-  const [templates, setTemplates] = useState<FeeTemplateListDto[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Filters
+  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>('');
-  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
-
-  // Modal State
+  const [classes, setClasses] = useState<{ id: string; level: string; name: string; section: string }[]>([]);
+  const [feeTemplates, setFeeTemplates] = useState<FeeTemplateListDto[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<FeeTemplateDetailDto | null>(null);
-  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
+  const { showAlert } = useDialog();
 
   useEffect(() => {
     fetchClasses();
   }, []);
 
   useEffect(() => {
-    fetchTemplates();
+    fetchFeeTemplates();
   }, [filterSession, filterTerm]);
 
   const fetchClasses = async () => {
     try {
-      const data = await api.get('/setup/classes');
-      setClasses(data);
+      const data = await api.get('/academics/classes');
+      setClasses(data || []);
     } catch (err) {
-      console.error("Failed to load classes");
+      console.error('Failed to load classes', err);
     }
   };
 
-  const fetchTemplates = async () => {
+  const fetchFeeTemplates = async () => {
     try {
       setLoading(true);
-      const data = await api.get(`/finance/setup/fee-templates?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
-      setTemplates(data);
       setError(null);
+      const data = await api.get(`/finance/setup/fee-templates?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
+      setFeeTemplates(data || []);
     } catch (err: any) {
       setError(err.message || 'Failed to load fee templates.');
     } finally {
@@ -72,20 +67,19 @@ export default function ClassFees() {
     }
   };
 
-  const handleRowClick = async (classId: string) => {
+  const handleViewBreakdown = async (classId: string) => {
     try {
-      setLoadingDetails(true);
+      setLoadingDetail(true);
       const data = await api.get(`/finance/setup/fee-templates/class/${classId}?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
       setSelectedTemplate(data);
     } catch (err: any) {
-      showAlert(err.message || 'Failed to load template details');
+      showAlert('Error', err.message || 'Failed to load breakdown details.');
     } finally {
-      setLoadingDetails(false);
+      setLoadingDetail(false);
     }
   };
 
-  // Filter templates
-  let filteredTemplates = templates;
+  let filteredTemplates = [...feeTemplates];
   if (filterLevel) {
     filteredTemplates = filteredTemplates.filter(t => t.level === filterLevel);
   }
@@ -105,7 +99,7 @@ export default function ClassFees() {
         </div>
       </div>
 
-      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label>Filter by Level:</label>
           <select value={filterLevel} onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} className="filter-select">
@@ -134,9 +128,9 @@ export default function ClassFees() {
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label>Session:</label>
           <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="filter-select">
-            <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
-            <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
-            <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
+            {getSessionOptions(filterSession).map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
           </select>
         </div>
         <div style={{ flex: 1, minWidth: '150px' }}>
@@ -172,7 +166,7 @@ export default function ClassFees() {
             </thead>
             <tbody>
               {filteredTemplates.map(template => (
-                <tr key={template.id} onClick={() => handleRowClick(template.classId)} style={{ cursor: 'pointer' }}>
+                <tr key={template.id} onClick={() => handleViewBreakdown(template.classId)} style={{ cursor: 'pointer' }}>
                   <td>{template.level}</td>
                   <td><strong>{template.className}</strong></td>
                   <td>{template.section}</td>
@@ -227,7 +221,7 @@ export default function ClassFees() {
         </div>
       )}
       
-      {loadingDetails && (
+      {loadingDetail && (
         <div className="modal-overlay">
           <div className="loading-screen">Loading Breakdown...</div>
         </div>

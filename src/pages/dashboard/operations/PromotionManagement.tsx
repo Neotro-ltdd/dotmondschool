@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../../../services/api';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   GraduationCap, 
@@ -520,9 +521,9 @@ export default function PromotionManagement() {
                 <div className="promo-input-wrapper">
                   <Calendar className="field-icon" size={16} />
                   <select className="promo-select-input" value={nextSession} onChange={e => setNextSession(e.target.value)} required>
-                    <option value={`${year}/${year + 1}`}>{`${year}/${year + 1}`}</option>
-                    <option value={`${year - 1}/${year}`}>{`${year - 1}/${year}`}</option>
-                    <option value={`${year - 2}/${year - 1}`}>{`${year - 2}/${year - 1}`}</option>
+                    {getSessionOptions(nextSession).map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
                   </select>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import './FinancialReportsHub.css';
 import { 
   BarChart3, 
@@ -223,12 +224,15 @@ export default function FinancialReportsHub() {
         <div style={{ display: 'flex', gap: '1rem', flex: 1, minWidth: '280px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Academic Session</label>
-            <input 
-              type="text" 
+            <select 
               className="select-filter-input" 
               value={session} 
-              onChange={e => setSession(e.target.value)} 
-            />
+              onChange={e => setSession(e.target.value)}
+            >
+              {getSessionOptions(session).map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Academic Term</label>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { getSessionOptions } from '../../../utils/sessionOptions';
 import { api } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
 import './AdminReviewResults.css';
@@ -257,9 +258,9 @@ export default function AdminReviewResults() {
             value={filterSession} 
             onChange={(e) => setFilterSession(e.target.value)}
           >
-            <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
-            <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
-            <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
+            {getSessionOptions(filterSession).map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
           </select>
 
           {/* Term Selector */}
