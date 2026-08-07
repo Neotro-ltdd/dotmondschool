@@ -373,7 +373,7 @@ export default function Overview() {
                   </div>
                   <div style={{ height: 260, marginTop: '10px' }}>
                     <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                      <LineChart data={principalData.attendanceTrend}>
+                      <LineChart data={principalData?.attendanceTrend || []}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                         <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                         <YAxis domain={[0, 100]} stroke="#64748B" fontSize={12} tickFormatter={(val) => `${val}%`} />
@@ -393,7 +393,7 @@ export default function Overview() {
                     <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                       <PieChart>
                         <Pie
-                          data={principalData.feeData}
+                          data={principalData?.feeData || []}
                           cx="50%"
                           cy="50%"
                           innerRadius={65}
@@ -401,7 +401,7 @@ export default function Overview() {
                           paddingAngle={5}
                           dataKey="value"
                         >
-                          {principalData.feeData.map((entry: any, index: number) => (
+                          {(principalData?.feeData || []).map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={feeColors[index % feeColors.length]} />
                           ))}
                         </Pie>
