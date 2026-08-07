@@ -221,7 +221,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 2. CLASS & STUDENT MANAGEMENT */}
-                {userRole !== 'Accountant' && !isSuperAdmin && (
+                {userRole !== 'Accountant' && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isClassStudentOpen ? 'open' : ''}`} 
@@ -246,7 +246,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                             Class Allocation
                           </NavLink>
                         )}
-                        {(userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'Principal') && (
+                        {(userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Principal') && (
                           <NavLink to="/dashboard/operations/promotions" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Student Promotions
                           </NavLink>
@@ -257,7 +257,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 3. SUBJECT MANAGEMENT */}
-                {userRole !== 'Accountant' && !isSuperAdmin && (
+                {userRole !== 'Accountant' && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isSubjectOpen ? 'open' : ''}`} 
@@ -345,7 +345,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
-                {userRole !== 'Accountant' && !isSuperAdmin && (
+                {userRole !== 'Accountant' && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`} 
@@ -370,8 +370,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </div>
                 )}
 
-                {/* ACCOUNTANT / SUPERADMIN FINANCE MODULES */}
-                {(userRole === 'Accountant' || userRole === 'Superadmin') && (
+                {/* ACCOUNTANT / SUPERADMIN / ADMIN FINANCE MODULES */}
+                {(userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Admin' || userRole === 'SystemAdmin') && (
                   <>
                     <div className="sidebar-section-header">FINANCE & BILLING</div>
                     <NavLink to="/dashboard/students" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>

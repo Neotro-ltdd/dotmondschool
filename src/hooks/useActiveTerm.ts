@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
 
-let cachedSession = '';
-let cachedTerm = '';
+let cachedSession = '2026/2027';
+let cachedTerm = 'First Term';
 let cachedIsHoliday = false;
 let cachedStatus = 'Active';
 let cachedResumptionDate = '';
@@ -10,51 +10,41 @@ let isFetching = false;
 let fetchPromise: Promise<void> | null = null;
 
 export function useActiveTerm() {
-  const [session, setSession] = useState<string>(cachedSession || '2026/2027');
-  const [term, setTerm] = useState<string>(cachedTerm || 'First Term');
+  const [session, setSession] = useState<string>(cachedSession);
+  const [term, setTerm] = useState<string>(cachedTerm);
   const [isHoliday, setIsHoliday] = useState<boolean>(cachedIsHoliday);
   const [status, setStatus] = useState<string>(cachedStatus);
   const [resumptionDate, setResumptionDate] = useState<string>(cachedResumptionDate);
-  const [loading, setLoading] = useState<boolean>(!cachedSession);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (cachedSession && cachedTerm) {
-      setSession(cachedSession);
-      setTerm(cachedTerm);
-      setIsHoliday(cachedIsHoliday);
-      setStatus(cachedStatus);
-      setResumptionDate(cachedResumptionDate);
-      return;
-    }
-
     if (!fetchPromise) {
       isFetching = true;
-      fetchPromise = api.get('/setup/school-profile')
-        .then(data => {
-          if (data.currentSession) cachedSession = data.currentSession;
-          if (data.currentTerm) {
-            cachedTerm = (data.currentTerm === 'Holiday' || data.isHoliday) ? 'First Term' : data.currentTerm;
+      fetchPromise = (async () => {
+        try {
+          const data = await api.get('/setup/school-profile');
+          if (data) {
+            if (data.currentSession) cachedSession = data.currentSession;
+            if (data.currentTerm) {
+              cachedTerm = (data.currentTerm === 'Holiday' || data.isHoliday) ? 'First Term' : data.currentTerm;
+            }
+            if (data.isHoliday !== undefined) cachedIsHoliday = !!data.isHoliday;
+            if (data.status) cachedStatus = data.status;
+            if (data.resumptionDate && typeof data.resumptionDate === 'string') {
+              cachedResumptionDate = data.resumptionDate.split('T')[0];
+            }
           }
-          if (data.isHoliday !== undefined) cachedIsHoliday = data.isHoliday;
-          if (data.status) cachedStatus = data.status;
-          if (data.resumptionDate) cachedResumptionDate = data.resumptionDate.split('T')[0];
-        })
-        .catch(err => {
-          console.error('Failed to load active term', err);
-          cachedSession = '2026/2027';
-          cachedTerm = 'First Term';
-          cachedIsHoliday = false;
-          cachedStatus = 'Active';
-          cachedResumptionDate = '';
-        })
-        .finally(() => {
+        } catch (err) {
+          console.error('Failed to load active term profile:', err);
+        } finally {
           isFetching = false;
-        });
+        }
+      })();
     }
 
-    fetchPromise.then(() => {
-      setSession(cachedSession || '2026/2027');
-      setTerm(cachedTerm || 'First Term');
+    fetchPromise.finally(() => {
+      setSession(cachedSession);
+      setTerm(cachedTerm);
       setIsHoliday(cachedIsHoliday);
       setStatus(cachedStatus);
       setResumptionDate(cachedResumptionDate);
@@ -66,8 +56,8 @@ export function useActiveTerm() {
 }
 
 export function invalidateActiveTermCache() {
-  cachedSession = '';
-  cachedTerm = '';
+  cachedSession = '2026/2027';
+  cachedTerm = 'First Term';
   cachedIsHoliday = false;
   cachedStatus = 'Active';
   cachedResumptionDate = '';
