@@ -81,24 +81,21 @@ export default function TermSetup() {
     
     try {
       setSaving(true);
-      const isHolidayOrMTB = isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
-      const computedStatus = isHolidayOrMTB 
-        ? (term === 'MTB (Mid Term Break)' || term === 'MTB' ? 'MTB' : 'Holiday') 
-        : (isActive ? 'Active' : 'SessionEnded');
+      const computedStatus = isHoliday ? 'Holiday' : 'Active';
 
       await api.post('/setup/terms', {
         session,
         term,
         nextTermResumptionDate: resumptionDate,
         isActive: true,
-        isHoliday: isHolidayOrMTB,
+        isHoliday,
         status: computedStatus,
         caWeightFirst,
         caWeightSecond,
         examWeight
       });
       invalidateActiveTermCache();
-      showAlert(`Term setup saved successfully! Portal operational status set to "${term}".`);
+      showAlert(`Term setup saved successfully! Operational status is set to: ${isHoliday ? `🌴 Holiday Mode (School resumes ${resumptionDate})` : '🟢 School In Session'}`);
     } catch (err: any) {
       showAlert(err.message || 'Failed to save term setup.');
     } finally {
@@ -203,19 +200,6 @@ export default function TermSetup() {
                 onChange={(e) => {
                   const selectedTerm = e.target.value;
                   setTerm(selectedTerm);
-                  if (selectedTerm === 'Holiday') {
-                    setIsHoliday(true);
-                    setIsActive(false);
-                    setStatus('Holiday');
-                  } else if (selectedTerm === 'MTB (Mid Term Break)' || selectedTerm === 'MTB') {
-                    setIsHoliday(true);
-                    setIsActive(false);
-                    setStatus('MTB');
-                  } else {
-                    setIsHoliday(false);
-                    setIsActive(true);
-                    setStatus('Active');
-                  }
                 }} 
                 className="select-filter-input"
                 style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem' }}
@@ -223,10 +207,50 @@ export default function TermSetup() {
                 <option value="First Term">First Term</option>
                 <option value="Second Term">Second Term</option>
                 <option value="Third Term">Third Term</option>
-                <option value="Holiday">Holiday</option>
-                <option value="MTB (Mid Term Break)">MTB (Mid Term Break)</option>
               </select>
             </div>
+          </div>
+
+          {/* Operational Status (Holiday Mode) Toggle Switch */}
+          <div style={{ marginTop: '1rem', padding: '1rem', background: isHoliday ? '#FFFBEB' : '#F0FDF4', borderRadius: '12px', border: `1px solid ${isHoliday ? '#FDE68A' : '#BBF7D0'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div>
+              <strong style={{ fontSize: '0.9rem', color: isHoliday ? '#92400E' : '#166534', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {isHoliday ? <Palmtree size={18} color="#D97706" /> : <CheckCircle size={18} color="#15803D" />}
+                School Operational Mode: {isHoliday ? '🌴 Holiday / Inter-Term Break' : '🟢 School In Session (Active)'}
+              </strong>
+              <span style={{ fontSize: '0.8rem', color: isHoliday ? '#78350F' : '#14532D', display: 'block', marginTop: '2px' }}>
+                {isHoliday 
+                  ? 'Gate tap-in scanning is BLOCKED, attendance emails are PAUSED. Fee setup and billing operate normally for First Term 2026/2027.' 
+                  : 'Gate tap-in scanning is LIVE, registers are ACTIVE, daily parent emails are SENT.'
+                }
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                const nextState = !isHoliday;
+                setIsHoliday(nextState);
+                setStatus(nextState ? 'Holiday' : 'Active');
+              }}
+              style={{
+                padding: '0.5rem 1.25rem',
+                borderRadius: '8px',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                background: isHoliday ? '#D97706' : '#16A34A',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              {isHoliday ? <Palmtree size={16} /> : <CheckCircle size={16} />}
+              {isHoliday ? 'Switch to Active Mode' : 'Trigger Holiday Mode'}
+            </button>
           </div>
 
           {/* Operational Status Banner Card */}
