@@ -82,24 +82,14 @@ export default function DashboardLayout() {
         )}
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         {isHoliday && (
-          <div style={{
-            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
-            color: '#78350F',
-            borderBottom: '1px solid #FCD34D',
-            padding: '0.65rem 1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: '0.84rem',
-            fontWeight: 700,
-            position: 'relative',
-            zIndex: 9
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.1rem' }}>🌴</span>
-              <span>
-                <strong>SCHOOL OPERATIONAL NOTICE:</strong> School is currently on Holiday / Inter-Term Break.
-                {resumptionDate ? ` Resumption date for ${session} (${term}) is ${resumptionDate}.` : ` Preparing for ${session} ${term}.`}
+          <div className="holiday-banner-container" title="Hover mouse over text to pause scrolling">
+            <div className="holiday-banner-track">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.1rem' }}>🌴</span>
+                <span>
+                  <strong>SCHOOL OPERATIONAL NOTICE:</strong> School is currently on Holiday / Inter-Term Break.
+                  {resumptionDate ? ` Resumption date for ${session} (${term}) is ${resumptionDate}.` : ` Preparing for ${session} ${term}.`}
+                </span>
               </span>
             </div>
           </div>

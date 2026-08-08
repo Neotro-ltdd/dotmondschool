@@ -550,3 +550,38 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
     padding: 0.5rem;
   }
 }
+
+/* ════════ SCROLLING HOLIDAY MARQUEE BANNER ════════ */
+.holiday-banner-container {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #78350F;
+  border-bottom: 1px solid #FCD34D;
+  padding: 0.55rem 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 9;
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.holiday-banner-track {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: holidayMarquee 28s linear infinite;
+}
+
+.holiday-banner-container:hover .holiday-banner-track {
+  animation-play-state: paused;
+}
+
+@keyframes holidayMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
