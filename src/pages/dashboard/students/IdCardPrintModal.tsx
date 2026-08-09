@@ -33,7 +33,6 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   const [idCardData, setIdCardData] = useState<IdCardData | null>(null);
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<'standard' | 'modern' | 'minimal'>('standard');
 
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
@@ -49,19 +48,18 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
         const idData = await api.get(`/attendance/id-card/${studentId}`);
         setIdCardData(idData);
 
-        // Fetch school profile for colors, logo, and session
+        // Fetch school profile
         try {
           const profile = await api.get('/setup/school-profile');
           setSchoolProfile(profile);
         } catch (profileErr) {
-          // Fallback if profile not found
           setSchoolProfile({
             schoolName: "DOTMOND SCHOOL",
             address: "Happyland Estate, Ajah, Lagos State, Nigeria",
             logoUrl: "",
-            primaryColor: "#0C2340",
-            secondaryColor: "#8B0000",
-            currentSession: "2026 - 2029"
+            primaryColor: "#12386E",
+            secondaryColor: "#C4293A",
+            currentSession: "2026/2027"
           });
         }
       } catch (err: any) {
@@ -77,7 +75,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return (
       <div className="id-card-overlay">
         <div className="id-card-modal-content" style={{ alignItems: 'center' }}>
-          <h2>Generating ID Card...</h2>
+          <h2>Generating Official ID Card...</h2>
         </div>
       </div>
     );
@@ -95,157 +93,202 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     );
   }
 
-  const pColor = schoolProfile?.primaryColor || '#0C2340';
-  const sColor = schoolProfile?.secondaryColor || '#8B0000';
-
   const getFullUrl = (url: string | undefined | null) => {
     if (!url) return '';
     return url.startsWith('/') ? `${API_ROOT}${url}` : url;
   };
 
   const schoolTitle = schoolProfile?.schoolName ? schoolProfile.schoolName.toUpperCase() : "DOTMOND";
-  const schoolSubTitle = "PRIMARY & SECONDARY SCHOOL";
-  const schoolAddr = schoolProfile?.address || "Happyland Estate, Ajah, Lagos";
+  const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const currentSession = schoolProfile?.currentSession || "2026 – 2027";
 
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
         
-        {/* Header Controls */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }} className="no-print">
+        {/* Modal Controls Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }} className="no-print">
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>Print Student ID Card</h2>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>Official school identification badge & gate barcode pass.</p>
+            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#12386E' }}>Print Student ID Card</h2>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#5B6063' }}>
+              Standard CR80 portrait layout (2.125″ × 3.375″).
+            </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569' }}>Template:</label>
-              <select 
-                value={selectedTemplate} 
-                onChange={(e) => setSelectedTemplate(e.target.value as any)}
-                style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 600, background: '#FFFFFF', color: '#0F172A' }}
-              >
-                <option value="standard">Dotmond Standard (Classic Vertical)</option>
-                <option value="modern">Executive Navy (Modern)</option>
-                <option value="minimal">Minimalist Pass</option>
-              </select>
-            </div>
-
             <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={handlePrint} style={{ fontWeight: 700 }}>
+            <button className="btn btn-primary" onClick={handlePrint} style={{ fontWeight: 700, background: '#12386E', border: 'none' }}>
               🖨️ Print Card
             </button>
           </div>
         </div>
 
-        <div className={`id-card-preview-area template-${selectedTemplate}`} ref={printRef} style={{ '--card-primary-color': pColor, '--card-secondary-color': sColor } as React.CSSProperties}>
+        <div className="id-card-preview-area" ref={printRef}>
           
-          {/* FRONT SIDE */}
+          {/* ================= FRONT SIDE ================= */}
           <div className="id-card-wrapper">
-            <div className="id-card front-card">
-              
-              {/* Header */}
-              <div className="front-header">
-                {schoolProfile?.logoUrl ? (
-                  <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" className="front-logo" />
-                ) : (
-                  <div className="front-logo-placeholder"></div>
-                )}
-                <div className="front-header-text">
-                  <div className="front-school-title">{schoolTitle}</div>
-                  <div className="front-school-subtitle">{schoolSubTitle}</div>
-                  <div className="front-school-address">{schoolAddr}</div>
+            <div className="card front">
+
+              {/* Shared Crest Header */}
+              <div className="head">
+                <div className="head-row">
+                  <div className="mark-cell">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                    ) : (
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                        <defs>
+                          <linearGradient id="fFlame1" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stopColor="#E63946"/><stop offset="100%" stopColor="#F4B740"/></linearGradient>
+                          <linearGradient id="fRibbon1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#C4293A"/><stop offset="50%" stopColor="#E63946"/><stop offset="100%" stopColor="#C4293A"/></linearGradient>
+                        </defs>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10" strokeLinejoin="round"/>
+                        <path d="M250,80 L400,133 L400,298 C400,412 330,472 250,510 C170,472 100,412 100,298 L100,133 Z" fill="none" stroke="#F4B740" strokeWidth="4"/>
+                        <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#12386E">
+                          <text x="136.7" y="239.7" transform="rotate(-54.0 136.7 239.7)" textAnchor="middle">D</text>
+                          <text x="167.7" y="208.7" transform="rotate(-36.0 167.7 208.7)" textAnchor="middle">O</text>
+                          <text x="206.7" y="188.9" transform="rotate(-18.0 206.7 188.9)" textAnchor="middle">T</text>
+                          <text x="250.0" y="182.0" textAnchor="middle">M</text>
+                          <text x="293.3" y="188.9" transform="rotate(18.0 293.3 188.9)" textAnchor="middle">O</text>
+                          <text x="332.3" y="208.7" transform="rotate(36.0 332.3 208.7)" textAnchor="middle">N</text>
+                          <text x="363.3" y="239.7" transform="rotate(54.0 363.3 239.7)" textAnchor="middle">D</text>
+                        </g>
+                        <path d="M188,233 Q250,243 312,233" fill="none" stroke="#F4B740" strokeWidth="3"/>
+                        <line x1="250" y1="300" x2="250" y2="365" stroke="#12386E" strokeWidth="4"/>
+                        <path d="M250,308 C215,290 175,294 152,312 C150,313 150,315 150,317 L150,352 C150,354 152,355 154,354 C177,340 215,338 250,354 Z" fill="#12386E"/>
+                        <path d="M250,308 C285,290 325,294 348,312 C350,313 350,315 350,317 L350,352 C350,354 348,355 346,354 C323,340 285,338 250,354 Z" fill="#12386E"/>
+                        <path d="M250,204 C238,222 226,238 226,254 C226,272 237,284 250,284 C263,284 274,272 274,254 C274,238 262,222 250,204 Z" fill="url(#fFlame1)"/>
+                        <text x="250" y="420" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="23" letterSpacing="5" fill="#12386E">SCHOOL</text>
+                        <g>
+                          <path d="M40,555 L100,540 L100,600 L40,615 L64,578 Z" fill="#9F1D2C"/>
+                          <path d="M460,555 L400,540 L400,600 L460,615 L436,578 Z" fill="#9F1D2C"/>
+                          <path d="M95,538 Q250,518 405,538 L405,602 Q250,584 95,602 Z" fill="url(#fRibbon1)"/>
+                          <text x="250" y="576" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="16" letterSpacing="0.5" fill="#FFFFFF">STEADY PROGRESS, BRIGHTER FUTURE</text>
+                        </g>
+                      </svg>
+                    )}
+                  </div>
+                  <div className="text-cell">
+                    <div className="word-dotmond">{schoolTitle} <span style={{ fontSize: '11px' }}>SCHOOL</span></div>
+                    <div className="subline">{schoolAddress}</div>
+                  </div>
                 </div>
               </div>
-              <div className="front-header-line"></div>
-              
-              {/* Badge Row */}
-              <div className="front-subheader-row">
-                <div className="student-id-badge">STUDENT ID</div>
-              </div>
 
-              {/* Photo Frame */}
-              <div className="front-body">
-                <div className="portrait-frame">
+              <div className="rule"></div>
+              <div className="id-row"><span className="id-pill">STUDENT ID</span></div>
+
+              {/* Passport Box */}
+              <div className="photo-box">
+                <div className="cell">
                   {idCardData.passportUrl ? (
-                    <img src={getFullUrl(idCardData.passportUrl)} alt="Student" className="student-photo" />
+                    <img src={getFullUrl(idCardData.passportUrl)} alt="Student" className="student-photo-img" />
                   ) : (
-                    <div className="student-photo placeholder">NO PHOTO</div>
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="50" cy="38" r="20" fill="#B9C2CA"/>
+                      <path d="M12,98 C12,72 28,58 50,58 C72,58 88,72 88,98 Z" fill="#B9C2CA"/>
+                    </svg>
                   )}
                 </div>
               </div>
 
-              {/* Angled Navy Student Info Banner */}
-              <div className="front-angled-block">
-                <div className="student-name">{idCardData.fullName.toUpperCase()}</div>
-                <div className="student-details-grid">
-                  <div className="detail-row">
-                    <span className="detail-label">Admission No: </span>
-                    <span className="detail-value">{idCardData.registrationNumber}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Section: </span>
-                    <span className="detail-value">{idCardData.section || 'Student'}</span>
-                  </div>
-                </div>
+              {/* Angled Navy Student Name Band */}
+              <div className="name-band">
+                <div className="name">{idCardData.fullName.toUpperCase()}</div>
+                <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
+                <div className="field"><b>Section:</b> {idCardData.section || 'Student'}</div>
               </div>
 
-              {/* Crimson Red Bar */}
-              <div className="front-red-bar"></div>
-              
-              {/* Validity Footer */}
-              <div className="front-footer-strip">
-                <span>VALID</span>
-                <span>{idCardData.validPeriod || '2026 - 2029'}</span>
+              {/* Red Bordered Footer Strip */}
+              <div className="foot-strip">
+                <div className="cell">VALID</div>
+                <div className="cell">{idCardData.validPeriod || currentSession}</div>
               </div>
+
             </div>
           </div>
 
-          {/* BACK SIDE */}
+          {/* ================= BACK SIDE ================= */}
           <div className="id-card-wrapper">
-            <div className="id-card back-card">
-              <div className="back-header">
-                {schoolProfile?.logoUrl ? (
-                  <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" className="back-logo" />
-                ) : (
-                  <div className="back-logo-placeholder"></div>
-                )}
-                <div className="back-header-text">
-                  <div className="back-school-title">{schoolTitle}</div>
-                  <div className="back-school-subtitle">Attendance &amp; Identification System</div>
+            <div className="card back">
+
+              {/* Header */}
+              <div className="head">
+                <div className="head-row">
+                  <div className="mark-cell">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                    ) : (
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                        <defs>
+                          <linearGradient id="fFlame2" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stopColor="#E63946"/><stop offset="100%" stopColor="#F4B740"/></linearGradient>
+                          <linearGradient id="fRibbon2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#C4293A"/><stop offset="50%" stopColor="#E63946"/><stop offset="100%" stopColor="#C4293A"/></linearGradient>
+                        </defs>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10" strokeLinejoin="round"/>
+                        <path d="M250,80 L400,133 L400,298 C400,412 330,472 250,510 C170,472 100,412 100,298 L100,133 Z" fill="none" stroke="#F4B740" strokeWidth="4"/>
+                        <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#12386E">
+                          <text x="136.7" y="239.7" transform="rotate(-54.0 136.7 239.7)" textAnchor="middle">D</text>
+                          <text x="167.7" y="208.7" transform="rotate(-36.0 167.7 208.7)" textAnchor="middle">O</text>
+                          <text x="206.7" y="188.9" transform="rotate(-18.0 206.7 188.9)" textAnchor="middle">T</text>
+                          <text x="250.0" y="182.0" textAnchor="middle">M</text>
+                          <text x="293.3" y="188.9" transform="rotate(18.0 293.3 188.9)" textAnchor="middle">O</text>
+                          <text x="332.3" y="208.7" transform="rotate(36.0 332.3 208.7)" textAnchor="middle">N</text>
+                          <text x="363.3" y="239.7" transform="rotate(54.0 363.3 239.7)" textAnchor="middle">D</text>
+                        </g>
+                        <path d="M188,233 Q250,243 312,233" fill="none" stroke="#F4B740" strokeWidth="3"/>
+                        <line x1="250" y1="300" x2="250" y2="365" stroke="#12386E" strokeWidth="4"/>
+                        <path d="M250,308 C215,290 175,294 152,312 C150,313 150,315 150,317 L150,352 C150,354 152,355 154,354 C177,340 215,338 250,354 Z" fill="#12386E"/>
+                        <path d="M250,308 C285,290 325,294 348,312 C350,313 350,315 350,317 L350,352 C350,354 348,355 346,354 C323,340 285,338 250,354 Z" fill="#12386E"/>
+                        <path d="M250,204 C238,222 226,238 226,254 C226,272 237,284 250,284 C263,284 274,272 274,254 C274,238 262,222 250,204 Z" fill="url(#fFlame2)"/>
+                        <text x="250" y="420" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="23" letterSpacing="5" fill="#12386E">SCHOOL</text>
+                        <g>
+                          <path d="M40,555 L100,540 L100,600 L40,615 L64,578 Z" fill="#9F1D2C"/>
+                          <path d="M460,555 L400,540 L400,600 L460,615 L436,578 Z" fill="#9F1D2C"/>
+                          <path d="M95,538 Q250,518 405,538 L405,602 Q250,584 95,602 Z" fill="url(#fRibbon2)"/>
+                          <text x="250" y="576" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="16" letterSpacing="0.5" fill="#FFFFFF">STEADY PROGRESS, BRIGHTER FUTURE</text>
+                        </g>
+                      </svg>
+                    )}
+                  </div>
+                  <div className="text-cell">
+                    <div className="word-dotmond">{schoolTitle} <span style={{ fontSize: '10px' }}>SCHOOL</span></div>
+                    <div className="subline">Attendance &amp; Identification System</div>
+                  </div>
                 </div>
               </div>
-              <div className="back-header-line"></div>
 
-              <div className="back-body">
-                <div className="instruction-text">
-                  This card is the property of {schoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
-                </div>
-                <div className="back-divider-line"></div>
+              <div className="rule"></div>
 
-                <div className="qr-section">
-                  <div className="scan-instruction-large">SCAN TO CLOCK IN</div>
-                  <div className="qr-container-large">
+              <p className="notice">
+                This card is the property of {schoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+              </p>
+
+              <div className="rule"></div>
+
+              {/* Barcode & QR Code Section */}
+              <div className="scan-block">
+                <div className="scan-label">SCAN TO CLOCK IN</div>
+                <div className="qr-wrap">
+                  <div className="cell">
                     <img
                       src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
                       alt="Student QR Code"
                     />
                   </div>
-                  <div className="encoded-id-pill">
-                    ENCODED ID: {idCardData.registrationNumber}
-                  </div>
                 </div>
-
-                <div className="signature-section">
-                  <div className="signature-line"></div>
-                  <div className="signature-label">Authorised Signature</div>
-                </div>
+                <span className="encoded-pill">ENCODED ID: {idCardData.registrationNumber}</span>
               </div>
 
-              <div className="back-footer-bar">
-                Powered by NEOTRO ATTENDANCE SYSTEM
+              {/* Authorised Signature Line */}
+              <div className="sig">
+                <div className="line"></div>
+                <div className="cap">Authorised Signature</div>
               </div>
+
+              {/* Footer */}
+              <div className="foot-strip">
+                <div className="cell">Powered by NEOTRO ATTENDANCE SYSTEM</div>
+              </div>
+
             </div>
           </div>
 
