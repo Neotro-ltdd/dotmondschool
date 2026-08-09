@@ -26,6 +26,8 @@ interface SchoolProfile {
   primaryColor: string;
   secondaryColor: string;
   currentSession: string;
+  principalSignatureUrl?: string;
+  signatureUrl?: string;
 }
 
 export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModalProps) {
@@ -59,7 +61,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
             logoUrl: "",
             primaryColor: "#12386E",
             secondaryColor: "#C4293A",
-            currentSession: "2026 – 2027"
+            currentSession: "2026/2027"
           });
         }
       } catch (err: any) {
@@ -98,35 +100,16 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return url.startsWith('/') ? `${API_ROOT}${url}` : url;
   };
 
-  // 1. School Name Parsing (Prevents "DOTMOND SCHOOL SCHOOL" duplicate repetition)
-  const fullSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
-  let mainName = "DOTMOND";
-  let subName = "SCHOOL";
-
-  const cleanSchoolName = fullSchoolName.trim();
-  if (cleanSchoolName.toUpperCase().endsWith(" SCHOOL")) {
-    mainName = cleanSchoolName.substring(0, cleanSchoolName.length - 7).trim().toUpperCase();
-    subName = "SCHOOL";
-  } else if (cleanSchoolName.toUpperCase().includes(" ")) {
-    const parts = cleanSchoolName.split(" ");
-    mainName = parts[0].toUpperCase();
-    subName = parts.slice(1).join(" ").toUpperCase();
-  } else {
-    mainName = cleanSchoolName.toUpperCase();
-    subName = "";
-  }
-
+  // 1. School Name Single Line Display ("DOTMOND SCHOOL")
+  const rawSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
+  const fullSchoolTitle = rawSchoolName.toUpperCase();
   const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
   
-  // 2. Active Session & Validity Fallback
-  const validPeriod = (idCardData.validPeriod && idCardData.validPeriod !== "Unassigned" && idCardData.validPeriod !== "")
-    ? idCardData.validPeriod
-    : (schoolProfile?.currentSession || "2026 – 2027");
+  // 2. Active System Academic Session
+  const activeSession = schoolProfile?.currentSession || idCardData.validPeriod || "2026/2027";
 
-  // 3. Section / Class Fallback
-  const sectionText = (idCardData.section && idCardData.section !== "Unassigned" && idCardData.section !== "")
-    ? idCardData.section
-    : ((idCardData as any).className || "Nursery 1");
+  // 3. Principal Signature Check
+  const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
 
   return (
     <div className="id-card-overlay">
@@ -155,7 +138,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           <div className="id-card-wrapper">
             <div className="card front">
 
-              {/* Shared Header */}
+              {/* Header with single-line school name */}
               <div className="head">
                 <div className="head-row">
                   <div className="mark-cell">
@@ -194,7 +177,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{mainName} <span className="word-school" style={{ fontSize: '11px' }}>{subName}</span></div>
+                    <div className="word-dotmond">{fullSchoolTitle}</div>
                     <div className="subline">{schoolAddress}</div>
                   </div>
                 </div>
@@ -217,17 +200,17 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 </div>
               </div>
 
-              {/* Angled Navy Student Name Band */}
+              {/* Angled Navy Student Name Band - Positioned right above bottom strip */}
               <div className="name-band">
                 <div className="name">{idCardData.fullName.toUpperCase()}</div>
                 <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
-                <div className="field"><b>Section:</b> {sectionText}</div>
+                <div className="field"><b>Session:</b> {activeSession}</div>
               </div>
 
               {/* Red Bordered Footer Strip */}
               <div className="foot-strip">
                 <div className="cell">VALID</div>
-                <div className="cell">{validPeriod}</div>
+                <div className="cell">{activeSession}</div>
               </div>
 
             </div>
@@ -276,7 +259,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{mainName} <span className="word-school" style={{ fontSize: '10px' }}>{subName}</span></div>
+                    <div className="word-dotmond">{fullSchoolTitle}</div>
                     <div className="subline">Attendance &amp; Identification System</div>
                   </div>
                 </div>
@@ -285,7 +268,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               <div className="rule"></div>
 
               <p className="notice">
-                This card is the property of {cleanSchoolName}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
               </p>
 
               <div className="rule"></div>
@@ -304,11 +287,14 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 <span className="encoded-pill">ENCODED ID: {idCardData.registrationNumber}</span>
               </div>
 
-              {/* Authorised Signature Line */}
-              <div className="sig">
-                <div className="line"></div>
-                <div className="cap">Authorised Signature</div>
-              </div>
+              {/* Conditional Authorised Signature Line */}
+              {principalSig ? (
+                <div className="sig">
+                  <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.22in', display: 'block', margin: '0 auto 2px' }} />
+                  <div className="line"></div>
+                  <div className="cap">Authorised Signature</div>
+                </div>
+              ) : null}
 
               {/* Footer */}
               <div className="foot-strip">

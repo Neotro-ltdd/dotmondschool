@@ -110,14 +110,10 @@
   color: var(--navy);
   letter-spacing: 0.2px;
   line-height: 1.15;
-  font-size: 14.5px;
-}
-
-.word-school {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  font-weight: 700;
-  color: var(--navy);
-  letter-spacing: 0.2px;
+  font-size: 11.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rule {
@@ -129,10 +125,6 @@
 /* ══════════════════════════════
    FRONT CARD
 ══════════════════════════════ */
-.front .word-dotmond {
-  font-size: 14.5px;
-}
-
 .front .subline {
   font-size: 7.6px;
   color: var(--ash-700);
@@ -160,7 +152,7 @@
 }
 
 .photo-box {
-  height: 1.35in;
+  height: 1.48in;
   margin: 0.02in 0.16in 0;
   border: 1.4px solid var(--red);
   border-radius: 0.06in;
@@ -191,21 +183,21 @@
 }
 
 .name-band {
-  height: 0.60in;
+  height: 0.58in;
   background: var(--navy);
   color: var(--white);
   padding: 0.06in 0.16in 0;
   clip-path: polygon(0 24%, 100% 0, 100% 100%, 0% 100%);
-  margin-top: 0.02in;
+  margin-top: 0.04in;
   box-sizing: border-box;
 }
 
 .name-band .name {
   font-family: 'Georgia', 'Times New Roman', serif;
   font-weight: 700;
-  font-size: 10.5px; /* Reduced from 14px to fit surname + firstname properly */
+  font-size: 10.5px;
   letter-spacing: 0.2px;
-  margin: 0 0 2px;
+  margin: 0 0 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -263,15 +255,6 @@
 /* ══════════════════════════════
    BACK CARD
 ══════════════════════════════ */
-.back .word-dotmond {
-  font-size: 13px;
-}
-
-.back .word-school {
-  font-size: 13px;
-  margin-left: 4px;
-}
-
 .back .subline {
   font-size: 7.6px;
   color: var(--ash-700);
@@ -342,6 +325,7 @@
 .sig {
   margin: 0.04in 0.18in 0;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .sig .line {
