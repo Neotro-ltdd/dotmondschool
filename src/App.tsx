@@ -51,6 +51,7 @@ import MyClass from './pages/dashboard/teacher/MyClass';
 import ContinuousAssessment from './pages/dashboard/teacher/ContinuousAssessment';
 import AttendanceRegister from './pages/dashboard/teacher/AttendanceRegister';
 import Utilities from './pages/dashboard/teacher/Utilities';
+import TeacherResults from './pages/dashboard/teacher/TeacherResults';
 import StaffAttendanceReport from './pages/dashboard/attendance/StaffAttendanceReport';
 import ParentHub from './pages/dashboard/parent/ParentHub';
 import VendorHub from './pages/dashboard/vendor/VendorHub';
