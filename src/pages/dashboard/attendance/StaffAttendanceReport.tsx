@@ -53,7 +53,7 @@ export default function StaffAttendanceReport() {
   const { data, isLoading, refetch, isRefetching } = useQuery<StaffAttendanceReportData>({
     queryKey: ['staff-attendance-report', selectedDate, categoryFilter],
     queryFn: async () => {
-      const res = await api.get(`/api/attendance/staff-report?date=${selectedDate}&category=${categoryFilter}`);
+      const res = await api.get(`/attendance/staff-report?date=${selectedDate}&category=${categoryFilter}`);
       return res;
     }
   });

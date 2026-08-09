@@ -47,7 +47,7 @@ export default function Teachers() {
   const { data: teachers = [], isLoading: loading, error: queryError } = useQuery<TeacherItem[]>({
     queryKey: ['staffList'],
     queryFn: async () => {
-      const res = await api.get('/api/setup/staff');
+      const res = await api.get('/setup/staff');
       return res;
     }
   });
@@ -116,9 +116,9 @@ export default function Teachers() {
         if (variables.data.employmentType) formDataPayload.append('employmentType', variables.data.employmentType);
         if (signatureFile) formDataPayload.append('signature', signatureFile);
 
-        return await api.put(`/api/setup/staff/${variables.id}`, formDataPayload);
+        return await api.put(`/setup/staff/${variables.id}`, formDataPayload);
       } else {
-        return await api.post('/api/setup/staff', variables.data);
+        return await api.post('/setup/staff', variables.data);
       }
     },
     onSuccess: (res, variables) => {
