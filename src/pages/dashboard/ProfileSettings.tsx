@@ -296,7 +296,7 @@ export default function ProfileSettings() {
                   {/* Joined Date Badge */}
                   <span style={{ background: '#F8FAFC', color: '#475569', border: '1px solid #E2E8F0', fontSize: '0.8rem', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                     <Calendar size={14} />
-                    Joined: {profile.createdDate ? new Date(profile.createdDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Active Staff'}
+                    Joined: {profile.createdDate ? new Date(profile.createdDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : (userRole === 'Parent' ? 'Active Parent' : 'Active Staff')}
                   </span>
                 </div>
               </div>
@@ -346,28 +346,30 @@ export default function ProfileSettings() {
               Bio-Data
             </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('roles')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.65rem 1.25rem',
-                borderRadius: '10px',
-                border: 'none',
-                background: activeTab === 'roles' ? '#000080' : 'transparent',
-                color: activeTab === 'roles' ? '#ffffff' : '#64748B',
-                fontWeight: activeTab === 'roles' ? 700 : 600,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeTab === 'roles' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
-              }}
-            >
-              <Shield size={16} />
-              Role Selection ({rolesList.length})
-            </button>
+            {userRole !== 'Parent' && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('roles')}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: activeTab === 'roles' ? '#000080' : 'transparent',
+                  color: activeTab === 'roles' ? '#ffffff' : '#64748B',
+                  fontWeight: activeTab === 'roles' ? 700 : 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: activeTab === 'roles' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
+                }}
+              >
+                <Shield size={16} />
+                Role Selection ({rolesList.length})
+              </button>
+            )}
 
             <button
               type="button"
@@ -392,28 +394,30 @@ export default function ProfileSettings() {
               Profile Image
             </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('signature')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.65rem 1.25rem',
-                borderRadius: '10px',
-                border: 'none',
-                background: activeTab === 'signature' ? '#000080' : 'transparent',
-                color: activeTab === 'signature' ? '#ffffff' : '#64748B',
-                fontWeight: activeTab === 'signature' ? 700 : 600,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeTab === 'signature' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
-              }}
-            >
-              <FileSignature size={16} />
-              Signature
-            </button>
+            {userRole !== 'Parent' && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('signature')}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: activeTab === 'signature' ? '#000080' : 'transparent',
+                  color: activeTab === 'signature' ? '#ffffff' : '#64748B',
+                  fontWeight: activeTab === 'signature' ? 700 : 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: activeTab === 'signature' ? '0 4px 14px rgba(0, 0, 128, 0.25)' : 'none'
+                }}
+              >
+                <FileSignature size={16} />
+                Signature
+              </button>
+            )}
 
           </div>
 
