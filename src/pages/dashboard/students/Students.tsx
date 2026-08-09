@@ -98,6 +98,7 @@ export default function Students() {
   // Upload State
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [standardizing, setStandardizing] = useState(false);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -214,6 +215,20 @@ export default function Students() {
     }
   };
 
+  const handleStandardizeRegNumbers = async () => {
+    if (!await showConfirm('Are you sure you want to standardize all student registration numbers? This will format every student registration number into the exact standard pattern (e.g. DOTSS2-001, DOTJSS1-001).', { title: 'Standardize Registration Numbers', type: 'warning' })) return;
+    try {
+      setStandardizing(true);
+      const res = await api.post('/admin/students/standardize-reg-numbers', {});
+      showAlert(res.message || 'Registration numbers standardized successfully.');
+      fetchStudents();
+    } catch (err: any) {
+      showAlert(err.message || 'Failed to standardize registration numbers.');
+    } finally {
+      setStandardizing(false);
+    }
+  };
+
   const handleDelete = async (studentId: string, studentName: string) => {
     setOpenDropdownId(null);
     if (!await showConfirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
@@ -286,6 +301,17 @@ export default function Students() {
           >
             <FileSpreadsheet size={18} />
             {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
+          </button>
+
+          <button 
+            className="btn-upload-excel"
+            style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fcd34d' }}
+            onClick={handleStandardizeRegNumbers}
+            disabled={standardizing}
+            title="Audit and re-format all student registration numbers to standard DOT format"
+          >
+            <ShieldCheck size={18} />
+            {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
           </button>
           
           <button className="btn-add-student" onClick={() => setShowModal(true)}>
