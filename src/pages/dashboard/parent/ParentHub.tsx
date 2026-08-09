@@ -21,7 +21,14 @@ import {
   BookOpen, 
   TrendingUp,
   ShieldCheck,
-  FileCheck
+  FileCheck,
+  User,
+  Hash,
+  DollarSign,
+  UploadCloud,
+  Copy,
+  Check,
+  Building
 } from 'lucide-react';
 import './ParentHub.css';
 
@@ -121,6 +128,13 @@ export default function ParentHub() {
   const [proofAmount, setProofAmount] = useState('');
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [submittingProof, setSubmittingProof] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState(false);
+
+  const handleCopyAccount = (accNo: string) => {
+    navigator.clipboard.writeText(accNo);
+    setCopiedAccount(true);
+    setTimeout(() => setCopiedAccount(false), 2500);
+  };
 
   useEffect(() => {
     fetchMyKids();
@@ -518,40 +532,165 @@ export default function ParentHub() {
 
               {/* Sub-Tab 3: Upload Bank Teller / Invoice */}
               {feeSubTab === 'upload' && (
-                <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px', maxWidth: '640px' }}>
-                  <h3 style={{ margin: '0 0 0.5rem', color: '#0f172a' }}>Upload Bank Teller / Transfer Receipt</h3>
-                  <p style={{ margin: '0 0 1.25rem', fontSize: '0.85rem', color: '#64748b' }}>
-                    Submit proof of payment for verification by the school bursar.
-                  </p>
-
-                  <form onSubmit={handleUploadProof}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="parent-content-panel">
+                  <div className="parent-split-grid">
+                    {/* Left Column: Bank Account Details Card */}
+                    <div className="bank-info-card">
                       <div>
-                        <label className="form-label">Depositor Name</label>
-                        <input type="text" className="form-control" value={depositorName} onChange={e => setDepositorName(e.target.value)} placeholder="Full name on bank account / teller" required />
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div>
-                          <label className="form-label">Bank Reference / Teller No.</label>
-                          <input type="text" className="form-control" value={bankRef} onChange={e => setBankRef(e.target.value)} placeholder="e.g. TRF/2026/84920" required />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem' }}>
+                          <Building size={24} style={{ color: '#818cf8' }} />
+                          <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.2rem', fontWeight: 700 }}>
+                            Official Bank Account Details
+                          </h3>
                         </div>
-                        <div>
-                          <label className="form-label">Amount Paid (₦)</label>
-                          <input type="number" className="form-control" value={proofAmount} onChange={e => setProofAmount(e.target.value)} placeholder="e.g. 150000" required />
+                        <p style={{ fontSize: '0.88rem', color: '#c7d2fe', margin: '0 0 1.5rem 0', lineHeight: 1.5 }}>
+                          Make your tuition payment directly via mobile app or bank deposit using the details below.
+                        </p>
+
+                        <div className="bank-info-row">
+                          <span className="bank-label">Bank Name</span>
+                          <span className="bank-value">ZENITH BANK PLC</span>
                         </div>
-                      </div>
-                      <div>
-                        <label className="form-label">Upload Proof Image / PDF</label>
-                        <input type="file" accept="image/*,.pdf" className="form-control" onChange={e => setProofFile(e.target.files?.[0] || null)} required />
+                        <div className="bank-info-row">
+                          <span className="bank-label">Account Name</span>
+                          <span className="bank-value">DOTMOND INT'L SCHOOLS</span>
+                        </div>
+                        <div className="bank-info-row">
+                          <span className="bank-label">Account Number</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <span className="bank-value" style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}>1012983745</span>
+                            <button 
+                              type="button" 
+                              className="copy-btn" 
+                              onClick={() => handleCopyAccount('1012983745')}
+                            >
+                              {copiedAccount ? <Check size={14} style={{ color: '#4ade80' }} /> : <Copy size={14} />}
+                              {copiedAccount ? 'Copied!' : 'Copy'}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="bank-info-row">
+                          <span className="bank-label">Student Reg Ref</span>
+                          <span className="bank-value" style={{ color: '#38bdf8', fontFamily: 'monospace' }}>
+                            {selectedKid.registrationNumber}
+                          </span>
+                        </div>
                       </div>
 
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
-                        <button type="submit" className="btn btn-primary" disabled={submittingProof}>
-                          {submittingProof ? 'Uploading...' : 'Submit Payment Proof'}
-                        </button>
+                      <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1rem', marginTop: '1.5rem', border: '1px dashed rgba(255,255,255,0.2)' }}>
+                        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
+                          <AlertCircle size={18} style={{ color: '#facc15', flexShrink: 0, marginTop: '2px' }} />
+                          <span style={{ fontSize: '0.82rem', color: '#e0e7ff', lineHeight: 1.45 }}>
+                            <strong>Important Note:</strong> Always include <code>{selectedKid.registrationNumber}</code> in your transaction narration for fast automated audit clearance.
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </form>
+
+                    {/* Right Column: Payment Proof Submission Form */}
+                    <div>
+                      <div style={{ marginBottom: '1.5rem' }}>
+                        <h3 style={{ margin: '0 0 0.35rem 0', color: '#0f172a', fontSize: '1.25rem', fontWeight: 800 }}>
+                          Submit Payment Proof
+                        </h3>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.88rem' }}>
+                          Upload your bank transfer receipt or paper teller image for bursar verification.
+                        </p>
+                      </div>
+
+                      <form onSubmit={handleUploadProof}>
+                        <div className="parent-form-group">
+                          <label className="parent-form-label">Depositor Full Name</label>
+                          <div className="input-icon-wrapper">
+                            <User size={18} />
+                            <input 
+                              type="text" 
+                              className="parent-form-input" 
+                              value={depositorName} 
+                              onChange={e => setDepositorName(e.target.value)} 
+                              placeholder="Full name as printed on bank transfer receipt" 
+                              required 
+                            />
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                          <div className="parent-form-group">
+                            <label className="parent-form-label">Bank Reference / Teller No.</label>
+                            <div className="input-icon-wrapper">
+                              <Hash size={18} />
+                              <input 
+                                type="text" 
+                                className="parent-form-input" 
+                                value={bankRef} 
+                                onChange={e => setBankRef(e.target.value)} 
+                                placeholder="e.g. TRF/2026/84920" 
+                                required 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="parent-form-group">
+                            <label className="parent-form-label">Amount Paid (₦)</label>
+                            <div className="input-icon-wrapper">
+                              <DollarSign size={18} />
+                              <input 
+                                type="number" 
+                                className="parent-form-input" 
+                                value={proofAmount} 
+                                onChange={e => setProofAmount(e.target.value)} 
+                                placeholder="e.g. 150000" 
+                                required 
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="parent-form-group">
+                          <label className="parent-form-label">Upload Transfer Receipt Image / PDF</label>
+                          <div 
+                            className={`file-dropzone-box ${proofFile ? 'file-dropzone-active' : ''}`}
+                            onClick={() => document.getElementById('proof-file-input')?.click()}
+                          >
+                            <input 
+                              id="proof-file-input" 
+                              type="file" 
+                              accept="image/*,.pdf" 
+                              style={{ display: 'none' }} 
+                              onChange={e => setProofFile(e.target.files?.[0] || null)} 
+                              required 
+                            />
+                            {proofFile ? (
+                              <div>
+                                <CheckCircle2 size={36} style={{ color: '#16a34a', margin: '0 auto 0.5rem' }} />
+                                <strong style={{ display: 'block', color: '#15803d', fontSize: '0.95rem' }}>
+                                  {proofFile.name}
+                                </strong>
+                                <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                                  {(proofFile.size / (1024 * 1024)).toFixed(2)} MB • Click to change file
+                                </span>
+                              </div>
+                            ) : (
+                              <div>
+                                <UploadCloud size={38} style={{ color: '#818cf8', margin: '0 auto 0.5rem' }} />
+                                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.95rem', marginBottom: '0.2rem' }}>
+                                  Click or drag transfer receipt here
+                                </strong>
+                                <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                                  Supports JPG, PNG, WEBP, or PDF (Max 10MB)
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <button type="submit" className="parent-submit-btn" disabled={submittingProof}>
+                          <Upload size={18} />
+                          {submittingProof ? 'Uploading & Verifying Proof...' : 'Submit Payment Proof for Verification'}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

@@ -1,5 +1,5 @@
 .parent-hub-page {
-  padding: 1.5rem;
+  padding: 1.75rem;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -222,7 +222,7 @@
 }
 
 .parent-sub-tab {
-  padding: 0.5rem 1.2rem;
+  padding: 0.55rem 1.35rem;
   border-radius: 30px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
@@ -242,7 +242,195 @@
   background: #4f46e5;
   color: #ffffff;
   border-color: #4f46e5;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
+}
+
+/* Full Width Container Cards */
+.parent-content-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
+
+/* Split Layout Grid for Payment Upload & Billing */
+.parent-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 2rem;
+}
+
+@media (max-width: 992px) {
+  .parent-split-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Bank Details Accent Card */
+.bank-info-card {
+  background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%);
+  border-radius: 16px;
+  padding: 1.75rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bank-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bank-info-row:last-child {
+  border-bottom: none;
+}
+
+.bank-label {
+  font-size: 0.82rem;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.bank-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.copy-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Modern Form Controls */
+.parent-form-group {
+  margin-bottom: 1.35rem;
+}
+
+.parent-form-label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-wrapper svg {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.parent-form-input {
+  width: 100%;
+  height: 50px;
+  padding: 0 1.25rem 0 2.85rem;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.parent-form-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.parent-form-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.input-icon-wrapper:focus-within svg {
+  color: #4f46e5;
+}
+
+/* File Upload Dropzone */
+.file-dropzone-box {
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.file-dropzone-box:hover {
+  border-color: #4f46e5;
+  background: #f5f3ff;
+}
+
+.file-dropzone-active {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.parent-submit-btn {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.35);
+  transition: all 0.25s ease;
+  margin-top: 0.5rem;
+}
+
+.parent-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px -4px rgba(79, 70, 229, 0.45);
+}
+
+.parent-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Tables */
