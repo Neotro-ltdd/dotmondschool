@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BookOpen } from 'lucide-react';
 import { api, API_ROOT } from '../services/api';
 import '../pages/dashboard/reports/ResultSheet.css';
 
@@ -69,14 +70,22 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
         setLogoUrl(profileRes.logoUrl);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load report card');
+      setError(err.message || 'No approved result sheet available for the selected term.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div style={{ padding: '20px', textAlign: 'center' }}>Loading Report Card...</div>;
-  if (error) return <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>{error}</div>;
+  if (loading) return <div style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>Loading Report Card...</div>;
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', padding: '3rem 2rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', margin: '1rem 0' }}>
+        <BookOpen size={40} style={{ color: '#94a3b8', margin: '0 auto 0.75rem' }} />
+        <h4 style={{ color: '#1e293b', margin: '0 0 0.25rem', fontSize: '1.1rem' }}>Terminal Result Notice</h4>
+        <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>{error}</p>
+      </div>
+    );
+  }
   if (!data) return null;
 
   const getFullUrl = (url: string | null | undefined) => {

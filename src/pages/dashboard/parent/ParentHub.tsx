@@ -232,7 +232,8 @@ export default function ParentHub() {
   };
 
   const currentInvoice = invoices.find(inv => inv.session === filterSession && inv.term === filterTerm) || invoices[0];
-  const hasOutstandingFees = invoices.some(inv => inv.status !== 'Completed' && inv.status !== 'Verified');
+  const selectedTermInvoice = invoices.find(inv => inv.session === filterSession && inv.term === filterTerm);
+  const hasOutstandingFees = selectedTermInvoice ? (selectedTermInvoice.status !== 'Completed' && selectedTermInvoice.status !== 'Verified' && selectedTermInvoice.status !== 'Paid') : false;
 
   return (
     <div className="parent-hub-page">
@@ -397,22 +398,22 @@ export default function ParentHub() {
                   <div style={{ flex: 1 }}>
                     <strong style={{ display: 'block', color: '#92400e', fontSize: '1rem' }}>Pending Tuition Clearance Required</strong>
                     <span style={{ fontSize: '0.88rem', color: '#b45309' }}>
-                      Terminal result viewing for {selectedKid.firstName} requires cleared tuition fees. Please resolve pending invoices to access the complete report sheet.
+                      Terminal result viewing for {selectedKid.firstName} for {filterSession} ({filterTerm}) requires cleared tuition fees. Please resolve pending invoices to access the complete report sheet.
                     </span>
                   </div>
                   <button className="btn btn-primary btn-sm" style={{ background: '#d97706', borderColor: '#d97706' }} onClick={() => setActiveTab('fees')}>
                     Clear Fees Now
                   </button>
                 </div>
-              ) : null}
-
-              {/* Interactive Report Card Component */}
-              <ReportCard 
-                studentId={selectedKid.id}
-                session={filterSession}
-                term={filterTerm}
-                onClose={() => {}}
-              />
+              ) : (
+                /* Interactive Report Card Component */
+                <ReportCard 
+                  studentId={selectedKid.id}
+                  session={filterSession}
+                  term={filterTerm}
+                  onClose={() => {}}
+                />
+              )}
             </div>
           )}
 
