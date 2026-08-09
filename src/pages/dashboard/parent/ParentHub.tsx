@@ -236,16 +236,23 @@ export default function ParentHub() {
 
   return (
     <div className="parent-hub-page">
-      {/* Overview Header */}
+      {/* Hero Banner Header */}
       {!selectedKid ? (
         <>
-          <div className="page-header" style={{ marginBottom: '1.5rem' }}>
-            <h1 className="page-title" style={{ margin: 0, fontSize: '1.6rem', color: '#0f172a' }}>
-              Parent Portal Workspace
-            </h1>
-            <p className="page-subtitle" style={{ margin: '0.25rem 0 0', color: '#64748b' }}>
-              Review your children's academic performance, monitor gate attendance, and manage tuition fees.
-            </p>
+          <div className="parent-hero-banner">
+            <div className="parent-hero-header">
+              <div>
+                <h1 className="parent-hero-title">Parent Academic & Financial Portal</h1>
+                <p className="parent-hero-subtitle">
+                  Review your children's academic performance, monitor daily gate attendance logs, inspect itemized tuition billing, and download official payment receipts.
+                </p>
+              </div>
+
+              <div className="parent-hero-badge">
+                <ShieldCheck size={16} />
+                <span>{currentSession} Session • {currentTerm}</span>
+              </div>
+            </div>
           </div>
 
           {loadingKids ? (
