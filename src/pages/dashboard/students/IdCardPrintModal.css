@@ -43,7 +43,7 @@
 
 .id-card {
   width: 230px;
-  height: 365px;
+  height: 360px;
   background: #ffffff;
   position: relative;
   overflow: hidden;
@@ -154,8 +154,8 @@
 }
 
 .portrait-frame {
-  width: 125px;
-  height: 138px;
+  width: 122px;
+  height: 135px;
   border: 2px solid #8b0000;
   border-radius: 12px;
   overflow: hidden;
@@ -182,9 +182,9 @@
 .front-angled-block {
   background: #0c2340;
   color: #ffffff;
-  padding: 12px 10px 4px 10px;
+  padding: 10px 10px 5px 10px;
   clip-path: polygon(0 8px, 100% 0, 100% 100%, 0 100%);
-  margin-top: -8px;
+  margin-top: -6px;
   position: relative;
   z-index: 1;
 }
@@ -236,7 +236,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 3px 10px 5px 10px;
+  padding: 4px 10px 5px 10px;
   color: #ffffff;
   font-size: 6.5px;
   font-weight: 700;
@@ -311,8 +311,8 @@
 }
 
 .qr-container-large {
-  width: 100px;
-  height: 100px;
+  width: 95px;
+  height: 95px;
   padding: 4px;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
@@ -336,7 +336,7 @@
   background: #cbd5e1;
   padding: 2px 8px;
   border-radius: 8px;
-  margin-top: 6px;
+  margin-top: 5px;
   letter-spacing: 0.03em;
 }
 

@@ -33,6 +33,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   const [idCardData, setIdCardData] = useState<IdCardData | null>(null);
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<'standard' | 'modern' | 'minimal'>('standard');
 
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
@@ -55,12 +56,12 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
         } catch (profileErr) {
           // Fallback if profile not found
           setSchoolProfile({
-            schoolName: "Your School Name",
-            address: "123 Education Way",
+            schoolName: "DOTMOND SCHOOL",
+            address: "Happyland Estate, Ajah, Lagos State, Nigeria",
             logoUrl: "",
-            primaryColor: "#0A192F",
-            secondaryColor: "#FACC15",
-            currentSession: "2026/2027"
+            primaryColor: "#0C2340",
+            secondaryColor: "#8B0000",
+            currentSession: "2026 - 2029"
           });
         }
       } catch (err: any) {
@@ -94,32 +95,57 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     );
   }
 
-  const pColor = schoolProfile?.primaryColor || '#0A192F';
-  const sColor = schoolProfile?.secondaryColor || '#FACC15';
+  const pColor = schoolProfile?.primaryColor || '#0C2340';
+  const sColor = schoolProfile?.secondaryColor || '#8B0000';
 
   const getFullUrl = (url: string | undefined | null) => {
     if (!url) return '';
     return url.startsWith('/') ? `${API_ROOT}${url}` : url;
   };
 
+  const schoolTitle = schoolProfile?.schoolName ? schoolProfile.schoolName.toUpperCase() : "DOTMOND";
+  const schoolSubTitle = "PRIMARY & SECONDARY SCHOOL";
+  const schoolAddr = schoolProfile?.address || "Happyland Estate, Ajah, Lagos";
+
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="no-print">
-          <h2>Print ID Card</h2>
+        
+        {/* Header Controls */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }} className="no-print">
           <div>
-            <button className="btn btn-secondary" style={{ marginRight: '10px' }} onClick={onClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={handlePrint}>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>Print Student ID Card</h2>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#64748B' }}>Official school identification badge & gate barcode pass.</p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#475569' }}>Template:</label>
+              <select 
+                value={selectedTemplate} 
+                onChange={(e) => setSelectedTemplate(e.target.value as any)}
+                style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 600, background: '#FFFFFF', color: '#0F172A' }}
+              >
+                <option value="standard">Dotmond Standard (Classic Vertical)</option>
+                <option value="modern">Executive Navy (Modern)</option>
+                <option value="minimal">Minimalist Pass</option>
+              </select>
+            </div>
+
+            <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+            <button className="btn btn-primary" onClick={handlePrint} style={{ fontWeight: 700 }}>
               🖨️ Print Card
             </button>
           </div>
         </div>
 
-        <div className="id-card-preview-area" ref={printRef} style={{ '--card-primary-color': pColor, '--card-secondary-color': sColor } as React.CSSProperties}>
+        <div className={`id-card-preview-area template-${selectedTemplate}`} ref={printRef} style={{ '--card-primary-color': pColor, '--card-secondary-color': sColor } as React.CSSProperties}>
           
-          {/* FRONT */}
+          {/* FRONT SIDE */}
           <div className="id-card-wrapper">
             <div className="id-card front-card">
+              
+              {/* Header */}
               <div className="front-header">
                 {schoolProfile?.logoUrl ? (
                   <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" className="front-logo" />
@@ -127,17 +153,19 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   <div className="front-logo-placeholder"></div>
                 )}
                 <div className="front-header-text">
-                  <div className="front-school-title">DOTMOND</div>
-                  <div className="front-school-subtitle">PRIMARY &amp; SECONDARY SCHOOL</div>
-                  <div className="front-school-address">{schoolProfile?.address || 'Happyland Estate, Ajah, Lagos'}</div>
+                  <div className="front-school-title">{schoolTitle}</div>
+                  <div className="front-school-subtitle">{schoolSubTitle}</div>
+                  <div className="front-school-address">{schoolAddr}</div>
                 </div>
               </div>
               <div className="front-header-line"></div>
               
+              {/* Badge Row */}
               <div className="front-subheader-row">
                 <div className="student-id-badge">STUDENT ID</div>
               </div>
 
+              {/* Photo Frame */}
               <div className="front-body">
                 <div className="portrait-frame">
                   {idCardData.passportUrl ? (
@@ -148,6 +176,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 </div>
               </div>
 
+              {/* Angled Navy Student Info Banner */}
               <div className="front-angled-block">
                 <div className="student-name">{idCardData.fullName.toUpperCase()}</div>
                 <div className="student-details-grid">
@@ -157,21 +186,23 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Section: </span>
-                    <span className="detail-value">{idCardData.section}</span>
+                    <span className="detail-value">{idCardData.section || 'Student'}</span>
                   </div>
                 </div>
               </div>
 
+              {/* Crimson Red Bar */}
               <div className="front-red-bar"></div>
               
+              {/* Validity Footer */}
               <div className="front-footer-strip">
                 <span>VALID</span>
-                <span>{idCardData.validPeriod}</span>
+                <span>{idCardData.validPeriod || '2026 - 2029'}</span>
               </div>
             </div>
           </div>
 
-          {/* BACK */}
+          {/* BACK SIDE */}
           <div className="id-card-wrapper">
             <div className="id-card back-card">
               <div className="back-header">
@@ -181,7 +212,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   <div className="back-logo-placeholder"></div>
                 )}
                 <div className="back-header-text">
-                  <div className="back-school-title">DOTMOND SCHOOL</div>
+                  <div className="back-school-title">{schoolTitle}</div>
                   <div className="back-school-subtitle">Attendance &amp; Identification System</div>
                 </div>
               </div>
@@ -189,7 +220,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
 
               <div className="back-body">
                 <div className="instruction-text">
-                  This card is the property of Dotmond Primary &amp; Secondary School. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                  This card is the property of {schoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
                 </div>
                 <div className="back-divider-line"></div>
 
