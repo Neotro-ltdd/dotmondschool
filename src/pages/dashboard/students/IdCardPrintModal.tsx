@@ -59,7 +59,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
             logoUrl: "",
             primaryColor: "#12386E",
             secondaryColor: "#C4293A",
-            currentSession: "2026/2027"
+            currentSession: "2026 – 2027"
           });
         }
       } catch (err: any) {
@@ -98,9 +98,35 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return url.startsWith('/') ? `${API_ROOT}${url}` : url;
   };
 
-  const schoolTitle = schoolProfile?.schoolName ? schoolProfile.schoolName.toUpperCase() : "DOTMOND";
+  // 1. School Name Parsing (Prevents "DOTMOND SCHOOL SCHOOL" duplicate repetition)
+  const fullSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
+  let mainName = "DOTMOND";
+  let subName = "SCHOOL";
+
+  const cleanSchoolName = fullSchoolName.trim();
+  if (cleanSchoolName.toUpperCase().endsWith(" SCHOOL")) {
+    mainName = cleanSchoolName.substring(0, cleanSchoolName.length - 7).trim().toUpperCase();
+    subName = "SCHOOL";
+  } else if (cleanSchoolName.toUpperCase().includes(" ")) {
+    const parts = cleanSchoolName.split(" ");
+    mainName = parts[0].toUpperCase();
+    subName = parts.slice(1).join(" ").toUpperCase();
+  } else {
+    mainName = cleanSchoolName.toUpperCase();
+    subName = "";
+  }
+
   const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
-  const currentSession = schoolProfile?.currentSession || "2026 – 2027";
+  
+  // 2. Active Session & Validity Fallback
+  const validPeriod = (idCardData.validPeriod && idCardData.validPeriod !== "Unassigned" && idCardData.validPeriod !== "")
+    ? idCardData.validPeriod
+    : (schoolProfile?.currentSession || "2026 – 2027");
+
+  // 3. Section / Class Fallback
+  const sectionText = (idCardData.section && idCardData.section !== "Unassigned" && idCardData.section !== "")
+    ? idCardData.section
+    : ((idCardData as any).className || "Nursery 1");
 
   return (
     <div className="id-card-overlay">
@@ -129,7 +155,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           <div className="id-card-wrapper">
             <div className="card front">
 
-              {/* Shared Crest Header */}
+              {/* Shared Header */}
               <div className="head">
                 <div className="head-row">
                   <div className="mark-cell">
@@ -168,7 +194,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{schoolTitle} <span style={{ fontSize: '11px' }}>SCHOOL</span></div>
+                    <div className="word-dotmond">{mainName} <span className="word-school" style={{ fontSize: '11px' }}>{subName}</span></div>
                     <div className="subline">{schoolAddress}</div>
                   </div>
                 </div>
@@ -195,13 +221,13 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               <div className="name-band">
                 <div className="name">{idCardData.fullName.toUpperCase()}</div>
                 <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
-                <div className="field"><b>Section:</b> {idCardData.section || 'Student'}</div>
+                <div className="field"><b>Section:</b> {sectionText}</div>
               </div>
 
               {/* Red Bordered Footer Strip */}
               <div className="foot-strip">
                 <div className="cell">VALID</div>
-                <div className="cell">{idCardData.validPeriod || currentSession}</div>
+                <div className="cell">{validPeriod}</div>
               </div>
 
             </div>
@@ -250,7 +276,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{schoolTitle} <span style={{ fontSize: '10px' }}>SCHOOL</span></div>
+                    <div className="word-dotmond">{mainName} <span className="word-school" style={{ fontSize: '10px' }}>{subName}</span></div>
                     <div className="subline">Attendance &amp; Identification System</div>
                   </div>
                 </div>
@@ -259,7 +285,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               <div className="rule"></div>
 
               <p className="notice">
-                This card is the property of {schoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                This card is the property of {cleanSchoolName}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
               </p>
 
               <div className="rule"></div>
