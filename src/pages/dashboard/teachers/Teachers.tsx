@@ -51,6 +51,7 @@ export default function Teachers() {
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
+  const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const filteredTeachers = teachers.filter(teacher => {
@@ -58,9 +59,10 @@ export default function Teachers() {
     const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || 
                           (teacher.email && teacher.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
                           (teacher.phoneNumber && teacher.phoneNumber.includes(searchTerm));
-    const matchesRole = roleFilter === 'ALL' || (teacher.role && teacher.role.toLowerCase() === roleFilter.toLowerCase());
+    const matchesRole = roleFilter === 'ALL' || (teacher.role && teacher.role.toLowerCase().includes(roleFilter.toLowerCase()));
+    const matchesCategory = categoryFilter === 'ALL' || (teacher.staffCategory && teacher.staffCategory.toLowerCase() === categoryFilter.toLowerCase());
     const matchesStatus = statusFilter === 'ALL' || (statusFilter === 'ACTIVE' ? teacher.isActive : !teacher.isActive);
-    return matchesSearch && matchesRole && matchesStatus;
+    return matchesSearch && matchesRole && matchesCategory && matchesStatus;
   });
 
   // Modal State
@@ -69,6 +71,7 @@ export default function Teachers() {
   const [isEditing, setIsEditing] = useState(false);
   const [editStaffId, setEditStaffId] = useState<string | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(['Teacher']);
   const [formData, setFormData] = useState({
     title: '',
     surname: '',
@@ -77,7 +80,9 @@ export default function Teachers() {
     phoneNumber: '',
     email: '',
     designation: '',
-    role: 'Teacher'
+    role: 'Teacher',
+    staffCategory: 'Teaching',
+    employmentType: 'FullTime'
   });
 
   // Credentials Modal State
@@ -724,20 +729,58 @@ export default function Teachers() {
             <div className="form-grid">
               <div className="form-group full-width">
                 <label>Designation / Job Title <span style={{ color: '#ef4444' }}>*</span></label>
-                <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Senior Mathematics Teacher, Bursaria Officer" required />
+                <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Senior Mathematics Teacher, Accountant, Driver" required />
+              </div>
+
+              <div className="form-group">
+                <label>Staff Classification Category <span style={{ color: '#ef4444' }}>*</span></label>
+                <select name="staffCategory" value={formData.staffCategory} onChange={handleInputChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                  <option value="Teaching">Teaching Staff (Full-Time Teacher)</option>
+                  <option value="NonTeaching">Non-Teaching Staff (Accountant, Admin, Driver, Security, etc.)</option>
+                  <option value="Contract">Contract Staff (Special Subject / Part-Time Teacher)</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Employment Nature</label>
+                <select name="employmentType" value={formData.employmentType} onChange={handleInputChange} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                  <option value="FullTime">Full-Time Employee</option>
+                  <option value="PartTime">Part-Time Employee</option>
+                  <option value="Contract">Contract Worker</option>
+                </select>
               </div>
 
               <div className="form-group full-width">
-                <label>Portal Access Role <span style={{ color: '#ef4444' }}>*</span></label>
-                <select name="role" value={formData.role} onChange={handleInputChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
-                  <option value="Teacher">Teacher (Class & Attendance Management)</option>
-                  <option value="SubjectTeacher">Subject Teacher (Grading & Assignments Only)</option>
-                  <option value="Accountant">Accountant (Fee Clearance & POS Billing)</option>
-                  <option value="Principal">Principal (Full Analytics & Academic Overseer)</option>
-                  <option value="Vendor">Vendor (POS & Service Processing)</option>
-                  <option value="Admin">System Admin (Full Portal Configurations)</option>
-                  <option value="Staff">General Support Staff</option>
-                </select>
+                <label>Portal Access Roles (Select all that apply for dual-role staff) <span style={{ color: '#ef4444' }}>*</span></label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', padding: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginTop: '4px' }}>
+                  {[
+                    { id: 'Teacher', label: 'Teacher (Class & Attendance)' },
+                    { id: 'Admin', label: 'Admin (System Configuration)' },
+                    { id: 'SubjectTeacher', label: 'Subject Teacher (Grading)' },
+                    { id: 'Accountant', label: 'Accountant (Fees & POS)' },
+                    { id: 'Principal', label: 'Principal (Superadmin Overseer)' },
+                    { id: 'Staff', label: 'General Non-Teaching Staff' }
+                  ].map(roleItem => (
+                    <label key={roleItem.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer', color: '#1E293B', fontWeight: 600 }}>
+                      <input 
+                        type="checkbox" 
+                        value={roleItem.id}
+                        checked={formData.role.includes(roleItem.id)}
+                        onChange={(e) => {
+                          const currentRoles = formData.role ? formData.role.split(',').map(r => r.trim()) : [];
+                          let updated: string[];
+                          if (e.target.checked) {
+                            updated = Array.from(new Set([...currentRoles, roleItem.id]));
+                          } else {
+                            updated = currentRoles.filter(r => r !== roleItem.id);
+                          }
+                          setFormData({ ...formData, role: updated.join(',') });
+                        }}
+                      />
+                      {roleItem.label}
+                    </label>
+                  ))}
+                </div>
               </div>
 
               {isEditing && (

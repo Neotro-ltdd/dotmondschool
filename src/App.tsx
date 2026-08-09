@@ -52,9 +52,7 @@ import ContinuousAssessment from './pages/dashboard/teacher/ContinuousAssessment
 import AttendanceRegister from './pages/dashboard/teacher/AttendanceRegister';
 import Utilities from './pages/dashboard/teacher/Utilities';
 import TeacherResults from './pages/dashboard/teacher/TeacherResults';
-import ParentHub from './pages/dashboard/parent/ParentHub';
-import VendorHub from './pages/dashboard/vendor/VendorHub';
-import ProfileSettings from './pages/dashboard/ProfileSettings';
+import StaffAttendanceReport from './pages/dashboard/attendance/StaffAttendanceReport';
 import './App.css';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -87,6 +85,7 @@ function App() {
             <Route path="subjects" element={<Subjects />} />
             <Route path="test-result-sample" element={<ResultSample />} />
             <Route path="teachers" element={<Teachers />} />
+            <Route path="staff-attendance" element={<StaffAttendanceReport />} />
             <Route path="students" element={<Students />} />
             <Route path="approvals" element={<Approvals />} />
             <Route path="finance">
