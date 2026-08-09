@@ -134,8 +134,9 @@
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+  border-left: 3.5px solid var(--secondary-color, #FACC15);
   transform: translateX(2px);
 }
 
@@ -154,9 +155,9 @@
   top: 15%;
   height: 70%;
   width: 3.5px;
-  background: #38BDF8;
+  background: var(--secondary-color, #FACC15);
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 10px #38BDF8;
+  box-shadow: 0 0 10px var(--secondary-color, #FACC15);
 }
 
 .nav-icon-box {
@@ -169,7 +170,7 @@
 
 .nav-item:hover .nav-icon-box,
 .nav-item.active .nav-icon-box {
-  color: #38BDF8;
+  color: var(--secondary-color, #FACC15);
 }
 
 .submenu {
@@ -188,6 +189,11 @@
   padding: 0.55rem 0.75rem !important;
   border-radius: 8px !important;
   color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.submenu-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--secondary-color, #FACC15) !important;
 }
 
 .submenu-item.active {

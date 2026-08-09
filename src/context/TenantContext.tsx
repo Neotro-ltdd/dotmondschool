@@ -13,7 +13,7 @@ const TenantContext = createContext<TenantContextType>({
   schoolName: 'Dotmond School',
   logoUrl: '/images/dotmond-logo-1.png',
   primaryColor: '#007bff',
-  secondaryColor: '#6c757d',
+  secondaryColor: '#FACC15',
   refreshTenantDetails: async () => {}
 });
 
@@ -21,7 +21,7 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
   const [schoolName, setSchoolName] = useState('Dotmond School');
   const [logoUrl, setLogoUrl] = useState<string | null>('/images/dotmond-logo-1.png');
   const [primaryColor, setPrimaryColor] = useState('#007bff');
-  const [secondaryColor, setSecondaryColor] = useState('#6c757d');
+  const [secondaryColor, setSecondaryColor] = useState('#FACC15');
 
   const refreshTenantDetails = async () => {
     const tenantId = getTenantId();
@@ -52,6 +52,9 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    document.documentElement.style.setProperty('--primary-color', primaryColor);
+    document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+    document.documentElement.style.setProperty('--color-secondary', secondaryColor);
     refreshTenantDetails();
   }, []);
 
