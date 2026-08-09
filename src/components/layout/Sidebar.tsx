@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
+import { api } from '../../services/api';
 import './Layout.css';
 
 export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen?: boolean, setIsSidebarOpen?: (open: boolean) => void }) {
@@ -36,6 +37,21 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const location = useLocation();
 
   const isSuperAdmin = userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
+  const [isFormClassTeacher, setIsFormClassTeacher] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
+      api.get('/academics/teacher/my-classes')
+        .then((classes: any) => {
+          const classList = Array.isArray(classes) ? classes : [];
+          const isClassT = classList.some((c: any) => c.isClassTeacher);
+          setIsFormClassTeacher(isClassT);
+        })
+        .catch(() => {
+          setIsFormClassTeacher(false);
+        });
+    }
+  }, [userRole]);
 
   // Accordion Group States
   const [isUserRoleOpen, setIsUserRoleOpen] = useState(false);
@@ -137,43 +153,53 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
               Overview
             </NavLink>
 
-            {userRole === 'Teacher' && (
+            {(userRole === 'Teacher' || userRole === 'SubjectTeacher') && (
               <>
-                <div className="sidebar-section-header">TEACHER WORKSTATION</div>
-                <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Users size={18} /></span>
-                  My Class
-                </NavLink>
-                <NavLink to="/dashboard/teacher/attendance" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Calendar size={18} /></span>
-                  Attendance Register
-                </NavLink>
-                <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><FileText size={18} /></span>
-                  Continuous Assessment
-                </NavLink>
-                <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><CheckCircle size={18} /></span>
-                  Review Results
-                </NavLink>
-                <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Wrench size={18} /></span>
-                  Utilities
-                </NavLink>
-              </>
-            )}
-
-            {userRole === 'SubjectTeacher' && (
-              <>
-                <div className="sidebar-section-header">SUBJECT WORKSTATION</div>
-                <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><FileText size={18} /></span>
-                  Continuous Assessment
-                </NavLink>
-                <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Wrench size={18} /></span>
-                  Utilities
-                </NavLink>
+                {isFormClassTeacher !== false ? (
+                  <>
+                    <div className="sidebar-section-header">TEACHER WORKSTATION</div>
+                    <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><Users size={18} /></span>
+                      My Class
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/attendance" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><Calendar size={18} /></span>
+                      Attendance Register
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><FileText size={18} /></span>
+                      Continuous Assessment
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><CheckCircle size={18} /></span>
+                      Review Results
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><Wrench size={18} /></span>
+                      Utilities
+                    </NavLink>
+                  </>
+                ) : (
+                  <>
+                    <div className="sidebar-section-header">SUBJECT WORKSTATION</div>
+                    <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><BookOpen size={18} /></span>
+                      My Subjects
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><FileText size={18} /></span>
+                      Continuous Assessment
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><CheckCircle size={18} /></span>
+                      Review Results
+                    </NavLink>
+                    <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                      <span className="nav-icon-box"><Wrench size={18} /></span>
+                      Utilities
+                    </NavLink>
+                  </>
+                )}
               </>
             )}
 

@@ -36,6 +36,11 @@ interface StudentItem {
   isCleared: boolean;
 }
 
+interface SubjectItem {
+  id: string;
+  name: string;
+}
+
 interface MyClassData {
   id: string;
   session: string;
@@ -43,6 +48,7 @@ interface MyClassData {
   name: string;
   section: string;
   isClassTeacher: boolean;
+  mySubjects?: SubjectItem[];
 }
 
 export default function MyClass() {
@@ -52,35 +58,44 @@ export default function MyClass() {
   // Local interface UI state
   const [filterSearch, setFilterSearch] = useState<string>('');
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
+  const [selectedSubjectClassId, setSelectedSubjectClassId] = useState<string>('');
 
-  // 1. Fetch teacher's classes via React Query (No useEffect)
+  // 1. Fetch teacher's assigned classes (Form Class & Subject Classes)
   const { 
-    data: myClass = null, 
+    data: teacherClasses = [], 
     isLoading: isClassesLoading, 
     error: classesError 
-  } = useQuery<MyClassData | null>({
-    queryKey: ['myTeacherClass'],
+  } = useQuery<MyClassData[]>({
+    queryKey: ['myTeacherClassesAll'],
     queryFn: async () => {
       const response = await api.get('/academics/teacher/my-classes');
-      const classes: MyClassData[] = response || [];
-      return classes.find(c => c.isClassTeacher) || null;
+      return response || [];
     },
-    staleTime: 5 * 60 * 1000, // cache class assignment for 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  // 2. Dependent query: fetch class students only when class ID is resolved
+  // Resolve mode & active class
+  const formClass = teacherClasses.find(c => c.isClassTeacher) || null;
+  const subjectClasses = teacherClasses.filter(c => !c.isClassTeacher && c.mySubjects && c.mySubjects.length > 0);
+
+  const isFormClassTeacher = !!formClass;
+  const activeClass = formClass || (selectedSubjectClassId 
+    ? teacherClasses.find(c => c.id === selectedSubjectClassId) || subjectClasses[0] || null
+    : subjectClasses[0] || null);
+
+  // 2. Dependent query: fetch class students for activeClass
   const { 
     data: students = [], 
     isLoading: isStudentsLoading, 
     error: studentsError 
   } = useQuery<StudentItem[]>({
-    queryKey: ['myClassStudents', myClass?.id, filterSession, filterTerm],
+    queryKey: ['myClassStudents', activeClass?.id, filterSession, filterTerm],
     queryFn: async () => {
-      if (!myClass?.id) return [];
-      const data = await api.get(`/setup/students?classId=${myClass.id}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
+      if (!activeClass?.id) return [];
+      const data = await api.get(`/setup/students?classId=${activeClass.id}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
       return data || [];
     },
-    enabled: !!myClass?.id,
+    enabled: !!activeClass?.id,
     staleTime: 30 * 1000,
   });
 
@@ -104,24 +119,67 @@ export default function MyClass() {
   const clearedCount = students.filter(s => s.isCleared).length;
   const unclearedCount = totalStudents - clearedCount;
 
+  const activeSubjectsLabel = activeClass?.mySubjects && activeClass.mySubjects.length > 0 
+    ? activeClass.mySubjects.map(s => s.name).join(', ')
+    : '';
+
   return (
     <div className="management-page">
+      {/* Page Header */}
       <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div className="stat-icon-square" style={{ background: '#e0f2fe', color: '#0284c7', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <GraduationCap size={28} />
+        <div className="stat-icon-square" style={{ background: isFormClassTeacher ? '#e0f2fe' : '#fef3c7', color: isFormClassTeacher ? '#0284c7' : '#d97706', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {isFormClassTeacher ? <GraduationCap size={28} /> : <BookOpen size={28} />}
         </div>
         <div>
-          <h1 className="page-title" style={{ margin: 0 }}>My Class Management</h1>
+          <h1 className="page-title" style={{ margin: 0 }}>
+            {isFormClassTeacher ? 'My Class Management' : 'My Subjects Management'}
+          </h1>
           <p className="page-subtitle" style={{ margin: '0.25rem 0 0' }}>
-            {myClass 
-              ? `Assigned Class Teacher for ${myClass.level} ${myClass.name} ${myClass.section}` 
-              : 'Class teacher overview and student enrollment directory'}
+            {isFormClassTeacher
+              ? `Assigned Class Teacher for ${formClass?.level} ${formClass?.name} ${formClass?.section}`
+              : activeClass
+                ? `Subject Teacher Workstation • ${activeSubjectsLabel ? `${activeSubjectsLabel} (${activeClass.level} ${activeClass.name} ${activeClass.section})` : `${activeClass.level} ${activeClass.name} ${activeClass.section}`}`
+                : 'Subject teacher overview and assigned class student roster'}
           </p>
         </div>
       </div>
 
+      {/* Subject Selector Pills for Subject Teachers teaching multiple classes */}
+      {!isFormClassTeacher && subjectClasses.length > 1 && (
+        <div className="glass-panel" style={{ padding: '0.85rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Allocated Classes:
+          </span>
+          {subjectClasses.map(c => {
+            const isSelected = (activeClass?.id === c.id);
+            const subjectsText = c.mySubjects ? c.mySubjects.map(s => s.name).join(', ') : '';
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setSelectedSubjectClassId(c.id)}
+                style={{
+                  padding: '0.45rem 0.9rem',
+                  borderRadius: '20px',
+                  border: isSelected ? '1px solid #d97706' : '1px solid #cbd5e1',
+                  background: isSelected ? '#fffbeb' : '#ffffff',
+                  color: isSelected ? '#b45309' : '#334155',
+                  fontWeight: isSelected ? 700 : 500,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isSelected ? '0 2px 4px rgba(217, 119, 6, 0.12)' : 'none'
+                }}
+              >
+                {subjectsText ? `${subjectsText} — ${c.level} ${c.name} ${c.section}` : `${c.level} ${c.name} ${c.section}`}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Quick Summary Statistical Cards */}
-      {myClass && (
+      {activeClass && (
         <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           <div className="stat-card">
             <div className="stat-header">
@@ -132,7 +190,9 @@ export default function MyClass() {
             </div>
             <div className="stat-value-container">
               <h3 className="stat-value">{totalStudents}</h3>
-              <span className="trend-text" style={{ fontSize: '0.85rem', color: '#64748b' }}>Active in {myClass.name}</span>
+              <span className="trend-text" style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                Enrolled in {activeClass.name} {activeClass.section}
+              </span>
             </div>
           </div>
 
@@ -216,16 +276,17 @@ export default function MyClass() {
         </div>
       )}
 
-      {!loading && !myClass && !errorMsg && (
+      {/* Empty State when teacher has neither class nor subject assigned */}
+      {!loading && !activeClass && !errorMsg && (
         <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem 2rem', color: '#64748b' }}>
           <Users size={48} style={{ margin: '0 auto 1rem', color: '#94a3b8' }} />
-          <h3 style={{ fontSize: '1.2rem', color: '#1e293b', marginBottom: '0.5rem' }}>No Class Assigned</h3>
-          <p style={{ maxWidth: '480px', margin: '0 auto' }}>You are not currently assigned as a Class Teacher for any class in the system. If you believe this is an error, please contact your School Admin.</p>
+          <h3 style={{ fontSize: '1.2rem', color: '#1e293b', marginBottom: '0.5rem' }}>No Class or Subject Assigned</h3>
+          <p style={{ maxWidth: '480px', margin: '0 auto' }}>You are not currently assigned as a Class Teacher or Subject Teacher for any class in the system. If you believe this is an error, please contact your School Admin.</p>
         </div>
       )}
 
       {/* Table Data Section */}
-      {myClass && (
+      {activeClass && (
         <div className="table-container glass-panel" style={{ padding: '0', overflow: 'hidden', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '3rem' }}>
@@ -333,8 +394,7 @@ export default function MyClass() {
           onClose={() => setEditingStudent(null)}
           onSuccess={() => {
             setEditingStudent(null);
-            // Seamlessly invalidate and re-fetch cached student directory via React Query
-            queryClient.invalidateQueries({ queryKey: ['myClassStudents', myClass?.id] });
+            queryClient.invalidateQueries({ queryKey: ['myClassStudents', activeClass?.id] });
           }}
         />
       )}
