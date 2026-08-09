@@ -74,6 +74,7 @@ export default function Overview() {
   const [adminData, setAdminData] = React.useState<any>(null);
   const [principalData, setPrincipalData] = React.useState<any>(null);
   const [vendorData, setVendorData] = React.useState<any>(null);
+  const [parentData, setParentData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -142,6 +143,19 @@ export default function Overview() {
         }
       };
       fetchVendorData();
+    } else if (userRole === 'Parent') {
+      const fetchParentData = async () => {
+        try {
+          setLoading(true);
+          const res = await api.get('/parents/my-kids');
+          setParentData(res || []);
+        } catch (err) {
+          console.error("Failed to fetch parent dashboard data", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchParentData();
     }
   }, [userRole]);
 
@@ -732,6 +746,146 @@ export default function Overview() {
                   </Link>
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+      ) : userRole === 'Parent' ? (
+
+        /* ════════ PARENT DASHBOARD ════════ */
+        <div className="analytics-section">
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+              <p>Loading Parent Portal workstation...</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+              
+              {/* Parent Stat Cards */}
+              <div className="stats-grid">
+                <StatCard 
+                  label="MY LINKED CHILDREN" 
+                  value={parentData.length} 
+                  icon={Users} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ text: `${parentData.length} ${parentData.length === 1 ? 'Child' : 'Children'} Enrolled`, type: 'positive' }}
+                  subText="Linked to your account"
+                />
+                <StatCard 
+                  label="TUITION CLEARANCE" 
+                  value={parentData.length > 0 && parentData.every((k: any) => k.isCleared) ? "All Cleared" : "Pending Action"} 
+                  icon={CreditCard} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ 
+                    text: parentData.length > 0 && parentData.every((k: any) => k.isCleared) ? '● 100% Cleared' : '⚠️ Action Required', 
+                    type: parentData.length > 0 && parentData.every((k: any) => k.isCleared) ? 'positive' : 'warning' 
+                  }}
+                  subText="Termly Tuition Billing"
+                />
+                <StatCard 
+                  label="GATE & PUNCTUALITY" 
+                  value="Active Logs" 
+                  icon={ShieldCheck} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ text: '● Realtime Gate Scans', type: 'positive' }}
+                  subText="Time-In / Time-Out"
+                />
+                <StatCard 
+                  label="CURRENT TERM" 
+                  value={`${session} ${displayTerm}`} 
+                  icon={Calendar} 
+                  topColor="#000080"
+                  iconBg="#EFF6FF" iconColor="#000080" 
+                  trendTag={{ text: isHolidayMode ? '🌴 Holiday / Closed' : `Session ${session}`, type: isHolidayMode ? 'warning' : 'positive' }}
+                  subText="Operational Term"
+                />
+              </div>
+
+              {/* My Children Roster Cards */}
+              <div className="quick-shortcuts-section">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>My Children Roster</h3>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748B' }}>Direct access to report cards, attendance logs, and fee payments for your kids.</p>
+                  </div>
+                  <Link to="/dashboard/parent-hub" className="btn btn-primary btn-sm" style={{ fontWeight: 700 }}>
+                    Open Full Parent Hub →
+                  </Link>
+                </div>
+
+                {parentData.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '2.5rem', background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+                    <p style={{ margin: 0, fontSize: '0.95rem' }}>No student records are currently linked to your parent account.</p>
+                  </div>
+                ) : (
+                  <div className="shortcuts-grid">
+                    {parentData.map((kid: any) => (
+                      <Link to="/dashboard/parent-hub" key={kid.id} className="shortcut-card" style={{ padding: '1.25rem' }}>
+                        <div className="shortcut-icon" style={{ background: '#EEF2FF', color: '#4F46E5', width: '44px', height: '44px' }}>
+                          <GraduationCap size={22} />
+                        </div>
+                        <div className="shortcut-info">
+                          <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                            {kid.surname} {kid.firstName}
+                          </h4>
+                          <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0.2rem 0 0 0' }}>
+                            {kid.registrationNumber} • {kid.className || 'Student'}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Parent Portal Actions */}
+              <div className="quick-shortcuts-section">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>Parent Quick Shortcuts</h3>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748B' }}>Frequently used parent workstation tools.</p>
+                  </div>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#000080', background: '#EFF6FF', padding: '4px 12px', borderRadius: '12px' }}>
+                    Parent Portal
+                  </span>
+                </div>
+
+                <div className="shortcuts-grid">
+                  <Link to="/dashboard/parent-hub" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#ECFDF5', color: '#10B981' }}>
+                      <Award size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Terminal Report Cards</h4>
+                      <p>View & print kid's result sheet</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/parent-hub" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#EFF6FF', color: '#2563EB' }}>
+                      <CreditCard size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Tuition Fees & Billing</h4>
+                      <p>Pay fees & download receipts</p>
+                    </div>
+                  </Link>
+
+                  <Link to="/dashboard/parent-hub" className="shortcut-card">
+                    <div className="shortcut-icon" style={{ background: '#F5F3FF', color: '#7C3AED' }}>
+                      <Calendar size={20} />
+                    </div>
+                    <div className="shortcut-info">
+                      <h4>Gate Attendance Reports</h4>
+                      <p>Daily time-in & time-out logs</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
             </div>
           )}
         </div>
