@@ -9,7 +9,7 @@ import AvatarTab from '../../components/dashboard/settings/AvatarTab';
 import SignatureTab from '../../components/dashboard/settings/SignatureTab';
 
 export default function ProfileSettings() {
-  const { userRole, setActiveRole, updateUserInfo } = useAuth();
+  const { userRole, availableRoles, setActiveRole, updateUserInfo } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'biodata' | 'roles' | 'avatar' | 'signature'>('biodata');
   const [profile, setProfile] = useState<any>(null);
@@ -184,7 +184,12 @@ export default function ProfileSettings() {
   const currentAvatarUrl = avatarPreview || resolveImageUrl(profile.avatarUrl);
   const currentSignatureUrl = signaturePreview || resolveImageUrl(profile.signatureUrl);
   const fullName = `${title ? title + ' ' : ''}${firstName} ${lastName}`.trim() || profile.email || 'User Profile';
-  const rolesList: string[] = profile.roles && profile.roles.length > 0 ? profile.roles : (userRole ? [userRole] : ['User']);
+  const rolesList: string[] = Array.from(new Set([
+    ...(availableRoles || []),
+    ...(profile?.roles || []),
+    ...(profile?.assignedRoles || []),
+    ...(userRole ? [userRole] : [])
+  ])).filter((r): r is string => Boolean(r));
 
   return (
     <div className="page-container fade-in" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
