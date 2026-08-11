@@ -19,15 +19,20 @@ export function getTenantId(): string {
 }
 
 export async function getPublicTenantDetails(tenantId: string) {
-    const response = await fetch(`${API_BASE_URL}/public/tenant/${tenantId}`, {
-        headers: {
-            'X-Tenant-ID': tenantId
+    try {
+        const response = await fetch(`${API_BASE_URL}/public/tenant/${tenantId}`, {
+            headers: {
+                'X-Tenant-ID': tenantId
+            }
+        });
+        if (!response.ok) {
+            return null;
         }
-    });
-    if (!response.ok) {
+        return await response.json();
+    } catch (err) {
+        console.warn(`Could not reach backend API at ${API_BASE_URL}:`, err);
         return null;
     }
-    return await response.json();
 }
 
 export class ApiError extends Error {
