@@ -58,6 +58,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const [isClassStudentOpen, setIsClassStudentOpen] = useState(false);
   const [isSubjectOpen, setIsSubjectOpen] = useState(false);
   const [isResultMgmtOpen, setIsResultMgmtOpen] = useState(false);
+  const [isApprovalMgmtOpen, setIsApprovalMgmtOpen] = useState(false);
   const [isSetupsOpen, setIsSetupsOpen] = useState(false);
   const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
   const [isFinanceOpen, setIsFinanceOpen] = useState(false);
@@ -70,7 +71,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
     if (path.includes('/dashboard/teachers') || path.includes('/dashboard/operations/roles')) {
       setIsUserRoleOpen(true);
     }
-    if (path.includes('/dashboard/classes') || path.includes('/dashboard/students') || path.includes('/dashboard/allocations/class-allocations') || path.includes('/dashboard/operations/promotions')) {
+    if (path.includes('/dashboard/classes') || path.includes('/dashboard/students') || path.includes('/dashboard/allocations/class-allocations')) {
       setIsClassStudentOpen(true);
     }
     if (path.includes('/dashboard/subjects') || path.includes('/dashboard/allocations/subject-allocations')) {
@@ -78,6 +79,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
     }
     if (path.includes('/dashboard/operations/result-management') || path.includes('/dashboard/operations/review-results')) {
       setIsResultMgmtOpen(true);
+    }
+    if (path.includes('/dashboard/approvals') || path.includes('/dashboard/operations/promotions')) {
+      setIsApprovalMgmtOpen(true);
     }
     if (path.includes('/dashboard/operations/term-setup') || path.includes('/dashboard/operations/session') || path.includes('/dashboard/operations/grading') || path.includes('/dashboard/operations/manual-clearance')) {
       setIsSetupsOpen(true);
@@ -332,6 +336,32 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                         )}
                         <NavLink to="/dashboard/operations/review-results" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                           Review Results
+                        </NavLink>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 5. APPROVAL MANAGEMENT */}
+                {(userRole === 'Principal' || userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
+                  <div className="nav-group">
+                    <button 
+                      className={`nav-item dropdown-toggle ${isApprovalMgmtOpen ? 'open' : ''}`} 
+                      onClick={() => setIsApprovalMgmtOpen(!isApprovalMgmtOpen)}
+                    >
+                      <span className="nav-icon-box"><ShieldCheck size={18} /></span>
+                      Approval Management
+                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                        {isApprovalMgmtOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      </span>
+                    </button>
+                    {isApprovalMgmtOpen && (
+                      <div className="submenu">
+                        <NavLink to="/dashboard/approvals" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          Result Approval
+                        </NavLink>
+                        <NavLink to="/dashboard/operations/promotions" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          Promotion Approval
                         </NavLink>
                       </div>
                     )}
