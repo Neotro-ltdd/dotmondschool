@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Sparkles, Activity, FileText } from 'lucide-react';
+import { Calendar, Sparkles, Activity } from 'lucide-react';
 import { formatDisplayName } from '../../../utils/nameFormatter';
 
 interface OverviewHeaderProps {
@@ -53,6 +53,8 @@ export const OverviewHeader: React.FC<OverviewHeaderProps> = ({
                 Role: {userRole}
               </span>
             )}
+          </div>
+
           <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', margin: 0 }}>
             Welcome back, {formatDisplayName(userTitle, userName)}
           </h1>
