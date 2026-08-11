@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   CreditCard, 
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import StatCard from './StatCard';
+import { formatDisplayName } from '../../../utils/nameFormatter';
 
 interface AccountantDashboardViewProps {
   userName?: string;
@@ -30,7 +31,23 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
   accountantData,
   loading
 }) => {
-  const currentDateFormatted = new Date().toLocaleDateString('en-US', {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getGreeting = () => {
+    const hour = currentDate.getHours();
+    if (hour >= 4 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  const currentDateFormatted = currentDate.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -66,7 +83,7 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
         <div className="banner-content">
           <div className="banner-text">
             <h2>
-              Good Afternoon, {userTitle ? `${userTitle} ` : ''}{userName} 👋
+              {getGreeting()}, {formatDisplayName(userTitle, userName)} 👋
             </h2>
             <p>
               Bursary & Financial Control Operations Hub: Oversee tuition fee collections, payment verifications, student invoice clearance, and financial audit reports.

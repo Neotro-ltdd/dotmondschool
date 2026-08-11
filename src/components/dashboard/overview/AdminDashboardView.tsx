@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, 
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import StatCard from './StatCard';
+import { formatDisplayName } from '../../../utils/nameFormatter';
 
 interface AdminDashboardViewProps {
   userName?: string;
@@ -25,7 +26,7 @@ interface AdminDashboardViewProps {
 }
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
-  userName = 'Mr. Praise Owolewa',
+  userName = 'Admin',
   userTitle,
   session = '2026/2027',
   displayTerm = 'First Term',
@@ -34,7 +35,23 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   loading,
   onToggleActivityLog
 }) => {
-  const currentDateFormatted = new Date().toLocaleDateString('en-US', {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getGreeting = () => {
+    const hour = currentDate.getHours();
+    if (hour >= 4 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  const currentDateFormatted = currentDate.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -66,7 +83,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         <div className="banner-content">
           <div className="banner-text">
             <h2>
-              Good Afternoon, {userTitle ? `${userTitle} ` : ''}{userName || 'Admin'} 👋
+              {getGreeting()}, {formatDisplayName(userTitle, userName || 'Admin')} 👋
             </h2>
             <p>
               Institutional Governance & Operations Control Hub: Oversee staff, student records, academics, and system setup.

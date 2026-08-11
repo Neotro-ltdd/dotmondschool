@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, 
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import StatCard from './StatCard';
+import { formatDisplayName } from '../../../utils/nameFormatter';
 
 interface ParentDashboardViewProps {
   userName?: string;
@@ -29,7 +30,23 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
   parentData = [],
   loading
 }) => {
-  const currentDateFormatted = new Date().toLocaleDateString('en-US', {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getGreeting = () => {
+    const hour = currentDate.getHours();
+    if (hour >= 4 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
+  const currentDateFormatted = currentDate.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -58,7 +75,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
         <div className="banner-content">
           <div className="banner-text">
             <h2>
-              Good Afternoon, {userTitle ? `${userTitle} ` : ''}{userName} 👋
+              {getGreeting()}, {formatDisplayName(userTitle, userName)} 👋
             </h2>
             <p>
               Parent & Guardian Portal: Access ward academic report cards, continuous assessment scores, term tuition payment receipts, and attendance logs.
