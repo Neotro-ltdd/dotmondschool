@@ -340,8 +340,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </div>
                 )}
 
-                {/* 5. APPROVAL MANAGEMENT */}
-                {(userRole === 'Principal' || userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
+                {/* 5. APPROVAL MANAGEMENT (PRINCIPAL ONLY) */}
+                {(userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isApprovalMgmtOpen ? 'open' : ''}`} 
@@ -431,8 +431,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </div>
                 )}
 
-                {/* ACCOUNTANT / SUPERADMIN / ADMIN FINANCE MODULES */}
-                {(userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Admin' || userRole === 'SystemAdmin') && (
+                {/* ACCOUNTANT / SUPERADMIN FINANCE MODULES */}
+                {(userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
                   <>
                     <div className="sidebar-section-header">FINANCE & BILLING</div>
                     <NavLink to="/dashboard/students" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
@@ -499,39 +499,43 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </>
                 )}
 
-                {/* 7. REPORTS & ANALYTICS */}
-                <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
+                {/* 7. REPORTS & ANALYTICS (EXCLUDE ADMIN) */}
+                {userRole !== 'Admin' && (
+                  <>
+                    <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
 
-                <div className="nav-group">
-                  <button 
-                    className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`} 
-                    onClick={() => setIsReportsOpen(!isReportsOpen)}
-                  >
-                    <span className="nav-icon-box"><BarChart3 size={18} /></span>
-                    Reports & Analytics
-                    <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                      {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                    </span>
-                  </button>
-                  {isReportsOpen && (
-                    <div className="submenu">
-                      {userRole !== 'Accountant' && (
-                        <NavLink to="/dashboard/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Academic Reports
-                        </NavLink>
+                    <div className="nav-group">
+                      <button 
+                        className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`} 
+                        onClick={() => setIsReportsOpen(!isReportsOpen)}
+                      >
+                        <span className="nav-icon-box"><BarChart3 size={18} /></span>
+                        Reports & Analytics
+                        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                          {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </span>
+                      </button>
+                      {isReportsOpen && (
+                        <div className="submenu">
+                          {userRole !== 'Accountant' && (
+                            <NavLink to="/dashboard/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                              Academic Reports
+                            </NavLink>
+                          )}
+                          <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            Financial Reports Hub
+                          </NavLink>
+                        </div>
                       )}
-                      <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                        Financial Reports Hub
-                      </NavLink>
                     </div>
-                  )}
-                </div>
 
-                {userRole !== 'Admin' && userRole !== 'Accountant' && (
-                  <NavLink to="/dashboard/settings/school" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <span className="nav-icon-box"><Settings size={18} /></span>
-                    Settings
-                  </NavLink>
+                    {userRole !== 'Accountant' && (
+                      <NavLink to="/dashboard/settings/school" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        <span className="nav-icon-box"><Settings size={18} /></span>
+                        Settings
+                      </NavLink>
+                    )}
+                  </>
                 )}
               </>
             )}
