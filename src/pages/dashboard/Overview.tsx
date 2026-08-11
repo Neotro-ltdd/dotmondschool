@@ -69,15 +69,50 @@ export default function Overview() {
   return (
     <div className="overview-page-container">
       {userRole === 'Accountant' ? (
-        <AccountantDashboardView accountantData={accountantData} loading={loading} />
+        <AccountantDashboardView 
+          userName={userName || undefined}
+          userTitle={userTitle || undefined}
+          session={session || '2026/2027'}
+          displayTerm={displayTerm || 'First Term'}
+          accountantData={accountantData} 
+          loading={loading} 
+        />
       ) : (userRole === 'Teacher' || userRole === 'SubjectTeacher') ? (
-        <TeacherDashboardView teacherData={teacherData} loading={loading} />
+        <TeacherDashboardView 
+          userName={userName || undefined}
+          userTitle={userTitle || undefined}
+          session={session || '2026/2027'}
+          displayTerm={displayTerm || 'First Term'}
+          teacherData={teacherData} 
+          loading={loading} 
+        />
       ) : userRole === 'Principal' ? (
-        <PrincipalDashboardView principalData={principalData} loading={loading} />
+        <PrincipalDashboardView 
+          userName={userName || undefined}
+          userTitle={userTitle || undefined}
+          session={session || '2026/2027'}
+          displayTerm={displayTerm || 'First Term'}
+          principalData={principalData} 
+          loading={loading} 
+        />
       ) : userRole === 'Parent' ? (
-        <ParentDashboardView parentData={parentData} loading={loading} />
+        <ParentDashboardView 
+          userName={userName || undefined}
+          userTitle={userTitle || undefined}
+          session={session || '2026/2027'}
+          displayTerm={displayTerm || 'First Term'}
+          parentData={parentData} 
+          loading={loading} 
+        />
       ) : (userRole === 'Vendor' || userRole === 'GateSecurity') ? (
-        <VendorDashboardView vendorData={vendorData} loading={loading} />
+        <VendorDashboardView 
+          userName={userName || undefined}
+          userTitle={userTitle || undefined}
+          session={session || '2026/2027'}
+          displayTerm={displayTerm || 'First Term'}
+          vendorData={vendorData} 
+          loading={loading} 
+        />
       ) : (
         <AdminDashboardView 
           userName={userName || undefined}
