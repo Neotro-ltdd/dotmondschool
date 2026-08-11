@@ -53,10 +53,11 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
     day: 'numeric'
   });
 
-  const totalStudents = principalData?.totalStudents ?? 605;
+  const totalStudents = principalData?.metrics?.totalStudents ?? principalData?.totalStudents ?? 269;
+  const totalStaff = principalData?.metrics?.totalStaff ?? principalData?.totalStaff ?? 19;
+  const totalClasses = principalData?.metrics?.totalClasses ?? principalData?.totalClasses ?? 14;
+  const totalSubjects = principalData?.metrics?.totalSubjects ?? principalData?.totalSubjects ?? 118;
   const pendingApprovals = principalData?.pendingApprovals ?? 3;
-  const schoolMean = principalData?.schoolMean ?? 68.4;
-  const totalStaff = principalData?.totalStaff ?? 48;
 
   if (loading) {
     return <div className="p-6 text-center">Loading Executive Principal Overview...</div>;
@@ -99,14 +100,36 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
       {/* ════════ EXECUTIVE STAT CARDS GRID ════════ */}
       <div className="stats-grid">
         <StatCard 
-          label="TOTAL ENROLLMENT"
+          label="TOTAL ACTIVE STUDENTS"
           value={totalStudents}
           icon={GraduationCap}
           topColor="#000080"
           iconBg="#EFF6FF"
           iconColor="#000080"
-          trendTag={{ type: 'positive', text: '● Total Active' }}
-          subText="Enrolled Student Roster"
+          trendTag={{ type: 'positive', text: '+12.4% vs last term' }}
+          subText="Active Portal Records"
+        />
+
+        <StatCard 
+          label="TOTAL STAFF & FACULTY"
+          value={totalStaff}
+          icon={Users}
+          topColor="#000080"
+          iconBg="#EFF6FF"
+          iconColor="#000080"
+          trendTag={{ type: 'positive', text: '● 100% Active' }}
+          subText="Teaching & Administrative"
+        />
+
+        <StatCard 
+          label="CLASSES & SUBJECTS"
+          value={`${totalClasses} / ${totalSubjects}`}
+          icon={BookOpen}
+          topColor="#000080"
+          iconBg="#EFF6FF"
+          iconColor="#000080"
+          trendTag={{ type: 'positive', text: '● Operational' }}
+          subText="Academic Infrastructure"
         />
 
         <StatCard 
@@ -118,28 +141,6 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
           iconColor="#000080"
           trendTag={{ type: 'positive', text: `● ${pendingApprovals} Awaiting Sign-off` }}
           subText="Term Broadsheets"
-        />
-
-        <StatCard 
-          label="SCHOOL MEAN SCORE"
-          value={`${schoolMean}%`}
-          icon={CheckCircle}
-          topColor="#000080"
-          iconBg="#EFF6FF"
-          iconColor="#000080"
-          trendTag={{ type: 'positive', text: '+2.1% vs Target' }}
-          subText="Overall Academic Average"
-        />
-
-        <StatCard 
-          label="TEACHING FACULTY"
-          value={totalStaff}
-          icon={Users}
-          topColor="#000080"
-          iconBg="#EFF6FF"
-          iconColor="#000080"
-          trendTag={{ type: 'positive', text: '● 100% Active' }}
-          subText="Academic Educators"
         />
       </div>
 

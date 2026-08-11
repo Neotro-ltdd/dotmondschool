@@ -43,8 +43,14 @@ export default function Overview() {
           const res = await api.get('/platform/summary');
           setAdminData(res?.data || res);
         } else if (userRole === 'Principal') {
-          const res = await api.get('/academics/principal/dashboard');
-          setPrincipalData(res?.data || res);
+          const [pData, pSummary] = await Promise.all([
+            api.get('/academics/principal/dashboard').catch(() => null),
+            api.get('/platform/summary').catch(() => null)
+          ]);
+          setPrincipalData({
+            ...(pSummary?.data || pSummary || {}),
+            ...(pData?.data || pData || {})
+          });
         } else if (userRole === 'Parent') {
           const res = await api.get('/parents/wards');
           setParentData(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
