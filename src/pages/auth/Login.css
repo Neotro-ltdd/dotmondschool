@@ -189,6 +189,41 @@
   cursor: not-allowed;
 }
 
+.login-container .password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.login-container .password-input-wrapper input {
+  padding-right: 42px;
+}
+
+.login-container .password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.login-container .password-toggle-btn:hover {
+  color: var(--navy-deep);
+  background-color: rgba(7, 23, 57, 0.06);
+}
+
+.login-container .password-toggle-btn:focus-visible {
+  outline: 2px solid var(--gold);
+}
+
 .login-container .row-between {
   display: flex; 
   justify-content: flex-end; 
