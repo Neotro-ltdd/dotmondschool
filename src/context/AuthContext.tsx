@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { cleanDuplicateTitles, formatDisplayName } from '../utils/nameFormatter';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -67,7 +68,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 } else {
                     setAvailableRoles([]);
                 }
-                
                 const email = decoded['email'] || decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
                 if (email) {
                     setUserEmail(email);
@@ -82,14 +82,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 const overrideName = localStorage.getItem('srms_override_name');
                 if (overrideName) {
-                    setUserName(overrideName);
+                    const cleanedOverride = cleanDuplicateTitles(overrideName);
+                    setUserName(cleanedOverride);
+                    if (cleanedOverride !== overrideName) {
+                        localStorage.setItem('srms_override_name', cleanedOverride);
+                    }
                 } else if (firstName || lastName) {
                     const fullName = `${firstName} ${lastName}`.trim();
-                    setUserName(finalTitle ? `${finalTitle} ${fullName}` : fullName);
+                    setUserName(formatDisplayName(finalTitle, fullName));
                 } else if (email) {
                     const namePart = email.split('@')[0];
                     const defaultName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-                    setUserName(finalTitle ? `${finalTitle} ${defaultName}` : defaultName);
+                    setUserName(formatDisplayName(finalTitle, defaultName));
                 }
                 
                 const avatar = decoded['avatar_url'] || null;
@@ -143,14 +147,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (data.firstName !== undefined && data.lastName !== undefined) {
             baseName = `${data.firstName} ${data.lastName}`.trim();
         } else {
-            baseName = userName;
-            if (userTitle && baseName.startsWith(userTitle)) {
-                baseName = baseName.slice(userTitle.length).trim();
-            }
+            baseName = cleanDuplicateTitles(userName);
         }
 
         if (baseName) {
-            const formattedName = activeTitle ? `${activeTitle} ${baseName}` : baseName;
+            const formattedName = formatDisplayName(activeTitle, baseName);
             setUserName(formattedName);
             localStorage.setItem('srms_override_name', formattedName);
         }

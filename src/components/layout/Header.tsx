@@ -4,6 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, Sun, Moon } from 'lucide-react';
 import { API_ROOT } from '../../services/api';
+import { formatDisplayName } from '../../utils/nameFormatter';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
@@ -23,17 +24,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
 
   const displayRole = userRole === 'Principal' ? 'Super Admin' : userRole || 'User';
   
-  const displayUserName = (() => {
-    if (userTitle && userTitle.trim()) {
-      const titleClean = userTitle.trim();
-      const normName = userName.toLowerCase().replace(/[.,]/g, '');
-      const normTitle = titleClean.toLowerCase().replace(/[.,]/g, '');
-      if (!normName.startsWith(normTitle)) {
-        return `${titleClean} ${userName}`;
-      }
-    }
-    return userName;
-  })();
+  const displayUserName = formatDisplayName(userTitle, userName);
 
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
 

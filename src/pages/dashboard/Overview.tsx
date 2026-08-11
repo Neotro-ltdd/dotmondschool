@@ -4,6 +4,7 @@ import { useTenant } from '../../context/TenantContext';
 import { useActiveTerm } from '../../hooks/useActiveTerm';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
+import { formatDisplayName } from '../../utils/nameFormatter';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
 import { 
   Calendar, 
@@ -159,10 +160,19 @@ export default function Overview() {
     }
   }, [userRole]);
 
+  const [currentDate, setCurrentDate] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
+    const hour = currentDate.getHours();
+    if (hour >= 4 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
     return 'Good Evening';
   };
 
@@ -171,27 +181,28 @@ export default function Overview() {
   };
 
   const getFormattedName = () => {
-    if (userTitle && userTitle.trim()) {
-      const titleClean = userTitle.trim();
-      const normName = userName.toLowerCase().replace(/[.,]/g, '');
-      const normTitle = titleClean.toLowerCase().replace(/[.,]/g, '');
-      if (!normName.startsWith(normTitle)) {
-        return `${titleClean} ${userName}`;
-      }
-    }
-    return userName;
+    return formatDisplayName(userTitle, userName);
   };
 
   const getRoleWelcomeMessage = () => {
+    if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
+      const isClassTeacher = teacherData?.isClassTeacher ?? (userRole === 'Teacher');
+      const isSubjectTeacher = teacherData?.isSubjectTeacher ?? (userRole === 'SubjectTeacher');
+
+      if (isClassTeacher && isSubjectTeacher) {
+        return 'Academic Instructional Hub: Manage form class attendance, termly evaluation, and subject continuous assessment scores.';
+      } else if (isClassTeacher) {
+        return 'Class Form Teacher Workstation: Manage class records, review daily attendance, and record termly affective evaluation.';
+      } else {
+        return 'Subject Instruction Portal: Manage subject topics, continuous assessment scores, grade distributions, and class rosters.';
+      }
+    }
+
     switch (userRole) {
       case 'Admin':
       case 'SystemAdmin':
       case 'Superadmin':
         return 'Institutional Governance & Operations Control Hub: Oversee staff, student records, academics, and system setup.';
-      case 'Teacher':
-        return 'Class Form Teacher Workstation: Manage class records, review daily attendance, and record termly affective evaluation.';
-      case 'SubjectTeacher':
-        return 'Subject Instruction Portal: Manage subject topics, continuous assessment scores, and grade distributions.';
       case 'Accountant':
         return 'Financial Operations & Billing Control: Manage tuition fee collection, reconcile payments, and process clearances.';
       case 'Principal':
@@ -205,7 +216,7 @@ export default function Overview() {
     }
   };
 
-  const todayDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const todayDate = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   
   return (
     <div className="overview-page">
@@ -240,15 +251,23 @@ export default function Overview() {
                 <CheckCircle size={17} /> Manual Clearance
               </Link>
             )}
-            {userRole === 'Teacher' && (
-              <Link to="/dashboard/teacher/attendance" className="banner-btn banner-btn-primary">
-                <CheckCircle size={17} /> Attendance Register
-              </Link>
-            )}
-            {userRole === 'SubjectTeacher' && (
-              <Link to="/dashboard/teacher/assessment" className="banner-btn banner-btn-primary">
-                <FileText size={17} /> Enter C.A. Scores
-              </Link>
+            {(userRole === 'Teacher' || userRole === 'SubjectTeacher') && (
+              <>
+                {(teacherData?.isClassTeacher ?? userRole === 'Teacher') && (
+                  <Link to="/dashboard/teacher/attendance" className="banner-btn banner-btn-primary">
+                    <CheckCircle size={17} /> Attendance Register
+                  </Link>
+                )}
+                {(teacherData?.isSubjectTeacher ?? (userRole === 'SubjectTeacher' || userRole === 'Teacher')) && (
+                  <Link 
+                    to="/dashboard/teacher/assessment" 
+                    className="banner-btn banner-btn-primary"
+                    style={teacherData?.isClassTeacher ? { marginLeft: '8px', background: 'rgba(255, 255, 255, 0.18)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)' } : {}}
+                  >
+                    <FileText size={17} /> Enter C.A. Scores
+                  </Link>
+                )}
+              </>
             )}
             {(userRole === 'Admin' || userRole === 'SystemAdmin' || userRole === 'Superadmin') && (
               <Link to="/dashboard/teachers" className="banner-btn banner-btn-primary">
@@ -603,42 +622,97 @@ export default function Overview() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
               
-              <div className="stats-grid">
-                <StatCard 
-                  label="FORM CLASS STUDENTS" 
-                  value={teacherData?.classTeacherMetrics?.totalStudents ?? (teacherData?.totalStudents || 0)} 
-                  icon={Users} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  subText={teacherData?.classTeacherMetrics?.className ? `Class: ${teacherData.classTeacherMetrics.className}` : "Form Class Register"}
-                />
-                <StatCard 
-                  label="TODAY'S ATTENDANCE" 
-                  value={`${teacherData?.classTeacherMetrics?.attendanceToday?.percentage ?? (teacherData?.attendancePercentage || 0)}%`} 
-                  icon={CheckCircle} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: `Present: ${teacherData?.classTeacherMetrics?.attendanceToday?.present ?? 0}`, type: 'positive' }}
-                  subText="Daily Gate & Register"
-                />
-                <StatCard 
-                  label="PENDING EVALUATION REMARKS" 
-                  value={teacherData?.classTeacherMetrics?.pendingRemarks ?? 0} 
-                  icon={FileText} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  trendTag={{ text: (teacherData?.classTeacherMetrics?.pendingRemarks ?? 0) > 0 ? 'Action Needed' : 'Completed', type: 'neutral' }}
-                  subText="Affective & Psychomotor"
-                />
-                <StatCard 
-                  label="SUBJECT ALLOCATIONS" 
-                  value={teacherData?.subjectTeacherMetrics?.totalAllocations ?? (teacherData?.totalAllocations || 0)} 
-                  icon={BookOpen} 
-                  topColor="#000080"
-                  iconBg="#EFF6FF" iconColor="#000080" 
-                  subText="Assigned Subjects"
-                />
-              </div>
+              {(() => {
+                const isFormTeacher = teacherData?.isClassTeacher ?? (userRole === 'Teacher');
+                const isSubjectTeacher = teacherData?.isSubjectTeacher ?? (userRole === 'SubjectTeacher');
+
+                if (!isFormTeacher && isSubjectTeacher) {
+                  const totalAllocations = teacherData?.subjectTeacherMetrics?.totalAllocations ?? (teacherData?.totalAllocations || 0);
+                  const totalSubjectStudents = teacherData?.subjectTeacherMetrics?.totalStudents ?? 0;
+                  const allocationsList = teacherData?.subjectTeacherMetrics?.allocations || [];
+                  const distinctClassesCount = new Set(allocationsList.map((a: any) => a.className)).size;
+
+                  return (
+                    <div className="stats-grid">
+                      <StatCard 
+                        label="ASSIGNED SUBJECTS" 
+                        value={totalAllocations} 
+                        icon={BookOpen} 
+                        topColor="#000080"
+                        iconBg="#EFF6FF" iconColor="#000080" 
+                        trendTag={{ text: '● Active Subjects', type: 'positive' }}
+                        subText="Subject Allocations"
+                      />
+                      <StatCard 
+                        label="TOTAL SUBJECT STUDENTS" 
+                        value={totalSubjectStudents} 
+                        icon={Users} 
+                        topColor="#000080"
+                        iconBg="#EFF6FF" iconColor="#000080" 
+                        trendTag={{ text: `${distinctClassesCount} Class Arms`, type: 'positive' }}
+                        subText="Assigned Roster Count"
+                      />
+                      <StatCard 
+                        label="CLASSES TAUGHT" 
+                        value={distinctClassesCount} 
+                        icon={GraduationCap} 
+                        topColor="#000080"
+                        iconBg="#EFF6FF" iconColor="#000080" 
+                        trendTag={{ text: 'Active Streams', type: 'neutral' }}
+                        subText="Class Allocations"
+                      />
+                      <StatCard 
+                        label="C.A. SCORE ENTRY STATUS" 
+                        value="Active" 
+                        icon={FileText} 
+                        topColor="#000080"
+                        iconBg="#EFF6FF" iconColor="#000080" 
+                        trendTag={{ text: 'Continuous Assessment', type: 'positive' }}
+                        subText="Termly Assessment Portal"
+                      />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="stats-grid">
+                    <StatCard 
+                      label="FORM CLASS STUDENTS" 
+                      value={teacherData?.classTeacherMetrics?.totalStudents ?? (teacherData?.totalStudents || 0)} 
+                      icon={Users} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      subText={teacherData?.classTeacherMetrics?.className ? `Class: ${teacherData.classTeacherMetrics.className}` : "Form Class Register"}
+                    />
+                    <StatCard 
+                      label="TODAY'S ATTENDANCE" 
+                      value={`${teacherData?.classTeacherMetrics?.attendanceToday?.percentage ?? (teacherData?.attendancePercentage || 0)}%`} 
+                      icon={CheckCircle} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      trendTag={{ text: `Present: ${teacherData?.classTeacherMetrics?.attendanceToday?.present ?? 0}`, type: 'positive' }}
+                      subText="Daily Gate & Register"
+                    />
+                    <StatCard 
+                      label="PENDING EVALUATION REMARKS" 
+                      value={teacherData?.classTeacherMetrics?.pendingRemarks ?? 0} 
+                      icon={FileText} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      trendTag={{ text: (teacherData?.classTeacherMetrics?.pendingRemarks ?? 0) > 0 ? 'Action Needed' : 'Completed', type: 'neutral' }}
+                      subText="Affective & Psychomotor"
+                    />
+                    <StatCard 
+                      label="SUBJECT ALLOCATIONS" 
+                      value={teacherData?.subjectTeacherMetrics?.totalAllocations ?? (teacherData?.totalAllocations || 0)} 
+                      icon={BookOpen} 
+                      topColor="#000080"
+                      iconBg="#EFF6FF" iconColor="#000080" 
+                      subText="Assigned Subjects"
+                    />
+                  </div>
+                );
+              })()}
 
               {/* Teacher Shortcuts */}
               <div className="quick-shortcuts-section">

@@ -120,11 +120,11 @@ export default function ProfileSettings() {
         avatarUrl: profile.avatarUrl,
         signatureUrl: profile.signatureUrl
       });
-      showAlert('Bio-Data updated successfully.');
+      showAlert('Bio-Data updated successfully.', { type: 'success', title: 'Bio-Data Updated' });
       setIsEditing(false);
       fetchProfile();
     } catch (error) {
-      showAlert('Failed to update Bio-Data.');
+      showAlert('Failed to update Bio-Data.', { type: 'danger', title: 'Update Failed' });
     } finally {
       setInfoSaving(false);
     }
@@ -137,12 +137,12 @@ export default function ProfileSettings() {
       const formData = new FormData();
       formData.append('file', avatarFile);
       await api.post('/profile/upload-avatar', formData);
-      showAlert('Profile picture updated successfully!');
+      showAlert('Profile picture updated successfully!', { type: 'success', title: 'Profile Picture Updated' });
       setAvatarFile(null);
       fetchProfile();
     } catch (error: any) {
       console.error('Avatar upload error:', error);
-      showAlert(error?.response?.data?.message || 'Failed to upload profile picture.');
+      showAlert(error?.response?.data?.message || 'Failed to upload profile picture.', { type: 'danger', title: 'Upload Failed' });
     } finally {
       setAvatarUploading(false);
     }
@@ -155,7 +155,7 @@ export default function ProfileSettings() {
       const formData = new FormData();
       formData.append('file', signatureFile);
       await api.post('/profile/upload-signature', formData);
-      showAlert('Official signature uploaded successfully!');
+      showAlert('Official signature uploaded successfully!', { type: 'success', title: 'Signature Uploaded' });
       setSignatureFile(null);
       fetchProfile();
     } catch (error: any) {
@@ -164,11 +164,11 @@ export default function ProfileSettings() {
         const formData = new FormData();
         formData.append('file', signatureFile);
         await api.post('/setup/upload-signature', formData);
-        showAlert('Official signature uploaded successfully!');
+        showAlert('Official signature uploaded successfully!', { type: 'success', title: 'Signature Uploaded' });
         setSignatureFile(null);
         fetchProfile();
       } catch (fallbackErr) {
-        showAlert(error?.response?.data?.message || 'Failed to upload signature.');
+        showAlert(error?.response?.data?.message || 'Failed to upload signature.', { type: 'danger', title: 'Upload Failed' });
       }
     } finally {
       setSignatureUploading(false);

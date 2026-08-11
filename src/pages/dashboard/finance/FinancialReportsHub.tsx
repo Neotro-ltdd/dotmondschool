@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import { useDialog } from '../../../context/DialogContext';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import './FinancialReportsHub.css';
 import { 
@@ -76,6 +77,7 @@ interface OptionalFeeRecipient {
 }
 
 export default function FinancialReportsHub() {
+  const { showAlert } = useDialog();
   const { session, term, setSession, setTerm } = useActiveTerm();
   const [activeTab, setActiveTab] = useState<'collection' | 'optional' | 'cashbook' | 'debtors'>('collection');
 
@@ -689,7 +691,7 @@ export default function FinancialReportsHub() {
                         <button 
                           className="btn-select-all-family"
                           style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
-                          onClick={() => window.alert(`Payment reminder trigger sent to ${d.parentPhoneNumber} / ${d.parentEmail}`)}
+                          onClick={() => showAlert(`Payment reminder trigger sent to ${d.parentPhoneNumber} / ${d.parentEmail}`, { type: 'success', title: 'Reminder Sent' })}
                         >
                           <Send size={12} style={{ marginRight: '4px' }} /> Send Reminder
                         </button>
