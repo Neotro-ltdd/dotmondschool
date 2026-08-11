@@ -22,6 +22,21 @@ export const SignatureTab: React.FC<SignatureTabProps> = ({
   onUpload,
   onBrowseClick
 }) => {
+  const previewUrl = React.useMemo(() => {
+    if (signatureFile) {
+      try {
+        return URL.createObjectURL(signatureFile);
+      } catch {
+        return null;
+      }
+    }
+    return currentSignatureUrl;
+  }, [signatureFile, currentSignatureUrl]);
+
+  React.useEffect(() => {
+    setSignatureLoadError(false);
+  }, [signatureFile]);
+
   return (
     <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.75rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
       <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem' }}>
@@ -110,10 +125,10 @@ export const SignatureTab: React.FC<SignatureTabProps> = ({
               padding: '1.25rem',
               overflow: 'hidden'
             }}>
-              {currentSignatureUrl && !signatureLoadError ? (
+              {previewUrl && !signatureLoadError ? (
                 <img 
-                  src={currentSignatureUrl} 
-                  alt="Signature Asset" 
+                  src={previewUrl} 
+                  alt="Signature Asset Preview" 
                   onError={() => setSignatureLoadError(true)}
                   style={{ maxWidth: '100%', maxHeight: '130px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} 
                 />
