@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useReactToPrint } from 'react-to-print';
-import { Printer, X, ShieldCheck } from 'lucide-react';
 import '../students/IdCardPrintModal.css';
 
 interface StaffIdCardPrintModalProps {
@@ -29,6 +28,8 @@ interface SchoolProfile {
   primaryColor: string;
   secondaryColor: string;
   currentSession: string;
+  principalSignatureUrl?: string;
+  signatureUrl?: string;
 }
 
 export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardPrintModalProps) {
@@ -47,18 +48,20 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     const fetchData = async () => {
       try {
         setLoading(true);
+        // Fetch staff ID card endpoint data
         const idData = await api.get(`/attendance/staff-id-card/${staffId}`);
         setIdCardData(idData);
 
+        // Fetch school profile metadata
         try {
           const profile = await api.get('/setup/school-profile');
           setSchoolProfile(profile);
         } catch {
           setSchoolProfile({
             schoolName: "DOTMOND SCHOOL",
-            address: "Happyland Estate, Ajah, Lagos State",
+            address: "Happyland Estate, Ajah, Lagos State, Nigeria",
             logoUrl: "",
-            primaryColor: "#12386E",
+            primaryColor: "#000080",
             secondaryColor: "#C4293A",
             currentSession: "2026/2027"
           });
@@ -75,7 +78,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
   if (loading) {
     return (
       <div className="id-card-overlay">
-        <div className="id-card-modal-content" style={{ alignItems: 'center', padding: '40px' }}>
+        <div className="id-card-modal-content" style={{ alignItems: 'center' }}>
           <h2>Generating Official Staff ID Card...</h2>
         </div>
       </div>
@@ -99,153 +102,188 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return url.startsWith('/') ? `${API_ROOT}${url}` : url;
   };
 
-  const primaryColor = schoolProfile?.primaryColor || '#000080';
-  const secondaryColor = schoolProfile?.secondaryColor || '#F59E0B';
-  const logoUrl = getFullUrl(schoolProfile?.logoUrl);
-  const passportUrl = getFullUrl(idCardData.passportUrl);
+  const rawSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
+  const fullSchoolTitle = rawSchoolName.toUpperCase();
+  const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+
+  // Avatar Fallback URL generator
+  const getAvatarFallback = (name: string) => {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=000080&color=ffffff&size=256`;
+  };
+
+  const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
 
   return (
     <div className="id-card-overlay">
-      <div className="id-card-modal-wrapper" style={{ maxWidth: '540px' }}>
-        <div className="id-card-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderBottom: '1px solid #E2E8F0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={20} color="#000080" />
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0F172A' }}>Official Staff Credential</h3>
+      <div className="id-card-modal-content">
+        
+        {/* Modal Controls Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }} className="no-print">
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#000080' }}>Print Staff ID Card</h2>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#5B6063' }}>
+              Standard CR80 2-Sided Portrait Layout (2.125″ × 3.375″). Front &amp; Back.
+            </p>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}>
-            <X size={20} />
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+            <button className="btn btn-primary" onClick={() => handlePrint()} style={{ fontWeight: 700, background: '#000080', border: 'none' }}>
+              🖨️ Print Card
+            </button>
+          </div>
         </div>
 
-        {/* Printable Card Area */}
-        <div className="id-card-preview-area" style={{ padding: '24px', background: '#F8FAFC', display: 'flex', justifyContent: 'center' }}>
-          <div ref={printRef} className="printable-card-container">
-            {/* Front Card Design matching Client Reference Image */}
-            <div 
-              className="id-card-front" 
-              style={{
-                width: '320px',
-                minHeight: '500px',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-                background: '#FFFFFF',
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                border: '1px solid #CBD5E1'
-              }}
-            >
-              {/* Top Header Section */}
-              <div style={{ padding: '20px 16px 12px 16px', textAlign: 'center', background: '#FFFFFF' }}>
-                {logoUrl ? (
-                  <img src={logoUrl} alt="Logo" style={{ height: '42px', objectFit: 'contain', marginBottom: '4px' }} />
-                ) : (
-                  <div style={{ fontWeight: 800, fontSize: '1.2rem', color: primaryColor, letterSpacing: '1px' }}>
-                    {schoolProfile?.schoolName || 'DOTMOND SCHOOL'}
+        <div className="id-card-preview-area" ref={printRef}>
+          
+          {/* ================= FRONT SIDE ================= */}
+          <div className="id-card-wrapper">
+            <div className="card front">
+
+              {/* Header */}
+              <div className="head">
+                <div className="head-row">
+                  <div className="mark-cell">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                    ) : (
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                        <defs>
+                          <linearGradient id="stfFlame1" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stopColor="#E63946"/><stop offset="100%" stopColor="#F4B740"/></linearGradient>
+                          <linearGradient id="stfRibbon1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#C4293A"/><stop offset="50%" stopColor="#E63946"/><stop offset="100%" stopColor="#C4293A"/></linearGradient>
+                        </defs>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10" strokeLinejoin="round"/>
+                        <path d="M250,80 L400,133 L400,298 C400,412 330,472 250,510 C170,472 100,412 100,298 L100,133 Z" fill="none" stroke="#F4B740" strokeWidth="4"/>
+                        <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080">
+                          <text x="250.0" y="182.0" textAnchor="middle">RMS</text>
+                        </g>
+                        <text x="250" y="420" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="23" letterSpacing="5" fill="#000080">SCHOOL</text>
+                      </svg>
+                    )}
                   </div>
-                )}
-                <div style={{ fontSize: '0.65rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  FACULTY & STAFF CREDENTIAL
+                  <div className="text-cell">
+                    <div className="word-dotmond">{fullSchoolTitle}</div>
+                    <div className="subline">{schoolAddress}</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Centered Photo Section with Framed Border */}
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
-                <div style={{
-                  width: '135px',
-                  height: '145px',
-                  borderRadius: '16px',
-                  border: `4px solid ${secondaryColor}`,
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                  background: '#F1F5F9',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {passportUrl ? (
-                    <img src={passportUrl} alt={idCardData.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div className="rule"></div>
+              <div className="id-row"><span className="id-pill" style={{ background: '#000080' }}>STAFF ID</span></div>
+
+              {/* Photo Box */}
+              <div className="photo-box" style={{ borderColor: '#000080' }}>
+                <div className="cell">
+                  {idCardData.passportUrl ? (
+                    <img 
+                      src={getFullUrl(idCardData.passportUrl)} 
+                      alt={idCardData.fullName} 
+                      className="student-photo-img" 
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = getAvatarFallback(idCardData.fullName);
+                      }}
+                    />
                   ) : (
-                    <div style={{ fontSize: '2.5rem', fontWeight: 700, color: '#94A3B8' }}>
-                      {idCardData.fullName.charAt(0)}
-                    </div>
+                    <img 
+                      src={getAvatarFallback(idCardData.fullName)} 
+                      alt={idCardData.fullName} 
+                      className="student-photo-img" 
+                    />
                   )}
                 </div>
               </div>
 
-              {/* Lower Section (Dark Blue Background) */}
-              <div style={{
-                flex: 1,
-                background: `linear-gradient(180deg, ${primaryColor} 0%, #000040 100%)`,
-                padding: '16px 16px 20px 16px',
-                color: '#FFFFFF',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}>
-                <div>
-                  <h2 style={{
-                    margin: '0 0 4px 0',
-                    fontSize: '1.15rem',
-                    fontWeight: 800,
-                    letterSpacing: '0.5px',
-                    color: '#FDE047',
-                    textTransform: 'uppercase',
-                    lineHeight: 1.25
-                  }}>
-                    {idCardData.fullName}
-                  </h2>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, opacity: 0.9, textTransform: 'uppercase', color: '#E2E8F0' }}>
-                    {idCardData.designation}
-                  </div>
-                  <div style={{ height: '1px', background: 'rgba(255,255,255,0.2)', width: '80%', margin: '8px auto' }} />
-                </div>
-
-                {/* Validity & Staff Code */}
-                <div style={{ margin: '4px 0' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#FDE047', letterSpacing: '0.5px' }}>
-                    VALIDADE: {idCardData.validPeriod}
-                  </div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, letterSpacing: '1px', color: '#FFFFFF', marginTop: '2px' }}>
-                    CÓD. ID: {idCardData.formattedStaffCode}
-                  </div>
-                </div>
-
-                {/* Embedded High-Res Gate Scan QR Code */}
-                {idCardData.qrCodeSvg && (
-                  <div style={{
-                    background: '#FFFFFF',
-                    padding: '6px',
-                    borderRadius: '8px',
-                    marginTop: '8px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                  }}>
-                    <img 
-                      src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`} 
-                      alt="Gate Tap-In QR" 
-                      style={{ width: '68px', height: '68px', display: 'block' }} 
-                    />
-                  </div>
-                )}
+              {/* Navy Staff Details Band */}
+              <div className="name-band" style={{ background: '#000080' }}>
+                <div className="name">{idCardData.fullName.toUpperCase()}</div>
+                <div className="field"><b>Designation:</b> {idCardData.designation}</div>
+                <div className="field"><b>CÓD. ID:</b> {idCardData.formattedStaffCode}</div>
               </div>
+
+              {/* Red/Gold Bordered Footer Strip */}
+              <div className="foot-strip" style={{ background: '#000040', borderTop: '2px solid #C4293A' }}>
+                <div className="cell">VALIDADE</div>
+                <div className="cell">{idCardData.validPeriod}</div>
+              </div>
+
             </div>
           </div>
+
+          {/* ================= BACK SIDE ================= */}
+          <div className="id-card-wrapper">
+            <div className="card back">
+
+              {/* Header */}
+              <div className="head">
+                <div className="head-row">
+                  <div className="mark-cell">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                    ) : (
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10" strokeLinejoin="round"/>
+                        <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080">
+                          <text x="250.0" y="182.0" textAnchor="middle">RMS</text>
+                        </g>
+                        <text x="250" y="420" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="23" letterSpacing="5" fill="#000080">SCHOOL</text>
+                      </svg>
+                    )}
+                  </div>
+                  <div className="text-cell">
+                    <div className="word-dotmond">{fullSchoolTitle}</div>
+                    <div className="subline">Attendance &amp; Identification System</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rule"></div>
+
+              <p className="notice">
+                This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+              </p>
+
+              <div className="rule"></div>
+
+              {/* Barcode & Gate Scan QR Code Section */}
+              <div className="scan-block">
+                <div className="scan-label" style={{ color: '#000080' }}>SCAN TO CLOCK IN</div>
+                <div className="qr-wrap">
+                  <div className="cell">
+                    {idCardData.qrCodeSvg && (
+                      <img
+                        src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
+                        alt="Staff Gate Scan QR Code"
+                      />
+                    )}
+                  </div>
+                </div>
+                <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF' }}>
+                  ENCODED ID: {idCardData.formattedStaffCode}
+                </span>
+              </div>
+
+              {/* Authorised Signature Line */}
+              {principalSig ? (
+                <div className="sig">
+                  <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.22in', display: 'block', margin: '0 auto 2px' }} />
+                  <div className="line"></div>
+                  <div className="cap">Authorised Signature</div>
+                </div>
+              ) : null}
+
+              {/* Footer Strip */}
+              <div className="foot-strip" style={{ background: '#000040', borderTop: '2px solid #C4293A' }}>
+                <div className="cell" style={{ textAlign: 'center', width: '100%' }}>
+                  Powered by NEOTRO ATTENDANCE SYSTEM
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
 
-        {/* Modal Actions */}
-        <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', gap: '12px', background: '#FFFFFF', borderTop: '1px solid #E2E8F0' }}>
-          <button className="btn btn-secondary" onClick={onClose}>Close</button>
-          <button 
-            className="btn btn-primary" 
-            onClick={() => handlePrint()}
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: primaryColor, color: '#FFFFFF', border: 'none', padding: '10px 18px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
-          >
-            <Printer size={16} /> Print Official ID Card
-          </button>
-        </div>
       </div>
     </div>
   );
