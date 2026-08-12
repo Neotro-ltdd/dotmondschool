@@ -4,7 +4,8 @@ import { api } from '../../../services/api';
 import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
-import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical } from 'lucide-react';
+import StaffIdCardPrintModal from './StaffIdCardPrintModal';
+import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical, CreditCard } from 'lucide-react';
 
 
 interface TeacherItem {
@@ -31,6 +32,7 @@ export default function Teachers() {
   // View Switcher & Dropdown State
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [selectedStaffIdForCard, setSelectedStaffIdForCard] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -448,6 +450,15 @@ export default function Teachers() {
                                 disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
                               >
                                 <Key size={15} color="#2563EB" /> Credentials
+                              </button>
+                              <button 
+                                className="dropdown-action-item" 
+                                onClick={() => {
+                                  setOpenDropdownId(null);
+                                  setSelectedStaffIdForCard(teacher.id);
+                                }}
+                              >
+                                <CreditCard size={15} color="#000080" /> Print Staff ID Card
                               </button>
                               <button 
                                 className="dropdown-action-item" 
@@ -906,6 +917,12 @@ export default function Teachers() {
         </div>
       )}
 
+      {selectedStaffIdForCard && (
+        <StaffIdCardPrintModal 
+          staffId={selectedStaffIdForCard} 
+          onClose={() => setSelectedStaffIdForCard(null)} 
+        />
+      )}
     </div>
   );
 }

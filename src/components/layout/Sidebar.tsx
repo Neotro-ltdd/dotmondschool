@@ -399,37 +399,35 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
-                {userRole !== 'Principal' && (
-                  <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`} 
-                      onClick={() => setIsAttendanceOpen(!isAttendanceOpen)}
-                    >
-                      <span className="nav-icon-box"><QrCode size={18} /></span>
-                      Attendance Management
-                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                        {isAttendanceOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                      </span>
-                    </button>
-                    {isAttendanceOpen && (
-                      <div className="submenu">
-                        {userRole !== 'Accountant' && (
-                          <>
-                            <NavLink to="/dashboard/operations/gate-scanner" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                              Gate Scanner
-                            </NavLink>
-                            <NavLink to="/dashboard/operations/gate-logs" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                              Gate Logs
-                            </NavLink>
-                          </>
-                        )}
-                        <NavLink to="/dashboard/staff-attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Staff Attendance Log
-                        </NavLink>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="nav-group">
+                  <button 
+                    className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`} 
+                    onClick={() => setIsAttendanceOpen(!isAttendanceOpen)}
+                  >
+                    <span className="nav-icon-box"><QrCode size={18} /></span>
+                    Attendance Management
+                    <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                      {isAttendanceOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </span>
+                  </button>
+                  {isAttendanceOpen && (
+                    <div className="submenu">
+                      {userRole !== 'Accountant' && userRole !== 'Principal' && (
+                        <>
+                          <NavLink to="/dashboard/operations/gate-scanner" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            Gate Scanner
+                          </NavLink>
+                          <NavLink to="/dashboard/operations/gate-logs" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            Gate Logs
+                          </NavLink>
+                        </>
+                      )}
+                      <NavLink to="/dashboard/staff-attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        Staff Attendance Log
+                      </NavLink>
+                    </div>
+                  )}
+                </div>
 
                 {/* ACCOUNTANT / SUPERADMIN FINANCE MODULES */}
                 {(userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (

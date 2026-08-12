@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
 import { 
   Users, 
@@ -7,16 +6,15 @@ import {
   UserX, 
   Calendar, 
   Filter, 
-  Printer, 
+  Clock, 
+  Search, 
   Download, 
-  RefreshCw,
-  Clock,
-  ShieldCheck,
+  Briefcase,
+  Sparkles,
   CheckCircle,
-  XCircle,
-  Briefcase
+  XCircle
 } from 'lucide-react';
-import './StaffAttendanceReport.css';
+import '../Dashboard.css';
 
 interface StaffAttendanceItem {
   staffId: string;
@@ -27,7 +25,7 @@ interface StaffAttendanceItem {
   role: string;
   staffCategory: string;
   employmentType: string;
-  clockInTime: string | null;
+  clockInTime?: string;
   status: string;
   avatarUrl: string;
 }
@@ -47,235 +45,268 @@ export default function StaffAttendanceReport() {
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
-  const [categoryFilter, setCategoryFilter] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('All');
 
-  const { data, isLoading, refetch, isRefetching } = useQuery<StaffAttendanceReportData>({
-    queryKey: ['staff-attendance-report', selectedDate, categoryFilter],
-    queryFn: async () => {
-      const res = await api.get(`/attendance/staff-report?date=${selectedDate}&category=${categoryFilter}`);
-      return res;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [reportData, setReportData] = useState<StaffAttendanceReportData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchReport = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await api.get(
+        `/attendance/staff-report?date=${selectedDate}&category=${encodeURIComponent(selectedCategory)}`
+      );
+      setReportData(res);
+    } catch (err: any) {
+      console.error("Failed to load staff attendance report", err);
+      setError(err.message || "Failed to load staff attendance report.");
+    } finally {
+      setLoading(false);
     }
-  });
-
-  const handlePrint = () => {
-    window.print();
   };
 
-  const filteredList = data?.staffAttendanceList.filter(item => {
-    const matchesSearch = 
-      item.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    fetchReport();
+  }, [selectedDate, selectedCategory]);
 
-    return matchesSearch;
-  }) || [];
+  const filteredList = (reportData?.staffAttendanceList || []).filter(item => {
+    const matchesSearch = item.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const formatClockInTime = (isoString?: string) => {
+    if (!isoString) return '—';
+    try {
+      const dateObj = new Date(isoString);
+      return dateObj.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return isoString;
+    }
+  };
 
   return (
-    <div className="staff-attendance-report-page">
-      {/* Header Banner */}
-      <div className="report-header-banner">
+    <div className="overview-page" style={{ padding: '24px' }}>
+      {/* ════════ EXECUTIVE HEADER ════════ */}
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 className="report-title">
-            <Users size={24} style={{ marginRight: '10px', color: 'var(--secondary-color, #FACC15)' }} />
-            Staff Attendance & Clock-In Log
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(0, 0, 128, 0.1)', color: '#000080', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '8px' }}>
+            <Sparkles size={14} /> Executive Audit & Institutional Oversight
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            Staff Morning Tap-In Attendance Report
           </h1>
-          <p className="report-subtitle">
-            One-way gate arrival tracking for Teaching, Non-Teaching, and Contract Staff members. Restricted to Superadmin, Admin, and Account.
+          <p style={{ color: '#64748B', margin: '4px 0 0 0', fontSize: '0.9rem' }}>
+            Daily gate attendance monitoring across Teaching, Non-Teaching, and Contract faculty.
           </p>
         </div>
-        <div className="report-actions">
-          <button className="btn-report-action" onClick={() => refetch()} disabled={isRefetching}>
-            <RefreshCw size={16} className={isRefetching ? 'spin' : ''} /> Refresh
-          </button>
-          <button className="btn-report-action primary" onClick={handlePrint}>
-            <Printer size={16} /> Print Report
-          </button>
+
+        {/* Filters bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FFFFFF', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '8px' }}>
+            <Calendar size={16} color="#64748B" />
+            <input 
+              type="date" 
+              value={selectedDate} 
+              onChange={(e) => setSelectedDate(e.target.value)}
+              style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: 600, fontSize: '0.85rem', color: '#0F172A' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FFFFFF', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '8px' }}>
+            <Filter size={16} color="#64748B" />
+            <select 
+              value={selectedCategory} 
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{ border: 'none', outline: 'none', background: 'transparent', fontWeight: 600, fontSize: '0.85rem', color: '#0F172A', cursor: 'pointer' }}
+            >
+              <option value="All">All Categories</option>
+              <option value="Teaching">Teaching Staff</option>
+              <option value="NonTeaching">Non-Teaching Staff</option>
+              <option value="Contract">Contract Staff</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="report-filter-bar">
-        <div className="filter-group">
-          <label><Calendar size={15} /> Select Attendance Date:</label>
-          <input 
-            type="date" 
-            value={selectedDate} 
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="filter-date-input"
-          />
-        </div>
-
-        <div className="filter-group">
-          <label><Filter size={15} /> Staff Classification:</label>
-          <select 
-            value={categoryFilter} 
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="filter-select-input"
-          >
-            <option value="All">All Staff Categories</option>
-            <option value="Teaching">Teaching Staff</option>
-            <option value="NonTeaching">Non-Teaching Staff</option>
-            <option value="Contract">Contract Staff</option>
-          </select>
-        </div>
-
-        <div className="filter-group search">
-          <input 
-            type="text" 
-            placeholder="Search by staff name, designation, email..." 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="filter-search-input"
-          />
-        </div>
-      </div>
-
-      {/* Summary Stat Cards */}
-      <div className="report-stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon-wrapper active-staff">
-            <Users size={22} />
-          </div>
-          <div>
-            <span className="stat-label">Total Active Staff</span>
-            <h2 className="stat-value">{data?.totalActiveStaff || 0}</h2>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon-wrapper present">
-            <UserCheck size={22} />
-          </div>
-          <div>
-            <span className="stat-label">Clocked In Today</span>
-            <h2 className="stat-value present">{data?.totalPresentToday || 0}</h2>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon-wrapper absent">
-            <UserX size={22} />
-          </div>
-          <div>
-            <span className="stat-label">Not Clocked In</span>
-            <h2 className="stat-value absent">{data?.totalAbsentToday || 0}</h2>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon-wrapper breakdown">
-            <Briefcase size={22} />
-          </div>
-          <div>
-            <span className="stat-label">Category Breakdown</span>
-            <div className="breakdown-pills">
-              <span className="pill teaching">Teaching: {data?.teachingPresent || 0}</span>
-              <span className="pill non-teaching">Non-Teach: {data?.nonTeachingPresent || 0}</span>
-              <span className="pill contract">Contract: {data?.contractPresent || 0}</span>
+      {/* ════════ EXECUTIVE METRIC CARDS ════════ */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Active Roster</span>
+            <div style={{ background: '#EFF6FF', padding: '8px', borderRadius: '10px', color: '#1D4ED8' }}>
+              <Users size={20} />
             </div>
           </div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0F172A' }}>
+            {loading ? '...' : (reportData?.totalActiveStaff ?? 0)}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '4px' }}>Registered Staff Members</div>
+        </div>
+
+        <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Present Today (Tap-In)</span>
+            <div style={{ background: '#ECFDF5', padding: '8px', borderRadius: '10px', color: '#059669' }}>
+              <UserCheck size={20} />
+            </div>
+          </div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#059669' }}>
+            {loading ? '...' : (reportData?.totalPresentToday ?? 0)}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 600, marginTop: '4px' }}>
+            {reportData && reportData.totalActiveStaff > 0
+              ? `${Math.round((reportData.totalPresentToday / reportData.totalActiveStaff) * 100)}% Turnout Rate`
+              : '0% Turnout'}
+          </div>
+        </div>
+
+        <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Absent Today</span>
+            <div style={{ background: '#FEF2F2', padding: '8px', borderRadius: '10px', color: '#DC2626' }}>
+              <UserX size={20} />
+            </div>
+          </div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#DC2626' }}>
+            {loading ? '...' : (reportData?.totalAbsentToday ?? 0)}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#DC2626', fontWeight: 600, marginTop: '4px' }}>No morning gate scan</div>
+        </div>
+
+        <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category Breakdown</span>
+            <div style={{ background: '#FAF5FF', padding: '8px', borderRadius: '10px', color: '#7E22CE' }}>
+              <Briefcase size={20} />
+            </div>
+          </div>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div>Teaching: <strong style={{ color: '#0F172A' }}>{reportData?.teachingPresent ?? 0}</strong> present</div>
+            <div>Non-Teaching: <strong style={{ color: '#0F172A' }}>{reportData?.nonTeachingPresent ?? 0}</strong> present</div>
+            <div>Contract: <strong style={{ color: '#0F172A' }}>{reportData?.contractPresent ?? 0}</strong> present</div>
+          </div>
         </div>
       </div>
 
-      {/* Attendance Log Table */}
-      <div className="report-table-card">
-        <div className="table-card-header">
-          <h3>Daily Arrival Records ({selectedDate})</h3>
-          <span className="record-count-badge">{filteredList.length} Staff Records</span>
+      {/* ════════ SEARCH & DATA TABLE ════════ */}
+      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)', overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '8px 14px', borderRadius: '8px', width: '280px' }}>
+            <Search size={16} color="#94A3B8" />
+            <input 
+              type="text" 
+              placeholder="Search staff name or role..." 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.85rem', width: '100%' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748B' }}>Status:</span>
+            <button 
+              onClick={() => setStatusFilter('All')} 
+              style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer', background: statusFilter === 'All' ? '#000080' : '#F1F5F9', color: statusFilter === 'All' ? '#FFF' : '#475569' }}
+            >
+              All
+            </button>
+            <button 
+              onClick={() => setStatusFilter('Present')} 
+              style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer', background: statusFilter === 'Present' ? '#059669' : '#F1F5F9', color: statusFilter === 'Present' ? '#FFF' : '#475569' }}
+            >
+              Present ({reportData?.totalPresentToday ?? 0})
+            </button>
+            <button 
+              onClick={() => setStatusFilter('Absent')} 
+              style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer', background: statusFilter === 'Absent' ? '#DC2626' : '#F1F5F9', color: statusFilter === 'Absent' ? '#FFF' : '#475569' }}
+            >
+              Absent ({reportData?.totalAbsentToday ?? 0})
+            </button>
+          </div>
         </div>
 
-        {isLoading ? (
-          <div className="table-loading-container">
-            <RefreshCw size={24} className="spin" />
-            <span>Loading staff attendance records...</span>
+        {/* Table Content */}
+        {loading ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>
+            Loading Staff Morning Attendance Logs...
+          </div>
+        ) : error ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#DC2626' }}>
+            {error}
           </div>
         ) : filteredList.length === 0 ? (
-          <div className="table-empty-container">
-            <UserX size={40} style={{ opacity: 0.3, marginBottom: '8px' }} />
-            <p>No staff attendance records found for this date & filter selection.</p>
+          <div style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>
+            No staff attendance logs found for the selected filters on {selectedDate}.
           </div>
         ) : (
-          <div className="table-responsive">
-            <table className="staff-attendance-table">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr>
-                  <th>Staff Profile</th>
-                  <th>Designation / Roles</th>
-                  <th>Category</th>
-                  <th>Employment</th>
-                  <th>Clock-In Timestamp</th>
-                  <th>Status</th>
+                <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Staff Member</th>
+                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Designation / Role</th>
+                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Category</th>
+                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Contact Info</th>
+                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Tap-In Time</th>
+                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredList.map((staff) => (
-                  <tr key={staff.staffId}>
-                    <td>
-                      <div className="staff-profile-cell">
-                        <img 
-                          src={staff.avatarUrl || '/images/default-avatar.png'} 
-                          alt={staff.fullName} 
-                          className="staff-avatar-img"
-                          onError={(e) => {
-                            (e.target as HTMLElement).setAttribute('src', '/images/default-avatar.png');
-                          }}
-                        />
-                        <div>
-                          <strong className="staff-name">{staff.fullName}</strong>
-                          <span className="staff-contact">{staff.email} • {staff.phoneNumber}</span>
-                        </div>
+                {filteredList.map((staff, idx) => (
+                  <tr key={staff.staffId || idx} style={{ borderBottom: '1px solid #F1F5F9', fontSize: '0.875rem', color: '#0F172A' }}>
+                    <td style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#000080', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>
+                        {staff.fullName.charAt(0)}
+                      </div>
+                      <div>
+                        <strong style={{ color: '#0F172A' }}>{staff.fullName}</strong>
                       </div>
                     </td>
-
-                    <td>
-                      <div className="staff-role-cell">
-                        <strong className="designation-text">{staff.designation}</strong>
-                        <div className="role-tags">
-                          {staff.role.split(',').map((r, i) => (
-                            <span key={i} className="role-badge">{r.trim()}</span>
-                          ))}
-                        </div>
-                      </div>
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ fontWeight: 600 }}>{staff.designation}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>Role: {staff.role}</div>
                     </td>
-
-                    <td>
-                      <span className={`category-badge ${staff.staffCategory.toLowerCase()}`}>
-                        {staff.staffCategory === 'NonTeaching' ? 'Non-Teaching' : staff.staffCategory}
+                    <td style={{ padding: '14px 20px' }}>
+                      <span style={{ 
+                        background: staff.staffCategory === 'Teaching' ? '#EFF6FF' : staff.staffCategory === 'Contract' ? '#FAF5FF' : '#F1F5F9',
+                        color: staff.staffCategory === 'Teaching' ? '#1D4ED8' : staff.staffCategory === 'Contract' ? '#7E22CE' : '#475569',
+                        padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700
+                      }}>
+                        {staff.staffCategory}
                       </span>
                     </td>
-
-                    <td>
-                      <span className="employment-badge">{staff.employmentType}</span>
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#334155' }}>{staff.email}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{staff.phoneNumber}</div>
                     </td>
-
-                    <td>
-                      {staff.clockInTime ? (
-                        <div className="time-cell">
-                          <Clock size={14} className="time-icon" />
-                          <span>
-                            {new Date(staff.clockInTime).toLocaleTimeString('en-US', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              second: '2-digit',
-                              hour12: true
-                            })}
-                          </span>
+                    <td style={{ padding: '14px 20px' }}>
+                      {staff.status === 'Present' ? (
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: '#059669', background: '#ECFDF5', padding: '4px 10px', borderRadius: '6px' }}>
+                          <Clock size={14} /> {formatClockInTime(staff.clockInTime)}
                         </div>
                       ) : (
-                        <span className="time-cell-absent">—</span>
+                        <span style={{ color: '#94A3B8' }}>—</span>
                       )}
                     </td>
-
-                    <td>
+                    <td style={{ padding: '14px 20px' }}>
                       {staff.status === 'Present' ? (
-                        <span className="status-badge present">
-                          <CheckCircle size={14} /> Clocked In
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#059669', fontWeight: 700, fontSize: '0.8rem' }}>
+                          <CheckCircle size={14} /> Present
                         </span>
                       ) : (
-                        <span className="status-badge absent">
-                          <XCircle size={14} /> Not Clocked In
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#DC2626', fontWeight: 700, fontSize: '0.8rem' }}>
+                          <XCircle size={14} /> Absent
                         </span>
                       )}
                     </td>
