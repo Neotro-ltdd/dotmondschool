@@ -81,19 +81,6 @@ export default function DashboardLayout() {
           />
         )}
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-        {isHoliday && (
-          <div className="holiday-banner-container" title="Hover mouse over text to pause scrolling">
-            <div className="holiday-banner-track">
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.1rem' }}>🌴</span>
-                <span>
-                  <strong>SCHOOL OPERATIONAL NOTICE:</strong> School is currently on Holiday / Inter-Term Break.
-                  {resumptionDate ? ` Resumption date for ${session} (${term}) is ${resumptionDate}.` : ` Preparing for ${session} ${term}.`}
-                </span>
-              </span>
-            </div>
-          </div>
-        )}
         <main className="dashboard-content" style={{ position: 'relative', zIndex: 1 }}>
           <Outlet />
         </main>
