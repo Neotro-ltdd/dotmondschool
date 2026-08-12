@@ -15,7 +15,7 @@ import './Dashboard.css';
 export default function Overview() {
   const { userRole, userName, userTitle } = useAuth();
   const { schoolName } = useTenant();
-  const { session, term, isHoliday } = useActiveTerm();
+  const { session, term, isHoliday, resumptionDate } = useActiveTerm();
   
   const isHolidayMode = isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
   const displayTerm = term === 'MTB (Mid Term Break)' || term === 'MTB' ? 'Mid Term Break (MTB)' : term;
@@ -126,6 +126,7 @@ export default function Overview() {
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
+          resumptionDate={resumptionDate}
           adminData={adminData} 
           loading={loading} 
           onToggleActivityLog={() => setShowActivityLog(!showActivityLog)}

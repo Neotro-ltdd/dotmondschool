@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import StatCard from './StatCard';
+import OverviewHeader from './OverviewHeader';
 import { formatDisplayName } from '../../../utils/nameFormatter';
 
 interface AdminDashboardViewProps {
@@ -20,6 +21,7 @@ interface AdminDashboardViewProps {
   session?: string;
   displayTerm?: string;
   isHolidayMode?: boolean;
+  resumptionDate?: string;
   adminData?: any;
   loading?: boolean;
   onToggleActivityLog?: () => void;
@@ -31,6 +33,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   session = '2026/2027',
   displayTerm = 'First Term',
   isHolidayMode = true,
+  resumptionDate,
   adminData,
   loading,
   onToggleActivityLog
@@ -69,6 +72,17 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
   return (
     <div className="overview-page">
+      <OverviewHeader 
+        userName={userName}
+        userTitle={userTitle}
+        session={session}
+        displayTerm={displayTerm}
+        isHolidayMode={isHolidayMode}
+        resumptionDate={resumptionDate}
+        userRole="Admin"
+        onToggleActivityLog={onToggleActivityLog}
+      />
+
       {/* ════════ EXECUTIVE HERO BANNER ════════ */}
       <div className="dashboard-banner">
         <div className="banner-header-row">

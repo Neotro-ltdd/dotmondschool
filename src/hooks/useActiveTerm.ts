@@ -6,7 +6,6 @@ let cachedTerm = 'First Term';
 let cachedIsHoliday = false;
 let cachedStatus = 'Active';
 let cachedResumptionDate = '';
-let isFetching = false;
 let fetchPromise: Promise<void> | null = null;
 
 export function useActiveTerm() {
@@ -15,29 +14,41 @@ export function useActiveTerm() {
   const [isHoliday, setIsHoliday] = useState<boolean>(cachedIsHoliday);
   const [status, setStatus] = useState<string>(cachedStatus);
   const [resumptionDate, setResumptionDate] = useState<string>(cachedResumptionDate);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!fetchPromise) {
-      isFetching = true;
       fetchPromise = (async () => {
         try {
-          const data = await api.get('/setup/school-profile');
-          if (data) {
-            if (data.currentSession) cachedSession = data.currentSession;
-            if (data.currentTerm) {
-              cachedTerm = (data.currentTerm === 'Holiday' || data.isHoliday) ? 'First Term' : data.currentTerm;
+          // 1. Fetch main school profile
+          const profileData = await api.get('/setup/school-profile');
+          if (profileData) {
+            if (profileData.currentSession) cachedSession = profileData.currentSession;
+            if (profileData.currentTerm) {
+              cachedTerm = (profileData.currentTerm === 'Holiday' || profileData.isHoliday) ? 'First Term' : profileData.currentTerm;
             }
-            if (data.isHoliday !== undefined) cachedIsHoliday = !!data.isHoliday;
-            if (data.status) cachedStatus = data.status;
-            if (data.resumptionDate && typeof data.resumptionDate === 'string') {
-              cachedResumptionDate = data.resumptionDate.split('T')[0];
+            if (profileData.isHoliday !== undefined) cachedIsHoliday = !!profileData.isHoliday;
+            if (profileData.status) cachedStatus = profileData.status;
+            if (profileData.resumptionDate && typeof profileData.resumptionDate === 'string') {
+              cachedResumptionDate = profileData.resumptionDate.split('T')[0];
             }
+          }
+
+          // 2. Query /setup/terms to get detailed term status & resumption date
+          try {
+            const termData = await api.get(`/setup/terms?session=${encodeURIComponent(cachedSession)}&term=${encodeURIComponent(cachedTerm)}`);
+            if (termData) {
+              if (termData.isHoliday !== undefined) cachedIsHoliday = !!termData.isHoliday;
+              if (termData.status) cachedStatus = termData.status;
+              if (termData.nextTermResumptionDate && typeof termData.nextTermResumptionDate === 'string') {
+                cachedResumptionDate = termData.nextTermResumptionDate.split('T')[0];
+              }
+            }
+          } catch (termErr) {
+            // Ignore term setup 404 gracefully if not configured yet
           }
         } catch (err) {
           console.error('Failed to load active term profile:', err);
-        } finally {
-          isFetching = false;
         }
       })();
     }
@@ -63,3 +74,4 @@ export function invalidateActiveTermCache() {
   cachedResumptionDate = '';
   fetchPromise = null;
 }
+
