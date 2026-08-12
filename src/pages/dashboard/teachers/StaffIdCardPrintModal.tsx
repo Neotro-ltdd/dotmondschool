@@ -172,7 +172,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="id-row"><span className="id-pill" style={{ background: '#000080' }}>STAFF ID</span></div>
 
               {/* Photo Box */}
-              <div className="photo-box" style={{ borderColor: '#000080' }}>
+              <div className="photo-box" style={{ height: '1.40in', borderColor: '#000080', margin: '0.02in 0.16in 0' }}>
                 <div className="cell">
                   {idCardData.passportUrl ? (
                     <img 
@@ -194,11 +194,28 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 </div>
               </div>
 
-              {/* Navy Staff Details Band */}
-              <div className="name-band" style={{ background: '#000080' }}>
-                <div className="name">{idCardData.fullName.toUpperCase()}</div>
-                <div className="field"><b>Designation:</b> {idCardData.designation}</div>
-                <div className="field"><b>CÓD. ID:</b> {idCardData.formattedStaffCode}</div>
+              {/* Staff Details Section (Clean White Background with Navy Blue Text) */}
+              <div style={{ padding: '0.08in 0.16in 0', background: '#FFFFFF', textAlign: 'left' }}>
+                <div style={{ 
+                  fontFamily: "Georgia, 'Times New Roman', serif", 
+                  fontWeight: 800, 
+                  fontSize: '11px', 
+                  letterSpacing: '0.2px', 
+                  color: '#000080', 
+                  textTransform: 'uppercase',
+                  margin: '0 0 3px 0',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {idCardData.fullName}
+                </div>
+                <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 700, margin: '2px 0', textTransform: 'uppercase' }}>
+                  <b>ROLE / DESIGNATION:</b> {idCardData.designation ? idCardData.designation.toUpperCase() : idCardData.role.toUpperCase()}
+                </div>
+                <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 800, margin: '2px 0' }}>
+                  <b>CÓD. ID:</b> {idCardData.formattedStaffCode}
+                </div>
               </div>
 
               {/* Red/Gold Bordered Footer Strip */}
