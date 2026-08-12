@@ -40,12 +40,17 @@ export default function Overview() {
           const res = await api.get('/academics/teacher/dashboard');
           setTeacherData(res?.data || res);
         } else if (userRole === 'Admin' || userRole === 'SuperAdmin' || userRole === 'SystemAdmin') {
-          const res = await api.get('/platform/summary');
+          let res;
+          try {
+            res = await api.get('/setup/admin/dashboard');
+          } catch {
+            res = await api.get('/platform/summary').catch(() => null);
+          }
           setAdminData(res?.data || res);
         } else if (userRole === 'Principal') {
           const [pData, pSummary] = await Promise.all([
             api.get('/academics/principal/dashboard').catch(() => null),
-            api.get('/platform/summary').catch(() => null)
+            api.get('/setup/admin/dashboard').catch(() => api.get('/platform/summary')).catch(() => null)
           ]);
           setPrincipalData({
             ...(pSummary?.data || pSummary || {}),
@@ -58,8 +63,12 @@ export default function Overview() {
           const res = await api.get('/vendor/dashboard');
           setVendorData(res?.data || res);
         } else {
-          // Default admin platform summary fallback
-          const res = await api.get('/platform/summary');
+          let res;
+          try {
+            res = await api.get('/setup/admin/dashboard');
+          } catch {
+            res = await api.get('/platform/summary').catch(() => null);
+          }
           setAdminData(res?.data || res);
         }
       } catch (err) {
