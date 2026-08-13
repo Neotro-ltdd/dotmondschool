@@ -171,18 +171,18 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="rule"></div>
               <div className="id-row"><span className="id-pill" style={{ background: '#000080' }}>STAFF ID</span></div>
 
-              {/* Photo Box (Strictly Constrained 1.05in Height to fit Name & Role) */}
+              {/* Bigger Photo Box (1.45in Height) */}
               <div 
                 style={{ 
-                  height: '1.05in', 
-                  maxHeight: '1.05in', 
-                  width: '1.05in', 
-                  margin: '0.03in auto', 
+                  height: '1.45in', 
+                  maxHeight: '1.45in', 
+                  width: 'calc(100% - 0.32in)', 
+                  margin: '0.02in auto 0.04in', 
                   border: '2px solid #000080', 
                   borderRadius: '8px', 
                   overflow: 'hidden', 
                   background: '#F1F5F9',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                   boxSizing: 'border-box'
                 }}
               >
@@ -205,8 +205,8 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 )}
               </div>
 
-              {/* Staff Details Section (White Background, Centered Navy Blue Text) */}
-              <div style={{ padding: '0.04in 0.10in 0', background: '#FFFFFF', textAlign: 'center' }}>
+              {/* Staff Details Section (Pushed Down to Bottom, Centered Navy Text) */}
+              <div style={{ padding: '0.02in 0.10in 0', background: '#FFFFFF', textAlign: 'center' }}>
                 <div style={{ 
                   fontFamily: "Georgia, 'Times New Roman', serif", 
                   fontWeight: 800, 
@@ -223,11 +223,11 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                   {idCardData.fullName}
                 </div>
                 
-                <div style={{ fontSize: '8px', color: '#334155', fontWeight: 700, margin: '2px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 700, margin: '1px 0 3px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                   {idCardData.designation ? idCardData.designation.toUpperCase() : idCardData.role.toUpperCase()}
                 </div>
 
-                <div style={{ margin: '3px 0 0 0' }}>
+                <div style={{ margin: '2px 0 0 0' }}>
                   <span style={{ 
                     display: 'inline-block', 
                     background: '#EFF6FF', 
@@ -239,15 +239,14 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                     borderRadius: '4px',
                     letterSpacing: '0.5px'
                   }}>
-                    CÓD. ID: {idCardData.formattedStaffCode}
+                    Staff ID: {idCardData.formattedStaffCode}
                   </span>
                 </div>
               </div>
 
-              {/* Red/Gold Bordered Footer Strip */}
+              {/* Red/Gold Bordered Bottom Navy Footer Banner */}
               <div className="foot-strip" style={{ background: '#000040', borderTop: '2px solid #C4293A' }}>
-                <div className="cell">VALIDADE</div>
-                <div className="cell">{idCardData.validPeriod}</div>
+                <div className="cell" style={{ textAlign: 'center', width: '100%' }}>FACULTY &amp; STAFF CREDENTIAL</div>
               </div>
 
             </div>

@@ -398,7 +398,7 @@ export default function Teachers() {
                           <div className="staff-names">
                             <span className="staff-primary-name">{fullName}</span>
                             <span className="staff-secondary-name">
-                              <strong style={{ color: '#000080', marginRight: '6px' }}>{teacher.staffCode || `STF-${teacher.id.replace(/-/g, '').substring(0, 5).toUpperCase()}`}</strong>
+                              <strong style={{ color: '#000080', marginRight: '6px' }}>{teacher.staffCode || `DOT-STF-${teacher.id.replace(/-/g, '').substring(0, 5).toUpperCase()}`}</strong>
                               {teacher.otherNames ? `• ${teacher.otherNames}` : ''}
                             </span>
                           </div>
