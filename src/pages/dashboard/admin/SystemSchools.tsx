@@ -21,6 +21,7 @@ interface School {
 export default function SystemSchools() {
   const { showAlert } = useDialog();
 
+
     const [schools, setSchools] = useState<School[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -32,6 +33,8 @@ export default function SystemSchools() {
     const [schoolName, setSchoolName] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
     const [adminPassword, setAdminPassword] = useState('Admin123!');
+    const [superAdminEmail, setSuperAdminEmail] = useState('');
+    const [superAdminPassword, setSuperAdminPassword] = useState('SuperAdmin123!');
     const [provisioning, setProvisioning] = useState(false);
 
     const fetchSchools = async () => {
@@ -59,7 +62,9 @@ export default function SystemSchools() {
                 tenantId,
                 schoolName,
                 adminEmail,
-                adminPassword
+                adminPassword,
+                superAdminEmail: superAdminEmail.trim() || undefined,
+                superAdminPassword: superAdminPassword.trim() || undefined
             });
             
             setShowModal(false);
@@ -67,6 +72,7 @@ export default function SystemSchools() {
             setTenantId('');
             setSchoolName('');
             setAdminEmail('');
+            setSuperAdminEmail('');
         } catch (err: any) {
             console.error(err);
             showAlert(err.message || "Failed to provision school");
@@ -130,7 +136,7 @@ export default function SystemSchools() {
                 {/* Provision Modal */}
                 {showModal && (
                     <div className="modal-overlay">
-                        <div className="modal-content">
+                        <div className="modal-content" style={{ maxWidth: '480px' }}>
                             <h2>Provision New School</h2>
                             <form onSubmit={handleProvision}>
                                 <div className="form-group">
@@ -142,12 +148,20 @@ export default function SystemSchools() {
                                     <input type="text" required value={schoolName} onChange={e => setSchoolName(e.target.value)} placeholder="e.g. Modern Primary School" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Default Admin Email</label>
-                                    <input type="email" required value={adminEmail} onChange={e => setAdminEmail(e.target.value)} placeholder="admin@mps.com" />
+                                    <label>Director / Admin Email</label>
+                                    <input type="email" required value={adminEmail} onChange={e => setAdminEmail(e.target.value)} placeholder="director@mps.com" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Default Admin Password</label>
+                                    <label>Director / Admin Password</label>
                                     <input type="text" required value={adminPassword} onChange={e => setAdminPassword(e.target.value)} />
+                                </div>
+                                <div className="form-group" style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px dashed #CBD5E1' }}>
+                                    <label style={{ color: '#2563EB', fontWeight: 700 }}>Developer SuperAdmin Email (Optional)</label>
+                                    <input type="email" value={superAdminEmail} onChange={e => setSuperAdminEmail(e.target.value)} placeholder="superadmin@mps.com (Not in Staff table)" />
+                                </div>
+                                <div className="form-group">
+                                    <label style={{ color: '#2563EB', fontWeight: 700 }}>Developer SuperAdmin Password (Optional)</label>
+                                    <input type="text" value={superAdminPassword} onChange={e => setSuperAdminPassword(e.target.value)} placeholder="SuperAdmin123!" />
                                 </div>
                                 <div className="modal-actions">
                                     <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">Cancel</button>
