@@ -5,7 +5,7 @@ import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
 import StaffIdCardPrintModal from './StaffIdCardPrintModal';
-import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical, CreditCard } from 'lucide-react';
+import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical, CreditCard, Camera } from 'lucide-react';
 
 
 interface TeacherItem {
@@ -80,6 +80,7 @@ export default function Teachers() {
   const [isEditing, setIsEditing] = useState(false);
   const [editStaffId, setEditStaffId] = useState<string | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [passportFile, setPassportFile] = useState<File | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['Teacher']);
   const [formData, setFormData] = useState({
     title: '',
@@ -118,6 +119,7 @@ export default function Teachers() {
         if (variables.data.staffCategory) formDataPayload.append('staffCategory', variables.data.staffCategory);
         if (variables.data.employmentType) formDataPayload.append('employmentType', variables.data.employmentType);
         if (signatureFile) formDataPayload.append('signature', signatureFile);
+        if (passportFile) formDataPayload.append('passport', passportFile);
 
         return await api.put(`/setup/staff/${variables.id}`, formDataPayload);
       } else {
@@ -169,6 +171,7 @@ export default function Teachers() {
       employmentType: teacher.employmentType || 'FullTime'
     });
     setSignatureFile(null);
+    setPassportFile(null);
     setEditStaffId(teacher.id);
     setIsEditing(true);
     setFormStep(1);
@@ -189,6 +192,7 @@ export default function Teachers() {
       employmentType: 'FullTime'
     });
     setSignatureFile(null);
+    setPassportFile(null);
     setEditStaffId(null);
     setIsEditing(false);
     setFormStep(1);
@@ -818,20 +822,39 @@ export default function Teachers() {
               </div>
 
               {isEditing && (
-                <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
-                  <label style={{ color: '#10203F', fontWeight: 600 }}>Update Official Signature (Optional)</label>
-                  <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
-                    Uploading a signature file will automatically override their current receipt/report signature watermark.
-                  </p>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
-                    className="form-control"
-                    style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
-                  />
-                  {signatureFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected: {signatureFile.name}</span>}
-                </div>
+                <>
+                  <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
+                    <label style={{ color: '#10203F', fontWeight: 600 }}>Update Official Signature (Optional)</label>
+                    <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
+                      Uploading a signature file will automatically override their current receipt/report signature watermark.
+                    </p>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
+                      className="form-control"
+                      style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
+                    />
+                    {signatureFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected: {signatureFile.name}</span>}
+                  </div>
+
+                  <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
+                    <label style={{ color: '#10203F', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Camera size={16} color="#000080" /> Upload Passport Photograph (Optional)
+                    </label>
+                    <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
+                      Uploading a passport photograph will update their official staff ID card image and profile photo across the system.
+                    </p>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={(e) => setPassportFile(e.target.files ? e.target.files[0] : null)}
+                      className="form-control"
+                      style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
+                    />
+                    {passportFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected Passport: {passportFile.name}</span>}
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -869,10 +892,16 @@ export default function Teachers() {
                 <span className="review-value" style={{ color: '#3b82f6', fontWeight: 700 }}>{formData.role}</span>
               </div>
               {isEditing && (
-                <div className="review-row">
-                  <span className="review-label">Signature Update:</span>
-                  <span className="review-value">{signatureFile ? signatureFile.name : 'No changes made'}</span>
-                </div>
+                <>
+                  <div className="review-row">
+                    <span className="review-label">Signature Update:</span>
+                    <span className="review-value">{signatureFile ? signatureFile.name : 'No changes made'}</span>
+                  </div>
+                  <div className="review-row">
+                    <span className="review-label">Passport Photograph:</span>
+                    <span className="review-value">{passportFile ? passportFile.name : 'No changes made'}</span>
+                  </div>
+                </>
               )}
             </div>
 
