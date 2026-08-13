@@ -4,11 +4,13 @@ import { api } from '../../../services/api';
 import './SchoolManagement.css';
 import { useDialog } from '../../../context/DialogContext';
 
-
 interface SchoolDetail {
     id: number;
     tenantId: string;
     schoolName: string;
+    adminEmail?: string;
+    directorEmail?: string;
+    superAdminEmail?: string;
     isSuspended: boolean;
     createdAt: string;
     studentCount: number;
@@ -18,12 +20,20 @@ interface SchoolDetail {
 }
 
 export default function SchoolManagement() {
-  const { showAlert, showConfirm } = useDialog();
+    const { showAlert, showConfirm } = useDialog();
+    const { id } = useParams<{ id: string }>(); // tenantId from route
 
-    const { id } = useParams<{ id: string }>(); // This will be the tenantId from the route
     const [school, setSchool] = useState<SchoolDetail | null>(null);
     const [loading, setLoading] = useState(true);
-    
+
+    // School Profile & SuperAdmin Credentials State
+    const [schoolNameState, setSchoolNameState] = useState('');
+    const [adminEmailState, setAdminEmailState] = useState('');
+    const [newAdminPassword, setNewAdminPassword] = useState('');
+    const [superAdminEmailState, setSuperAdminEmailState] = useState('');
+    const [newSuperAdminPassword, setNewSuperAdminPassword] = useState('');
+    const [savingSchool, setSavingSchool] = useState(false);
+
     // Notification Settings State
     const [customSenderName, setCustomSenderName] = useState('');
     const [isSmsEnabled, setIsSmsEnabled] = useState(true);
@@ -37,6 +47,9 @@ export default function SchoolManagement() {
         try {
             const res = await api.get(`/system/schools/${id}`);
             setSchool(res);
+            setSchoolNameState(res.schoolName || '');
+            setAdminEmailState(res.adminEmail || res.directorEmail || '');
+            setSuperAdminEmailState(res.superAdminEmail || '');
             setCustomSenderName(res.customSenderName || '');
             setIsSmsEnabled(res.isSmsEnabled ?? true);
         } catch (err) {
@@ -55,6 +68,30 @@ export default function SchoolManagement() {
         } catch (err) {
             console.error(err);
             showAlert("Failed to toggle status");
+        }
+    };
+
+    const handleSchoolSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!school) return;
+        setSavingSchool(true);
+        try {
+            await api.put(`/system/schools/${school.id}`, {
+                schoolName: schoolNameState,
+                adminEmail: adminEmailState,
+                superAdminEmail: superAdminEmailState.trim() || null,
+                newAdminPassword: newAdminPassword.trim() || undefined,
+                newSuperAdminPassword: newSuperAdminPassword.trim() || undefined
+            });
+            showAlert("School profile and SuperAdmin account updated successfully.");
+            setNewAdminPassword('');
+            setNewSuperAdminPassword('');
+            fetchSchool();
+        } catch (err: any) {
+            console.error(err);
+            showAlert(err.message || "Failed to update school credentials");
+        } finally {
+            setSavingSchool(false);
         }
     };
 
@@ -121,7 +158,6 @@ export default function SchoolManagement() {
     if (loading) return <div style={{ padding: '2rem' }}>Loading school details...</div>;
     if (!school) return <div style={{ padding: '2rem' }}>School not found.</div>;
 
-    // Calculate percentage of 10GB for progress bar (assuming 10GB limit)
     const dbLimitMB = 10240;
     const progressPercent = Math.min((school.sizeMB / dbLimitMB) * 100, 100);
 
@@ -139,11 +175,11 @@ export default function SchoolManagement() {
             </div>
 
             <div className="settings-grid">
-                {/* Card 1: Platform Settings / Profile */}
+                {/* Card 1: School Profile & Status */}
                 <div className="settings-card">
                     <div className="settings-card-header platform">
                         <div className="icon">⚙️</div>
-                        <h3>School Profile</h3>
+                        <h3>School Status & Info</h3>
                     </div>
                     <div className="settings-card-body">
                         <div className="setting-row">
@@ -181,7 +217,76 @@ export default function SchoolManagement() {
                     </div>
                 </div>
 
-                {/* Card 2: Notification Settings */}
+                {/* Card 2: Edit School Credentials & SuperAdmin Setup */}
+                <div className="settings-card">
+                    <div className="settings-card-header" style={{ background: '#0F172A', color: 'white' }}>
+                        <div className="icon">🔑</div>
+                        <h3 style={{ color: 'white' }}>School & SuperAdmin Account</h3>
+                    </div>
+                    <div className="settings-card-body">
+                        <form id="school-credentials-form" onSubmit={handleSchoolSave}>
+                            <div className="form-group-vertical">
+                                <label>Full School Name</label>
+                                <input 
+                                    type="text" 
+                                    required 
+                                    value={schoolNameState} 
+                                    onChange={e => setSchoolNameState(e.target.value)} 
+                                    placeholder="e.g. Dotmond School"
+                                />
+                            </div>
+
+                            <div className="form-group-vertical">
+                                <label>Director / Admin Email</label>
+                                <input 
+                                    type="email" 
+                                    required 
+                                    value={adminEmailState} 
+                                    onChange={e => setAdminEmailState(e.target.value)} 
+                                    placeholder="director@school.com"
+                                />
+                            </div>
+
+                            <div className="form-group-vertical">
+                                <label>Reset Director Password (Optional)</label>
+                                <input 
+                                    type="password" 
+                                    value={newAdminPassword} 
+                                    onChange={e => setNewAdminPassword(e.target.value)} 
+                                    placeholder="Leave blank to keep current"
+                                />
+                            </div>
+
+                            <div className="form-group-vertical" style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px dashed #CBD5E1' }}>
+                                <label style={{ color: '#2563EB', fontWeight: 700 }}>Developer SuperAdmin Email</label>
+                                <input 
+                                    type="email" 
+                                    value={superAdminEmailState} 
+                                    onChange={e => setSuperAdminEmailState(e.target.value)} 
+                                    placeholder="superadmin@dotmond.sch.ng (Saved in System DB)"
+                                />
+                                <small style={{ color: '#64748B' }}>Saved in System DB (dbo). Hidden from school Staff table.</small>
+                            </div>
+
+                            <div className="form-group-vertical">
+                                <label style={{ color: '#2563EB', fontWeight: 700 }}>Set / Reset SuperAdmin Password</label>
+                                <input 
+                                    type="password" 
+                                    value={newSuperAdminPassword} 
+                                    onChange={e => setNewSuperAdminPassword(e.target.value)} 
+                                    placeholder="Leave blank to keep current (Default: SuperAdmin123!)"
+                                />
+                            </div>
+                        </form>
+                    </div>
+                    <div className="settings-card-footer">
+                        <button type="submit" form="school-credentials-form" disabled={savingSchool} className="btn-save" style={{ background: '#2563EB' }}>
+                            {savingSchool ? 'Saving Credentials...' : 'Save Credentials & SuperAdmin Account'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Card 3: Notification Settings */}
                 <div className="settings-card">
                     <div className="settings-card-header notification">
                         <div className="icon">🔔</div>
@@ -224,7 +329,7 @@ export default function SchoolManagement() {
                     </div>
                 </div>
 
-                {/* Card 3: Database & Maintenance */}
+                {/* Card 4: Database & Maintenance */}
                 <div className="settings-card">
                     <div className="settings-card-header database">
                         <div className="icon">🗄️</div>

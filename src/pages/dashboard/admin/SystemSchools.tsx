@@ -10,6 +10,9 @@ interface School {
     id: number;
     tenantId: string;
     schoolName: string;
+    adminEmail?: string;
+    directorEmail?: string;
+    superAdminEmail?: string;
     isSuspended: boolean;
     createdAt: string;
     studentCount: number;
@@ -98,6 +101,7 @@ export default function SystemSchools() {
                             <tr>
                                 <th>Tenant ID</th>
                                 <th>School Name</th>
+                                <th>SuperAdmin Email</th>
                                 <th>Students</th>
                                 <th>Storage (MB)</th>
                                 <th>Created</th>
@@ -107,11 +111,20 @@ export default function SystemSchools() {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem' }}>Loading...</td></tr>
+                                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Loading...</td></tr>
                             ) : (schools || []).map(school => (
                                 <tr key={school.id}>
                                     <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{school.tenantId}</td>
                                     <td style={{ fontWeight: 'bold' }}>{school.schoolName}</td>
+                                    <td>
+                                        {school.superAdminEmail ? (
+                                            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#2563EB' }}>
+                                                {school.superAdminEmail}
+                                            </span>
+                                        ) : (
+                                            <span style={{ fontSize: '0.8rem', color: '#94A3B8', fontStyle: 'italic' }}>Not set</span>
+                                        )}
+                                    </td>
                                     <td>{school.studentCount}</td>
                                     <td>{school.sizeMB?.toFixed(2) || '0.00'}</td>
                                     <td>{new Date(school.createdAt).toLocaleDateString()}</td>
@@ -124,7 +137,7 @@ export default function SystemSchools() {
                                         <button 
                                             onClick={() => navigate(`/system-admin/schools/${school.tenantId}`)}
                                             className="action-btn" style={{ background: '#0f172a', color: 'white' }}>
-                                            ⚙️ Manage
+                                            ⚙️ Manage & Edit
                                         </button>
                                     </td>
                                 </tr>
