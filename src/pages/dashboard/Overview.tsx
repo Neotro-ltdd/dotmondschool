@@ -89,6 +89,8 @@ export default function Overview() {
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
+          isHolidayMode={isHolidayMode}
+          resumptionDate={resumptionDate}
           accountantData={accountantData} 
           loading={loading} 
         />
@@ -98,6 +100,8 @@ export default function Overview() {
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
+          isHolidayMode={isHolidayMode}
+          resumptionDate={resumptionDate}
           teacherData={teacherData} 
           loading={loading} 
         />
@@ -107,6 +111,8 @@ export default function Overview() {
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
+          isHolidayMode={isHolidayMode}
+          resumptionDate={resumptionDate}
           principalData={principalData} 
           loading={loading} 
         />
@@ -116,6 +122,8 @@ export default function Overview() {
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
+          isHolidayMode={isHolidayMode}
+          resumptionDate={resumptionDate}
           parentData={parentData} 
           loading={loading} 
         />
@@ -125,6 +133,8 @@ export default function Overview() {
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
+          isHolidayMode={isHolidayMode}
+          resumptionDate={resumptionDate}
           vendorData={vendorData} 
           loading={loading} 
         />

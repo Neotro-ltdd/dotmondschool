@@ -12,12 +12,15 @@ import {
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import StatCard from './StatCard';
 import { formatDisplayName } from '../../../utils/nameFormatter';
+import HolidayBanner from '../../ui/HolidayBanner';
 
 interface PrincipalDashboardViewProps {
   userName?: string;
   userTitle?: string;
   session?: string;
   displayTerm?: string;
+  isHolidayMode?: boolean;
+  resumptionDate?: string;
   principalData?: any;
   loading?: boolean;
 }
@@ -27,6 +30,8 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
   userTitle = 'Dr.',
   session = '2026/2027',
   displayTerm = 'First Term',
+  isHolidayMode,
+  resumptionDate,
   principalData,
   loading
 }) => {
@@ -65,6 +70,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
 
   return (
     <div className="overview-page">
+      <HolidayBanner isHolidayMode={isHolidayMode} resumptionDate={resumptionDate} />
       {/* ════════ EXECUTIVE HERO BANNER ════════ */}
       <div className="dashboard-banner">
         <div className="banner-header-row">
