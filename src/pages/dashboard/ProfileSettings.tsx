@@ -7,6 +7,7 @@ import BiodataForm from '../../components/dashboard/settings/BiodataForm';
 import RolesTab from '../../components/dashboard/settings/RolesTab';
 import AvatarTab from '../../components/dashboard/settings/AvatarTab';
 import SignatureTab from '../../components/dashboard/settings/SignatureTab';
+import RequestEmailChangeDrawer from '../../components/dashboard/settings/RequestEmailChangeDrawer';
 
 export default function ProfileSettings() {
   const { userRole, availableRoles, setActiveRole, updateUserInfo } = useAuth();
@@ -14,6 +15,7 @@ export default function ProfileSettings() {
   const [activeTab, setActiveTab] = useState<'biodata' | 'roles' | 'avatar' | 'signature'>('biodata');
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [emailDrawerOpen, setEmailDrawerOpen] = useState(false);
   
   // Edit states for Bio-Data
   const [isEditing, setIsEditing] = useState(false);
@@ -264,6 +266,7 @@ export default function ProfileSettings() {
             rolesList={rolesList}
             infoSaving={infoSaving}
             onSave={handleUpdateInfo}
+            onRequestEmailChange={() => setEmailDrawerOpen(true)}
           />
         </div>
       )}
@@ -305,6 +308,12 @@ export default function ProfileSettings() {
         />
       )}
 
+      {/* Request Email Change Drawer Modal */}
+      <RequestEmailChangeDrawer
+        isOpen={emailDrawerOpen}
+        onClose={() => setEmailDrawerOpen(false)}
+        currentEmail={profile?.email}
+      />
     </div>
   );
 }

@@ -18,6 +18,7 @@ interface BiodataFormProps {
   rolesList: string[];
   infoSaving: boolean;
   onSave: () => void;
+  onRequestEmailChange?: () => void;
 }
 
 export const BiodataForm: React.FC<BiodataFormProps> = ({
@@ -36,7 +37,8 @@ export const BiodataForm: React.FC<BiodataFormProps> = ({
   email,
   rolesList,
   infoSaving,
-  onSave
+  onSave,
+  onRequestEmailChange
 }) => {
   return (
     <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.75rem', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -91,9 +93,29 @@ export const BiodataForm: React.FC<BiodataFormProps> = ({
         </div>
 
         <div>
-          <label style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
-            Username (Email)
-          </label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: '#475569', margin: 0 }}>
+              Username (Email)
+            </label>
+            {onRequestEmailChange && (
+              <button
+                type="button"
+                onClick={onRequestEmailChange}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#000080',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0
+                }}
+              >
+                Request Email Change
+              </button>
+            )}
+          </div>
           <div style={{ padding: '0.65rem 0.85rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>{email}</span>
             <Lock size={14} style={{ color: '#94A3B8' }} />
