@@ -426,7 +426,9 @@ export default function Reports() {
                                   </span>
                                 </td>
                                 <td className="font-bold text-gray-900">
-                                  {st.surname ? `${st.surname}, ${st.firstName}` : st.name || st.studentName || 'Student'}
+                                  {st.surname 
+                                    ? `${st.surname}, ${[st.firstName, st.otherNames || st.otherName].filter(Boolean).join(' ')}` 
+                                    : st.name || st.studentName || 'Student'}
                                 </td>
                                 <td className="text-xs font-mono text-gray-500">
                                   {st.registrationNumber || 'REG-STD'}

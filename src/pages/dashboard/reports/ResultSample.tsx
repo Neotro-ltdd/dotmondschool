@@ -9,7 +9,7 @@ const ResultSample: React.FC = () => {
     schoolName: 'Dotmond School',
     schoolAddress: 'Happyland Estate, Ajah, Lagos State, Nigeria',
     schoolMotto: 'Steady Progress, Brighter Future',
-    studentName: 'Uhama, Oluebube',
+    studentName: 'Sunday, Micheal Chukwuma',
     registrationNumber: 'DOTJSS1-030',
     className: 'NURSERY 1',
     session: '2025/2026',
