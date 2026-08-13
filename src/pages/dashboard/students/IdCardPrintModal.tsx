@@ -119,9 +119,6 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }} className="no-print">
           <div>
             <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#12386E' }}>Print Student ID Card</h2>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.85rem', color: '#5B6063' }}>
-              Standard CR80 portrait layout (2.125″ × 3.375″).
-            </p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
