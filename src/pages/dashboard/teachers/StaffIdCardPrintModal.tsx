@@ -171,11 +171,11 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="rule"></div>
               <div className="id-row"><span className="id-pill" style={{ background: '#000080' }}>STAFF ID</span></div>
 
-              {/* Bigger Photo Box (1.45in Height) */}
+              {/* Bigger Photo Box (1.75in Height) */}
               <div 
                 style={{ 
-                  height: '1.45in', 
-                  maxHeight: '1.45in', 
+                  height: '1.75in', 
+                  maxHeight: '1.75in', 
                   width: 'calc(100% - 0.32in)', 
                   margin: '0.02in auto 0.04in', 
                   border: '2px solid #000080', 
@@ -205,12 +205,12 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 )}
               </div>
 
-              {/* Staff Details Section (Pushed Down to Bottom, Centered Navy Text) */}
-              <div style={{ padding: '0.02in 0.10in 0', background: '#FFFFFF', textAlign: 'center' }}>
+              {/* Staff Details Section (Pushed Down to Bottom of Card, Centered Navy Text) */}
+              <div style={{ padding: '0.02in 0.10in 0.08in', background: '#FFFFFF', textAlign: 'center' }}>
                 <div style={{ 
                   fontFamily: "Georgia, 'Times New Roman', serif", 
                   fontWeight: 800, 
-                  fontSize: '10.5px', 
+                  fontSize: '11px', 
                   letterSpacing: '0.2px', 
                   color: '#000080', 
                   textTransform: 'uppercase',
@@ -227,26 +227,22 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                   {idCardData.designation ? idCardData.designation.toUpperCase() : idCardData.role.toUpperCase()}
                 </div>
 
-                <div style={{ margin: '2px 0 0 0' }}>
+                <div style={{ margin: '3px 0 0 0' }}>
                   <span style={{ 
                     display: 'inline-block', 
                     background: '#EFF6FF', 
                     border: '1px solid #BFDBFE', 
                     color: '#1D4ED8', 
                     fontWeight: 800, 
-                    fontSize: '8px', 
-                    padding: '2px 8px', 
+                    fontSize: '8.5px', 
+                    padding: '2px 10px', 
                     borderRadius: '4px',
-                    letterSpacing: '0.5px'
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase'
                   }}>
-                    Staff ID: {idCardData.formattedStaffCode}
+                    STAFF ID: {idCardData.formattedStaffCode}
                   </span>
                 </div>
-              </div>
-
-              {/* Red/Gold Bordered Bottom Navy Footer Banner */}
-              <div className="foot-strip" style={{ background: '#000040', borderTop: '2px solid #C4293A' }}>
-                <div className="cell" style={{ textAlign: 'center', width: '100%' }}>FACULTY &amp; STAFF CREDENTIAL</div>
               </div>
 
             </div>
