@@ -171,50 +171,76 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="rule"></div>
               <div className="id-row"><span className="id-pill" style={{ background: '#000080' }}>STAFF ID</span></div>
 
-              {/* Photo Box */}
-              <div className="photo-box" style={{ height: '1.40in', borderColor: '#000080', margin: '0.02in 0.16in 0' }}>
-                <div className="cell">
-                  {idCardData.passportUrl ? (
-                    <img 
-                      src={getFullUrl(idCardData.passportUrl)} 
-                      alt={idCardData.fullName} 
-                      className="student-photo-img" 
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = getAvatarFallback(idCardData.fullName);
-                      }}
-                    />
-                  ) : (
-                    <img 
-                      src={getAvatarFallback(idCardData.fullName)} 
-                      alt={idCardData.fullName} 
-                      className="student-photo-img" 
-                    />
-                  )}
-                </div>
+              {/* Photo Box (Strictly Constrained 1.05in Height to fit Name & Role) */}
+              <div 
+                style={{ 
+                  height: '1.05in', 
+                  maxHeight: '1.05in', 
+                  width: '1.05in', 
+                  margin: '0.03in auto', 
+                  border: '2px solid #000080', 
+                  borderRadius: '8px', 
+                  overflow: 'hidden', 
+                  background: '#F1F5F9',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                  boxSizing: 'border-box'
+                }}
+              >
+                {idCardData.passportUrl ? (
+                  <img 
+                    src={getFullUrl(idCardData.passportUrl)} 
+                    alt={idCardData.fullName} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getAvatarFallback(idCardData.fullName);
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={getAvatarFallback(idCardData.fullName)} 
+                    alt={idCardData.fullName} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                )}
               </div>
 
-              {/* Staff Details Section (Clean White Background with Navy Blue Text) */}
-              <div style={{ padding: '0.08in 0.16in 0', background: '#FFFFFF', textAlign: 'left' }}>
+              {/* Staff Details Section (White Background, Centered Navy Blue Text) */}
+              <div style={{ padding: '0.04in 0.10in 0', background: '#FFFFFF', textAlign: 'center' }}>
                 <div style={{ 
                   fontFamily: "Georgia, 'Times New Roman', serif", 
                   fontWeight: 800, 
-                  fontSize: '11px', 
+                  fontSize: '10.5px', 
                   letterSpacing: '0.2px', 
                   color: '#000080', 
                   textTransform: 'uppercase',
-                  margin: '0 0 3px 0',
+                  margin: '0 0 2px 0',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  textOverflow: 'ellipsis',
+                  lineHeight: 1.2
                 }}>
                   {idCardData.fullName}
                 </div>
-                <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 700, margin: '2px 0', textTransform: 'uppercase' }}>
-                  <b>ROLE / DESIGNATION:</b> {idCardData.designation ? idCardData.designation.toUpperCase() : idCardData.role.toUpperCase()}
+                
+                <div style={{ fontSize: '8px', color: '#334155', fontWeight: 700, margin: '2px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                  {idCardData.designation ? idCardData.designation.toUpperCase() : idCardData.role.toUpperCase()}
                 </div>
-                <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 800, margin: '2px 0' }}>
-                  <b>CÓD. ID:</b> {idCardData.formattedStaffCode}
+
+                <div style={{ margin: '3px 0 0 0' }}>
+                  <span style={{ 
+                    display: 'inline-block', 
+                    background: '#EFF6FF', 
+                    border: '1px solid #BFDBFE', 
+                    color: '#1D4ED8', 
+                    fontWeight: 800, 
+                    fontSize: '8px', 
+                    padding: '2px 8px', 
+                    borderRadius: '4px',
+                    letterSpacing: '0.5px'
+                  }}>
+                    CÓD. ID: {idCardData.formattedStaffCode}
+                  </span>
                 </div>
               </div>
 
