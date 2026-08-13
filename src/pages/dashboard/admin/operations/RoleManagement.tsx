@@ -49,6 +49,7 @@ interface EmailChangeRequestItem {
 }
 
 const AVAILABLE_ROLES = [
+  { id: 'SuperAdmin', name: 'SuperAdmin (Developer)', description: 'Root developer role with full visibility across Director, Admin, Finance, Academic, and Non-Teaching Staff modules', icon: ShieldAlert, color: 'admin' },
   { id: 'Director', name: 'Director', description: 'Executive oversight, school-wide management, and approval authority', icon: Shield, color: 'admin' },
   { id: 'Admin', name: 'Admin', description: 'Full system management, staff setup, and operations governance', icon: ShieldCheck, color: 'admin' },
   { id: 'Principal', name: 'Principal', description: 'Academic administration, report approvals, and school leadership', icon: Shield, color: 'admin' },
