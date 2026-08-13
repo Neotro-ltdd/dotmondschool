@@ -113,6 +113,17 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
 
+  const formatDisplayName = (rawName: string | undefined | null) => {
+    if (!rawName) return 'STAFF MEMBER';
+    const parts = rawName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length <= 2) {
+      return parts.join(' ').toUpperCase();
+    }
+    const firstTwo = parts.slice(0, 2).map(p => p.toUpperCase()).join(' ');
+    const abbreviatedOthers = parts.slice(2).map(p => `${p[0].toUpperCase()}.`).join(' ');
+    return `${firstTwo} ${abbreviatedOthers}`;
+  };
+
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
@@ -221,7 +232,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                   textOverflow: 'ellipsis',
                   lineHeight: 1.2
                 }}>
-                  {idCardData.fullName}
+                  {formatDisplayName(idCardData.fullName)}
                 </div>
                 
                 <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 700, margin: '1px 0 3px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
