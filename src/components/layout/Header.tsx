@@ -22,7 +22,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
     navigate('/login');
   };
 
-  const displayRole = userRole === 'Principal' ? 'Super Admin' : userRole || 'User';
+  const displayRole = (userRole === 'Director' || userRole === 'Principal') ? 'Director' : userRole || 'User';
   
   const displayUserName = formatDisplayName(userTitle, userName);
 

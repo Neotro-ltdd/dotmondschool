@@ -47,7 +47,7 @@ export default function Overview() {
             res = await api.get('/platform/summary').catch(() => null);
           }
           setAdminData(res?.data || res);
-        } else if (userRole === 'Principal') {
+        } else if (userRole === 'Director' || userRole === 'Principal') {
           const [pData, pSummary] = await Promise.all([
             api.get('/academics/principal/dashboard').catch(() => null),
             api.get('/setup/admin/dashboard').catch(() => api.get('/platform/summary')).catch(() => null)
@@ -101,7 +101,7 @@ export default function Overview() {
           teacherData={teacherData} 
           loading={loading} 
         />
-      ) : userRole === 'Principal' ? (
+      ) : (userRole === 'Director' || userRole === 'Principal') ? (
         <PrincipalDashboardView 
           userName={userName || undefined}
           userTitle={userTitle || undefined}

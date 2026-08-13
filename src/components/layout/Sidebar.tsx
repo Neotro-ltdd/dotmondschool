@@ -36,7 +36,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSuperAdmin = userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
+  const isSuperAdmin = userRole === 'Director' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
   const [isFormClassTeacher, setIsFormClassTeacher] = useState<boolean | null>(null);
 
   useEffect(() => {

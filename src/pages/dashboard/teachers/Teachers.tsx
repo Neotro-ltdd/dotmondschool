@@ -319,6 +319,7 @@ export default function Teachers() {
               <option value="ALL">All Roles</option>
               <option value="Teacher">Teacher</option>
               <option value="Accountant">Accountant</option>
+              <option value="Director">Director</option>
               <option value="Principal">Principal</option>
               <option value="Admin">Admin</option>
               <option value="Staff">Staff</option>
@@ -421,7 +422,7 @@ export default function Teachers() {
                         </div>
                       </td>
                       <td>
-                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}>
+                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}>
                           {teacher.role || 'Staff'}
                         </span>
                       </td>
@@ -532,7 +533,7 @@ export default function Teachers() {
                       />
                       <div>
                         <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>{fullName}</h3>
-                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`} style={{ marginTop: '0.25rem', display: 'inline-block' }}>
+                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`} style={{ marginTop: '0.25rem', display: 'inline-block' }}>
                           {teacher.role || 'Staff'}
                         </span>
                       </div>
@@ -796,7 +797,8 @@ export default function Teachers() {
                     { id: 'Admin', label: 'Admin (System Configuration)' },
                     { id: 'SubjectTeacher', label: 'Subject Teacher (Grading)' },
                     { id: 'Accountant', label: 'Accountant (Fees & POS)' },
-                    { id: 'Principal', label: 'Principal (Superadmin Overseer)' },
+                    { id: 'Director', label: 'Director (Superadmin Overseer)' },
+                    { id: 'Principal', label: 'Principal (Executive Overseer)' },
                     { id: 'Staff', label: 'General Non-Teaching Staff' }
                   ].map(roleItem => (
                     <label key={roleItem.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer', color: '#1E293B', fontWeight: 600 }}>

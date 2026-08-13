@@ -48,7 +48,7 @@ export const RequestEmailChangeDrawer: React.FC<RequestEmailChangeDrawerProps> =
         reason: reason.trim()
       });
 
-      setSuccessMsg(res?.message || 'Your email change request has been submitted successfully to Admin/Principal for review.');
+      setSuccessMsg(res?.message || 'Your email change request has been submitted successfully to Admin/Director for review.');
       setNewEmail('');
       setReason('');
 
@@ -114,7 +114,7 @@ export const RequestEmailChangeDrawer: React.FC<RequestEmailChangeDrawerProps> =
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Request Email Change</h3>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94A3B8' }}>Submit email update request to Admin/Principal</p>
+              <p style={{ margin: 0, fontSize: '0.75rem', color: '#94A3B8' }}>Submit email update request to Admin/Director</p>
             </div>
           </div>
           <button
@@ -259,7 +259,7 @@ export const RequestEmailChangeDrawer: React.FC<RequestEmailChangeDrawerProps> =
             color: '#1E40AF',
             lineHeight: '1.45'
           }}>
-            <strong>🔒 Password Protection Notice:</strong> Your existing password will remain unchanged. Once an Admin or Principal approves your request, you can log in immediately using your new email address with your existing password.
+            <strong>🔒 Password Protection Notice:</strong> Your existing password will remain unchanged. Once an Admin or Director approves your request, you can log in immediately using your new email address with your existing password.
           </div>
 
           {/* Drawer Footer Actions */}

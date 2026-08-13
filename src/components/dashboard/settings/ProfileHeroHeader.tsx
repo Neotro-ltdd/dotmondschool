@@ -215,7 +215,7 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
             Profile Image
           </button>
 
-          {(userRole === 'Teacher' || userRole === 'SubjectTeacher' || userRole === 'FormTeacher' || userRole === 'Principal' || userRole === 'Admin' || userRole === 'SuperAdmin') && (
+          {(userRole === 'Teacher' || userRole === 'SubjectTeacher' || userRole === 'FormTeacher' || userRole === 'Director' || userRole === 'Principal' || userRole === 'Admin' || userRole === 'SuperAdmin') && (
             <button
               type="button"
               onClick={() => setActiveTab('signature')}

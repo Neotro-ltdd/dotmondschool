@@ -49,7 +49,9 @@ interface EmailChangeRequestItem {
 }
 
 const AVAILABLE_ROLES = [
+  { id: 'Director', name: 'Director', description: 'Executive oversight, school-wide management, and approval authority', icon: Shield, color: 'admin' },
   { id: 'Admin', name: 'Admin', description: 'Full system management, staff setup, and operations governance', icon: ShieldCheck, color: 'admin' },
+  { id: 'Principal', name: 'Principal', description: 'Academic administration, report approvals, and school leadership', icon: Shield, color: 'admin' },
   { id: 'Accountant', name: 'Accountant', description: 'Fee billing, ledger management, online verification & POS', icon: DollarSign, color: 'accountant' },
   { id: 'Teacher', name: 'Form Teacher', description: 'Class roster management, attendance registers, and grade submission', icon: BookOpen, color: 'teacher' },
   { id: 'SubjectTeacher', name: 'Subject Teacher', description: 'Subject assessment entry and score recording', icon: UserCheck, color: 'teacher' },
