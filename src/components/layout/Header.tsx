@@ -8,7 +8,7 @@ import { formatDisplayName } from '../../utils/nameFormatter';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
-  const { userName, userRole, userAvatar, userTitle, logout } = useAuth();
+  const { userName, userRole, userAvatar, userTitle, availableRoles, setActiveRole, logout } = useAuth();
   const { theme, toggleTheme, isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
@@ -47,6 +47,35 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
       </div>
       
       <div className="header-actions">
+        {/* Developer / SuperAdmin Role Switcher Dropdown */}
+        {availableRoles && availableRoles.length > 1 && (
+          <div className="role-switcher-box" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '4px 10px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563EB', whiteSpace: 'nowrap' }}>⚡ View Role:</span>
+            <select
+              value={userRole || ''}
+              onChange={(e) => setActiveRole(e.target.value)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                color: '#0F172A',
+                cursor: 'pointer',
+                outline: 'none'
+              }}
+            >
+              <option value="SuperAdmin">👑 SuperAdmin (All Sidebars)</option>
+              <option value="Director">🏛️ Director (Executive)</option>
+              <option value="Admin">⚙️ Admin (Operations)</option>
+              <option value="Accountant">💰 Accountant (Finance)</option>
+              <option value="Teacher">👩‍🏫 Class Teacher (Form)</option>
+              <option value="SubjectTeacher">📚 Subject Teacher</option>
+              <option value="Vendor">🏷️ Vendor (Printing)</option>
+              <option value="Parent">👪 Parent Portal</option>
+            </select>
+          </div>
+        )}
+
         <button className="icon-btn notification-btn" title="Notifications">
           <span className="icon">🔔</span>
           <span className="badge">3</span>

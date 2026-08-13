@@ -37,6 +37,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const location = useLocation();
 
   const isSuperAdmin = userRole === 'Director' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
+  const isDeveloperRoot = userRole === 'SuperAdmin' || userRole === 'Superadmin' || userRole === 'SystemAdmin';
   const [isFormClassTeacher, setIsFormClassTeacher] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -106,17 +107,18 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   };
 
   const getUserInitials = () => {
-    if (!userName) return 'US';
-    const titles = ['mr', 'mrs', 'ms', 'dr', 'prof', 'rev', 'engr', 'chief', 'elder', 'deacon', 'deaconess', 'pastor'];
-    const parts = userName.trim().split(' ').filter(p => !titles.includes(p.toLowerCase().replace(/[.,]/g, '')));
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return 'US';
+    if (!userName) return 'U';
+    const parts = userName.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return userName.substring(0, 2).toUpperCase();
   };
 
   return (
-    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-      {setIsSidebarOpen && (
+    <aside className={`sidebar glass-panel ${isSidebarOpen ? 'mobile-open' : ''}`}>
+      {/* Mobile Close Button */}
+      {isSidebarOpen && setIsSidebarOpen && (
         <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="Close menu">
           ×
         </button>
@@ -156,6 +158,39 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
               <span className="nav-icon-box"><LayoutDashboard size={18} /></span>
               Overview
             </NavLink>
+
+            {/* DEVELOPER SAMPLE WORKSTATIONS FOR SUPERADMIN */}
+            {isDeveloperRoot && (
+              <>
+                <div className="sidebar-section-header">TEACHER WORKSTATION (SAMPLE)</div>
+                <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><Users size={18} /></span>
+                  My Class / Subjects
+                </NavLink>
+                <NavLink to="/dashboard/teacher/attendance" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><Calendar size={18} /></span>
+                  Attendance Register
+                </NavLink>
+                <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><FileText size={18} /></span>
+                  Continuous Assessment
+                </NavLink>
+                <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><CheckCircle size={18} /></span>
+                  Review Results
+                </NavLink>
+                <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><Wrench size={18} /></span>
+                  Utilities
+                </NavLink>
+
+                <div className="sidebar-section-header">VENDOR HUB (SAMPLE)</div>
+                <NavLink to="/dashboard/vendor-hub" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><Printer size={18} /></span>
+                  Printing Hub
+                </NavLink>
+              </>
+            )}
 
             {(userRole === 'Teacher' || userRole === 'SubjectTeacher') && (
               <>

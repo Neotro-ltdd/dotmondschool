@@ -51,19 +51,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const roleClaim = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
                 if (roleClaim) {
                     const roles = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
-                    setAvailableRoles(roles);
-                    // Use previously saved active role if it's valid for this user
-                    const savedRole = localStorage.getItem('srms_active_role');
-                    if (savedRole && roles.includes(savedRole)) {
-                        setUserRole(savedRole);
+                    const isDevAccount = roles.some(r => r === 'SuperAdmin' || r === 'Superadmin' || r === 'SystemAdmin');
+                    
+                    if (isDevAccount) {
+                        const devRoles = ['SuperAdmin', 'Director', 'Admin', 'Accountant', 'Teacher', 'SubjectTeacher', 'Vendor', 'Parent'];
+                        setAvailableRoles(devRoles);
+                        const savedRole = localStorage.getItem('srms_active_role');
+                        if (savedRole && devRoles.includes(savedRole)) {
+                            setUserRole(savedRole);
+                        } else {
+                            setUserRole('SuperAdmin');
+                        }
                     } else {
-                        // Default priority: SystemAdmin -> Admin -> Teacher -> SubjectTeacher -> Staff
-                        if (roles.includes("SystemAdmin")) setUserRole("SystemAdmin");
-                        else if (roles.includes("Admin")) setUserRole("Admin");
-                        else if (roles.includes("Teacher")) setUserRole("Teacher");
-                        else if (roles.includes("SubjectTeacher")) setUserRole("SubjectTeacher");
-                        else if (roles.includes("Accountant")) setUserRole("Accountant");
-                        else setUserRole(roles[0]);
+                        setAvailableRoles(roles);
+                        // Use previously saved active role if it's valid for this user
+                        const savedRole = localStorage.getItem('srms_active_role');
+                        if (savedRole && roles.includes(savedRole)) {
+                            setUserRole(savedRole);
+                        } else {
+                            // Default priority: SystemAdmin -> Admin -> Teacher -> SubjectTeacher -> Staff
+                            if (roles.includes("SystemAdmin")) setUserRole("SystemAdmin");
+                            else if (roles.includes("Admin")) setUserRole("Admin");
+                            else if (roles.includes("Teacher")) setUserRole("Teacher");
+                            else if (roles.includes("SubjectTeacher")) setUserRole("SubjectTeacher");
+                            else if (roles.includes("Accountant")) setUserRole("Accountant");
+                            else setUserRole(roles[0]);
+                        }
                     }
                 } else {
                     setAvailableRoles([]);
