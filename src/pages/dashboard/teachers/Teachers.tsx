@@ -797,7 +797,6 @@ export default function Teachers() {
                     { id: 'Admin', label: 'Admin (System Configuration)' },
                     { id: 'SubjectTeacher', label: 'Subject Teacher (Grading)' },
                     { id: 'Accountant', label: 'Accountant (Fees & POS)' },
-                    { id: 'SuperAdmin', label: 'SuperAdmin (Developer Root Access)' },
                     { id: 'Director', label: 'Director (Superadmin Overseer)' },
                     { id: 'Principal', label: 'Principal (Executive Overseer)' },
                     { id: 'Staff', label: 'General Non-Teaching Staff' }
