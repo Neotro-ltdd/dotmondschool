@@ -1,10 +1,22 @@
+import React, { useState, useEffect } from 'react';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
-import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
-import './TeacherAcademics.css';
-import '../students/Management.css';
 import { useDialog } from '../../../context/DialogContext';
+import { useAuth } from '../../../context/AuthContext';
+import { 
+  FileSpreadsheet, 
+  Download, 
+  UploadCloud, 
+  School, 
+  BookOpen, 
+  CheckCircle2, 
+  AlertCircle,
+  FileCode,
+  Sparkles
+} from 'lucide-react';
+import './TeacherAcademics.css';
+import '../students/Students.css';
 
 interface MySubject {
   id: string;
@@ -23,24 +35,54 @@ interface MyClass {
 
 export default function Utilities() {
   const { showAlert } = useDialog();
+  const { userRole } = useAuth();
+  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
 
   const [classes, setClasses] = useState<MyClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<MyClass | null>(null);
+  const [isDeveloperMode, setIsDeveloperMode] = useState(false);
   
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [scoreFile, setScoreFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
-  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
+  const isSuperUser = ['SuperAdmin', 'Superadmin', 'SystemAdmin', 'Director', 'Admin', 'Principal'].includes(userRole || '');
 
+  // 1. Fetch Classes Roster
   const fetchMyClasses = async () => {
     try {
-      const data = await api.get('/academics/teacher/my-classes');
-      setClasses(data || []);
-      if (data && data.length > 0) {
-        setSelectedClass(data[0]);
-        if (data[0].mySubjects?.length > 0) {
-          setSelectedSubjectId(data[0].mySubjects[0].id);
+      const myClassesResponse = await api.get('/academics/teacher/my-classes').catch(() => []);
+      const myClasses: MyClass[] = myClassesResponse || [];
+
+      if (myClasses.length > 0 && !isSuperUser) {
+        setClasses(myClasses);
+        setSelectedClass(myClasses[0]);
+        setIsDeveloperMode(false);
+        if (myClasses[0].mySubjects?.length > 0) {
+          setSelectedSubjectId(myClasses[0].mySubjects[0].id);
+        }
+      } else {
+        // Fallback for SuperAdmin / Admin / Unallocated: Fetch All System Classes & Subjects
+        const allSystemClasses = await api.get('/setup/classes').catch(() => []);
+        const allSubjectsResponse = await api.get('/setup/subjects').catch(() => []);
+        const allSubjects: MySubject[] = (allSubjectsResponse || []).map((s: any) => ({ id: s.id, name: s.name }));
+
+        const formattedClasses: MyClass[] = (allSystemClasses || []).map((c: any) => ({
+          id: c.id,
+          session: c.session || filterSession,
+          level: c.level || 'Class',
+          name: `${c.level || ''} ${c.name || ''}`.trim(),
+          section: c.section || '',
+          isClassTeacher: true,
+          mySubjects: allSubjects
+        }));
+
+        setClasses(formattedClasses);
+        setIsDeveloperMode(true);
+        if (formattedClasses.length > 0) {
+          setSelectedClass(formattedClasses[0]);
+          if (allSubjects.length > 0) setSelectedSubjectId(allSubjects[0].id);
         }
       }
     } catch (error) {
@@ -50,23 +92,29 @@ export default function Utilities() {
 
   useEffect(() => {
     fetchMyClasses();
-  }, []);
+  }, [userRole]);
 
+  // Handle Download Excel Template
   const handleDownloadTemplate = async () => {
     if (!selectedClass || !selectedSubjectId) return;
     try {
+      setDownloading(true);
       const blob = await api.download(`/academics/scores/template?classId=${selectedClass.id}&subjectId=${selectedSubjectId}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `ScoreTemplate_${selectedClass.name}.xlsx`);
+      link.setAttribute('download', `ScoreTemplate_${selectedClass.name}_${filterTerm}.xlsx`);
       document.body.appendChild(link);
       link.click();
+      showAlert('Excel score template downloaded successfully!');
     } catch (error: any) {
       showAlert(error.message || 'Failed to download template.');
+    } finally {
+      setDownloading(false);
     }
   };
 
+  // Handle Upload Completed Excel Scores
   const handleUploadScores = async () => {
     if (!scoreFile || !selectedClass) return;
     try {
@@ -78,7 +126,7 @@ export default function Utilities() {
       formData.append('subjectId', selectedSubjectId);
 
       await api.post('/academics/scores/upload', formData);
-      showAlert('Scores uploaded successfully!');
+      showAlert('Scores uploaded and saved successfully!');
       setScoreFile(null);
     } catch (error: any) {
       showAlert(error.response?.data?.message || 'Failed to upload scores.');
@@ -88,26 +136,120 @@ export default function Utilities() {
   };
 
   return (
-    <div className="teacher-hub-page">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Utilities</h1>
-          <p className="page-subtitle">Bulk operations for uploading Test and Exam scores via CSV / Excel.</p>
+    <div className="teacher-hub-page fade-in">
+      
+      {/* HERO BANNER & STATS */}
+      <div className="ca-hero-banner">
+        <h1 className="ca-hero-title">
+          <span>📥</span> Offline Excel Utilities & Import Hub
+        </h1>
+        <p className="ca-hero-subtitle">
+          Download pre-formatted Excel templates for offline mark entry, or bulk upload completed score spreadsheets directly into the system.
+        </p>
+
+        <div className="ca-stats-grid">
+          <div className="ca-stat-card">
+            <div className="ca-stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60A5FA' }}>
+              <School size={24} />
+            </div>
+            <div>
+              <div className="ca-stat-value" style={{ fontSize: '1.2rem' }}>
+                {selectedClass ? `${selectedClass.name} ${selectedClass.section}` : 'N/A'}
+              </div>
+              <div className="ca-stat-label">Active Class</div>
+            </div>
+          </div>
+
+          <div className="ca-stat-card">
+            <div className="ca-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399' }}>
+              <BookOpen size={24} />
+            </div>
+            <div>
+              <div className="ca-stat-value">{selectedClass?.mySubjects?.length || 0}</div>
+              <div className="ca-stat-label">Subjects Allocated</div>
+            </div>
+          </div>
+
+          <div className="ca-stat-card">
+            <div className="ca-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24' }}>
+              <FileSpreadsheet size={24} />
+            </div>
+            <div>
+              <div className="ca-stat-value" style={{ fontSize: '1.1rem', color: selectedSubjectId ? '#34D399' : '#9CA3AF' }}>
+                {selectedSubjectId ? 'Template Ready' : 'Select Subject'}
+              </div>
+              <div className="ca-stat-label">Excel Export</div>
+            </div>
+          </div>
+
+          <div className="ca-stat-card">
+            <div className="ca-stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#A78BFA' }}>
+              <UploadCloud size={24} />
+            </div>
+            <div>
+              <div className="ca-stat-value" style={{ fontSize: '1.1rem', color: scoreFile ? '#34D399' : '#9CA3AF' }}>
+                {scoreFile ? 'File Attached' : 'No File Picked'}
+              </div>
+              <div className="ca-stat-label">Upload Readiness</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: 'var(--text-light)', fontSize: '0.9rem' }}>Session:</label>
-          <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="filter-select">
+      {/* DEVELOPER SUPERADMIN OVERLAY BANNER */}
+      {isDeveloperMode && (
+        <div className="ca-dev-banner">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span className="ca-dev-badge">Developer & Admin Mode</span>
+            <span style={{ fontSize: '0.9rem', color: '#1E40AF', fontWeight: 500 }}>
+              You are accessing offline Excel utilities as a System Admin / SuperAdmin. Select any class below to download templates or upload scores.
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* SESSION & TERM SELECTION BAR */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #E2E8F0',
+        borderRadius: '16px',
+        padding: '1.25rem 1.5rem',
+        marginBottom: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1.5rem',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)'
+      }}>
+        <div style={{ flex: 1, maxWidth: '240px' }}>
+          <label style={{ display: 'block', marginBottom: '0.35rem', fontWeight: '700', color: '#475569', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Academic Session
+          </label>
+          <select 
+            value={filterSession} 
+            onChange={(e) => setFilterSession(e.target.value)} 
+            style={{
+              width: '100%', padding: '0.55rem 1rem', borderRadius: '10px', border: '1.5px solid #CBD5E1',
+              fontWeight: '600', color: '#0F172A', background: '#F8FAFC'
+            }}
+          >
             {getSessionOptions(filterSession).map(s => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>
-        <div style={{ flex: 1, minWidth: '150px' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: 'var(--text-light)', fontSize: '0.9rem' }}>Term:</label>
-          <select value={filterTerm} onChange={(e) => setFilterTerm(e.target.value)} className="filter-select">
+
+        <div style={{ flex: 1, maxWidth: '240px' }}>
+          <label style={{ display: 'block', marginBottom: '0.35rem', fontWeight: '700', color: '#475569', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Academic Term
+          </label>
+          <select 
+            value={filterTerm} 
+            onChange={(e) => setFilterTerm(e.target.value)} 
+            style={{
+              width: '100%', padding: '0.55rem 1rem', borderRadius: '10px', border: '1.5px solid #CBD5E1',
+              fontWeight: '600', color: '#0F172A', background: '#F8FAFC'
+            }}
+          >
             <option value="First Term">First Term</option>
             <option value="Second Term">Second Term</option>
             <option value="Third Term">Third Term</option>
@@ -115,11 +257,17 @@ export default function Utilities() {
         </div>
       </div>
 
+      {/* MAIN WORKSPACE GRID */}
       <div className="teacher-hub-grid">
+        
+        {/* SIDEBAR PANEL: CLASS SELECTION */}
         <div className="sidebar-panel">
-          <h3 style={{ marginBottom: '1rem' }}>Select Class</h3>
+          <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0F172A', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <School size={18} style={{ color: '#2563EB' }} /> Select Class
+          </h3>
+
           {!classes || classes.length === 0 ? (
-            <p className="text-muted">You have no assigned classes.</p>
+            <p style={{ color: '#64748B', fontSize: '0.9rem' }}>No assigned classes found.</p>
           ) : (
             <div className="class-list">
               {classes.map(c => (
@@ -128,7 +276,7 @@ export default function Utilities() {
                   className={`class-item ${selectedClass?.id === c.id ? 'active' : ''}`}
                   onClick={() => {
                     setSelectedClass(c);
-                    if (c.mySubjects.length > 0) setSelectedSubjectId(c.mySubjects[0].id);
+                    if (c.mySubjects?.length > 0) setSelectedSubjectId(c.mySubjects[0].id);
                     else setSelectedSubjectId('');
                   }}
                 >
@@ -142,49 +290,145 @@ export default function Utilities() {
           )}
         </div>
 
+        {/* MAIN PANEL: TEMPLATE DOWNLOAD & UPLOAD */}
         <div className="main-panel">
           {!selectedClass ? (
-            <div className="empty-state">
-              <span className="empty-icon">👈</span>
-              <h3>Select a class</h3>
-              <p>Choose a class from the sidebar to perform bulk operations.</p>
+            <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#64748B' }}>
+              <School size={48} style={{ margin: '0 auto 1rem', color: '#CBD5E1' }} />
+              <h3 style={{ color: '#0F172A', fontWeight: 800, marginBottom: '0.5rem' }}>Select a Class</h3>
+              <p style={{ fontSize: '0.9rem', margin: 0 }}>Choose a class from the sidebar to perform Excel import and export operations.</p>
             </div>
           ) : (
-            <div className="fade-in">
-              <div className="action-card" style={{ marginBottom: '1.5rem' }}>
-                <h3>Hybrid Score Entry</h3>
-                <p>Select your subject and download the Excel template. Fill it offline, then upload it back to securely save all student scores at once.</p>
-                
-                <div className="form-group" style={{ maxWidth: '300px', marginBottom: '1rem' }}>
-                  <label>Select Subject</label>
-                  <select className="form-control" value={selectedSubjectId} onChange={e => setSelectedSubjectId(e.target.value)}>
-                    <option value="">-- Choose Subject --</option>
-                    {selectedClass.mySubjects?.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              
+              {/* CARD 1: DOWNLOAD EXCEL TEMPLATE */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: '16px',
+                padding: '1.5rem',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <div style={{ background: '#EFF6FF', color: '#2563EB', padding: '0.5rem', borderRadius: '10px' }}>
+                    <FileSpreadsheet size={22} />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
+                      Hybrid Offline Score Entry (Excel Download)
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B' }}>
+                      Select your target subject below to generate and download a pre-formatted Excel template.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="action-row">
-                  <button className="btn btn-secondary" onClick={handleDownloadTemplate} disabled={!selectedSubjectId}>
-                    ⬇️ Download Excel Template
-                  </button>
+                {/* SUBJECT SELECTION CHIPS */}
+                <div style={{ margin: '1.25rem 0' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Choose Subject Template
+                  </label>
+                  {!selectedClass.mySubjects || selectedClass.mySubjects.length === 0 ? (
+                    <p style={{ color: '#991B1B', fontSize: '0.88rem', background: '#FEF2F2', padding: '0.75rem', borderRadius: '8px' }}>
+                      No subjects available for this class.
+                    </p>
+                  ) : (
+                    <div className="ca-subjects-chips">
+                      {selectedClass.mySubjects.map(s => (
+                        <button
+                          type="button"
+                          key={s.id}
+                          className={`ca-subject-chip ${selectedSubjectId === s.id ? 'active' : ''}`}
+                          onClick={() => setSelectedSubjectId(s.id)}
+                        >
+                          <BookOpen size={14} /> {s.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+                <button 
+                  className="btn-submit-scores" 
+                  onClick={handleDownloadTemplate} 
+                  disabled={!selectedSubjectId || downloading}
+                >
+                  <Download size={16} /> {downloading ? 'Generating Template...' : 'Download Excel Template (.xlsx)'}
+                </button>
               </div>
 
-              <div className="action-card">
-                <h3>Upload Completed Scores</h3>
-                <p>Upload your completed Excel or CSV template here to update all scores for the selected term and session.</p>
-                <div className="action-row" style={{ marginTop: '1rem' }}>
-                  <input type="file" accept=".xlsx, .xls, .csv" className="form-control" style={{ maxWidth: '300px' }} onChange={e => setScoreFile(e.target.files?.[0] || null)} />
-                  <button className="btn btn-primary" onClick={handleUploadScores} disabled={!scoreFile || uploading}>
-                    {uploading ? 'Uploading...' : '⬆️ Upload & Save Scores'}
-                  </button>
+              {/* CARD 2: UPLOAD COMPLETED SCORES */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: '16px',
+                padding: '1.5rem',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <div style={{ background: '#ECFDF5', color: '#047857', padding: '0.5rem', borderRadius: '10px' }}>
+                    <UploadCloud size={22} />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
+                      Upload Completed Scores Spreadsheet
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B' }}>
+                      Upload your filled Excel (`.xlsx`) or CSV spreadsheet to update student scores instantly.
+                    </p>
+                  </div>
                 </div>
+
+                {/* DROPZONE / FILE INPUT */}
+                <div style={{
+                  border: '2px dashed #CBD5E1',
+                  borderRadius: '14px',
+                  padding: '2rem 1.5rem',
+                  textAlign: 'center',
+                  background: '#F8FAFC',
+                  margin: '1.25rem 0',
+                  cursor: 'pointer',
+                  transition: 'border-color 0.2s ease'
+                }}>
+                  <FileCode size={36} style={{ margin: '0 auto 0.75rem', color: '#94A3B8' }} />
+                  <p style={{ fontWeight: 700, color: '#0F172A', margin: '0 0 0.25rem' }}>
+                    {scoreFile ? scoreFile.name : 'Select or drag score spreadsheet here'}
+                  </p>
+                  <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0 0 1rem' }}>
+                    Supported formats: `.xlsx`, `.xls`, `.csv`
+                  </p>
+
+                  <input 
+                    type="file" 
+                    id="excelFileInput"
+                    accept=".xlsx, .xls, .csv" 
+                    onChange={e => setScoreFile(e.target.files?.[0] || null)}
+                    style={{ display: 'none' }}
+                  />
+
+                  <label 
+                    htmlFor="excelFileInput"
+                    className="btn-save-draft"
+                    style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    Browse Local File
+                  </label>
+                </div>
+
+                <button 
+                  className="btn-submit-scores" 
+                  onClick={handleUploadScores} 
+                  disabled={!scoreFile || uploading}
+                  style={{ background: '#059669' }}
+                >
+                  <UploadCloud size={16} /> {uploading ? 'Processing & Saving Scores...' : 'Upload & Save Scores'}
+                </button>
               </div>
+
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
