@@ -563,7 +563,7 @@ export default function Teachers() {
                             className="dropdown-action-item" 
                             onClick={() => {
                               setOpenDropdownId(null);
-                              setSelectedIdCardStaffId(teacher.id);
+                              setSelectedStaffIdForCard(teacher.id);
                             }}
                           >
                             <CreditCard size={15} color="#000080" /> Print Staff ID Card
