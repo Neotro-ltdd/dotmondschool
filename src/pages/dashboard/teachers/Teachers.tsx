@@ -563,6 +563,15 @@ export default function Teachers() {
                             className="dropdown-action-item" 
                             onClick={() => {
                               setOpenDropdownId(null);
+                              setSelectedIdCardStaffId(teacher.id);
+                            }}
+                          >
+                            <CreditCard size={15} color="#000080" /> Print Staff ID Card
+                          </button>
+                          <button 
+                            className="dropdown-action-item" 
+                            onClick={() => {
+                              setOpenDropdownId(null);
                               handleEditClick(teacher);
                             }}
                           >
