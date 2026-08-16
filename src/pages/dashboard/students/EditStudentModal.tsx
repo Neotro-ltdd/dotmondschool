@@ -429,7 +429,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justify: 'center',
+              justifyContent: 'center',
               gap: '0.75rem'
             }}>
               {passportPreview ? (
@@ -461,7 +461,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
                       height: '24px',
                       display: 'flex',
                       alignItems: 'center',
-                      justify: 'center',
+                      justifyContent: 'center',
                       cursor: 'pointer'
                     }}
                     title="Remove Photo"
@@ -478,7 +478,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
                   color: '#64748B',
                   display: 'flex',
                   alignItems: 'center',
-                  justify: 'center'
+                  justifyContent: 'center'
                 }}>
                   <ImageIcon size={28} />
                 </div>
