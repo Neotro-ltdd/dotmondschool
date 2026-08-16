@@ -38,7 +38,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-/* CA HERO BANNER */
+/* CA & ATTENDANCE HERO BANNER */
 .ca-hero-banner {
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #1E1B4B 100%);
   border-radius: 20px;
@@ -384,6 +384,86 @@
 .grade-C { background: #FEF9C3; color: #A16207; }
 .grade-D { background: #FFEDD5; color: #C2410C; }
 .grade-F { background: #FEE2E2; color: #B91C1C; }
+
+/* ATTENDANCE TOGGLES & PILLS */
+.att-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.att-status-pill.Present {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #86EFAC;
+}
+
+.att-status-pill.Absent {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FCA5A5;
+}
+
+.att-status-pill.Late {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.att-status-pill.Excused {
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #7DD3FC;
+}
+
+.att-toggle-group {
+  display: inline-flex;
+  background: #F1F5F9;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  gap: 2px;
+}
+
+.att-toggle-btn {
+  padding: 0.3rem 0.65rem;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #64748B;
+  transition: all 0.15s ease;
+}
+
+.att-toggle-btn.active.Present {
+  background: #10B981;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+.att-toggle-btn.active.Absent {
+  background: #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+
+.att-toggle-btn.active.Late {
+  background: #F59E0B;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+.att-toggle-btn.active.Excused {
+  background: #0EA5E9;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.3);
+}
 
 /* ACTION BAR FOOTER */
 .ca-table-footer {
