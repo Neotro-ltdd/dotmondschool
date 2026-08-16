@@ -87,6 +87,7 @@ export default function Teachers() {
     surname: '',
     firstName: '',
     otherNames: '',
+    gender: 'Female',
     phoneNumber: '',
     email: '',
     designation: '',
@@ -163,6 +164,7 @@ export default function Teachers() {
       surname: teacher.surname || '',
       firstName: teacher.firstName || '',
       otherNames: teacher.otherNames || '',
+      gender: teacher.gender || 'Female',
       phoneNumber: teacher.phoneNumber || '',
       email: teacher.email || '',
       designation: teacher.designation || '',
@@ -184,6 +186,7 @@ export default function Teachers() {
       surname: '',
       firstName: '',
       otherNames: '',
+      gender: 'Female',
       phoneNumber: '',
       email: '',
       designation: '',
@@ -748,7 +751,14 @@ export default function Teachers() {
                 <label>First Name <span style={{ color: '#ef4444' }}>*</span></label>
                 <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required placeholder="e.g. Adefolarin" />
               </div>
-              <div className="form-group full-width">
+              <div className="form-group">
+                <label>Gender <span style={{ color: '#ef4444' }}>*</span></label>
+                <select name="gender" value={formData.gender} onChange={handleInputChange} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                </select>
+              </div>
+              <div className="form-group">
                 <label>Other Names</label>
                 <input type="text" name="otherNames" value={formData.otherNames} onChange={handleInputChange} placeholder="Optional middle names" />
               </div>
