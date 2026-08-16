@@ -253,7 +253,7 @@ export default function TeacherResults() {
         padding: '1.25rem 1.5rem',
         marginBottom: '1.5rem',
         display: 'flex',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '1rem',
