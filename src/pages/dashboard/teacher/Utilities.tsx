@@ -13,7 +13,9 @@ import {
   CheckCircle2, 
   AlertCircle,
   FileCode,
-  Sparkles
+  Sparkles,
+  Layers,
+  FileText
 } from 'lucide-react';
 import './TeacherAcademics.css';
 import '../students/Students.css';
@@ -43,11 +45,31 @@ export default function Utilities() {
   const [isDeveloperMode, setIsDeveloperMode] = useState(false);
   
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
+  const [templateType, setTemplateType] = useState<'broadsheet' | 'subject'>('broadsheet');
   const [scoreFile, setScoreFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   const isSuperUser = ['SuperAdmin', 'Superadmin', 'SystemAdmin', 'Director', 'Admin', 'Principal'].includes(userRole || '');
+
+  // Helper: Detect if a class should use Full Class Broadsheet Mode (Nursery 1 to Primary 5 / Primary & Early Childhood)
+  const isBroadsheetClass = (c: MyClass | null) => {
+    if (!c) return false;
+    const level = (c.level || '').toLowerCase();
+    const name = (c.name || '').toLowerCase();
+    const combined = `${level} ${name}`;
+    
+    // Secondary classes (JSS 1 - SS 3) use single subject templates by default
+    const isSecondary = combined.includes('jss') || 
+                        combined.includes('ss 1') || combined.includes('ss 2') || combined.includes('ss 3') || 
+                        combined.includes('ss1') || combined.includes('ss2') || combined.includes('ss3') ||
+                        combined.includes('secondary') || combined.includes('senior') || combined.includes('junior secondary');
+
+    if (isSecondary) return false;
+
+    // Nursery 1 to Primary 5 and Nursery / Early Childhood always use Broadsheet Mode
+    return true;
+  };
 
   // 1. Fetch Classes Roster
   const fetchMyClasses = async () => {
@@ -57,11 +79,13 @@ export default function Utilities() {
 
       if (myClasses.length > 0 && !isSuperUser) {
         setClasses(myClasses);
-        setSelectedClass(myClasses[0]);
+        const initialClass = myClasses[0];
+        setSelectedClass(initialClass);
         setIsDeveloperMode(false);
-        if (myClasses[0].mySubjects?.length > 0) {
-          setSelectedSubjectId(myClasses[0].mySubjects[0].id);
+        if (initialClass.mySubjects?.length > 0) {
+          setSelectedSubjectId(initialClass.mySubjects[0].id);
         }
+        setTemplateType(isBroadsheetClass(initialClass) ? 'broadsheet' : 'subject');
       } else {
         // Fallback for SuperAdmin / Admin / Unallocated: Fetch All System Classes & Subjects
         const allSystemClasses = await api.get('/setup/classes').catch(() => []);
@@ -81,8 +105,10 @@ export default function Utilities() {
         setClasses(formattedClasses);
         setIsDeveloperMode(true);
         if (formattedClasses.length > 0) {
-          setSelectedClass(formattedClasses[0]);
+          const initialClass = formattedClasses[0];
+          setSelectedClass(initialClass);
           if (allSubjects.length > 0) setSelectedSubjectId(allSubjects[0].id);
+          setTemplateType(isBroadsheetClass(initialClass) ? 'broadsheet' : 'subject');
         }
       }
     } catch (error) {
@@ -94,21 +120,46 @@ export default function Utilities() {
     fetchMyClasses();
   }, [userRole]);
 
-  // Handle Download Excel Template
+  // Update Template Type default when Selected Class changes
+  useEffect(() => {
+    if (selectedClass) {
+      setTemplateType(isBroadsheetClass(selectedClass) ? 'broadsheet' : 'subject');
+    }
+  }, [selectedClass]);
+
+  // Handle Download Excel Template (Broadsheet or Single Subject)
   const handleDownloadTemplate = async () => {
-    if (!selectedClass || !selectedSubjectId) return;
+    if (!selectedClass) return;
+
     try {
       setDownloading(true);
-      const blob = await api.download(`/academics/scores/template?classId=${selectedClass.id}&subjectId=${selectedSubjectId}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `ScoreTemplate_${selectedClass.name}_${filterTerm}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-      showAlert('Excel score template downloaded successfully!');
+      if (templateType === 'broadsheet') {
+        // Broadsheet Template for Full Class (All subjects in 1 sheet)
+        const blob = await api.download(`/academics/scores/broadsheet/template?classId=${selectedClass.id}`);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Broadsheet_Template_${selectedClass.name.replace(/\s+/g, '_')}_${filterTerm.replace(/\s+/g, '_')}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        showAlert('Full Class Broadsheet Excel template downloaded successfully!');
+      } else {
+        // Single Subject Score Template
+        if (!selectedSubjectId) {
+          showAlert('Please select a subject to download a single subject template.');
+          return;
+        }
+        const blob = await api.download(`/academics/scores/template?classId=${selectedClass.id}&subjectId=${selectedSubjectId}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `ScoreTemplate_${selectedClass.name.replace(/\s+/g, '_')}_${filterTerm.replace(/\s+/g, '_')}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        showAlert('Single subject score template downloaded successfully!');
+      }
     } catch (error: any) {
-      showAlert(error.message || 'Failed to download template.');
+      showAlert(error.message || 'Failed to download score template.');
     } finally {
       setDownloading(false);
     }
@@ -121,19 +172,28 @@ export default function Utilities() {
       setUploading(true);
       const formData = new FormData();
       formData.append('file', scoreFile);
-      formData.append('session', filterSession);
-      formData.append('term', filterTerm);
-      formData.append('subjectId', selectedSubjectId);
 
-      await api.post('/academics/scores/upload', formData);
-      showAlert('Scores uploaded and saved successfully!');
+      if (templateType === 'broadsheet') {
+        formData.append('classId', selectedClass.id);
+        const response = await api.post('/academics/scores/broadsheet/upload', formData);
+        showAlert(response?.message || 'Full Class Broadsheet scores uploaded and saved successfully!');
+      } else {
+        formData.append('session', filterSession);
+        formData.append('term', filterTerm);
+        formData.append('subjectId', selectedSubjectId);
+        await api.post('/academics/scores/upload', formData);
+        showAlert('Single subject scores uploaded and saved successfully!');
+      }
+
       setScoreFile(null);
     } catch (error: any) {
-      showAlert(error.response?.data?.message || 'Failed to upload scores.');
+      showAlert(error.response?.data?.message || error.message || 'Failed to upload score spreadsheet.');
     } finally {
       setUploading(false);
     }
   };
+
+  const isPrimaryNursery = selectedClass ? isBroadsheetClass(selectedClass) : false;
 
   return (
     <div className="teacher-hub-page fade-in">
@@ -162,11 +222,13 @@ export default function Utilities() {
 
           <div className="ca-stat-card">
             <div className="ca-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399' }}>
-              <BookOpen size={24} />
+              <Layers size={24} />
             </div>
             <div>
-              <div className="ca-stat-value">{selectedClass?.mySubjects?.length || 0}</div>
-              <div className="ca-stat-label">Subjects Allocated</div>
+              <div className="ca-stat-value" style={{ fontSize: '1.1rem', color: templateType === 'broadsheet' ? '#34D399' : '#60A5FA' }}>
+                {templateType === 'broadsheet' ? 'Full Broadsheet' : 'Single Subject'}
+              </div>
+              <div className="ca-stat-label">Template Mode</div>
             </div>
           </div>
 
@@ -175,8 +237,8 @@ export default function Utilities() {
               <FileSpreadsheet size={24} />
             </div>
             <div>
-              <div className="ca-stat-value" style={{ fontSize: '1.1rem', color: selectedSubjectId ? '#34D399' : '#9CA3AF' }}>
-                {selectedSubjectId ? 'Template Ready' : 'Select Subject'}
+              <div className="ca-stat-value" style={{ fontSize: '1.1rem', color: selectedClass ? '#34D399' : '#9CA3AF' }}>
+                {selectedClass ? 'Template Ready' : 'Select Class'}
               </div>
               <div className="ca-stat-label">Excel Export</div>
             </div>
@@ -270,22 +332,25 @@ export default function Utilities() {
             <p style={{ color: '#64748B', fontSize: '0.9rem' }}>No assigned classes found.</p>
           ) : (
             <div className="class-list">
-              {classes.map(c => (
-                <div 
-                  key={c.id} 
-                  className={`class-item ${selectedClass?.id === c.id ? 'active' : ''}`}
-                  onClick={() => {
-                    setSelectedClass(c);
-                    if (c.mySubjects?.length > 0) setSelectedSubjectId(c.mySubjects[0].id);
-                    else setSelectedSubjectId('');
-                  }}
-                >
-                  <span className="class-name">{c.name} {c.section}</span>
-                  <span className="class-meta">
-                    {c.isClassTeacher ? '⭐ Class Teacher' : `${c.mySubjects?.length || 0} Subjects`}
-                  </span>
-                </div>
-              ))}
+              {classes.map(c => {
+                const isPrimary = isBroadsheetClass(c);
+                return (
+                  <div 
+                    key={c.id} 
+                    className={`class-item ${selectedClass?.id === c.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedClass(c);
+                      if (c.mySubjects?.length > 0) setSelectedSubjectId(c.mySubjects[0].id);
+                      else setSelectedSubjectId('');
+                    }}
+                  >
+                    <span className="class-name">{c.name} {c.section}</span>
+                    <span className="class-meta">
+                      {isPrimary ? '📋 Broadsheet Mode (Primary)' : c.isClassTeacher ? '⭐ Class Teacher' : `${c.mySubjects?.length || 0} Subjects`}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -301,6 +366,43 @@ export default function Utilities() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               
+              {/* TEMPLATE MODE TOGGLE BAR */}
+              <div style={{
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '14px',
+                padding: '0.75rem 1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Sparkles size={18} style={{ color: '#2563EB' }} />
+                  <span style={{ fontWeight: 700, color: '#0F172A', fontSize: '0.88rem' }}>
+                    Template Format Mode:
+                  </span>
+                </div>
+
+                <div className="view-mode-toggle">
+                  <button 
+                    type="button" 
+                    className={`view-toggle-btn ${templateType === 'broadsheet' ? 'active' : ''}`}
+                    onClick={() => setTemplateType('broadsheet')}
+                  >
+                    <Layers size={14} /> Full Class Broadsheet Template
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`view-toggle-btn ${templateType === 'subject' ? 'active' : ''}`}
+                    onClick={() => setTemplateType('subject')}
+                  >
+                    <FileText size={14} /> Single Subject Template
+                  </button>
+                </div>
+              </div>
+
               {/* CARD 1: DOWNLOAD EXCEL TEMPLATE */}
               <div style={{
                 background: '#FFFFFF',
@@ -315,45 +417,73 @@ export default function Utilities() {
                   </div>
                   <div>
                     <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
-                      Hybrid Offline Score Entry (Excel Download)
+                      {templateType === 'broadsheet' 
+                        ? 'Full Class Broadsheet Template (All Subjects in 1 Sheet)'
+                        : 'Single Subject Mark Sheet Template'}
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B' }}>
-                      Select your target subject below to generate and download a pre-formatted Excel template.
+                      {templateType === 'broadsheet'
+                        ? `One teacher handles all subjects for ${selectedClass.name}. Downloading this template generates a single Excel sheet containing columns for all subjects.`
+                        : `Select your target subject below to generate and download a subject-specific Excel score template.`}
                     </p>
                   </div>
                 </div>
 
-                {/* SUBJECT SELECTION CHIPS */}
-                <div style={{ margin: '1.25rem 0' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Choose Subject Template
-                  </label>
-                  {!selectedClass.mySubjects || selectedClass.mySubjects.length === 0 ? (
-                    <p style={{ color: '#991B1B', fontSize: '0.88rem', background: '#FEF2F2', padding: '0.75rem', borderRadius: '8px' }}>
-                      No subjects available for this class.
-                    </p>
-                  ) : (
-                    <div className="ca-subjects-chips">
-                      {selectedClass.mySubjects.map(s => (
-                        <button
-                          type="button"
-                          key={s.id}
-                          className={`ca-subject-chip ${selectedSubjectId === s.id ? 'active' : ''}`}
-                          onClick={() => setSelectedSubjectId(s.id)}
-                        >
-                          <BookOpen size={14} /> {s.name}
-                        </button>
-                      ))}
+                {/* PRIMARY / NURSERY BROADSHEET NOTICE */}
+                {isPrimaryNursery && templateType === 'broadsheet' && (
+                  <div style={{
+                    background: '#ECFDF5',
+                    border: '1px solid #A7F3D0',
+                    borderRadius: '12px',
+                    padding: '0.85rem 1rem',
+                    margin: '1.25rem 0',
+                    color: '#065F46',
+                    fontSize: '0.88rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem'
+                  }}>
+                    <CheckCircle2 size={18} style={{ flexShrink: 0, color: '#059669' }} />
+                    <div>
+                      <strong style={{ display: 'block' }}>Broadsheet Mode Active (Nursery 1 – Primary 5)</strong>
+                      <span>The downloaded template includes columns for all subjects assigned to {selectedClass.name}. Fill it offline and upload it below.</span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {/* SINGLE SUBJECT CHIPS (Only shown when Single Subject Mode is active) */}
+                {templateType === 'subject' && (
+                  <div style={{ margin: '1.25rem 0' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, color: '#475569', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Choose Subject Template
+                    </label>
+                    {!selectedClass.mySubjects || selectedClass.mySubjects.length === 0 ? (
+                      <p style={{ color: '#991B1B', fontSize: '0.88rem', background: '#FEF2F2', padding: '0.75rem', borderRadius: '8px' }}>
+                        No subjects available for this class.
+                      </p>
+                    ) : (
+                      <div className="ca-subjects-chips">
+                        {selectedClass.mySubjects.map(s => (
+                          <button
+                            type="button"
+                            key={s.id}
+                            className={`ca-subject-chip ${selectedSubjectId === s.id ? 'active' : ''}`}
+                            onClick={() => setSelectedSubjectId(s.id)}
+                          >
+                            <BookOpen size={14} /> {s.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <button 
                   className="btn-submit-scores" 
                   onClick={handleDownloadTemplate} 
-                  disabled={!selectedSubjectId || downloading}
+                  disabled={(templateType === 'subject' && !selectedSubjectId) || downloading}
                 >
-                  <Download size={16} /> {downloading ? 'Generating Template...' : 'Download Excel Template (.xlsx)'}
+                  <Download size={16} /> {downloading ? 'Generating Template...' : templateType === 'broadsheet' ? 'Download Full Broadsheet Template (.xlsx)' : 'Download Subject Template (.xlsx)'}
                 </button>
               </div>
 
@@ -371,10 +501,10 @@ export default function Utilities() {
                   </div>
                   <div>
                     <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
-                      Upload Completed Scores Spreadsheet
+                      {templateType === 'broadsheet' ? 'Upload Completed Broadsheet Spreadsheet' : 'Upload Single Subject Scores Spreadsheet'}
                     </h3>
                     <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B' }}>
-                      Upload your filled Excel (`.xlsx`) or CSV spreadsheet to update student scores instantly.
+                      Upload your filled Excel (`.xlsx`) or CSV template here to update all scores for {selectedClass.name}.
                     </p>
                   </div>
                 </div>
@@ -392,7 +522,7 @@ export default function Utilities() {
                 }}>
                   <FileCode size={36} style={{ margin: '0 auto 0.75rem', color: '#94A3B8' }} />
                   <p style={{ fontWeight: 700, color: '#0F172A', margin: '0 0 0.25rem' }}>
-                    {scoreFile ? scoreFile.name : 'Select or drag score spreadsheet here'}
+                    {scoreFile ? scoreFile.name : 'Select or drag completed score spreadsheet here'}
                   </p>
                   <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0 0 1rem' }}>
                     Supported formats: `.xlsx`, `.xls`, `.csv`
