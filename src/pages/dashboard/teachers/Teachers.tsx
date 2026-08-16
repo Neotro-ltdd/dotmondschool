@@ -18,6 +18,7 @@ interface TeacherItem {
   otherNames: string;
   phoneNumber: string;
   email: string;
+  gender?: string;
   designation?: string;
   role: string;
   staffCategory?: string;
