@@ -115,13 +115,21 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
   const formatDisplayName = (rawName: string | undefined | null) => {
     if (!rawName) return 'STAFF MEMBER';
-    const parts = rawName.trim().split(/\s+/).filter(Boolean);
-    if (parts.length <= 2) {
-      return parts.join(' ').toUpperCase();
+    const trimmed = rawName.trim();
+    if (trimmed.includes(',')) {
+      return trimmed.toUpperCase();
     }
-    const firstTwo = parts.slice(0, 2).map(p => p.toUpperCase()).join(' ');
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) {
+      return parts[0].toUpperCase();
+    }
+    if (parts.length === 2) {
+      return `${parts[0].toUpperCase()}, ${parts[1].toUpperCase()}`;
+    }
+    const surname = parts[0].toUpperCase();
+    const firstName = parts[1].toUpperCase();
     const abbreviatedOthers = parts.slice(2).map(p => `${p[0].toUpperCase()}.`).join(' ');
-    return `${firstTwo} ${abbreviatedOthers}`;
+    return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
   return (

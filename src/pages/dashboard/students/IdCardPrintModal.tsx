@@ -111,6 +111,22 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   // 3. Principal Signature Check
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
 
+  const formatStudentDisplayName = (rawName: string | undefined | null) => {
+    if (!rawName) return 'STUDENT';
+    const trimmed = rawName.trim();
+    if (trimmed.includes(',')) {
+      return trimmed.toUpperCase();
+    }
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].toUpperCase();
+    if (parts.length === 2) return `${parts[0].toUpperCase()}, ${parts[1].toUpperCase()}`;
+    
+    const surname = parts[0].toUpperCase();
+    const firstName = parts[1].toUpperCase();
+    const others = parts.slice(2).join(' ').toUpperCase();
+    return `${surname}, ${firstName} ${others}`.trim();
+  };
+
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
