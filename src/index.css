@@ -92,10 +92,33 @@ body[data-theme='dark'] .subject-alloc-grid-card,
 body[data-theme='dark'] .review-grid-card,
 body[data-theme='dark'] .clearance-grid-card,
 body[data-theme='dark'] .gate-grid-card,
-body[data-theme='dark'] .promo-grid-card {
+body[data-theme='dark'] .promo-grid-card,
+body[data-theme='dark'] .stat-card-executive,
+body.dark-theme .stat-card-executive,
+body[data-theme='dark'] .quick-shortcuts-section,
+body.dark-theme .quick-shortcuts-section,
+body[data-theme='dark'] .admin-overview-shortcuts,
+body.dark-theme .admin-overview-shortcuts,
+body[data-theme='dark'] .overview-stat-card,
+body.dark-theme .overview-stat-card,
+body[data-theme='dark'] .management-desk,
+body.dark-theme .management-desk {
   background-color: #1E293B !important;
   border-color: #334155 !important;
   color: #F1F5F9 !important;
+}
+
+body[data-theme='dark'] .shortcut-card,
+body.dark-theme .shortcut-card {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+  color: #F1F5F9 !important;
+}
+
+body[data-theme='dark'] .shortcut-card:hover,
+body.dark-theme .shortcut-card:hover {
+  background-color: #1E293B !important;
+  border-color: #3B82F6 !important;
 }
 
 body[data-theme='dark'] .subjects-page-title,
@@ -114,8 +137,40 @@ body[data-theme='dark'] .sessionop-card-title,
 body[data-theme='dark'] .teacher-name-title,
 body[data-theme='dark'] .promo-table-title,
 body[data-theme='dark'] .card-student-name,
-body[data-theme='dark'] .promo-modal-title {
+body[data-theme='dark'] .promo-modal-title,
+body[data-theme='dark'] .section-title,
+body.dark-theme .section-title,
+body[data-theme='dark'] .stat-main-value,
+body.dark-theme .stat-main-value,
+body[data-theme='dark'] .shortcut-info h4,
+body.dark-theme .shortcut-info h4,
+body[data-theme='dark'] .user-name,
+body.dark-theme .user-name {
   color: #F8FAFC !important;
+}
+
+body[data-theme='dark'] .section-desc,
+body.dark-theme .section-desc,
+body[data-theme='dark'] .shortcut-info p,
+body.dark-theme .shortcut-info p,
+body[data-theme='dark'] .stat-subtext,
+body.dark-theme .stat-subtext,
+body[data-theme='dark'] .stat-label-text,
+body.dark-theme .stat-label-text,
+body[data-theme='dark'] .user-role,
+body.dark-theme .user-role {
+  color: #CBD5E1 !important;
+}
+
+body[data-theme='dark'] .quick-action-pill,
+body.dark-theme .quick-action-pill {
+  background-color: #334155 !important;
+  color: #38BDF8 !important;
+}
+
+body[data-theme='dark'] .stat-footer-row,
+body.dark-theme .stat-footer-row {
+  border-top-color: #334155 !important;
 }
 
 body[data-theme='dark'] .executive-subjects-table th,
