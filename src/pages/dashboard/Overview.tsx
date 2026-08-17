@@ -17,6 +17,7 @@ interface SystemActivityItem {
   id: string;
   title: string;
   desc: string;
+  initiatedBy?: string;
   time: string;
   timestamp: string;
   status: string;
@@ -211,7 +212,12 @@ export default function Overview() {
                   </span>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
-                <span style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>{item.time}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>
+                    {item.initiatedBy || 'Initiated by School Administrator'}
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>{item.time}</span>
+                </div>
               </div>
             ))
           )}
