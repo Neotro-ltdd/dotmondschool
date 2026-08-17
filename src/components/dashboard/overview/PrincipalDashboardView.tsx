@@ -181,7 +181,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
             </div>
           </Link>
 
-          <Link to="/dashboard/admin/staff" className="shortcut-card">
+          <Link to="/dashboard/teachers" className="shortcut-card">
             <div className="shortcut-icon">
               <Users size={20} />
             </div>
@@ -191,7 +191,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
             </div>
           </Link>
 
-          <Link to="/dashboard/admin/students" className="shortcut-card">
+          <Link to="/dashboard/students" className="shortcut-card">
             <div className="shortcut-icon">
               <GraduationCap size={20} />
             </div>

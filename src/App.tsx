@@ -88,6 +88,9 @@ function App() {
             <Route path="subjects" element={<Subjects />} />
             <Route path="test-result-sample" element={<ResultSample />} />
             <Route path="teachers" element={<Teachers />} />
+            <Route path="staff" element={<Teachers />} />
+            <Route path="admin/staff" element={<Teachers />} />
+            <Route path="admin/students" element={<Students />} />
             <Route path="staff-attendance" element={<StaffAttendanceReport />} />
             <Route path="students" element={<Students />} />
             <Route path="approvals" element={<Approvals />} />

@@ -98,7 +98,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </div>
 
           <div className="banner-actions">
-            <Link to="/dashboard/admin/staff" className="banner-btn banner-btn-primary">
+            <Link to="/dashboard/teachers" className="banner-btn banner-btn-primary">
               <Users size={16} /> Staff Management
             </Link>
             {onToggleActivityLog && (
@@ -172,7 +172,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         </div>
 
         <div className="shortcuts-grid">
-          <Link to="/dashboard/admin/students" className="shortcut-card">
+          <Link to="/dashboard/students" className="shortcut-card">
             <div className="shortcut-icon">
               <GraduationCap size={20} />
             </div>
@@ -182,7 +182,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             </div>
           </Link>
 
-          <Link to="/dashboard/admin/staff" className="shortcut-card">
+          <Link to="/dashboard/teachers" className="shortcut-card">
             <div className="shortcut-icon">
               <Users size={20} />
             </div>
