@@ -1,4 +1,5 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { useActiveTerm } from '../../hooks/useActiveTerm';
@@ -11,6 +12,16 @@ import PrincipalDashboardView from '../../components/dashboard/overview/Principa
 import ParentDashboardView from '../../components/dashboard/overview/ParentDashboardView';
 import VendorDashboardView from '../../components/dashboard/overview/VendorDashboardView';
 import './Dashboard.css';
+
+interface SystemActivityItem {
+  id: string;
+  title: string;
+  desc: string;
+  time: string;
+  timestamp: string;
+  status: string;
+  color: string;
+}
 
 export default function Overview() {
   const { userRole, userName, userTitle } = useAuth();
@@ -28,6 +39,17 @@ export default function Overview() {
   const [vendorData, setVendorData] = React.useState<any>(null);
   const [parentData, setParentData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
+
+  // Fetch Live Activity Log from Database
+  const { data: activityLogs = [], isLoading: loadingActivities } = useQuery<SystemActivityItem[]>({
+    queryKey: ['system-activities'],
+    queryFn: async () => {
+      const res = await api.get('/setup/activities');
+      return Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+    },
+    enabled: showActivityLog,
+    refetchInterval: 15000
+  });
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -171,24 +193,28 @@ export default function Overview() {
         }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {[
-            { title: "Student Record Created", desc: "Adefolarin Bakare was newly enrolled into JSS 2 Silver.", time: "10 minutes ago", status: "Success", color: "#10B981" },
-            { title: "Fee Clearance Verified", desc: "Manual clearance approved for student NGN 150,000 tuition via Bank Transfer.", time: "2 hours ago", status: "Verified", color: "#3B82F6" },
-            { title: "Report Card Template Updated", desc: "Termly Grading Criteria adjusted to standard 40/60 distribution.", time: "Yesterday at 4:15 PM", status: "Updated", color: "#8B5CF6" },
-            { title: "System Login Recorded", desc: `Successful administrative sign-in by ${userName || 'Super Admin'} from standard IP.`, time: "Yesterday at 9:00 AM", status: "Security", color: "#F59E0B" },
-            { title: "Bulk SMS Broadcast", desc: "Mid-term resumption notification sent to 269 parents.", time: "3 days ago", status: "Broadcast", color: "#000080" }
-          ].map((item, i) => (
-            <div key={i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FAFCFE', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <strong style={{ color: '#0F172A', fontSize: '0.95rem' }}>{item.title}</strong>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: item.color, background: `${item.color}15`, padding: '4px 10px', borderRadius: '6px' }}>
-                  {item.status}
-                </span>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
-              <span style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>{item.time}</span>
+          {loadingActivities ? (
+            <div style={{ padding: '24px', textAlign: 'center', color: '#64748B' }}>
+              Loading recent system activity...
             </div>
-          ))}
+          ) : activityLogs.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center', color: '#64748B' }}>
+              No system activity logs found.
+            </div>
+          ) : (
+            activityLogs.map((item, i) => (
+              <div key={item.id || i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FAFCFE', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ color: '#0F172A', fontSize: '0.95rem' }}>{item.title}</strong>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: item.color || '#10B981', background: `${item.color || '#10B981'}15`, padding: '4px 10px', borderRadius: '6px' }}>
+                    {item.status || 'Success'}
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
+                <span style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>{item.time}</span>
+              </div>
+            ))
+          )}
         </div>
       </SlideOver>
     </div>
