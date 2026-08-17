@@ -213,9 +213,9 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 </div>
               </div>
 
-              {/* Angled Navy Student Name Band - Positioned right above bottom strip */}
+              {/* Navy Student Name Band - Positioned right above bottom strip */}
               <div className="name-band">
-                <div className="name">{idCardData.fullName.toUpperCase()}</div>
+                <div className="name">{formatStudentDisplayName(idCardData.fullName)}</div>
                 <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
                 <div className="field"><b>Session:</b> {activeSession}</div>
               </div>
