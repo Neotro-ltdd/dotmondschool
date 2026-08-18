@@ -99,7 +99,8 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
   const getFullUrl = (url: string | undefined | null) => {
     if (!url) return '';
-    return url.startsWith('/') ? `${API_ROOT}${url}` : url;
+    const fullUrl = url.startsWith('/') ? `${API_ROOT}${url}` : url;
+    return fullUrl.includes('?') ? `${fullUrl}&t=${Date.now()}` : `${fullUrl}?t=${Date.now()}`;
   };
 
   const rawSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
