@@ -105,8 +105,8 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   const fullSchoolTitle = rawSchoolName.toUpperCase();
   const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
   
-  // 2. Active System Academic Session
-  const activeSession = schoolProfile?.currentSession || idCardData.validPeriod || "2026/2027";
+  // 2. Active System Academic Session / Calculated Validity Period (e.g. "2026/2027 - 2028/2029")
+  const activeSession = idCardData.validPeriod || schoolProfile?.currentSession || "2026/2027";
 
   // 3. Principal Signature Check
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
