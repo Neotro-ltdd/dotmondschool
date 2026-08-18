@@ -351,38 +351,61 @@
 
 /* ─── PRINT MEDIA STYLES ─── */
 @media print {
-  body {
-    background: var(--white) !important;
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  body, html {
+    background: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
   }
+
   .no-print, .page-note, .frame-label {
     display: none !important;
   }
+
   .id-card-overlay {
     position: static !important;
     background: transparent !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
   }
+
   .id-card-modal-content {
     padding: 0 !important;
     background: transparent !important;
-    width: auto !important;
+    width: 100% !important;
     max-width: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
   }
+
   .id-card-preview-area {
-    margin: 0 !important;
-    gap: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5in !important;
+    margin: 0 auto !important;
+    padding: 0.25in 0 !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
   }
+
   .id-card-wrapper {
-    page-break-after: always;
+    display: inline-block !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
   }
+
   .id-card-wrapper .card {
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
-    box-shadow: none !important;
-  }
-  @page {
-    size: 2.125in 3.375in;
-    margin: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    border-radius: 0.11in !important;
+    overflow: hidden !important;
   }
 }
