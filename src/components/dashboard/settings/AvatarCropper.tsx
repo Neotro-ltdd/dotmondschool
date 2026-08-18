@@ -27,6 +27,12 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const exportCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  // ID Card Frame Dimensions (Aspect ratio 1.048:1 matching Staff ID Card 1.8in x 1.75in frame)
+  const viewportWidth = 250;
+  const viewportHeight = 238;
+  const outputWidth = 540;
+  const outputHeight = 515;
+
   // Load image object from file
   useEffect(() => {
     if (!imageFile) return;
@@ -50,28 +56,26 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
   const generateCroppedOutput = useCallback(() => {
     if (!imageObj) return;
 
-    const outputSize = 500; // Output canvas resolution (500x500)
     const canvas = exportCanvasRef.current || document.createElement('canvas');
-    canvas.width = outputSize;
-    canvas.height = outputSize;
+    canvas.width = outputWidth;
+    canvas.height = outputHeight;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, outputSize, outputSize);
+    ctx.clearRect(0, 0, outputWidth, outputHeight);
 
     // Save context state
     ctx.save();
 
     // Center output canvas
-    ctx.translate(outputSize / 2, outputSize / 2);
+    ctx.translate(outputWidth / 2, outputHeight / 2);
 
     // Apply rotation
     ctx.rotate((rotation * Math.PI) / 180);
 
-    // Calculate aspect scale to cover 500x500 viewport at zoom = 1
-    const viewportSize = 240; // Size of circular crop area in UI (240px)
-    const minScale = Math.max(viewportSize / imageObj.width, viewportSize / imageObj.height);
-    const scaleFactor = (outputSize / viewportSize);
+    // Calculate aspect scale to cover output viewport at zoom = 1
+    const minScale = Math.max(viewportWidth / imageObj.width, viewportHeight / imageObj.height);
+    const scaleFactor = outputWidth / viewportWidth;
 
     const effectiveScale = minScale * zoom * scaleFactor;
 
@@ -79,7 +83,10 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
     ctx.scale(effectiveScale, effectiveScale);
 
     // Apply pan offset adjusted for canvas scaling
-    ctx.translate(pan.x * (outputSize / viewportSize) / (minScale * zoom), pan.y * (outputSize / viewportSize) / (minScale * zoom));
+    ctx.translate(
+      (pan.x * scaleFactor) / (minScale * zoom),
+      (pan.y * scaleFactor) / (minScale * zoom)
+    );
 
     // Draw centered image
     ctx.drawImage(imageObj, -imageObj.width / 2, -imageObj.height / 2);
@@ -176,8 +183,8 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
         onTouchEnd={handleTouchEnd}
         style={{
           position: 'relative',
-          width: '260px',
-          height: '260px',
+          width: `${viewportWidth + 24}px`,
+          height: `${viewportHeight + 24}px`,
           borderRadius: '16px',
           backgroundColor: '#0F172A',
           overflow: 'hidden',
@@ -207,8 +214,8 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
               src={imageObj.src}
               alt="Avatar Target"
               style={{
-                maxHeight: '240px',
-                maxWidth: '240px',
+                maxHeight: `${viewportHeight}px`,
+                maxWidth: `${viewportWidth}px`,
                 objectFit: 'contain',
                 pointerEvents: 'none'
               }}
@@ -216,40 +223,46 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
           </div>
         )}
 
-        {/* Translucent Backdrop Mask & Circular Target Aperture */}
+        {/* Translucent Backdrop Mask & Staff ID Card Rectangular Aperture */}
         <div
           style={{
             position: 'absolute',
-            inset: 0,
+            width: `${viewportWidth}px`,
+            height: `${viewportHeight}px`,
             pointerEvents: 'none',
-            boxShadow: '0 0 0 9999px rgba(15, 23, 42, 0.55)',
-            border: '2px dashed rgba(255, 255, 255, 0.85)',
-            margin: '10px',
-            borderRadius: '50%'
+            borderRadius: '10px',
+            boxShadow: '0 0 0 9999px rgba(15, 23, 42, 0.65)',
+            border: '2px dashed rgba(255, 255, 255, 0.9)'
           }}
-        />
+        >
+          {/* Label inside viewport overlay */}
+          <div style={{ position: 'absolute', bottom: '6px', right: '8px', fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            ID Card Frame
+          </div>
+        </div>
 
         {/* Drag Hint Indicator */}
         <div
           style={{
             position: 'absolute',
-            top: '12px',
+            top: '10px',
             left: '50%',
             transform: 'translateX(-50%)',
-            background: 'rgba(15, 23, 42, 0.75)',
+            background: 'rgba(15, 23, 42, 0.85)',
             color: '#FFFFFF',
             fontSize: '0.7rem',
             fontWeight: 700,
-            padding: '3px 10px',
+            padding: '4px 12px',
             borderRadius: '20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '4px',
+            gap: '5px',
             backdropFilter: 'blur(4px)',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            zIndex: 2
           }}
         >
-          <Move size={12} /> Drag photo to reposition
+          <Move size={12} /> Drag photo down to create top space
         </div>
       </div>
 
@@ -259,7 +272,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#F1F5F9', padding: '0.5rem 0.85rem', borderRadius: '10px' }}>
           <button
             type="button"
-            onClick={() => setZoom((z) => Math.max(0.8, +(z - 0.15).toFixed(2)))}
+            onClick={() => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)))}
             style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#475569', display: 'flex', padding: 2 }}
             title="Zoom Out"
           >
@@ -267,7 +280,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
           </button>
           <input
             type="range"
-            min="0.8"
+            min="0.6"
             max="3"
             step="0.05"
             value={zoom}
@@ -276,7 +289,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
           />
           <button
             type="button"
-            onClick={() => setZoom((z) => Math.min(3, +(z + 0.15).toFixed(2)))}
+            onClick={() => setZoom((z) => Math.min(3, +(z + 0.1).toFixed(2)))}
             style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#475569', display: 'flex', padding: 2 }}
             title="Zoom In"
           >
@@ -355,3 +368,4 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
 };
 
 export default AvatarCropper;
+

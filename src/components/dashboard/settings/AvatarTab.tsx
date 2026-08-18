@@ -103,26 +103,51 @@ export const AvatarTab: React.FC<AvatarTabProps> = ({
         )}
 
         {/* Preview Box */}
-        <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', minHeight: '340px' }}>
+        <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', minHeight: '380px' }}>
           <div style={{ textAlign: 'center', width: '100%' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '1.5rem', letterSpacing: '0.05em' }}>
-              Final Avatar Preview
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '1.25rem', letterSpacing: '0.05em' }}>
+              Final Previews
             </span>
 
-            <div style={{ width: '140px', height: '140px', borderRadius: '50%', border: '4px solid #ffffff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'hidden', margin: '0 auto 1.25rem auto', backgroundColor: '#0F172A' }}>
-              {displayAvatarUrl && !avatarLoadError ? (
-                <img src={displayAvatarUrl} alt="Avatar Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA580C', fontSize: '2.5rem', fontWeight: 800 }}>
-                  {firstName ? firstName.charAt(0).toUpperCase() : 'U'}
+            {/* Dual Previews Container */}
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', alignItems: 'flex-end', marginBottom: '1.25rem' }}>
+              {/* ID Card Rectangular Frame Preview */}
+              <div>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
+                  Staff ID Card Frame
+                </span>
+                <div style={{ width: '120px', height: '115px', borderRadius: '8px', border: '2px solid #000080', boxShadow: '0 4px 14px rgba(0,0,0,0.1)', overflow: 'hidden', backgroundColor: '#0F172A' }}>
+                  {displayAvatarUrl && !avatarLoadError ? (
+                    <img src={displayAvatarUrl} alt="Staff ID Card Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA580C', fontSize: '2.2rem', fontWeight: 800 }}>
+                      {firstName ? firstName.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+
+              {/* Header Circle Avatar Preview */}
+              <div>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
+                  Portal Circle
+                </span>
+                <div style={{ width: '100px', height: '100px', borderRadius: '50%', border: '3px solid #ffffff', boxShadow: '0 4px 14px rgba(0,0,0,0.1)', overflow: 'hidden', backgroundColor: '#0F172A' }}>
+                  {displayAvatarUrl && !avatarLoadError ? (
+                    <img src={displayAvatarUrl} alt="Portal Circle Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA580C', fontSize: '2rem', fontWeight: 800 }}>
+                      {firstName ? firstName.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {avatarFile ? (
               <div style={{ background: '#F1F5F9', borderRadius: '8px', padding: '0.6rem 0.85rem', marginTop: '0.5rem' }}>
                 <span style={{ fontSize: '0.8rem', color: '#16A34A', fontWeight: 700, display: 'block' }}>
-                  ✓ Positioned & Ready
+                  ✓ Positioned & Ready for ID Badge
                 </span>
                 <span style={{ fontSize: '0.75rem', color: '#64748B', display: 'block', wordBreak: 'break-all', marginTop: '2px' }}>
                   {avatarFile.name} ({(avatarFile.size / 1024).toFixed(1)} KB)
