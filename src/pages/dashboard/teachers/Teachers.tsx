@@ -5,6 +5,7 @@ import './Management.css';
 import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
 import StaffIdCardPrintModal from './StaffIdCardPrintModal';
+import AvatarCropper from '../../../components/dashboard/settings/AvatarCropper';
 import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical, CreditCard, Camera } from 'lucide-react';
 
 
@@ -82,6 +83,9 @@ export default function Teachers() {
   const [editStaffId, setEditStaffId] = useState<string | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [passportFile, setPassportFile] = useState<File | null>(null);
+  const [rawPassportFile, setRawPassportFile] = useState<File | null>(null);
+  const [passportPreviewUrl, setPassportPreviewUrl] = useState<string | null>(null);
+  const [existingPassportUrl, setExistingPassportUrl] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<string[]>(['Teacher']);
   const [formData, setFormData] = useState({
     title: '',
@@ -175,6 +179,9 @@ export default function Teachers() {
     });
     setSignatureFile(null);
     setPassportFile(null);
+    setRawPassportFile(null);
+    setPassportPreviewUrl(null);
+    setExistingPassportUrl(teacher.avatarUrl || null);
     setEditStaffId(teacher.id);
     setIsEditing(true);
     setFormStep(1);
@@ -197,6 +204,9 @@ export default function Teachers() {
     });
     setSignatureFile(null);
     setPassportFile(null);
+    setRawPassportFile(null);
+    setPassportPreviewUrl(null);
+    setExistingPassportUrl(null);
     setEditStaffId(null);
     setIsEditing(false);
     setFormStep(1);
@@ -216,6 +226,8 @@ export default function Teachers() {
         return;
       }
       setFormStep(3);
+    } else if (formStep === 3) {
+      setFormStep(4);
     }
   };
 
@@ -676,7 +688,7 @@ export default function Teachers() {
               </button>
             )}
 
-            {formStep < 3 ? (
+            {formStep < 4 ? (
               <button 
                 type="button" 
                 className="btn btn-primary" 
@@ -703,17 +715,22 @@ export default function Teachers() {
         <div className="slideover-stepper" style={{ margin: '-24px -24px 24px -24px' }}>
           <div className={`stepper-step ${formStep === 1 ? 'active' : formStep > 1 ? 'completed' : ''}`}>
             <span className="stepper-circle">{formStep > 1 ? '✓' : '1'}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14} /> Biodata & Contact</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14} /> Biodata</span>
           </div>
           <div className="stepper-divider"></div>
           <div className={`stepper-step ${formStep === 2 ? 'active' : formStep > 2 ? 'completed' : ''}`}>
             <span className="stepper-circle">{formStep > 2 ? '✓' : '2'}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Briefcase size={14} /> Role Details</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Briefcase size={14} /> Roles</span>
           </div>
           <div className="stepper-divider"></div>
-          <div className={`stepper-step ${formStep === 3 ? 'active' : ''}`}>
-            <span className="stepper-circle">3</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><FileCheck size={14} /> Verification & Review</span>
+          <div className={`stepper-step ${formStep === 3 ? 'active' : formStep > 3 ? 'completed' : ''}`}>
+            <span className="stepper-circle">{formStep > 3 ? '✓' : '3'}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Camera size={14} /> ID Passport</span>
+          </div>
+          <div className="stepper-divider"></div>
+          <div className={`stepper-step ${formStep === 4 ? 'active' : ''}`}>
+            <span className="stepper-circle">4</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><FileCheck size={14} /> Review</span>
           </div>
         </div>
 
@@ -844,46 +861,133 @@ export default function Teachers() {
               </div>
 
               {isEditing && (
-                <>
-                  <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
-                    <label style={{ color: '#10203F', fontWeight: 600 }}>Update Official Signature (Optional)</label>
-                    <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
-                      Uploading a signature file will automatically override their current receipt/report signature watermark.
-                    </p>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
-                      className="form-control"
-                      style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
-                    />
-                    {signatureFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected: {signatureFile.name}</span>}
-                  </div>
-
-                  <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
-                    <label style={{ color: '#10203F', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Camera size={16} color="#000080" /> Upload Passport Photograph (Optional)
-                    </label>
-                    <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
-                      Uploading a passport photograph will update their official staff ID card image and profile photo across the system.
-                    </p>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={(e) => setPassportFile(e.target.files ? e.target.files[0] : null)}
-                      className="form-control"
-                      style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
-                    />
-                    {passportFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected Passport: {passportFile.name}</span>}
-                  </div>
-                </>
+                <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
+                  <label style={{ color: '#10203F', fontWeight: 600 }}>Update Official Signature (Optional)</label>
+                  <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
+                    Uploading a signature file will automatically override their current receipt/report signature watermark.
+                  </p>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
+                    className="form-control"
+                    style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
+                  />
+                  {signatureFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected: {signatureFile.name}</span>}
+                </div>
               )}
             </div>
           </div>
         )}
 
-        {/* Slide 3: Verification & Summary */}
+        {/* Slide 3: Official ID Passport Photograph (Dedicated Cropper Step) */}
         {formStep === 3 && (
+          <div className="slide-stage-content">
+            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Camera size={18} color="#000080" /> Official Staff ID Passport Photograph
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 12px 0' }}>
+              Upload, align, and position the official headshot for printing on the staff member's ID card badge.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: rawPassportFile ? '1.1fr 0.9fr' : '1fr', gap: '1.5rem', alignItems: 'start' }}>
+              {/* Photo Selector / Interactive Cropper */}
+              {!rawPassportFile ? (
+                <div 
+                  style={{
+                    border: '2px dashed #CBD5E1',
+                    borderRadius: '14px',
+                    padding: '2.5rem 1.5rem',
+                    textAlign: 'center',
+                    backgroundColor: '#F8FAFC',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '1rem',
+                    minHeight: '280px'
+                  }}
+                >
+                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EFF6FF', color: '#000080', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Camera size={26} />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                      Select Official Passport Photograph
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
+                      Upload a clear headshot photo. Supports PNG, JPG or WEBP.
+                    </p>
+                  </div>
+
+                  <label className="btn btn-outline" style={{ padding: '0.55rem 1.25rem', fontSize: '0.85rem', fontWeight: 700, borderColor: '#000080', color: '#000080', cursor: 'pointer' }}>
+                    Browse Photo...
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setRawPassportFile(e.target.files[0]);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
+                    Adjust ID Card Position & Zoom
+                  </span>
+
+                  <AvatarCropper
+                    imageFile={rawPassportFile}
+                    onPreviewChange={(url) => setPassportPreviewUrl(url)}
+                    onCroppedFileReady={(file) => setPassportFile(file)}
+                    uploading={false}
+                    onCancel={() => {
+                      setRawPassportFile(null);
+                      setPassportFile(null);
+                      setPassportPreviewUrl(null);
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* ID Badge Live Preview Box */}
+              <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', minHeight: '280px', justifyContent: 'center' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '1rem', letterSpacing: '0.05em' }}>
+                  Staff ID Badge Frame Preview
+                </span>
+
+                <div style={{ width: '130px', height: '124px', borderRadius: '8px', border: '2px solid #000080', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden', margin: '0 auto 1rem auto', backgroundColor: '#0F172A' }}>
+                  {passportPreviewUrl ? (
+                    <img src={passportPreviewUrl} alt="Staff ID Card Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : existingPassportUrl && existingPassportUrl !== 'default.jpg' && existingPassportUrl !== 'null' ? (
+                    <img src={existingPassportUrl} alt="Staff ID Card Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA580C', fontSize: '2.2rem', fontWeight: 800 }}>
+                      {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : 'S'}
+                    </div>
+                  )}
+                </div>
+
+                {passportFile ? (
+                  <span style={{ fontSize: '0.8rem', color: '#16A34A', fontWeight: 700 }}>
+                    ✓ New Passport Positioned & Framed
+                  </span>
+                ) : (
+                  <span style={{ fontSize: '0.8rem', color: '#64748B', fontStyle: 'italic' }}>
+                    {existingPassportUrl ? 'Using current passport photo. Upload a new photo to adjust.' : 'No photo uploaded yet.'}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Slide 4: Verification & Summary */}
+        {formStep === 4 && (
           <div className="slide-stage-content">
             <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
               Final Verification & Review
@@ -913,17 +1017,17 @@ export default function Teachers() {
                 <span className="review-label">Assigned Role:</span>
                 <span className="review-value" style={{ color: '#3b82f6', fontWeight: 700 }}>{formData.role}</span>
               </div>
-              {isEditing && (
-                <>
-                  <div className="review-row">
-                    <span className="review-label">Signature Update:</span>
-                    <span className="review-value">{signatureFile ? signatureFile.name : 'No changes made'}</span>
-                  </div>
-                  <div className="review-row">
-                    <span className="review-label">Passport Photograph:</span>
-                    <span className="review-value">{passportFile ? passportFile.name : 'No changes made'}</span>
-                  </div>
-                </>
+              <div className="review-row">
+                <span className="review-label">Official Passport Photo:</span>
+                <span className="review-value" style={{ color: passportFile ? '#16A34A' : '#64748B', fontWeight: 700 }}>
+                  {passportFile ? `New Positioned Passport (${passportFile.name})` : (existingPassportUrl ? 'Current Photo Preserved' : 'Not Provided')}
+                </span>
+              </div>
+              {isEditing && signatureFile && (
+                <div className="review-row">
+                  <span className="review-label">Signature Update:</span>
+                  <span className="review-value">{signatureFile.name}</span>
+                </div>
               )}
             </div>
 
