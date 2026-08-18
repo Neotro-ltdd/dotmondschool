@@ -3,13 +3,13 @@
 /* IdCardPrintModal.css — Strict CR80 (2.125in x 3.375in) Spec */
 
 :root {
-  --navy: #12386E;
-  --navy-deep: #0D2B54;
+  --navy: #000080;
+  --navy-deep: #000040;
   --gold: #E7A93B;
   --red: #C4293A;
   --red-deep: #9F1D2C;
   --ash-950: #2B2E30;
-  --ash-700: #5B6063;
+  --ash-700: #000080;
   --ash-500: #8A8F92;
   --ash-300: #C9CDC6;
   --ash-150: #E4E2DC;
@@ -106,8 +106,8 @@
 
 .word-dotmond {
   font-family: 'Georgia', 'Times New Roman', serif;
-  font-weight: 700;
-  color: var(--navy);
+  font-weight: 800;
+  color: #000080;
   letter-spacing: 0.2px;
   line-height: 1.15;
   font-size: 11.5px;
@@ -127,7 +127,8 @@
 ══════════════════════════════ */
 .front .subline {
   font-size: 7.6px;
-  color: var(--ash-700);
+  color: #000080;
+  font-weight: 600;
   margin-top: 3px;
   line-height: 1.35;
 }
@@ -258,7 +259,8 @@
 ══════════════════════════════ */
 .back .subline {
   font-size: 7.6px;
-  color: var(--ash-700);
+  color: #000080;
+  font-weight: 600;
   margin-top: 3px;
 }
 
@@ -267,7 +269,8 @@
   margin: 0.05in 0.18in 0;
   font-size: 7.2px;
   line-height: 1.45;
-  color: var(--ash-700);
+  color: #000080;
+  font-weight: 600;
   box-sizing: border-box;
 }
 

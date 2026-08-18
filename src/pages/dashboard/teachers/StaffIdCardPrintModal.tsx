@@ -179,8 +179,8 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{fullSchoolTitle}</div>
-                    <div className="subline">{schoolAddress}</div>
+                    <div className="word-dotmond" style={{ color: '#000080', fontWeight: 800 }}>{fullSchoolTitle}</div>
+                    <div className="subline" style={{ color: '#000080', fontWeight: 600 }}>{schoolAddress}</div>
                   </div>
                 </div>
               </div>
@@ -291,15 +291,15 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{fullSchoolTitle}</div>
-                    <div className="subline">Attendance &amp; Identification System</div>
+                    <div className="word-dotmond" style={{ color: '#000080', fontWeight: 800 }}>{fullSchoolTitle}</div>
+                    <div className="subline" style={{ color: '#000080', fontWeight: 600 }}>Attendance &amp; Identification System</div>
                   </div>
                 </div>
               </div>
 
               <div className="rule"></div>
 
-              <p className="notice">
+              <p className="notice" style={{ color: '#000080', fontWeight: 600 }}>
                 This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
               </p>
 
