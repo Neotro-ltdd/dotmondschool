@@ -237,44 +237,160 @@
   font-weight: bold;
 }
 
-/* Print Styles */
+/* Print Styles - Single Page A4 Spec */
 @media print {
   @page {
-    margin: 0; /* Remove default browser headers and footers */
+    size: A4 portrait;
+    margin: 4mm 6mm; /* Minimal margins so the entire sheet fits on 1 single A4 page */
   }
 
-  /* Make only the result sheet and its children visible */
-  .result-sheet-container, .result-sheet-container * {
-    visibility: visible !important;
-  }
-  
-  /* Pull the result sheet out of the layout hierarchy */
-  .result-sheet-container {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
+  body, html {
+    background: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
-    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
   .no-print, .actions-bar {
     display: none !important;
     visibility: hidden !important;
   }
-  
-  .result-sheet-paper {
-    box-shadow: none !important;
-    max-width: none !important;
+
+  .result-sheet-container {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
-    padding: 5mm !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 0 !important;
     margin: 0 !important;
-    border-radius: 0 !important;
+    background: #ffffff !important;
+    display: block !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
   }
 
-  /* Force background colors to print */
-  .result-table th, .custom-box {
+  .result-sheet-paper {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 2mm 4mm !important;
+    margin: 0 auto !important;
+    border-radius: 0 !important;
+    border: none !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Compact Header for 1-Page Fit */
+  .result-header {
+    margin-bottom: 6px !important;
+  }
+
+  .school-info h1 {
+    font-size: 18px !important;
+    line-height: 1.15 !important;
+  }
+
+  .school-info p {
+    font-size: 10.5px !important;
+    margin: 1px 0 !important;
+  }
+
+  .school-info h2 {
+    font-size: 14px !important;
+    margin-top: 4px !important;
+  }
+
+  .school-logo-placeholder, .student-photo-placeholder {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  .divider {
+    margin-bottom: 8px !important;
+    border-bottom-width: 1.5px !important;
+  }
+
+  .bio-data-grid {
+    gap: 4px 10px !important;
+    margin-bottom: 8px !important;
+    font-size: 10.5px !important;
+  }
+
+  /* Compact Table for 1-Page Fit */
+  .result-table {
+    margin-bottom: 8px !important;
+  }
+
+  .result-table th, .result-table td {
+    padding: 3px 5px !important;
+    font-size: 10.5px !important;
+    line-height: 1.15 !important;
+  }
+
+  .result-table th {
+    font-size: 10px !important;
+    padding: 4px 5px !important;
+  }
+
+  /* Compact Summary & Remarks Section */
+  .summary-grid {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .custom-box {
+    padding: 8px 10px !important;
+    border-radius: 6px !important;
+  }
+
+  .custom-box h4 {
+    font-size: 11.5px !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 3px !important;
+  }
+
+  .att-row {
+    font-size: 10.5px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .signatures-section {
+    gap: 4px !important;
+    margin-bottom: 4px !important;
+    padding: 8px 10px !important;
+  }
+
+  .remark-row {
+    font-size: 10.5px !important;
+  }
+
+  .remark-label {
+    width: 150px !important;
+  }
+
+  .signature-area {
+    height: 25px !important;
+    width: 120px !important;
+  }
+
+  .signature-area img {
+    max-height: 25px !important;
+    max-width: 100px !important;
+  }
+
+  .footer-section {
+    margin-top: 4px !important;
+    font-size: 10.5px !important;
+  }
+
+  /* Background Color Print Fidelity */
+  .result-table th, .custom-box, .att-val {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
