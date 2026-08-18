@@ -118,12 +118,13 @@ export default function ProfileSettings() {
     }
   };
 
-  const handleUploadAvatar = async () => {
-    if (!avatarFile) return;
+  const handleUploadAvatar = async (fileToUpload?: File) => {
+    const targetFile = fileToUpload || avatarFile;
+    if (!targetFile) return;
     try {
       setAvatarUploading(true);
       const formData = new FormData();
-      formData.append('file', avatarFile);
+      formData.append('file', targetFile);
       await api.post('/profile/upload-avatar', formData);
       alert('Profile picture updated successfully!');
       setAvatarFile(null);
