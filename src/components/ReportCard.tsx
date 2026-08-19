@@ -104,7 +104,7 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
           <button className="btn btn-primary" onClick={() => window.print()}>🖨️ Print Result</button>
         </div>
 
-        <div className="result-sheet-paper" style={{ position: 'relative', padding: '40px' }}>
+        <div className="result-sheet-paper flex flex-col min-h-[297mm]" style={{ position: 'relative', padding: '40px', boxSizing: 'border-box' }}>
           {/* Watermark */}
           {data.schoolLogoUrl && (
             <div className="watermark-container">
@@ -179,48 +179,51 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
             </tbody>
           </table>
 
-          {/* Summary & Attendance Grid */}
-          <div className="summary-grid">
-            <div className="attendance-box custom-box">
-              <h4>ATTENDANCE</h4>
-              <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
-              <div className="att-row"><span>Days Present:</span> <span className="att-val">{data.daysStudentPresent}</span></div>
-              <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - data.daysStudentPresent}</span></div>
-            </div>
-            
-            <div className="performance-box custom-box">
-              <h4>PERFORMANCE SUMMARY</h4>
-              <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(data.grandTotal)}</span></div>
-              <div className="att-row"><span>Average:</span> <span className="att-val">{data.average.toFixed(1)}%</span></div>
-              {isSecondary ? (
-                <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(data.average)}%</span></div>
-              ) : (
-                <div className="att-row"><span>Grade/Position:</span> <span className="att-val">Grade {data.averageGrade}</span></div>
-              )}
-            </div>
-          </div>
-
-          {/* Remarks & Signatures */}
-          <div className="signatures-section custom-box">
-            <div className="remark-row">
-              <span className="remark-label">Class Teacher's Remark:</span>
-              <span className="remark-text">{data.teacherComment}</span>
-              <div className="signature-area">
-                {data.teacherSignatureUrl ? <img src={getFullUrl(data.teacherSignatureUrl) as string} alt="Teacher Signature" /> : <span>_________________</span>}
+          {/* Bottom Sections Wrapper - Pushed to page bottom via mt-auto */}
+          <div className="result-bottom-wrapper mt-auto w-full flex flex-col">
+            {/* Summary & Attendance Grid */}
+            <div className="summary-grid">
+              <div className="attendance-box custom-box">
+                <h4>ATTENDANCE</h4>
+                <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
+                <div className="att-row"><span>Days Present:</span> <span className="att-val">{data.daysStudentPresent}</span></div>
+                <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - data.daysStudentPresent}</span></div>
+              </div>
+              
+              <div className="performance-box custom-box">
+                <h4>PERFORMANCE SUMMARY</h4>
+                <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(data.grandTotal)}</span></div>
+                <div className="att-row"><span>Average:</span> <span className="att-val">{data.average.toFixed(1)}%</span></div>
+                {isSecondary ? (
+                  <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(data.average)}%</span></div>
+                ) : (
+                  <div className="att-row"><span>Grade/Position:</span> <span className="att-val">Grade {data.averageGrade}</span></div>
+                )}
               </div>
             </div>
 
-            <div className="remark-row">
-              <span className="remark-label">Principal's Remark:</span>
-              <span className="remark-text">{data.principalComment}</span>
-              <div className="signature-area">
-                {data.principalSignatureUrl ? <img src={getFullUrl(data.principalSignatureUrl) as string} alt="Principal Signature" /> : <span>_________________</span>}
+            {/* Remarks & Signatures */}
+            <div className="signatures-section custom-box">
+              <div className="remark-row">
+                <span className="remark-label">Class Teacher's Remark:</span>
+                <span className="remark-text">{data.teacherComment}</span>
+                <div className="signature-area">
+                  {data.teacherSignatureUrl ? <img src={getFullUrl(data.teacherSignatureUrl) as string} alt="Teacher Signature" /> : <span>_________________</span>}
+                </div>
+              </div>
+
+              <div className="remark-row">
+                <span className="remark-label">Principal's Remark:</span>
+                <span className="remark-text">{data.principalComment}</span>
+                <div className="signature-area">
+                  {data.principalSignatureUrl ? <img src={getFullUrl(data.principalSignatureUrl) as string} alt="Principal Signature" /> : <span>_________________</span>}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="footer-section">
-            <strong>Next Term Resumes:</strong> {data.resumptionDate ? new Date(data.resumptionDate).toLocaleDateString() : 'To Be Announced'}
+            <div className="footer-section">
+              <strong>Next Term Resumes:</strong> {data.resumptionDate ? new Date(data.resumptionDate).toLocaleDateString() : 'To Be Announced'}
+            </div>
           </div>
         </div>
       </div>
