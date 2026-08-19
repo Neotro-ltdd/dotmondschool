@@ -304,18 +304,25 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
 
               <div className="rule"></div>
 
-              {/* Barcode & QR Code Section */}
-              <div className="scan-block">
-                <div className="scan-label">SCAN TO CLOCK IN</div>
-                <div className="qr-wrap">
-                  <div className="cell">
-                    <img
-                      src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
-                      alt="Student QR Code"
-                    />
+              {/* Barcode & Gate Scan QR Code Section (Enlarged & Adjusted to match Staff ID) */}
+              <div className="scan-block" style={{ height: '1.75in', marginTop: '0.06in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="scan-label" style={{ color: '#000080', fontSize: '9.5px', fontWeight: 800, letterSpacing: '1.5px', marginBottom: '6px' }}>
+                  SCAN TO CLOCK IN
+                </div>
+                <div className="qr-wrap" style={{ width: '1.25in', height: '1.25in', padding: '6px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', display: 'block' }}>
+                  <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {idCardData.qrCodeSvg && (
+                      <img
+                        src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
+                        alt="Student Gate Scan QR Code"
+                        style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
+                      />
+                    )}
                   </div>
                 </div>
-                <span className="encoded-pill">ENCODED ID: {idCardData.registrationNumber}</span>
+                <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8.5px', fontWeight: 800, letterSpacing: '0.8px', padding: '4px 12px', borderRadius: '12px', marginTop: '8px' }}>
+                  ENCODED ID: {idCardData.registrationNumber}
+                </span>
               </div>
 
               {/* Conditional Authorised Signature Line */}
