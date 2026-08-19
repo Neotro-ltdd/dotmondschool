@@ -319,12 +319,12 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
               <div className="rule"></div>
 
-              {/* Barcode & Gate Scan QR Code Section (Enlarged & Adjusted Downward) */}
-              <div className="scan-block" style={{ height: '1.75in', marginTop: '0.06in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="scan-label" style={{ color: '#000080', fontSize: '9.5px', fontWeight: 800, letterSpacing: '1.5px', marginBottom: '6px' }}>
+              {/* Barcode & Gate Scan QR Code Section */}
+              <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
                   SCAN TO CLOCK IN
                 </div>
-                <div className="qr-wrap" style={{ width: '1.25in', height: '1.25in', padding: '6px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', display: 'block' }}>
+                <div className="qr-wrap" style={{ width: '1.15in', height: '1.15in', padding: '5px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 3px 10px rgba(0,0,0,0.1)', display: 'block' }}>
                   <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {idCardData.qrCodeSvg && (
                       <img
@@ -335,23 +335,25 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                     )}
                   </div>
                 </div>
-                <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8.5px', fontWeight: 800, letterSpacing: '0.8px', padding: '4px 12px', borderRadius: '12px', marginTop: '8px' }}>
+                <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8px', fontWeight: 800, letterSpacing: '0.8px', padding: '3px 10px', borderRadius: '12px', marginTop: '6px' }}>
                   ENCODED ID: {idCardData.formattedStaffCode}
                 </span>
               </div>
 
               {/* Authorised Signature Line */}
-              {principalSig ? (
-                <div className="sig">
-                  <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.22in', display: 'block', margin: '0 auto 2px' }} />
-                  <div className="line"></div>
-                  <div className="cap">Authorised Signature</div>
+              <div className="sig-block" style={{ margin: '0.02in 0.16in 0', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+                {principalSig ? (
+                  <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.20in', display: 'block', margin: '0 auto -2px', objectFit: 'contain' }} />
+                ) : null}
+                <div className="sig-line" style={{ borderTop: '1px solid #000080', width: '100%', margin: '0 auto 2px' }}></div>
+                <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
+                  Signed ....................................................
                 </div>
-              ) : null}
+              </div>
 
-              {/* Footer Strip */}
-              <div className="foot-strip" style={{ background: '#000040', borderTop: '2px solid #C4293A' }}>
-                <div className="cell" style={{ textAlign: 'center', width: '100%' }}>
+              {/* Reduced Compact Footer */}
+              <div className="foot-strip compact-back-footer" style={{ height: '0.24in', background: '#000040', borderTop: '2px solid #C4293A' }}>
+                <div className="cell" style={{ textAlign: 'center', width: '100%', fontSize: '7.5px', color: '#FFFFFF', padding: '0 4px', lineHeight: 1 }}>
                   Powered by NEOTRO ATTENDANCE SYSTEM
                 </div>
               </div>
