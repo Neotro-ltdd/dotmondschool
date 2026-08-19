@@ -274,12 +274,13 @@
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
-    min-height: auto !important;
-    height: auto !important;
+    min-height: 287mm !important;
+    height: 287mm !important;
     padding: 0 !important;
     margin: 0 !important;
     background: #ffffff !important;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     page-break-before: avoid !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
@@ -289,11 +290,13 @@
     box-shadow: none !important;
     max-width: 100% !important;
     width: 100% !important;
-    min-height: 285mm !important;
+    min-height: 287mm !important;
+    height: 287mm !important;
     display: flex !important;
     flex-direction: column !important;
+    justify-content: space-between !important;
     box-sizing: border-box !important;
-    padding: 2mm 4mm !important;
+    padding: 4mm 6mm !important;
     margin: 0 auto !important;
     border-radius: 0 !important;
     border: none !important;
@@ -308,6 +311,7 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 6px !important;
+    padding-top: 10px !important;
   }
 
   /* Compact Header for 1-Page Fit */

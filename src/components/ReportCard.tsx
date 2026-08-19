@@ -98,13 +98,13 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
 
   return (
     <div style={{ background: 'rgba(0,0,0,0.8)', position: 'fixed', inset: 0, zIndex: 9999, overflowY: 'auto', padding: '20px' }}>
-      <div className="result-sheet-container" style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}>
+      <div className="result-sheet-container" style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative', minHeight: '297mm', display: 'flex', flexDirection: 'column' }}>
         <div className="no-print actions-bar" style={{ padding: '15px', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8f9fa', borderBottom: '1px solid #ddd' }}>
           <button className="btn btn-secondary" onClick={onClose}>Close</button>
           <button className="btn btn-primary" onClick={() => window.print()}>🖨️ Print Result</button>
         </div>
 
-        <div className="result-sheet-paper flex flex-col min-h-[297mm]" style={{ position: 'relative', padding: '40px', boxSizing: 'border-box' }}>
+        <div className="result-sheet-paper flex flex-col min-h-[297mm] flex-1" style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
           {/* Watermark */}
           {data.schoolLogoUrl && (
             <div className="watermark-container">
@@ -180,7 +180,7 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
           </table>
 
           {/* Bottom Sections Wrapper - Pushed to page bottom via mt-auto */}
-          <div className="result-bottom-wrapper mt-auto w-full flex flex-col">
+          <div className="result-bottom-wrapper mt-auto w-full flex flex-col pt-4">
             {/* Summary & Attendance Grid */}
             <div className="summary-grid">
               <div className="attendance-box custom-box">
@@ -224,6 +224,13 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
             <div className="footer-section">
               <strong>Next Term Resumes:</strong> {data.resumptionDate ? new Date(data.resumptionDate).toLocaleDateString() : 'To Be Announced'}
             </div>
+
+            {/* School Motto Bottom Framing Banner */}
+            {data.schoolMotto && (
+              <div className="footer-motto-banner text-center text-xs font-extrabold tracking-widest text-[#0b2e59] uppercase pt-3 border-t border-blue-100 mt-2">
+                {data.schoolMotto}
+              </div>
+            )}
           </div>
         </div>
       </div>
