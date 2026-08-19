@@ -341,11 +341,14 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               </div>
 
               {/* Authorised Signature Line */}
-              <div className="sig-block" style={{ margin: '0.02in 0.16in 0', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+              <div className="sig-block" style={{ marginTop: '0.06in', marginBottom: '0.04in', padding: '0 0.16in', textAlign: 'center', position: 'relative', zIndex: 5 }}>
                 {principalSig ? (
-                  <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.20in', display: 'block', margin: '0 auto -2px', objectFit: 'contain' }} />
+                  <img 
+                    src={getFullUrl(principalSig)} 
+                    alt="Principal Signature" 
+                    style={{ height: '0.28in', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto -6px', objectFit: 'contain', position: 'relative', zIndex: 6 }} 
+                  />
                 ) : null}
-                <div className="sig-line" style={{ borderTop: '1px solid #000080', width: '100%', margin: '0 auto 2px' }}></div>
                 <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
                   Signed ....................................................
                 </div>
