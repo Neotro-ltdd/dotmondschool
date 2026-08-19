@@ -62,6 +62,7 @@ interface SchoolProfile {
   primaryColor: string;
   secondaryColor: string;
   currentSession: string;
+  currentTerm?: string;
   principalSignatureUrl?: string;
   signatureUrl?: string;
 }
@@ -101,7 +102,8 @@ export default function VendorHub() {
   // Student Section State & Filters
   const [students, setStudents] = useState<Student[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
-  const [selectedSession, setSelectedSession] = useState<string>('2026/2027');
+  const [selectedSession, setSelectedSession] = useState<string>('2025/2026');
+  const [selectedTerm, setSelectedTerm] = useState<string>('Third Term');
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [selectedClearanceStatus, setSelectedClearanceStatus] = useState<string>(''); // '', 'cleared', 'owing'
@@ -132,7 +134,7 @@ export default function VendorHub() {
 
   useEffect(() => {
     fetchStudents();
-  }, [selectedSession]);
+  }, [selectedSession, selectedTerm]);
 
   const fetchStats = async () => {
     try {
@@ -150,6 +152,9 @@ export default function VendorHub() {
       if (profile?.currentSession) {
         setSelectedSession(profile.currentSession);
       }
+      if (profile?.currentTerm) {
+        setSelectedTerm(profile.currentTerm);
+      }
     } catch {
       setSchoolProfile({
         schoolName: schoolName || "DOTMOND SCHOOL",
@@ -157,7 +162,8 @@ export default function VendorHub() {
         logoUrl: logoUrl || "",
         primaryColor: "#12386E",
         secondaryColor: "#C4293A",
-        currentSession: "2026/2027"
+        currentSession: "2025/2026",
+        currentTerm: "Third Term"
       });
     }
   };
@@ -176,6 +182,7 @@ export default function VendorHub() {
       setLoadingStudents(true);
       let queryParams = [];
       if (selectedSession) queryParams.push(`session=${encodeURIComponent(selectedSession)}`);
+      if (selectedTerm) queryParams.push(`term=${encodeURIComponent(selectedTerm)}`);
       if (selectedClassId) queryParams.push(`classId=${selectedClassId}`);
       if (selectedLevel) queryParams.push(`level=${encodeURIComponent(selectedLevel)}`);
       if (selectedClearanceStatus) queryParams.push(`clearanceStatus=${selectedClearanceStatus}`);
@@ -203,12 +210,12 @@ export default function VendorHub() {
     }
   };
 
-  // Derive unique levels from classes
+  // Unique levels from classes
   const availableLevels = Array.from(new Set(classes.map(c => c.level))).filter(Boolean);
 
   // Filter classes based on selected level
   const filteredClasses = selectedLevel
-    ? classes.filter(c => c.level === selectedLevel)
+    ? classes.filter(c => c.level === selectedLevel || c.level.toLowerCase().includes(selectedLevel.toLowerCase()))
     : classes;
 
   // Filtered Students List
@@ -367,7 +374,7 @@ export default function VendorHub() {
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
   const fullSchoolTitle = (schoolProfile?.schoolName || schoolName || "DOTMOND SCHOOL").toUpperCase();
   const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
-  const activeSession = selectedSession || schoolProfile?.currentSession || "2026/2027";
+  const activeSession = selectedSession || schoolProfile?.currentSession || "2025/2026";
 
   return (
     <div className="vendor-hub-page">
@@ -464,7 +471,7 @@ export default function VendorHub() {
         {/* Filter Toolbar */}
         <div className="filter-toolbar-panel">
           {activeTab === 'students' ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.85rem', marginBottom: '1rem' }}>
               {/* Session Filter */}
               <div className="form-group">
                 <label>Academic Session</label>
@@ -473,9 +480,25 @@ export default function VendorHub() {
                   value={selectedSession} 
                   onChange={(e) => setSelectedSession(e.target.value)}
                 >
-                  <option value="2026/2027">Session 2026/2027</option>
                   <option value="2025/2026">Session 2025/2026</option>
+                  <option value="2026/2027">Session 2026/2027</option>
                   <option value="2027/2028">Session 2027/2028</option>
+                  <option value="">All Sessions</option>
+                </select>
+              </div>
+
+              {/* Term Filter */}
+              <div className="form-group">
+                <label>Academic Term</label>
+                <select 
+                  className="form-control" 
+                  value={selectedTerm} 
+                  onChange={(e) => setSelectedTerm(e.target.value)}
+                >
+                  <option value="Third Term">Third Term</option>
+                  <option value="Second Term">Second Term</option>
+                  <option value="First Term">First Term</option>
+                  <option value="">All Terms</option>
                 </select>
               </div>
 
@@ -491,9 +514,10 @@ export default function VendorHub() {
                   }}
                 >
                   <option value="">All Educational Levels</option>
-                  {availableLevels.map(lvl => (
-                    <option key={lvl} value={lvl}>{lvl}</option>
-                  ))}
+                  <option value="Junior Secondary">Junior Secondary (JSS)</option>
+                  <option value="Senior Secondary">Senior Secondary (SSS)</option>
+                  <option value="Primary">Primary</option>
+                  <option value="Nursery">Nursery</option>
                 </select>
               </div>
 
@@ -597,7 +621,7 @@ export default function VendorHub() {
         <div className="main-table-panel">
           <div className="table-header-bar">
             <div>
-              <h2 className="table-title">Student Directory ({selectedSession})</h2>
+              <h2 className="table-title">Student Directory ({selectedSession} - {selectedTerm || 'All Terms'})</h2>
               <span className="table-subtitle">Showing {filteredStudents.length} student records</span>
             </div>
             <div className="batch-action-buttons">
@@ -1003,7 +1027,7 @@ export default function VendorHub() {
 
                   <div className="rule"></div>
 
-                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', aggregates: 'center', justifyContent: 'center' }}>
                     <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
                       SCAN TO CLOCK IN
                     </div>
