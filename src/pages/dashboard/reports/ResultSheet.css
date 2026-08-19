@@ -21,6 +21,10 @@
   background-color: white;
   width: 100%;
   max-width: 800px; /* A4 width roughly */
+  min-height: 297mm;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
   padding: 40px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08); /* More elegant shadow */
   color: #333;
@@ -31,9 +35,17 @@
   overflow: hidden; /* to contain the faint watermark if it bleeds */
 }
 
+.result-bottom-section {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .watermark-container {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.07; /* Faint watermark */
@@ -262,12 +274,13 @@
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
-    min-height: auto !important;
-    height: auto !important;
+    min-height: 285mm !important;
+    height: 285mm !important;
     padding: 0 !important;
     margin: 0 !important;
     background: #ffffff !important;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     page-break-before: avoid !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
@@ -277,6 +290,12 @@
     box-shadow: none !important;
     max-width: 100% !important;
     width: 100% !important;
+    min-height: 285mm !important;
+    height: 285mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
     padding: 2mm 4mm !important;
     margin: 0 auto !important;
     border-radius: 0 !important;
@@ -284,6 +303,18 @@
     page-break-before: avoid !important;
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
+  }
+
+  .result-bottom-section {
+    margin-top: auto !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .watermark-container {
+    top: 35% !important;
   }
 
   /* Compact Header for 1-Page Fit */
