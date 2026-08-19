@@ -1027,7 +1027,7 @@ export default function VendorHub() {
 
                   <div className="rule"></div>
 
-                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', aggregates: 'center', justifyContent: 'center' }}>
+                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                     <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
                       SCAN TO CLOCK IN
                     </div>
