@@ -383,49 +383,73 @@ export default function VendorHub() {
           </div>
         </div>
 
-        {/* Executive Stats Cards */}
+        {/* Executive Stats Cards (Matching Image 2 Style) */}
         {activeTab === 'students' ? (
           <div className="stats-grid">
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Total Students</span>
-              <span className="stat-value text-white">{stats?.totalStudents || 0}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Total Students</span>
+                <span className="stat-value">{stats?.totalStudents || 0}</span>
+              </div>
+              <div className="stat-icon-box icon-blue">👥</div>
             </div>
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Fee Cleared</span>
-              <span className="stat-value text-emerald">{stats?.clearedStudents ?? '-'}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Fee Cleared</span>
+                <span className="stat-value">{stats?.clearedStudents ?? '-'}</span>
+              </div>
+              <div className="stat-icon-box icon-green">🛡️</div>
             </div>
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Owing Fees</span>
-              <span className="stat-value text-amber">{stats?.owingStudents ?? '-'}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Owing Fees</span>
+                <span className="stat-value">{stats?.owingStudents ?? '-'}</span>
+              </div>
+              <div className="stat-icon-box icon-amber">⚠️</div>
             </div>
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Printed Cards</span>
-              <span className="stat-value text-emerald">{stats?.printedCards || 0}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Printed Cards</span>
+                <span className="stat-value">{stats?.printedCards || 0}</span>
+              </div>
+              <div className="stat-icon-box icon-purple">🖨️</div>
             </div>
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Pending Cards</span>
-              <span className="stat-value text-amber">{stats?.pendingCards || 0}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Pending Cards</span>
+                <span className="stat-value">{stats?.pendingCards || 0}</span>
+              </div>
+              <div className="stat-icon-box icon-rose">⏳</div>
             </div>
           </div>
         ) : (
           <div className="stats-grid grid-cols-3">
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Total Active Staff</span>
-              <span className="stat-value text-white">{stats?.totalStaff || staffList.length}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Total Active Staff</span>
+                <span className="stat-value">{stats?.totalStaff || staffList.length}</span>
+              </div>
+              <div className="stat-icon-box icon-blue">👔</div>
             </div>
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Teaching Staff</span>
-              <span className="stat-value text-emerald">{staffList.filter(s => s.staffCategory === 'Teaching').length}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Teaching Staff</span>
+                <span className="stat-value">{staffList.filter(s => s.staffCategory === 'Teaching').length}</span>
+              </div>
+              <div className="stat-icon-box icon-green">📚</div>
             </div>
-            <div className="stat-card glass-panel">
-              <span className="stat-label">Non-Teaching Staff</span>
-              <span className="stat-value text-amber">{staffList.filter(s => s.staffCategory !== 'Teaching').length}</span>
+            <div className="stat-card">
+              <div className="stat-info">
+                <span className="stat-label">Non-Teaching Staff</span>
+                <span className="stat-value">{staffList.filter(s => s.staffCategory !== 'Teaching').length}</span>
+              </div>
+              <div className="stat-icon-box icon-amber">💼</div>
             </div>
           </div>
         )}
 
         {/* Filter Toolbar */}
-        <div className="glass-panel filter-toolbar-panel">
+        <div className="filter-toolbar-panel">
           {activeTab === 'students' ? (
             <div className="filter-grid-4">
               {/* Level Filter */}
@@ -543,7 +567,7 @@ export default function VendorHub() {
 
       {/* Main Data Section */}
       {activeTab === 'students' ? (
-        <div className="glass-panel main-table-panel">
+        <div className="main-table-panel">
           <div className="table-header-bar">
             <div>
               <h2 className="table-title">Student Directory</h2>
@@ -647,7 +671,7 @@ export default function VendorHub() {
           </div>
         </div>
       ) : (
-        <div className="glass-panel main-table-panel">
+        <div className="main-table-panel">
           <div className="table-header-bar">
             <div>
               <h2 className="table-title">Staff Directory</h2>
