@@ -1,9 +1,9 @@
-/* VendorHub.css - Clean Dark Theme Standard */
+/* VendorHub.css - Clean Light Theme Standard */
 .vendor-hub-page {
   padding: 2rem;
-  background-color: #0b0f19;
+  background-color: #f8fafc;
   min-height: 100vh;
-  color: #f8fafc;
+  color: #0f172a;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -12,39 +12,40 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .vendor-page-title {
-  font-size: 2rem;
+  font-size: 1.85rem;
   font-weight: 800;
-  color: #ffffff;
-  margin: 0 0 0.4rem 0;
-  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 0.3rem 0;
+  letter-spacing: -0.025em;
 }
 
 .vendor-page-subtitle {
   font-size: 0.95rem;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 }
 
 .category-tabs-container {
   display: flex;
-  background: #1e293b;
-  padding: 6px;
+  background: #ffffff;
+  padding: 5px;
   border-radius: 12px;
-  border: 1px solid #334155;
-  gap: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  gap: 6px;
 }
 
 .category-tab-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
-  padding: 10px 22px;
+  color: #64748b;
+  padding: 9px 20px;
   font-size: 0.9rem;
   font-weight: 700;
   border-radius: 8px;
@@ -53,14 +54,14 @@
 }
 
 .category-tab-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  color: #0f172a;
+  background: #f1f5f9;
 }
 
 .category-tab-btn.active {
   background: #000080;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 128, 0.4);
+  box-shadow: 0 3px 10px rgba(0, 0, 128, 0.25);
 }
 
 /* Executive Stats Grid */
@@ -68,7 +69,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1.25rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
 .stats-grid.grid-cols-3 {
@@ -76,41 +77,65 @@
 }
 
 .stat-card {
-  padding: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stat-info {
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  background: #1e293b;
-  border: 1px solid #334155;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .stat-label {
-  font-size: 0.8rem;
-  color: #94a3b8;
+  font-size: 0.75rem;
+  color: #64748b;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .stat-value {
-  font-size: 2.2rem;
+  font-size: 1.85rem;
   font-weight: 800;
+  color: #0f172a;
   line-height: 1;
 }
 
-.text-white { color: #ffffff; }
+.stat-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.icon-blue { background: #eff6ff; color: #2563eb; }
+.icon-green { background: #ecfdf5; color: #10b981; }
+.icon-amber { background: #fffbeb; color: #f59e0b; }
+.icon-purple { background: #faf5ff; color: #9333ea; }
+.icon-rose { background: #fff1f2; color: #f43f5e; }
+
+.text-white { color: #0f172a; }
 .text-emerald { color: #10b981; }
 .text-amber { color: #f59e0b; }
 
-/* Filter Toolbar */
+/* Filter Toolbar Panel */
 .filter-toolbar-panel {
-  padding: 1.5rem 2rem;
-  margin-bottom: 2rem;
-  border-radius: 14px;
-  background: #1e293b;
-  border: 1px solid #334155;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .filter-grid-4 {
@@ -129,34 +154,35 @@
 .form-group label {
   display: block;
   font-size: 0.75rem;
-  font-weight: 800;
-  color: #94a3b8;
+  font-weight: 700;
+  color: #64748b;
   margin-bottom: 0.4rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .form-control {
   width: 100%;
   padding: 0.65rem 1rem;
   border-radius: 8px;
-  background: #0f172a !important;
-  border: 1px solid #334155 !important;
-  color: #f8fafc !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
   font-size: 0.9rem;
   font-weight: 500;
   box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 .form-control option {
-  background: #0f172a;
-  color: #f8fafc;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .form-control:focus {
   outline: none;
   border-color: #000080 !important;
-  box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
 }
 
 .filter-action-row {
@@ -173,30 +199,31 @@
 /* Main Table Panel */
 .main-table-panel {
   padding: 1.5rem;
-  border-radius: 14px;
-  background: #1e293b;
-  border: 1px solid #334155;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .table-header-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
 .table-title {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #0f172a;
   margin: 0;
 }
 
 .table-subtitle {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .batch-action-buttons {
@@ -212,6 +239,7 @@
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .action-btn-all {
@@ -222,65 +250,67 @@
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .action-btn-selected:disabled,
 .action-btn-all:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 /* Table Styling */
 .table-responsive {
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  color: #f8fafc;
-  background: #0f172a;
+  color: #0f172a;
+  background: #ffffff;
 }
 
 .data-table th {
-  background: #1e293b !important;
-  color: #94a3b8 !important;
+  background: #f8fafc !important;
+  color: #64748b !important;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 1rem;
-  border-bottom: 2px solid #334155 !important;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #e2e8f0 !important;
   text-align: left;
 }
 
 .data-table td {
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #f1f5f9;
   font-size: 0.9rem;
   vertical-align: middle;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .data-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8fafc;
 }
 
 .avatar-img {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #000080;
+  border: 2px solid #e2e8f0;
 }
 
 .avatar-placeholder {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #334155;
-  color: #94a3b8;
+  background: #e2e8f0;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -289,17 +319,20 @@
 }
 
 .code-pill {
-  background: rgba(14, 165, 233, 0.15);
-  color: #38bdf8;
+  background: #f1f5f9;
+  color: #0f172a;
   padding: 4px 10px;
   border-radius: 6px;
   font-weight: 700;
   font-size: 0.825rem;
   font-family: monospace;
+  border: 1px solid #e2e8f0;
 }
 
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 0.75rem;
@@ -307,31 +340,31 @@
 }
 
 .badge-cleared {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
 }
 
 .badge-owing {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
 }
 
 .badge-printed {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: #ecfdf5;
+  color: #059669;
 }
 
 .badge-pending {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  background: #fffbeb;
+  color: #d97706;
 }
 
 .badge-role {
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
 }
 
 /* Vertical CR80 Dimensions for Printing */
