@@ -31,6 +31,26 @@ interface ClassItem {
   section: string;
 }
 
+const formatVendorStudentName = (surname?: string, firstName?: string, otherNames?: string) => {
+  const s = (surname || '').trim().toUpperCase();
+  const f = (firstName || '').trim().toUpperCase();
+  if (!s && !f) return 'STUDENT';
+  if (!f) return s;
+  if (!s) return f;
+
+  if (!otherNames || !otherNames.trim()) {
+    return `${s}, ${f}`;
+  }
+
+  const otherParts = otherNames.trim().split(/\s+/).filter(Boolean);
+  const abbreviatedOthers = otherParts.map(p => {
+    if (p.length <= 2 && p.endsWith('.')) return p.toUpperCase();
+    return `${p[0].toUpperCase()}.`;
+  }).join(' ');
+
+  return `${s}, ${f} ${abbreviatedOthers}`.trim();
+};
+
 export default function VendorHub() {
   const { showAlert } = useDialog();
 
@@ -330,7 +350,7 @@ export default function VendorHub() {
                     </div>
                     
                     <div className="student-name">
-                      {student.surname.toUpperCase()} {student.firstName.toUpperCase()}
+                      {formatVendorStudentName(student.surname, student.firstName, student.otherNames)}
                     </div>
                     
                     <div className="student-details-grid">

@@ -114,17 +114,35 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   const formatStudentDisplayName = (rawName: string | undefined | null) => {
     if (!rawName) return 'STUDENT';
     const trimmed = rawName.trim();
+
+    let surname = '';
+    let firstAndMiddle = '';
+
     if (trimmed.includes(',')) {
-      return trimmed.toUpperCase();
+      const commaParts = trimmed.split(',').map(s => s.trim());
+      surname = commaParts[0].toUpperCase();
+      firstAndMiddle = commaParts.slice(1).join(' ').trim();
+    } else {
+      const parts = trimmed.split(/\s+/).filter(Boolean);
+      surname = parts[0]?.toUpperCase() || '';
+      firstAndMiddle = parts.slice(1).join(' ').trim();
     }
-    const parts = trimmed.split(/\s+/).filter(Boolean);
-    if (parts.length === 1) return parts[0].toUpperCase();
-    if (parts.length === 2) return `${parts[0].toUpperCase()}, ${parts[1].toUpperCase()}`;
-    
-    const surname = parts[0].toUpperCase();
-    const firstName = parts[1].toUpperCase();
-    const others = parts.slice(2).join(' ').toUpperCase();
-    return `${surname}, ${firstName} ${others}`.trim();
+
+    if (!firstAndMiddle) return surname;
+
+    const restParts = firstAndMiddle.split(/\s+/).filter(Boolean);
+    const firstName = restParts[0].toUpperCase();
+
+    if (restParts.length === 1) {
+      return `${surname}, ${firstName}`;
+    }
+
+    const abbreviatedOthers = restParts.slice(1).map(p => {
+      if (p.length <= 2 && p.endsWith('.')) return p.toUpperCase();
+      return `${p[0].toUpperCase()}.`;
+    }).join(' ');
+
+    return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
   return (
