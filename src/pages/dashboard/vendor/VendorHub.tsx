@@ -4,6 +4,7 @@ import { useTenant } from '../../../context/TenantContext';
 import { QRCodeSVG } from 'qrcode.react';
 import { useReactToPrint } from 'react-to-print';
 import './VendorHub.css';
+import '../students/IdCardPrintModal.css';
 import { useDialog } from '../../../context/DialogContext';
 
 interface Student {
@@ -65,10 +66,10 @@ interface SchoolProfile {
   signatureUrl?: string;
 }
 
-const formatDisplayName = (surname?: string, firstName?: string, otherNames?: string) => {
+const formatStudentDisplayName = (surname?: string, firstName?: string, otherNames?: string) => {
   const s = (surname || '').trim().toUpperCase();
   const f = (firstName || '').trim().toUpperCase();
-  if (!s && !f) return 'MEMBER';
+  if (!s && !f) return 'STUDENT';
   if (!f) return s;
   if (!s) return f;
 
@@ -100,6 +101,7 @@ export default function VendorHub() {
   // Student Section State & Filters
   const [students, setStudents] = useState<Student[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<string>('2026/2027');
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [selectedClearanceStatus, setSelectedClearanceStatus] = useState<string>(''); // '', 'cleared', 'owing'
@@ -125,9 +127,12 @@ export default function VendorHub() {
     fetchClasses();
     fetchStats();
     fetchSchoolProfile();
-    fetchStudents();
     fetchStaff();
   }, []);
+
+  useEffect(() => {
+    fetchStudents();
+  }, [selectedSession]);
 
   const fetchStats = async () => {
     try {
@@ -142,12 +147,15 @@ export default function VendorHub() {
     try {
       const profile = await api.get('/setup/school-profile');
       setSchoolProfile(profile);
+      if (profile?.currentSession) {
+        setSelectedSession(profile.currentSession);
+      }
     } catch {
       setSchoolProfile({
         schoolName: schoolName || "DOTMOND SCHOOL",
         address: "Happyland Estate, Ajah, Lagos State, Nigeria",
         logoUrl: logoUrl || "",
-        primaryColor: "#000080",
+        primaryColor: "#12386E",
         secondaryColor: "#C4293A",
         currentSession: "2026/2027"
       });
@@ -167,6 +175,7 @@ export default function VendorHub() {
     try {
       setLoadingStudents(true);
       let queryParams = [];
+      if (selectedSession) queryParams.push(`session=${encodeURIComponent(selectedSession)}`);
       if (selectedClassId) queryParams.push(`classId=${selectedClassId}`);
       if (selectedLevel) queryParams.push(`level=${encodeURIComponent(selectedLevel)}`);
       if (selectedClearanceStatus) queryParams.push(`clearanceStatus=${selectedClearanceStatus}`);
@@ -317,7 +326,7 @@ export default function VendorHub() {
     setIsPrinting(true);
   };
 
-  // Student Checkbox handlers
+  // Checkbox Handlers
   const toggleStudentCheck = (id: string) => {
     const newChecked = new Set(checkedStudentIds);
     if (newChecked.has(id)) newChecked.delete(id);
@@ -333,7 +342,6 @@ export default function VendorHub() {
     }
   };
 
-  // Staff Checkbox handlers
   const toggleStaffCheck = (id: string) => {
     const newChecked = new Set(checkedStaffIds);
     if (newChecked.has(id)) newChecked.delete(id);
@@ -349,12 +357,17 @@ export default function VendorHub() {
     }
   };
 
+  // URL Helper with Timestamp Cache Buster
   const getFullUrl = (url?: string | null) => {
     if (!url) return '';
-    return url.startsWith('/') ? `${API_ROOT}${url}` : url;
+    const fullUrl = url.startsWith('/') ? `${API_ROOT}${url}` : url;
+    return fullUrl.includes('?') ? `${fullUrl}&t=${Date.now()}` : `${fullUrl}?t=${Date.now()}`;
   };
 
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
+  const fullSchoolTitle = (schoolProfile?.schoolName || schoolName || "DOTMOND SCHOOL").toUpperCase();
+  const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const activeSession = selectedSession || schoolProfile?.currentSession || "2026/2027";
 
   return (
     <div className="vendor-hub-page">
@@ -383,7 +396,7 @@ export default function VendorHub() {
           </div>
         </div>
 
-        {/* Executive Stats Cards (Matching Image 2 Style) */}
+        {/* Executive Stats Cards */}
         {activeTab === 'students' ? (
           <div className="stats-grid">
             <div className="stat-card">
@@ -396,14 +409,14 @@ export default function VendorHub() {
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Fee Cleared</span>
-                <span className="stat-value">{stats?.clearedStudents ?? '-'}</span>
+                <span className="stat-value">{students.filter(s => s.isCleared).length}</span>
               </div>
               <div className="stat-icon-box icon-green">🛡️</div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Owing Fees</span>
-                <span className="stat-value">{stats?.owingStudents ?? '-'}</span>
+                <span className="stat-value">{students.filter(s => !s.isCleared).length}</span>
               </div>
               <div className="stat-icon-box icon-amber">⚠️</div>
             </div>
@@ -451,7 +464,21 @@ export default function VendorHub() {
         {/* Filter Toolbar */}
         <div className="filter-toolbar-panel">
           {activeTab === 'students' ? (
-            <div className="filter-grid-4">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+              {/* Session Filter */}
+              <div className="form-group">
+                <label>Academic Session</label>
+                <select 
+                  className="form-control" 
+                  value={selectedSession} 
+                  onChange={(e) => setSelectedSession(e.target.value)}
+                >
+                  <option value="2026/2027">Session 2026/2027</option>
+                  <option value="2025/2026">Session 2025/2026</option>
+                  <option value="2027/2028">Session 2027/2028</option>
+                </select>
+              </div>
+
               {/* Level Filter */}
               <div className="form-group">
                 <label>Filter by Level</label>
@@ -570,7 +597,7 @@ export default function VendorHub() {
         <div className="main-table-panel">
           <div className="table-header-bar">
             <div>
-              <h2 className="table-title">Student Directory</h2>
+              <h2 className="table-title">Student Directory ({selectedSession})</h2>
               <span className="table-subtitle">Showing {filteredStudents.length} student records</span>
             </div>
             <div className="batch-action-buttons">
@@ -638,10 +665,10 @@ export default function VendorHub() {
                         )}
                       </td>
                       <td><span className="code-pill">{student.registrationNumber}</span></td>
-                      <td className="font-bold">{formatDisplayName(student.surname, student.firstName, student.otherNames)}</td>
+                      <td className="font-bold">{formatStudentDisplayName(student.surname, student.firstName, student.otherNames)}</td>
                       <td>{student.className || '-'}</td>
                       <td>
-                        {student.isCleared || (student.totalBalance !== undefined && student.totalBalance <= 0) ? (
+                        {student.isCleared ? (
                           <span className="badge badge-cleared">✅ Cleared</span>
                         ) : (
                           <span className="badge badge-owing">⚠️ Owing Fees</span>
@@ -741,7 +768,7 @@ export default function VendorHub() {
                         )}
                       </td>
                       <td><span className="code-pill">{staff.staffCode}</span></td>
-                      <td className="font-bold">{formatDisplayName(staff.surname, staff.firstName, staff.otherNames)}</td>
+                      <td className="font-bold">{formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}</td>
                       <td>{staff.designation || 'Staff Member'} ({staff.staffCategory || 'Teaching'})</td>
                       <td><span className="badge badge-role">{staff.role || 'Staff'}</span></td>
                       <td style={{ textAlign: 'right' }}>
@@ -762,7 +789,7 @@ export default function VendorHub() {
         </div>
       )}
 
-      {/* Hidden printable area for batch printing CR80 Cards */}
+      {/* Hidden printable area for batch printing CR80 Cards (MATCHING IMAGE 2 OFFICIAL DESIGN) */}
       <div style={{ display: 'none' }}>
         <div className="id-cards-grid print-section" ref={printRef}>
           {/* STUDENT CARDS PRINT LOOP */}
@@ -770,98 +797,117 @@ export default function VendorHub() {
             <React.Fragment key={student.id}>
               {/* FRONT OF STUDENT CARD */}
               <div className="id-card-wrapper">
-                <div className="id-card vertical-card">
-                  <div className="card-header-dark">
-                    <div className="header-content">
-                      {logoUrl ? (
-                        <img src={getFullUrl(logoUrl)} alt="Logo" className="card-logo" />
-                      ) : (
-                        <div className="card-logo-placeholder"></div>
-                      )}
-                      <div className="header-text">
-                        <div className="school-title">{(schoolName || 'DOTMOND SCHOOL').toUpperCase()}</div>
-                        <div className="school-subtitle">{schoolProfile?.address || 'Lekki, Lagos, Nigeria'}</div>
+                <div className="card front">
+                  <div className="head">
+                    <div className="head-row">
+                      <div className="mark-cell">
+                        {schoolProfile?.logoUrl ? (
+                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                        ) : (
+                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10" strokeLinejoin="round"/>
+                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#12386E"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-cell">
+                        <div className="word-dotmond">{fullSchoolTitle}</div>
+                        <div className="subline">{schoolAddress}</div>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="card-body">
-                    <div className="student-badge-label">
-                      <span>STUDENT ID</span>
-                    </div>
-                    
-                    <div className="photo-container">
+
+                  <div className="rule"></div>
+                  <div className="id-row"><span className="id-pill">STUDENT ID</span></div>
+
+                  <div className="photo-box">
+                    <div className="cell">
                       {student.passportUrl ? (
-                        <img src={getFullUrl(student.passportUrl)} alt="Student" className="student-photo" />
+                        <img src={getFullUrl(student.passportUrl)} alt="Student" className="student-photo-img" />
                       ) : (
-                        <div className="student-photo placeholder">NO PHOTO</div>
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="50" cy="38" r="20" fill="#B9C2CA"/>
+                          <path d="M12,98 C12,72 28,58 50,58 C72,58 88,72 88,98 Z" fill="#B9C2CA"/>
+                        </svg>
                       )}
                     </div>
-                    
-                    <div className="student-name">
-                      {formatDisplayName(student.surname, student.firstName, student.otherNames)}
-                    </div>
-                    
-                    <div className="student-details-grid">
-                      <div className="detail-label">ADMISSION</div>
-                      <div className="detail-value">{student.registrationNumber}</div>
-                      
-                      <div className="detail-label">SECTION</div>
-                      <div className="detail-value">{student.className}</div>
-                    </div>
                   </div>
-                  
-                  <div className="card-footer-dark">
-                    <div className="footer-left">VALID</div>
-                    <div className="footer-right">2026 — 2029</div>
+
+                  <div className="name-band">
+                    <div className="name">{formatStudentDisplayName(student.surname, student.firstName, student.otherNames)}</div>
+                    <div className="field"><b>Admission No:</b> {student.registrationNumber}</div>
+                    <div className="field"><b>Session:</b> {activeSession}</div>
+                  </div>
+
+                  <div className="foot-strip">
+                    <div className="cell">VALID</div>
+                    <div className="cell">{activeSession}</div>
                   </div>
                 </div>
               </div>
 
               {/* BACK OF STUDENT CARD */}
               <div className="id-card-wrapper">
-                <div className="id-card vertical-card">
-                  <div className="card-header-dark center-text">
-                    <div className="back-title">NEOTRO ATTENDANCE SYSTEM</div>
-                    <div className="back-subtitle">{(schoolName || 'DOTMOND SCHOOL')}</div>
+                <div className="card back">
+                  <div className="head">
+                    <div className="head-row">
+                      <div className="mark-cell">
+                        {schoolProfile?.logoUrl ? (
+                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                        ) : (
+                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10"/>
+                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#12386E"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-cell">
+                        <div className="word-dotmond">{fullSchoolTitle}</div>
+                        <div className="subline">Attendance &amp; Identification System</div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="card-body back-body">
-                    <div className="back-heading">
-                      {(schoolName || 'DOTMOND SCHOOL').toUpperCase()}
-                    </div>
-                    
-                    <div className="qr-container" style={{ padding: '4px', marginBottom: '4px' }}>
-                      <QRCodeSVG 
-                        value={student.registrationNumber} 
-                        size={110}
-                        level="M"
-                        includeMargin={true}
-                      />
-                    </div>
-                    
-                    <div className="scan-instruction">SCAN TO CLOCK IN</div>
-                    
-                    <div className="encoded-id-pill">
-                      ENCODED ID: {student.registrationNumber}
-                    </div>
-                    
-                    <div className="signature-overlay-block">
-                      {principalSig && (
-                        <img src={getFullUrl(principalSig)} alt="Signature" className="card-sig-img" />
-                      )}
-                      <div className="sig-line">Signed ....................................................</div>
-                    </div>
 
-                    <div className="disclaimer-text">
-                      This card is the property of {(schoolName || 'DOTMOND SCHOOL')}.<br/>
-                      If found, please return to the school office.
+                  <div className="rule"></div>
+
+                  <p className="notice">
+                    This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                  </p>
+
+                  <div className="rule"></div>
+
+                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
+                      SCAN TO CLOCK IN
+                    </div>
+                    <div className="qr-wrap" style={{ width: '1.15in', height: '1.15in', padding: '5px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 3px 10px rgba(0,0,0,0.1)', display: 'block' }}>
+                      <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <QRCodeSVG 
+                          value={student.registrationNumber} 
+                          size={95}
+                          level="M"
+                          includeMargin={true}
+                        />
+                      </div>
+                    </div>
+                    <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8px', fontWeight: 800, letterSpacing: '0.8px', padding: '3px 10px', borderRadius: '12px', marginTop: '6px' }}>
+                      ENCODED ID: {student.registrationNumber}
+                    </span>
+                  </div>
+
+                  <div className="sig-block" style={{ marginTop: '0.06in', marginBottom: '0.04in', padding: '0 0.16in', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+                    {principalSig && (
+                      <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.28in', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto -6px', objectFit: 'contain', position: 'relative', zIndex: 6 }} />
+                    )}
+                    <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
+                      Signed ....................................................
                     </div>
                   </div>
-                  
-                  <div className="card-footer-dark center-text back-footer">
-                    <span className="powered-by">Powered by</span>
-                    <span className="rms-badge">Neotro Attendance System</span>
+
+                  <div className="foot-strip compact-back-footer" style={{ height: '0.24in', background: '#000040', borderTop: '2px solid #C4293A' }}>
+                    <div className="cell" style={{ textAlign: 'center', width: '100%', fontSize: '7.5px', color: '#FFFFFF', padding: '0 4px', lineHeight: 1 }}>
+                      Powered by NEOTRO ATTENDANCE SYSTEM
+                    </div>
                   </div>
                 </div>
               </div>
@@ -873,97 +919,122 @@ export default function VendorHub() {
             <React.Fragment key={staff.id}>
               {/* FRONT OF STAFF CARD */}
               <div className="id-card-wrapper">
-                <div className="id-card vertical-card">
-                  <div className="card-header-dark">
-                    <div className="header-content">
-                      {logoUrl ? (
-                        <img src={getFullUrl(logoUrl)} alt="Logo" className="card-logo" />
-                      ) : (
-                        <div className="card-logo-placeholder"></div>
-                      )}
-                      <div className="header-text">
-                        <div className="school-title">{(schoolName || 'DOTMOND SCHOOL').toUpperCase()}</div>
+                <div className="card front">
+                  <div className="head">
+                    <div className="head-row">
+                      <div className="mark-cell">
+                        {schoolProfile?.logoUrl ? (
+                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                        ) : (
+                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10"/>
+                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-cell">
+                        <div className="word-dotmond" style={{ color: '#000080', fontWeight: 800 }}>{fullSchoolTitle}</div>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="card-body">
-                    <div className="student-badge-label">
-                      <span>STAFF ID</span>
-                    </div>
-                    
-                    <div className="photo-container" style={{ height: '1.4in' }}>
-                      {staff.passportUrl || staff.avatarUrl ? (
-                        <img src={getFullUrl(staff.passportUrl || staff.avatarUrl)} alt="Staff" className="student-photo" />
-                      ) : (
-                        <div className="student-photo placeholder">NO PHOTO</div>
-                      )}
-                    </div>
-                    
-                    <div className="student-name">
-                      {formatDisplayName(staff.surname, staff.firstName, staff.otherNames)}
-                    </div>
-                    
-                    <div className="student-details-grid">
-                      <div className="detail-label">DESIGNATION</div>
-                      <div className="detail-value">{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
-                      
-                      <div className="detail-label">CODE</div>
-                      <div className="detail-value">{staff.staffCode}</div>
-                    </div>
+
+                  <div className="rule"></div>
+                  <div className="id-row" style={{ height: '0.22in', padding: '0.02in 0.16in 0' }}>
+                    <span className="id-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', padding: '4px 12px', borderRadius: '6px' }}>
+                      STAFF ID
+                    </span>
                   </div>
-                  
-                  <div className="card-footer-dark">
-                    <div className="footer-left">OFFICIAL STAFF ID</div>
-                    <div className="footer-right">2026 — 2028</div>
+
+                  <div style={{ height: '1.75in', maxHeight: '1.75in', width: 'calc(100% - 0.32in)', margin: '0.02in auto 0.04in', border: '2px solid #000080', borderRadius: '8px', overflow: 'hidden', background: '#F1F5F9', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', boxSizing: 'border-box' }}>
+                    <img 
+                      src={getFullUrl(staff.passportUrl || staff.avatarUrl)} 
+                      alt={staff.surname} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.surname + ' ' + staff.firstName)}&background=000080&color=ffffff&size=256`;
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ padding: '0.02in 0.10in 0.08in', background: '#FFFFFF', textAlign: 'center' }}>
+                    <div style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 800, fontSize: '11px', color: '#000080', textTransform: 'uppercase', margin: '0 0 2px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}
+                    </div>
+                    <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 700, margin: '1px 0 3px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                      {(staff.designation || staff.role || 'STAFF').toUpperCase()}
+                    </div>
+                    <div style={{ margin: '3px 0 0 0' }}>
+                      <span style={{ display: 'inline-block', background: '#EFF6FF', border: '1.5px solid #93C5FD', color: '#000080', fontWeight: 800, fontSize: '9px', padding: '3px 12px', borderRadius: '6px', letterSpacing: '0.5px' }}>
+                        STAFF ID: {staff.staffCode}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* BACK OF STAFF CARD */}
               <div className="id-card-wrapper">
-                <div className="id-card vertical-card">
-                  <div className="card-header-dark center-text">
-                    <div className="back-title">NEOTRO ATTENDANCE SYSTEM</div>
-                    <div className="back-subtitle">{schoolProfile?.address || 'Lekki, Lagos, Nigeria'}</div>
+                <div className="card back">
+                  <div className="head">
+                    <div className="head-row">
+                      <div className="mark-cell">
+                        {schoolProfile?.logoUrl ? (
+                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                        ) : (
+                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10"/>
+                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-cell">
+                        <div className="word-dotmond" style={{ color: '#000080', fontWeight: 800 }}>{fullSchoolTitle}</div>
+                        <div className="subline" style={{ color: '#000080', fontWeight: 600 }}>{schoolAddress}</div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="card-body back-body">
-                    <div className="back-heading">
-                      {(schoolName || 'DOTMOND SCHOOL').toUpperCase()}
-                    </div>
-                    
-                    <div className="qr-container" style={{ padding: '4px', marginBottom: '4px' }}>
-                      <QRCodeSVG 
-                        value={staff.staffCode} 
-                        size={110}
-                        level="M"
-                        includeMargin={true}
-                      />
-                    </div>
-                    
-                    <div className="scan-instruction">SCAN TO CLOCK IN</div>
-                    
-                    <div className="encoded-id-pill">
-                      ENCODED ID: {staff.staffCode}
-                    </div>
 
-                    <div className="signature-overlay-block">
-                      {principalSig && (
-                        <img src={getFullUrl(principalSig)} alt="Signature" className="card-sig-img" />
-                      )}
-                      <div className="sig-line">Signed ....................................................</div>
+                  <div className="rule"></div>
+
+                  <p className="notice" style={{ color: '#000080', fontWeight: 600 }}>
+                    This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                  </p>
+
+                  <div className="rule"></div>
+
+                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
+                      SCAN TO CLOCK IN
                     </div>
-                    
-                    <div className="disclaimer-text">
-                      This card is the property of {(schoolName || 'DOTMOND SCHOOL')}.<br/>
-                      If found, please return to the school office.
+                    <div className="qr-wrap" style={{ width: '1.15in', height: '1.15in', padding: '5px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 3px 10px rgba(0,0,0,0.1)', display: 'block' }}>
+                      <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <QRCodeSVG 
+                          value={staff.staffCode} 
+                          size={95}
+                          level="M"
+                          includeMargin={true}
+                        />
+                      </div>
+                    </div>
+                    <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8px', fontWeight: 800, letterSpacing: '0.8px', padding: '3px 10px', borderRadius: '12px', marginTop: '6px' }}>
+                      ENCODED ID: {staff.staffCode}
+                    </span>
+                  </div>
+
+                  <div className="sig-block" style={{ marginTop: '0.06in', marginBottom: '0.04in', padding: '0 0.16in', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+                    {principalSig && (
+                      <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.28in', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto -6px', objectFit: 'contain', position: 'relative', zIndex: 6 }} />
+                    )}
+                    <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
+                      Signed ....................................................
                     </div>
                   </div>
-                  
-                  <div className="card-footer-dark center-text back-footer">
-                    <span className="powered-by">Powered by</span>
-                    <span className="rms-badge">Neotro Attendance System</span>
+
+                  <div className="foot-strip compact-back-footer" style={{ height: '0.24in', background: '#000040', borderTop: '2px solid #C4293A' }}>
+                    <div className="cell" style={{ textAlign: 'center', width: '100%', fontSize: '7.5px', color: '#FFFFFF', padding: '0 4px', lineHeight: 1 }}>
+                      Powered by NEOTRO ATTENDANCE SYSTEM
+                    </div>
                   </div>
                 </div>
               </div>
