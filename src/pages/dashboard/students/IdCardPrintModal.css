@@ -313,7 +313,7 @@
 }
 
 .back .scan-block {
-  margin-top: 0.06in;
+  margin-top: 0.08in;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -323,20 +323,20 @@
 
 .back .scan-label {
   color: #0B2545;
-  font-size: 8.5px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
+  letter-spacing: 1.2px;
+  margin-bottom: 5px;
 }
 
 .back .qr-wrap {
-  width: 1.25in;
-  height: 1.25in;
-  padding: 5px;
+  width: 1.35in;
+  height: 1.35in;
+  padding: 6px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 11px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   display: block;
   box-sizing: border-box;
 }
@@ -359,27 +359,27 @@
 .back .encoded-pill {
   display: inline-block;
   background: #CBD5E1;
-  color: #334155;
-  font-size: 7.5px;
+  color: #1e293b;
+  font-size: 7.8px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  padding: 3px 10px;
-  border-radius: 9px;
-  margin-top: 5px;
+  padding: 3px 12px;
+  border-radius: 10px;
+  margin-top: 6px;
   line-height: 1;
 }
 
 .back .sig-block {
   position: absolute;
-  left: 0.10in;
-  right: 0.10in;
+  left: 0.12in;
+  right: 0.12in;
   bottom: 0.28in;
   text-align: left;
   z-index: 5;
 }
 
 .back .sig-img {
-  height: 0.20in;
+  height: 0.22in;
   width: auto;
   max-width: 100%;
   display: block;
@@ -390,8 +390,8 @@
 }
 
 .back .sig-line-text {
-  font-size: 6.8px;
-  color: #334155;
+  font-size: 7.2px;
+  color: #1e293b;
   font-weight: 700;
   border-top: 1px solid #94a3b8;
   padding-top: 2px;
