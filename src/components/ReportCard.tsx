@@ -104,7 +104,7 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
           <button className="btn btn-primary" onClick={() => window.print()}>🖨️ Print Result</button>
         </div>
 
-        <div className="result-sheet-paper flex flex-col min-h-[297mm]" style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box' }}>
+        <div className="result-sheet-paper sheet flex flex-col" style={{ position: 'relative', padding: '24px 32px', boxSizing: 'border-box' }}>
           {/* Watermark */}
           {data.schoolLogoUrl && (
             <div className="watermark-container">
