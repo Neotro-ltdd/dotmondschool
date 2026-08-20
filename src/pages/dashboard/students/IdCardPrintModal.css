@@ -598,7 +598,8 @@
 .staff-card .owner-text {
   font-size: 6.5px;
   line-height: 1.35;
-  color: #6B7684;
+  color: #12395F !important;
+  font-weight: 700 !important;
   margin: 2px 0 0;
 }
 
