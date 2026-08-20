@@ -128,6 +128,9 @@ export default function AdmissionsHub() {
   // Modal 4: Public Link Share Popup
   const [linkModal, setLinkModal] = useState<{ title: string; url: string; copied: boolean } | null>(null);
 
+  // Modal 5: Document Previewer Popup
+  const [docPreviewModal, setDocPreviewModal] = useState<{ title: string; url: string; originalUrl: string } | null>(null);
+
   const handleOpenLinkModal = (title: string, path: string) => {
     const activeTenantId = getTenantId();
     const fullUrl = `${window.location.origin}${path}${path.includes('?') ? '&' : '?'}tenant=${encodeURIComponent(activeTenantId)}`;
@@ -266,12 +269,21 @@ export default function AdmissionsHub() {
   const getFullUrl = (url?: string | null) => {
     if (!url) return '';
     let finalUrl = url.startsWith('/') ? `${API_ROOT}${url}` : url;
-    if (finalUrl.includes('cloudinary.com') && finalUrl.toLowerCase().endsWith('.pdf')) {
-      if (finalUrl.includes('/image/upload/') && !finalUrl.includes('/fl_attachment/')) {
-        finalUrl = finalUrl.replace('/image/upload/', '/image/upload/fl_attachment/');
-      }
+    if (finalUrl.includes('cloudinary.com') && finalUrl.toLowerCase().endsWith('.pdf') && finalUrl.includes('/image/upload/')) {
+      finalUrl = finalUrl.replace(/\.pdf$/i, '.jpg');
     }
     return finalUrl;
+  };
+
+  const handlePreviewDocument = (rawUrl?: string | null, docTitle: string = 'Uploaded Document') => {
+    if (!rawUrl) return;
+    const resolvedUrl = getFullUrl(rawUrl);
+    const originalUrl = rawUrl.startsWith('/') ? `${API_ROOT}${rawUrl}` : rawUrl;
+    setDocPreviewModal({
+      title: docTitle,
+      url: resolvedUrl,
+      originalUrl
+    });
   };
 
   const formatStatusBadge = (status: string) => {
@@ -724,24 +736,40 @@ export default function AdmissionsHub() {
 
                   <div className="attachments-links-row mt-3">
                     {viewApp.birthCertificateUrl && (
-                      <a href={getFullUrl(viewApp.birthCertificateUrl)} target="_blank" rel="noreferrer" className="attachment-btn">
+                      <button 
+                        type="button" 
+                        onClick={() => handlePreviewDocument(viewApp.birthCertificateUrl, `Birth Certificate - ${viewApp.fullName}`)} 
+                        className="act-btn act-btn-view"
+                      >
                         📄 View Birth Certificate
-                      </a>
+                      </button>
                     )}
                     {viewApp.passportPhotoUrl && (
-                      <a href={getFullUrl(viewApp.passportPhotoUrl)} target="_blank" rel="noreferrer" className="attachment-btn">
+                      <button 
+                        type="button" 
+                        onClick={() => handlePreviewDocument(viewApp.passportPhotoUrl, `Passport Photograph - ${viewApp.fullName}`)} 
+                        className="act-btn act-btn-view"
+                      >
                         📷 View Passport Photo
-                      </a>
+                      </button>
                     )}
                     {viewApp.previousResultUrl && (
-                      <a href={getFullUrl(viewApp.previousResultUrl)} target="_blank" rel="noreferrer" className="attachment-btn">
+                      <button 
+                        type="button" 
+                        onClick={() => handlePreviewDocument(viewApp.previousResultUrl, `Previous Academic Result - ${viewApp.fullName}`)} 
+                        className="act-btn act-btn-view"
+                      >
                         📑 View Previous Result
-                      </a>
+                      </button>
                     )}
                     {viewApp.paymentProofUrl && (
-                      <a href={getFullUrl(viewApp.paymentProofUrl)} target="_blank" rel="noreferrer" className="attachment-btn">
+                      <button 
+                        type="button" 
+                        onClick={() => handlePreviewDocument(viewApp.paymentProofUrl, `Payment Receipt Proof - ${viewApp.fullName}`)} 
+                        className="act-btn act-btn-view"
+                      >
                         💳 View Payment Receipt
-                      </a>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -1063,6 +1091,52 @@ export default function AdmissionsHub() {
                 )}
               </div>
               <button className="btn btn-secondary" onClick={() => setViewVisit(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 7: INLINE DOCUMENT PREVIEWER */}
+      {docPreviewModal && (
+        <div className="modal-overlay" onClick={() => setDocPreviewModal(null)}>
+          <div className="modal-content-revamped" style={{ maxWidth: '800px', width: '94%' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header-revamped">
+              <div className="modal-title-group">
+                <span className="modal-header-icon">📑</span>
+                <h2>{docPreviewModal.title}</h2>
+              </div>
+              <button className="close-btn-revamped" onClick={() => setDocPreviewModal(null)}>✕</button>
+            </div>
+
+            <div className="modal-body-revamped" style={{ textAlign: 'center', background: '#0f172a', padding: '1.25rem', minHeight: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {docPreviewModal.url.toLowerCase().endsWith('.pdf') ? (
+                <iframe 
+                  src={docPreviewModal.url} 
+                  title={docPreviewModal.title}
+                  style={{ width: '100%', height: '520px', border: 'none', borderRadius: '8px', background: '#ffffff' }}
+                />
+              ) : (
+                <img 
+                  src={docPreviewModal.url} 
+                  alt={docPreviewModal.title} 
+                  style={{ maxWidth: '100%', maxHeight: '540px', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}
+                />
+              )}
+            </div>
+
+            <div className="modal-footer-revamped" style={{ justifyContent: 'space-between' }}>
+              <a 
+                href={docPreviewModal.originalUrl} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn-modal-cancel"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                ↗ Open Original Direct Link
+              </a>
+              <button type="button" className="btn-modal-cancel" onClick={() => setDocPreviewModal(null)}>
+                Close Preview
+              </button>
             </div>
           </div>
         </div>
