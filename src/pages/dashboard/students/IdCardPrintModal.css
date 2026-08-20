@@ -371,30 +371,41 @@
 
 .back .sig-block {
   position: absolute;
-  left: 0.12in;
-  right: 0.12in;
+  left: 0;
+  right: 0;
   bottom: 0.28in;
-  text-align: left;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   z-index: 5;
+  padding: 0 0.12in;
+  box-sizing: border-box;
 }
 
 .back .sig-img {
-  height: 0.22in;
+  height: 0.25in;
   width: auto;
-  max-width: 100%;
+  max-width: 1.4in;
   display: block;
-  margin-bottom: -2px;
+  margin: 0 auto -3px;
   object-fit: contain;
   position: relative;
   z-index: 6;
 }
 
 .back .sig-line-text {
-  font-size: 7.2px;
-  color: #1e293b;
-  font-weight: 700;
-  border-top: 1px solid #94a3b8;
-  padding-top: 2px;
+  font-size: 8px;
+  color: #0B2545;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  border-top: 1.8px solid #0B2545;
+  padding-top: 3px;
+  width: 1.4in;
+  text-align: center;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .compact-back-footer {
