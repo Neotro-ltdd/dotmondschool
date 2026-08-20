@@ -292,7 +292,7 @@
 }
 
 .back .notice {
-  margin: 0.03in 0.12in;
+  margin: 0.02in 0.10in 0.03in;
   font-size: 6.8px;
   line-height: 1.25;
   color: #334155;
@@ -304,11 +304,11 @@
 .rule {
   height: 1px;
   background: #e2e8f0;
-  margin: 0 0.12in;
+  margin: 0 0.10in;
 }
 
 .back .scan-block {
-  height: 1.45in;
+  height: 1.65in;
   margin-top: 0.02in;
   display: flex;
   flex-direction: column;
@@ -326,8 +326,8 @@
 }
 
 .back .qr-wrap {
-  width: 1.05in;
-  height: 1.05in;
+  width: 1.22in;
+  height: 1.22in;
   padding: 5px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
@@ -356,20 +356,21 @@
   display: inline-block;
   background: #CBD5E1;
   color: #334155;
-  font-size: 7.2px;
+  font-size: 7.5px;
   font-weight: 800;
   letter-spacing: 0.5px;
   padding: 2px 9px;
   border-radius: 9px;
-  margin-top: 5px;
+  margin-top: 4px;
   line-height: 1;
 }
 
 .back .sig-block {
-  margin-top: 0.04in;
-  padding: 0 0.12in;
+  position: absolute;
+  left: 0.10in;
+  right: 0.10in;
+  bottom: 0.26in;
   text-align: left;
-  position: relative;
   z-index: 5;
 }
 
@@ -378,7 +379,7 @@
   width: auto;
   max-width: 100%;
   display: block;
-  margin-bottom: -4px;
+  margin-bottom: -2px;
   object-fit: contain;
   position: relative;
   z-index: 6;
