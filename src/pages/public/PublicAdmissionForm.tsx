@@ -155,7 +155,7 @@ export default function PublicAdmissionForm() {
       if (previousResultFile) submitData.append('PreviousResultFile', previousResultFile);
       if (paymentProofFile) submitData.append('PaymentProofFile', paymentProofFile);
 
-      await api.postForm('/public/admission', submitData);
+      await api.post('/public/admission', submitData);
       setSubmitted(true);
     } catch (err: any) {
       setError(err.message || "Failed to submit admission application. Please try again.");
