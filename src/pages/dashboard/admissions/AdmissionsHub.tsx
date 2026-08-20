@@ -265,7 +265,11 @@ export default function AdmissionsHub() {
 
   const getFullUrl = (url?: string | null) => {
     if (!url) return '';
-    return url.startsWith('/') ? `${API_ROOT}${url}` : url;
+    let finalUrl = url.startsWith('/') ? `${API_ROOT}${url}` : url;
+    if (finalUrl.includes('cloudinary.com') && finalUrl.toLowerCase().endsWith('.pdf') && finalUrl.includes('/image/upload/')) {
+      finalUrl = finalUrl.replace('/image/upload/', '/raw/upload/');
+    }
+    return finalUrl;
   };
 
   const formatStatusBadge = (status: string) => {
@@ -432,7 +436,7 @@ export default function AdmissionsHub() {
                         <td style={{ textAlign: 'right' }}>
                           <div className="table-action-group">
                             <button 
-                              className="btn btn-sm btn-outline-secondary" 
+                              className="act-btn act-btn-view" 
                               onClick={() => setViewVisit(visit)}
                               title="View Visit Details"
                             >
@@ -440,7 +444,7 @@ export default function AdmissionsHub() {
                             </button>
                             {visit.status === 'Pending' && (
                               <button 
-                                className="btn btn-sm btn-primary" 
+                                className="act-btn act-btn-approve" 
                                 onClick={() => handleUpdateVisitStatus(visit.id, 'Confirmed')}
                                 disabled={submittingAction}
                               >
@@ -449,7 +453,7 @@ export default function AdmissionsHub() {
                             )}
                             {(visit.status === 'Confirmed' || visit.status === 'Pending') && (
                               <button 
-                                className="btn btn-sm btn-success" 
+                                className="act-btn act-btn-admit" 
                                 onClick={() => handleUpdateVisitStatus(visit.id, 'Completed')}
                                 disabled={submittingAction}
                               >
@@ -458,7 +462,7 @@ export default function AdmissionsHub() {
                             )}
                             {visit.status !== 'Cancelled' && (
                               <button 
-                                className="btn btn-sm btn-outline-danger" 
+                                className="act-btn act-btn-cancel" 
                                 onClick={() => handleUpdateVisitStatus(visit.id, 'Cancelled')}
                                 disabled={submittingAction}
                               >
@@ -586,14 +590,14 @@ export default function AdmissionsHub() {
                         <td>{formatStatusBadge(appItem.status)}</td>
                         <td style={{ textAlign: 'right' }}>
                           <div className="table-action-group">
-                            <button className="btn btn-sm btn-outline-secondary" onClick={() => setViewApp(appItem)}>
+                            <button className="act-btn act-btn-view" onClick={() => setViewApp(appItem)}>
                               👁️ View Form
                             </button>
 
                             {/* Lifecycle Stage Action Triggers */}
                             {appItem.status === 'Submitted' && (
                               <button 
-                                className="btn btn-sm btn-primary" 
+                                className="act-btn act-btn-approve" 
                                 onClick={() => {
                                   setAssessmentApp(appItem);
                                   setRegFeeAmount(appItem.registrationFeeAmount || 10000);
@@ -605,7 +609,7 @@ export default function AdmissionsHub() {
 
                             {appItem.status === 'ApprovedForAssessment' && (
                               <button 
-                                className="btn btn-sm btn-warning" 
+                                className="act-btn act-btn-complete" 
                                 onClick={() => setCompleteApp(appItem)}
                               >
                                 ✅ Complete Assessment
@@ -614,7 +618,7 @@ export default function AdmissionsHub() {
 
                             {(appItem.status === 'ReadyForAdmission' || appItem.status === 'ApprovedForAssessment') && (
                               <button 
-                                className="btn btn-sm btn-success" 
+                                className="act-btn act-btn-admit" 
                                 onClick={() => setAdmitApp(appItem)}
                                 disabled={submittingAction}
                               >
