@@ -764,44 +764,63 @@ export default function AdmissionsHub() {
 
       {/* MODAL 2: APPROVE FOR ASSESSMENT */}
       {assessmentApp && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>Schedule Documentation &amp; Assessment</h2>
-              <button className="close-btn" onClick={() => setAssessmentApp(null)}>✕</button>
+        <div className="modal-overlay" onClick={() => setAssessmentApp(null)}>
+          <div className="modal-content-revamped" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-revamped">
+              <div className="modal-title-group">
+                <span className="modal-header-icon">📋</span>
+                <h2>Schedule Documentation &amp; Assessment</h2>
+              </div>
+              <button className="close-btn-revamped" onClick={() => setAssessmentApp(null)}>✕</button>
             </div>
 
             <form onSubmit={handleApproveForAssessment}>
-              <div className="modal-body">
-                <p>Approve application for <strong>{assessmentApp.fullName}</strong> ({assessmentApp.targetClassName}) and send Email &amp; SMS notice to parent.</p>
-
-                <div className="form-group">
-                  <label>Registration Form Fee (₦) *</label>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    value={regFeeAmount} 
-                    onChange={(e) => setRegFeeAmount(Number(e.target.value))} 
-                    required 
-                  />
-                  <small className="text-muted">This registration form fee amount will be sent to the parent in the Email and SMS notice.</small>
+              <div className="modal-body-revamped">
+                <div className="modal-applicant-card">
+                  <div className="applicant-avatar-box">
+                    {assessmentApp.fullName ? assessmentApp.fullName.charAt(0) : 'A'}
+                  </div>
+                  <div className="applicant-details-box">
+                    <div className="applicant-card-name">
+                      {assessmentApp.fullName}
+                      <span className="applicant-card-class">{assessmentApp.targetClassName}</span>
+                    </div>
+                    <div className="applicant-card-meta">
+                      ✉️ Parent Notification will be dispatched via Email &amp; SMS
+                    </div>
+                  </div>
                 </div>
 
-                <div className="form-group mt-3">
-                  <label>Assessment Appointment Date *</label>
+                <div className="form-group-revamped">
+                  <label className="form-label-revamped">Registration Form Fee (₦) <span className="req-star">*</span></label>
+                  <div className="input-with-prefix">
+                    <span className="input-prefix">₦</span>
+                    <input 
+                      type="number" 
+                      className="form-control-revamped input-prefixed" 
+                      value={regFeeAmount} 
+                      onChange={(e) => setRegFeeAmount(Number(e.target.value))} 
+                      required 
+                    />
+                  </div>
+                  <small className="form-help-text">This registration fee amount will be sent to the parent in the Email and SMS notice.</small>
+                </div>
+
+                <div className="form-group-revamped mt-3">
+                  <label className="form-label-revamped">Assessment Appointment Date <span className="req-star">*</span></label>
                   <input 
                     type="date" 
-                    className="form-control" 
+                    className="form-control-revamped" 
                     value={assessmentDate} 
                     onChange={(e) => setAssessmentDate(e.target.value)} 
                     required 
                   />
                 </div>
 
-                <div className="form-group mt-3">
-                  <label>Instructions / Special Notes for Parent</label>
+                <div className="form-group-revamped mt-3">
+                  <label className="form-label-revamped">Instructions / Special Notes for Parent</label>
                   <textarea 
-                    className="form-control" 
+                    className="form-control-revamped textarea-revamped" 
                     rows={3}
                     placeholder="e.g. Please bring original birth certificate and come between 9:00 AM - 1:00 PM."
                     value={assessmentNotes}
@@ -810,9 +829,9 @@ export default function AdmissionsHub() {
                 </div>
               </div>
 
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setAssessmentApp(null)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={submittingAction}>
+              <div className="modal-footer-revamped">
+                <button type="button" className="btn-modal-cancel" onClick={() => setAssessmentApp(null)}>Cancel</button>
+                <button type="submit" className="btn-modal-submit btn-modal-primary" disabled={submittingAction}>
                   {submittingAction ? 'Sending Notifications...' : '📧 Send Email & SMS Notice'}
                 </button>
               </div>
@@ -823,21 +842,37 @@ export default function AdmissionsHub() {
 
       {/* MODAL 3: COMPLETE ASSESSMENT (READY FOR ADMISSION) */}
       {completeApp && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>Complete Physical Assessment</h2>
-              <button className="close-btn" onClick={() => setCompleteApp(null)}>✕</button>
+        <div className="modal-overlay" onClick={() => setCompleteApp(null)}>
+          <div className="modal-content-revamped" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-revamped">
+              <div className="modal-title-group">
+                <span className="modal-header-icon">✅</span>
+                <h2>Complete Physical Assessment</h2>
+              </div>
+              <button className="close-btn-revamped" onClick={() => setCompleteApp(null)}>✕</button>
             </div>
 
             <form onSubmit={handleMarkAssessmentComplete}>
-              <div className="modal-body">
-                <p>Confirm that <strong>{completeApp.fullName}</strong> has completed physical assessment and document verification at Dotmond School.</p>
+              <div className="modal-body-revamped">
+                <div className="modal-applicant-card">
+                  <div className="applicant-avatar-box" style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}>
+                    {completeApp.fullName ? completeApp.fullName.charAt(0) : 'A'}
+                  </div>
+                  <div className="applicant-details-box">
+                    <div className="applicant-card-name">
+                      {completeApp.fullName}
+                      <span className="applicant-card-class">{completeApp.targetClassName}</span>
+                    </div>
+                    <div className="applicant-card-meta">
+                      Physical assessment &amp; document verification stage
+                    </div>
+                  </div>
+                </div>
 
-                <div className="form-group">
-                  <label>Assessment Result / Performance Notes</label>
+                <div className="form-group-revamped">
+                  <label className="form-label-revamped">Assessment Result / Performance Notes</label>
                   <textarea 
-                    className="form-control" 
+                    className="form-control-revamped textarea-revamped" 
                     rows={3}
                     placeholder="e.g. Child passed mathematics & english entrance assessment. Documents verified."
                     value={assessmentNotes}
@@ -846,9 +881,9 @@ export default function AdmissionsHub() {
                 </div>
               </div>
 
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setCompleteApp(null)}>Cancel</button>
-                <button type="submit" className="btn btn-warning" disabled={submittingAction}>
+              <div className="modal-footer-revamped">
+                <button type="button" className="btn-modal-cancel" onClick={() => setCompleteApp(null)}>Cancel</button>
+                <button type="submit" className="btn-modal-submit btn-modal-warning" disabled={submittingAction}>
                   {submittingAction ? 'Saving...' : '🎓 Mark Ready for Admission'}
                 </button>
               </div>
@@ -859,27 +894,43 @@ export default function AdmissionsHub() {
 
       {/* MODAL 4: CONFIRM FINAL ADMIT & CLASS PLACEMENT */}
       {admitApp && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>Confirm Final Student Admission</h2>
-              <button className="close-btn" onClick={() => setAdmitApp(null)}>✕</button>
+        <div className="modal-overlay" onClick={() => setAdmitApp(null)}>
+          <div className="modal-content-revamped" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-revamped">
+              <div className="modal-title-group">
+                <span className="modal-header-icon">🎓</span>
+                <h2>Confirm Final Student Admission</h2>
+              </div>
+              <button className="close-btn-revamped" onClick={() => setAdmitApp(null)}>✕</button>
             </div>
 
-            <div className="modal-body">
-              <p>You are about to officially admit <strong>{admitApp.fullName}</strong> into <strong>{admitApp.targetClassName}</strong>.</p>
+            <div className="modal-body-revamped">
+              <div className="modal-applicant-card">
+                <div className="applicant-avatar-box" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
+                  {admitApp.fullName ? admitApp.fullName.charAt(0) : 'A'}
+                </div>
+                <div className="applicant-details-box">
+                  <div className="applicant-card-name">
+                    {admitApp.fullName}
+                    <span className="applicant-card-class">{admitApp.targetClassName}</span>
+                  </div>
+                  <div className="applicant-card-meta">
+                    Parent Email: {admitApp.parentEmail}
+                  </div>
+                </div>
+              </div>
               
               <div className="admit-summary-box">
-                <p>1. System will generate official **Student Registration Number**.</p>
+                <p>1. System will generate official <strong>Student Registration Number</strong>.</p>
                 <p>2. Provision Parent Portal Account for <strong>{admitApp.parentEmail}</strong>.</p>
                 <p>3. Create active Student profile and place into <strong>{admitApp.targetClassName}</strong>.</p>
                 <p>4. Send Welcome Email and SMS to parent with portal credentials and Student No.</p>
               </div>
             </div>
 
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={() => setAdmitApp(null)}>Cancel</button>
-              <button type="button" className="btn btn-success" onClick={() => handleFinalAdmit(admitApp)} disabled={submittingAction}>
+            <div className="modal-footer-revamped">
+              <button type="button" className="btn-modal-cancel" onClick={() => setAdmitApp(null)}>Cancel</button>
+              <button type="button" className="btn-modal-submit btn-modal-success" onClick={() => handleFinalAdmit(admitApp)} disabled={submittingAction}>
                 {submittingAction ? 'Admitting Student...' : '🎉 Confirm Admission & Place in Class'}
               </button>
             </div>
