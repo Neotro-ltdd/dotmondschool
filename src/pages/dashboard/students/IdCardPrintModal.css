@@ -608,29 +608,32 @@
 }
 
 .staff-card .qr-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 4px 0 !important;
 }
 
 .staff-card .qr-box {
-  width: 0.88in;
-  height: 0.88in;
-  border: 1.2px solid #DCE3EA;
-  border-radius: 6px;
-  padding: 4px;
-  background: #FFFFFF;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 0.95in !important;
+  height: 0.95in !important;
+  border: 1.2px solid #DCE3EA !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+  background: #FFFFFF !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
 }
 
 .staff-card .qr-box img, .staff-card .qr-box svg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
 }
 
 .staff-card .encoded-id {
