@@ -266,8 +266,10 @@ export default function AdmissionsHub() {
   const getFullUrl = (url?: string | null) => {
     if (!url) return '';
     let finalUrl = url.startsWith('/') ? `${API_ROOT}${url}` : url;
-    if (finalUrl.includes('cloudinary.com') && finalUrl.toLowerCase().endsWith('.pdf') && finalUrl.includes('/image/upload/')) {
-      finalUrl = finalUrl.replace('/image/upload/', '/raw/upload/');
+    if (finalUrl.includes('cloudinary.com') && finalUrl.toLowerCase().endsWith('.pdf')) {
+      if (finalUrl.includes('/image/upload/') && !finalUrl.includes('/fl_attachment/')) {
+        finalUrl = finalUrl.replace('/image/upload/', '/image/upload/fl_attachment/');
+      }
     }
     return finalUrl;
   };
