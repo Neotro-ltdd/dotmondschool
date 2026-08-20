@@ -621,12 +621,11 @@
 }
 
 .staff-card .qr-box {
-  width: 0.95in !important;
-  height: 0.95in !important;
-  border: 1.2px solid #DCE3EA !important;
-  border-radius: 8px !important;
-  padding: 4px !important;
-  background: #FFFFFF !important;
+  width: 1.15in !important;
+  height: 1.15in !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
   box-sizing: border-box !important;
   display: flex !important;
   align-items: center !important;
