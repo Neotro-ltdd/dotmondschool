@@ -426,193 +426,215 @@
 }
 
 /* ══════════════════════════════
-   SIMPLIFIED CLEAN STAFF ID CARD DESIGN
+   SIMPLIFIED CLEAN STAFF ID CARD DESIGN (CR80 Compliant)
 ══════════════════════════════ */
 .staff-card {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   background: #FFFFFF !important;
-  border-radius: 16px !important;
-  box-shadow: 0 1px 2px rgba(20,30,45,.06), 0 12px 28px rgba(20,30,45,.10) !important;
-  position: relative;
-  overflow: hidden;
+  border-radius: 0.12in !important;
+  box-shadow: 0 10px 24px rgba(11, 37, 69, 0.2) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
 }
 
 .staff-card .card-header {
-  padding: 16px 18px 10px;
+  padding: 0.08in 0.10in 0.04in;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  height: 0.52in;
+  box-sizing: border-box;
 }
 
 .staff-card .card-header img {
-  width: 32px;
+  width: 0.32in;
   height: auto;
-  flex: 0 0 32px;
+  flex: 0 0 0.32in;
+  display: block;
 }
 
 .staff-card .card-header .school-name {
-  font-size: 12px;
+  font-size: 8.5px;
   font-weight: 800;
-  color: var(--navy);
+  color: #12395F;
   letter-spacing: .2px;
   line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .staff-card .card-header .school-addr {
-  font-size: 7.5px;
+  font-size: 6px;
   color: #6B7684;
-  margin-top: 2px;
-  line-height: 1.3;
+  margin-top: 1px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .staff-card .accent-rule {
-  height: 2px;
-  background: var(--red);
-  width: 30px;
-  margin-left: 18px;
+  height: 1.5px;
+  background: #B3282D;
+  width: 28px;
+  margin-left: 0.10in;
 }
 
 .staff-card .id-tag {
   text-align: right;
-  padding: 8px 18px 0;
-  font-size: 8px;
+  padding: 2px 0.10in 0;
+  font-size: 6.5px;
   font-weight: 700;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   color: #6B7684;
 }
 
 .staff-card .photo-wrap {
   display: flex;
   justify-content: center;
-  padding: 10px 0 4px;
+  padding: 4px 0 2px;
 }
 
 .staff-card .photo-box {
-  width: 140px;
-  height: 140px;
-  border-radius: 12px;
-  border: 1.4px solid #DCE3EA;
+  width: 1.10in;
+  height: 1.10in;
+  border-radius: 8px;
+  border: 1.2px solid #DCE3EA;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #F4F6F8;
   color: #A9B2BB;
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 1px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .staff-card .photo-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .staff-card .name-block {
   text-align: center;
-  padding: 8px 16px 0;
+  padding: 4px 0.08in 0;
 }
 
 .staff-card .name-block .name {
-  font-size: 13.5px;
+  font-size: 9.5px;
   font-weight: 800;
-  color: var(--navy-deep);
+  color: #0B2C4A;
   letter-spacing: .2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .staff-card .name-underline {
-  width: 32px;
-  height: 2px;
-  background: var(--navy);
-  margin: 5px auto 7px;
-  border-radius: 2px;
+  width: 24px;
+  height: 1.5px;
+  background: #12395F;
+  margin: 3px auto 4px;
+  border-radius: 1px;
 }
 
 .staff-card .meta-row {
-  font-size: 10px;
+  font-size: 7.5px;
   color: #1E2328;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
+  line-height: 1.2;
 }
 
 .staff-card .meta-row .lbl {
   color: #6B7684;
   font-weight: 600;
-  margin-right: 4px;
+  margin-right: 3px;
 }
 
 .staff-card .front-footer {
   margin-top: auto;
-  padding: 10px 18px;
+  padding: 4px 0.10in 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid #DCE3EA;
+  box-sizing: border-box;
 }
 
 .staff-card .front-footer .valid-lbl {
-  font-size: 8px;
-  letter-spacing: 1px;
+  font-size: 6.5px;
+  letter-spacing: 0.8px;
   color: #6B7684;
   font-weight: 700;
 }
 
 .staff-card .front-footer .valid-val {
-  font-size: 10px;
-  color: var(--navy-deep);
+  font-size: 7.5px;
+  color: #0B2C4A;
   font-weight: 700;
 }
 
 /* BACK SIDE STAFF CARD */
 .staff-card .back-body {
-  padding: 8px 18px 0;
+  padding: 4px 0.10in 0;
 }
 
 .staff-card .owner-text {
-  font-size: 8.5px;
-  line-height: 1.5;
+  font-size: 6.5px;
+  line-height: 1.35;
   color: #6B7684;
-  margin-top: 4px;
+  margin: 2px 0 0;
 }
 
 .staff-card .scan-label {
   text-align: center;
-  font-size: 9px;
+  font-size: 7.5px;
   font-weight: 800;
-  letter-spacing: 1.4px;
-  color: var(--navy);
-  margin: 10px 0 6px;
+  letter-spacing: 1px;
+  color: #12395F;
+  margin: 6px 0 3px;
 }
 
 .staff-card .qr-wrap {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .staff-card .qr-box {
-  width: 95px;
-  height: 95px;
-  border: 1.4px solid #DCE3EA;
-  border-radius: 8px;
-  padding: 6px;
+  width: 0.88in;
+  height: 0.88in;
+  border: 1.2px solid #DCE3EA;
+  border-radius: 6px;
+  padding: 4px;
   background: #FFFFFF;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.staff-card .qr-box img {
+.staff-card .qr-box img, .staff-card .qr-box svg {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
 }
 
 .staff-card .encoded-id {
   text-align: center;
-  margin-top: 6px;
-  font-size: 8.5px;
-  color: var(--navy-deep);
-  letter-spacing: .3px;
+  margin-top: 3px;
+  font-size: 7px;
+  color: #0B2C4A;
+  letter-spacing: .2px;
 }
 
 .staff-card .encoded-id b {
@@ -620,22 +642,22 @@
 }
 
 .staff-card .sig-line {
-  margin: 14px 18px 0;
+  margin: 6px 0.10in 0;
   border-top: 1px solid #DCE3EA;
-  padding-top: 4px;
-  font-size: 8px;
+  padding-top: 2px;
+  font-size: 6.5px;
   color: #6B7684;
   text-align: center;
-  letter-spacing: .4px;
+  letter-spacing: .3px;
 }
 
 .staff-card .back-footer {
   margin-top: auto;
-  padding: 8px 18px 10px;
+  padding: 4px 0.10in 6px;
   text-align: center;
   border-top: 1px solid #DCE3EA;
-  font-size: 7.5px;
-  letter-spacing: .6px;
+  font-size: 6.5px;
+  letter-spacing: .5px;
   color: #6B7684;
   font-weight: 700;
 }

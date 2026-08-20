@@ -941,119 +941,92 @@ export default function VendorHub() {
             <React.Fragment key={staff.id}>
               {/* FRONT OF STAFF CARD */}
               <div className="id-card-wrapper">
-                <div className="card front">
-                  <div className="head">
-                    <div className="head-row">
-                      <div className="mark-cell">
-                        {schoolProfile?.logoUrl ? (
-                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.38in', height: 'auto', display: 'block' }} />
-                        ) : (
-                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.38in' }}>
-                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10"/>
-                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080"><text x="250" y="182" textAnchor="middle">RMS</text></g>
-                          </svg>
-                        )}
-                      </div>
-                      <div className="text-cell">
-                        <div className="word-dotmond">{fullSchoolTitle}</div>
-                        <div className="subline-addr">{schoolAddress}</div>
-                      </div>
+                <div className="card staff-card front">
+                  <div className="card-header">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                    ) : (
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px' }}>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10"/>
+                        <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                      </svg>
+                    )}
+                    <div>
+                      <div className="school-name">{fullSchoolTitle}</div>
+                      <div className="school-addr">{schoolAddress}</div>
                     </div>
                   </div>
 
-                  <div className="top-divider-row">
-                    <div className="divider-line"></div>
-                    <span className="id-pill">STAFF ID</span>
+                  <div className="accent-rule"></div>
+                  <div className="id-tag">STAFF IDENTIFICATION</div>
+
+                  <div className="photo-wrap">
+                    <div className="photo-box">
+                      <img 
+                        src={getFullUrl(staff.passportUrl || staff.avatarUrl)} 
+                        alt={staff.surname} 
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.surname + ' ' + staff.firstName)}&background=000080&color=ffffff&size=256`;
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  <div className="large-photo-box">
-                    <img 
-                      src={getFullUrl(staff.passportUrl || staff.avatarUrl)} 
-                      alt={staff.surname} 
-                      className="student-photo-img"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.surname + ' ' + staff.firstName)}&background=000080&color=ffffff&size=256`;
-                      }}
-                    />
-                  </div>
-
-                  <div className="slanted-name-band">
+                  <div className="name-block">
                     <div className="name">{formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}</div>
-                    <div className="field"><b>Role:</b> {(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
-                    <div className="field"><b>Staff No:</b> {staff.staffCode}</div>
+                    <div className="name-underline"></div>
+                    <div className="meta-row"><span className="lbl">Role</span>{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
+                    <div className="meta-row"><span className="lbl">Staff No</span>{staff.staffCode}</div>
                   </div>
 
-                  <div className="red-accent-line"></div>
-
-                  <div className="foot-strip">
-                    <div>VALID</div>
-                    <div>PERMANENT</div>
+                  <div className="front-footer">
+                    <span className="valid-lbl">VALID</span>
+                    <span className="valid-val">PERMANENT</span>
                   </div>
                 </div>
               </div>
 
               {/* BACK OF STAFF CARD */}
               <div className="id-card-wrapper">
-                <div className="card back">
-                  <div className="head">
-                    <div className="head-row">
-                      <div className="mark-cell">
-                        {schoolProfile?.logoUrl ? (
-                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.38in', height: 'auto', display: 'block' }} />
-                        ) : (
-                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.38in' }}>
-                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10"/>
-                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080"><text x="250" y="182" textAnchor="middle">RMS</text></g>
-                          </svg>
-                        )}
-                      </div>
-                      <div className="text-cell">
-                        <div className="word-dotmond">DOTMOND SCHOOL</div>
-                        <div className="subline">Attendance &amp; Identification System</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rule"></div>
-
-                  <p className="notice">
-                    This card is the property of Dotmond Primary &amp; Secondary School. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
-                  </p>
-
-                  <div className="rule"></div>
-
-                  <div className="scan-block">
-                    <div className="scan-label">
-                      SCAN TO CLOCK IN
-                    </div>
-                    <div className="qr-wrap">
-                      <div className="cell">
-                        <QRCodeSVG 
-                          value={staff.staffCode} 
-                          size={95}
-                          level="M"
-                          includeMargin={true}
-                        />
-                      </div>
-                    </div>
-                    <span className="encoded-pill">
-                      ENCODED ID: {staff.staffCode}
-                    </span>
-                  </div>
-
-                  <div className="sig-block">
-                    {principalSig && (
-                      <img src={getFullUrl(principalSig)} alt="Principal Signature" className="sig-img" />
+                <div className="card staff-card back">
+                  <div className="card-header">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                    ) : (
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px' }}>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10"/>
+                        <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                      </svg>
                     )}
-                    <div className="sig-line-text">
-                      Authorised Signature
+                    <div>
+                      <div className="school-name">{fullSchoolTitle}</div>
+                      <div className="school-addr">Attendance &amp; Identification System</div>
                     </div>
                   </div>
 
-                  <div className="foot-strip compact-back-footer">
-                    <div>Powered by NEOTRO ATTENDANCE SYSTEM</div>
+                  <div className="accent-rule"></div>
+
+                  <div className="back-body">
+                    <p className="owner-text">This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.</p>
                   </div>
+
+                  <div className="scan-label">SCAN TO CLOCK IN</div>
+                  <div className="qr-wrap">
+                    <div className="qr-box">
+                      <QRCodeSVG 
+                        value={staff.staffCode} 
+                        size={80}
+                        level="M"
+                        includeMargin={true}
+                      />
+                    </div>
+                  </div>
+                  <div className="encoded-id">ID: <b>{staff.staffCode}</b></div>
+
+                  <div className="sig-line">Authorised Signature</div>
+
+                  <div className="back-footer">POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
                 </div>
               </div>
             </React.Fragment>
