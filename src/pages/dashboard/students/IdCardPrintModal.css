@@ -76,10 +76,10 @@
    HEADER (Shared Table Layout)
 ══════════════════════════════ */
 .head {
-  height: 0.68in;
+  height: 0.56in;
   display: table;
   width: 100%;
-  padding: 0.05in 0.14in 0;
+  padding: 0.04in 0.12in 0;
   box-sizing: border-box;
 }
 
@@ -89,19 +89,19 @@
 
 .head .mark-cell {
   display: table-cell;
-  width: 0.48in;
+  width: 0.44in;
   vertical-align: top;
 }
 
 .head .mark-cell svg {
-  width: 0.45in;
+  width: 0.42in;
   height: auto;
 }
 
 .head .text-cell {
   display: table-cell;
   vertical-align: middle;
-  padding-left: 0.07in;
+  padding-left: 0.06in;
 }
 
 .word-dotmond {
@@ -109,8 +109,8 @@
   font-weight: 800;
   color: #000080;
   letter-spacing: 0.2px;
-  line-height: 1.15;
-  font-size: 11.5px;
+  line-height: 1.1;
+  font-size: 11px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,24 +119,24 @@
 .rule {
   height: 1px;
   background: var(--ash-300);
-  margin: 0 0.16in;
+  margin: 0 0.14in;
 }
 
 /* ══════════════════════════════
    FRONT CARD
 ══════════════════════════════ */
 .front .subline {
-  font-size: 7.6px;
+  font-size: 7.2px;
   color: #000080;
   font-weight: 600;
-  margin-top: 3px;
-  line-height: 1.35;
+  margin-top: 2px;
+  line-height: 1.25;
 }
 
 .id-row {
-  height: 0.18in;
+  height: 0.16in;
   text-align: right;
-  padding: 0.04in 0.16in 0;
+  padding: 0.02in 0.14in 0;
   box-sizing: border-box;
 }
 
@@ -144,30 +144,26 @@
   display: inline-block;
   background: var(--navy);
   color: var(--white);
-  font-size: 7.6px;
-  font-weight: 700;
-  letter-spacing: 1.1px;
-  padding: 3px 9px;
-  border-radius: 9px;
+  font-size: 7.2px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 7px;
+  border-radius: 8px;
   line-height: 1;
 }
 
 .photo-box {
-  height: 1.48in;
-  margin: 0.02in 0.16in 0;
-  border: 1.4px solid var(--red);
-  border-radius: 0.06in;
-  display: table;
-  width: calc(100% - 0.32in);
+  height: 1.15in;
+  width: 0.95in;
+  margin: 0.02in auto 0;
+  border: 1.5px solid var(--red);
+  border-radius: 0.05in;
   overflow: hidden;
   background: linear-gradient(180deg, #EEF2F6 0%, #E3E8ED 100%);
   box-sizing: border-box;
-}
-
-.photo-box .cell {
-  display: table-cell;
-  vertical-align: bottom;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .photo-box img.student-photo-img {
@@ -184,21 +180,24 @@
 }
 
 .name-band {
-  height: 0.62in;
+  height: 0.85in;
   background: var(--navy);
   color: var(--white);
-  padding: 0.05in 0.14in 0;
+  padding: 0.06in 0.12in;
   border-top: 2.5px solid var(--gold);
   margin-top: 0.04in;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .name-band .name {
   font-family: 'Georgia', 'Times New Roman', serif;
   font-weight: 800;
-  font-size: 11px;
-  letter-spacing: 0.3px;
-  margin: 0 0 2px;
+  font-size: 10.5px;
+  letter-spacing: 0.2px;
+  margin: 0 0 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -207,7 +206,7 @@
 }
 
 .name-band .field {
-  font-size: 7.8px;
+  font-size: 8px;
   line-height: 1.35;
   color: #E8ECF2;
   white-space: nowrap;
@@ -225,14 +224,17 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 0.36in;
+  height: 0.28in;
   background: var(--navy-deep);
   border-top: 2px solid var(--red);
-  display: table;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.12in;
   width: 100%;
-  font-size: 7.8px;
-  letter-spacing: 1px;
-  font-weight: 700;
+  font-size: 7.5px;
+  letter-spacing: 0.8px;
+  font-weight: 800;
   color: var(--ash-300);
   box-sizing: border-box;
   z-index: 10;

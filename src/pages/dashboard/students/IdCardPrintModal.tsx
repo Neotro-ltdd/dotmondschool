@@ -219,29 +219,28 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
 
               {/* Passport Box */}
               <div className="photo-box">
-                <div className="cell">
-                  {idCardData.passportUrl ? (
-                    <img src={getFullUrl(idCardData.passportUrl)} alt="Student" className="student-photo-img" />
-                  ) : (
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="50" cy="38" r="20" fill="#B9C2CA"/>
-                      <path d="M12,98 C12,72 28,58 50,58 C72,58 88,72 88,98 Z" fill="#B9C2CA"/>
-                    </svg>
-                  )}
-                </div>
+                {idCardData.passportUrl ? (
+                  <img src={getFullUrl(idCardData.passportUrl)} alt="Student" className="student-photo-img" />
+                ) : (
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="38" r="20" fill="#B9C2CA"/>
+                    <path d="M12,98 C12,72 28,58 50,58 C72,58 88,72 88,98 Z" fill="#B9C2CA"/>
+                  </svg>
+                )}
               </div>
 
-              {/* Navy Student Name Band - Positioned right above bottom strip */}
+              {/* Navy Student Name Band */}
               <div className="name-band">
                 <div className="name">{formatStudentDisplayName(idCardData.fullName)}</div>
+                {idCardData.section && <div className="field"><b>Class:</b> {idCardData.section}</div>}
                 <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
                 <div className="field"><b>Session:</b> {activeSession}</div>
               </div>
 
               {/* Red Bordered Footer Strip */}
               <div className="foot-strip">
-                <div className="cell">VALID</div>
-                <div className="cell">{activeSession}</div>
+                <div>VALID</div>
+                <div>{activeSession}</div>
               </div>
 
             </div>
