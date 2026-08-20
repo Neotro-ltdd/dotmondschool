@@ -304,45 +304,42 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               <div className="rule"></div>
 
               {/* Barcode & Gate Scan QR Code Section */}
-              <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
+              <div className="scan-block">
+                <div className="scan-label">
                   SCAN TO CLOCK IN
                 </div>
-                <div className="qr-wrap" style={{ width: '1.15in', height: '1.15in', padding: '5px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 3px 10px rgba(0,0,0,0.1)', display: 'block' }}>
-                  <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="qr-wrap">
+                  <div className="cell">
                     {idCardData.qrCodeSvg && (
                       <img
                         src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
                         alt="Student Gate Scan QR Code"
-                        style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
                       />
                     )}
                   </div>
                 </div>
-                <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8px', fontWeight: 800, letterSpacing: '0.8px', padding: '3px 10px', borderRadius: '12px', marginTop: '6px' }}>
+                <span className="encoded-pill">
                   ENCODED ID: {idCardData.registrationNumber}
                 </span>
               </div>
 
               {/* Authorised Signature Line */}
-              <div className="sig-block" style={{ marginTop: '0.06in', marginBottom: '0.04in', padding: '0 0.16in', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+              <div className="sig-block">
                 {principalSig ? (
                   <img 
                     src={getFullUrl(principalSig)} 
                     alt="Principal Signature" 
-                    style={{ height: '0.28in', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto -6px', objectFit: 'contain', position: 'relative', zIndex: 6 }} 
+                    className="sig-img"
                   />
                 ) : null}
-                <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
+                <div className="sig-line-text">
                   Signed ....................................................
                 </div>
               </div>
 
               {/* Reduced Compact Footer */}
-              <div className="foot-strip compact-back-footer" style={{ height: '0.24in', background: '#000040', borderTop: '2px solid #C4293A' }}>
-                <div className="cell" style={{ textAlign: 'center', width: '100%', fontSize: '7.5px', color: '#FFFFFF', padding: '0 4px', lineHeight: 1 }}>
-                  Powered by NEOTRO ATTENDANCE SYSTEM
-                </div>
+              <div className="foot-strip compact-back-footer">
+                <div>Powered by NEOTRO ATTENDANCE SYSTEM</div>
               </div>
 
             </div>
