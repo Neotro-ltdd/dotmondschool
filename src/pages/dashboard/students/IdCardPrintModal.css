@@ -496,12 +496,12 @@
 .staff-card .photo-wrap {
   display: flex;
   justify-content: center;
-  padding: 4px 0 2px;
+  padding: 4px 0.16in 2px;
 }
 
 .staff-card .photo-box {
-  width: 1.35in;
-  height: 1.35in;
+  width: 1.76in;
+  height: 1.45in;
   border-radius: 10px;
   border: 1.4px solid #DCE3EA;
   display: flex;
