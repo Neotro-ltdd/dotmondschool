@@ -166,8 +166,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
         </div>
 
         <div className="id-card-preview-area" ref={printRef}>
-          
-          {/* ================= FRONT SIDE ================= */}
+                {/* ================= FRONT SIDE ================= */}
           <div className="id-card-wrapper">
             <div className="card front">
 
@@ -176,9 +175,9 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 <div className="head-row">
                   <div className="mark-cell">
                     {schoolProfile?.logoUrl ? (
-                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.38in', height: 'auto', display: 'block' }} />
                     ) : (
-                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.38in' }}>
                         <defs>
                           <linearGradient id="stfFlame1" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stopColor="#E63946"/><stop offset="100%" stopColor="#F4B740"/></linearGradient>
                           <linearGradient id="stfRibbon1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#C4293A"/><stop offset="50%" stopColor="#E63946"/><stop offset="100%" stopColor="#C4293A"/></linearGradient>
@@ -193,38 +192,24 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond" style={{ color: '#000080', fontWeight: 800 }}>{fullSchoolTitle}</div>
+                    <div className="word-dotmond">{fullSchoolTitle}</div>
+                    <div className="subline-addr">{schoolAddress}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="rule"></div>
-              <div className="id-row" style={{ height: '0.22in', padding: '0.02in 0.16in 0' }}>
-                <span className="id-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', padding: '4px 12px', borderRadius: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>
-                  STAFF ID
-                </span>
+              <div className="top-divider-row">
+                <div className="divider-line"></div>
+                <span className="id-pill">STAFF ID</span>
               </div>
 
-              {/* Bigger Photo Box (1.75in Height) */}
-              <div 
-                style={{ 
-                  height: '1.75in', 
-                  maxHeight: '1.75in', 
-                  width: 'calc(100% - 0.32in)', 
-                  margin: '0.02in auto 0.04in', 
-                  border: '2px solid #000080', 
-                  borderRadius: '8px', 
-                  overflow: 'hidden', 
-                  background: '#F1F5F9',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                  boxSizing: 'border-box'
-                }}
-              >
+              {/* Large Photo Box */}
+              <div className="large-photo-box">
                 {idCardData.passportUrl ? (
                   <img 
                     src={getFullUrl(idCardData.passportUrl)} 
                     alt={idCardData.fullName} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    className="student-photo-img"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = getAvatarFallback(idCardData.fullName);
@@ -234,50 +219,24 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                   <img 
                     src={getAvatarFallback(idCardData.fullName)} 
                     alt={idCardData.fullName} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    className="student-photo-img"
                   />
                 )}
               </div>
 
-              {/* Staff Details Section (Pushed Down to Bottom of Card, Centered Navy Text) */}
-              <div style={{ padding: '0.02in 0.10in 0.08in', background: '#FFFFFF', textAlign: 'center' }}>
-                <div style={{ 
-                  fontFamily: "Georgia, 'Times New Roman', serif", 
-                  fontWeight: 800, 
-                  fontSize: '11px', 
-                  letterSpacing: '0.2px', 
-                  color: '#000080', 
-                  textTransform: 'uppercase',
-                  margin: '0 0 2px 0',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  lineHeight: 1.2
-                }}>
-                  {formatDisplayName(idCardData.fullName)}
-                </div>
-                
-                <div style={{ fontSize: '8.5px', color: '#000080', fontWeight: 700, margin: '1px 0 3px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
-                  {idCardData.designation ? idCardData.designation.toUpperCase() : idCardData.role.toUpperCase()}
-                </div>
+              {/* Slanted Navy Staff Name Band */}
+              <div className="slanted-name-band">
+                <div className="name">{formatDisplayName(idCardData.fullName)}</div>
+                <div className="field"><b>Role:</b> {(idCardData.designation || idCardData.role || 'STAFF').toUpperCase()}</div>
+                <div className="field"><b>Staff No:</b> {idCardData.formattedStaffCode}</div>
+              </div>
 
-                <div style={{ margin: '3px 0 0 0' }}>
-                  <span style={{ 
-                    display: 'inline-block', 
-                    background: '#EFF6FF', 
-                    border: '1.5px solid #93C5FD', 
-                    color: '#000080', 
-                    fontWeight: 800, 
-                    fontSize: '9px', 
-                    padding: '3px 12px', 
-                    borderRadius: '6px',
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                  }}>
-                    STAFF ID: {idCardData.formattedStaffCode}
-                  </span>
-                </div>
+              <div className="red-accent-line"></div>
+
+              {/* Footer Strip */}
+              <div className="foot-strip">
+                <div>VALID</div>
+                <div>{idCardData.validPeriod || "PERMANENT"}</div>
               </div>
 
             </div>
@@ -292,72 +251,67 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 <div className="head-row">
                   <div className="mark-cell">
                     {schoolProfile?.logoUrl ? (
-                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.38in', height: 'auto', display: 'block' }} />
                     ) : (
-                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
-                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10" strokeLinejoin="round"/>
-                        <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080">
-                          <text x="250.0" y="182.0" textAnchor="middle">RMS</text>
-                        </g>
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.38in' }}>
+                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#000080" strokeWidth="10"/>
+                        <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#000080"><text x="250" y="182" textAnchor="middle">RMS</text></g>
                         <text x="250" y="420" textAnchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="23" letterSpacing="5" fill="#000080">SCHOOL</text>
                       </svg>
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond" style={{ color: '#000080', fontWeight: 800 }}>{fullSchoolTitle}</div>
-                    <div className="subline" style={{ color: '#000080', fontWeight: 600 }}>{schoolAddress}</div>
+                    <div className="word-dotmond">DOTMOND SCHOOL</div>
+                    <div className="subline">Attendance &amp; Identification System</div>
                   </div>
                 </div>
               </div>
 
               <div className="rule"></div>
 
-              <p className="notice" style={{ color: '#000080', fontWeight: 600 }}>
-                This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+              <p className="notice">
+                This card is the property of Dotmond Primary &amp; Secondary School. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
               </p>
 
               <div className="rule"></div>
 
               {/* Barcode & Gate Scan QR Code Section */}
-              <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
+              <div className="scan-block">
+                <div className="scan-label">
                   SCAN TO CLOCK IN
                 </div>
-                <div className="qr-wrap" style={{ width: '1.15in', height: '1.15in', padding: '5px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 3px 10px rgba(0,0,0,0.1)', display: 'block' }}>
-                  <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="qr-wrap">
+                  <div className="cell">
                     {idCardData.qrCodeSvg && (
                       <img
                         src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
                         alt="Staff Gate Scan QR Code"
-                        style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
                       />
                     )}
                   </div>
                 </div>
-                <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8px', fontWeight: 800, letterSpacing: '0.8px', padding: '3px 10px', borderRadius: '12px', marginTop: '6px' }}>
+                <span className="encoded-pill">
                   ENCODED ID: {idCardData.formattedStaffCode}
                 </span>
               </div>
 
               {/* Authorised Signature Line */}
-              <div className="sig-block" style={{ marginTop: '0.06in', marginBottom: '0.04in', padding: '0 0.16in', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+              <div className="sig-block">
                 {principalSig ? (
                   <img 
                     src={getFullUrl(principalSig)} 
                     alt="Principal Signature" 
-                    style={{ height: '0.28in', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto -6px', objectFit: 'contain', position: 'relative', zIndex: 6 }} 
+                    className="sig-img"
                   />
                 ) : null}
-                <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
-                  Signed ....................................................
+                <div className="sig-line-text">
+                  Authorised Signature
                 </div>
               </div>
 
               {/* Reduced Compact Footer */}
-              <div className="foot-strip compact-back-footer" style={{ height: '0.24in', background: '#000040', borderTop: '2px solid #C4293A' }}>
-                <div className="cell" style={{ textAlign: 'center', width: '100%', fontSize: '7.5px', color: '#FFFFFF', padding: '0 4px', lineHeight: 1 }}>
-                  Powered by NEOTRO ATTENDANCE SYSTEM
-                </div>
+              <div className="foot-strip compact-back-footer">
+                <div>Powered by NEOTRO ATTENDANCE SYSTEM</div>
               </div>
 
             </div>
