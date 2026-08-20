@@ -522,10 +522,15 @@ export default function PublicAdmissionForm() {
                   <input type="text" className="form-control" name="otherDocuments" value={formData.otherDocuments} onChange={handleInputChange} placeholder="e.g. Immunization Card" />
                 </div>
 
-                {/* Payment Proof Upload */}
-                <div className="form-group full-width mt-2">
-                  <label>Upload Application Payment Receipt / Proof</label>
-                  <input type="file" className="form-control" accept="image/*,application/pdf" onChange={(e) => setPaymentProofFile(e.target.files?.[0] || null)} />
+                {/* Registration Form Fee Payment Notice */}
+                <div className="fee-notice-banner mt-3">
+                  <div className="fee-notice-icon">ℹ️</div>
+                  <div className="fee-notice-content">
+                    <strong>Important Notice on Registration Form Fee</strong>
+                    <p>
+                      The registration form fee will be paid physically at the school administrative office when you and your child visit the school for documentation and physical assessment.
+                    </p>
+                  </div>
                 </div>
 
               </div>
