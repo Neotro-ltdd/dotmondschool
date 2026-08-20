@@ -208,8 +208,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">DOTMOND</div>
-                    <div className="subline-title">PRIMARY &amp; SECONDARY SCHOOL</div>
+                    <div className="word-dotmond">{fullSchoolTitle}</div>
                     <div className="subline-addr">{schoolAddress}</div>
                   </div>
                 </div>
