@@ -56,6 +56,7 @@ import StaffAttendanceReport from './pages/dashboard/attendance/StaffAttendanceR
 import ParentHub from './pages/dashboard/parent/ParentHub';
 import VendorHub from './pages/dashboard/vendor/VendorHub';
 import PublicAdmissionForm from './pages/public/PublicAdmissionForm';
+import PublicScheduleVisitForm from './pages/public/PublicScheduleVisitForm';
 import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import './App.css';
@@ -73,6 +74,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/apply-admission" element={<PublicAdmissionForm />} />
+          <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/master-login" element={<MasterLogin />} />
           

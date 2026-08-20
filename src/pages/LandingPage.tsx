@@ -116,7 +116,7 @@ export default function LandingPage() {
               <button onClick={() => navigate('/apply-admission')} className="lp-btn lp-btn-primary">
                 Apply for Admission
               </button>
-              <button className="lp-btn lp-btn-outline">
+              <button onClick={() => navigate('/schedule-visit')} className="lp-btn lp-btn-outline">
                 Schedule a Visit
               </button>
             </div>

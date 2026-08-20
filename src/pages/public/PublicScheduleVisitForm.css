@@ -1,0 +1,77 @@
+/* PublicScheduleVisitForm.css */
+.public-visit-page {
+  padding: 2.5rem 1.5rem;
+  background-color: #f5f9fc;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+}
+
+.visit-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.visit-header-card {
+  background: linear-gradient(135deg, #000080 0%, #12386E 100%);
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 128, 0.15);
+}
+
+.school-visit-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+}
+
+.school-visit-subtitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #b0d6f5;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.04em;
+}
+
+.visit-school-logo {
+  max-height: 80px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.visit-form-card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit-visit-btn {
+  background-color: #000080 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  padding: 0.75rem 2rem !important;
+  font-size: 0.95rem !important;
+  border-radius: 8px !important;
+}
+
+.btn-group-center {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 1.5rem;
+}

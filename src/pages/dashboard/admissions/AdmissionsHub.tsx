@@ -226,9 +226,14 @@ export default function AdmissionsHub() {
           <h1 className="admissions-title">Admission Applications Hub</h1>
           <p className="admissions-subtitle">Review online registration submissions, schedule documentation assessments, and admit new intake students.</p>
         </div>
-        <a href="/apply-admission" target="_blank" rel="noreferrer" className="btn btn-primary public-apply-link-btn">
-          🔗 Public Application Portal Link
-        </a>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <a href="/schedule-visit" target="_blank" rel="noreferrer" className="btn btn-secondary">
+            📅 Public Schedule Visit Link
+          </a>
+          <a href="/apply-admission" target="_blank" rel="noreferrer" className="btn btn-primary public-apply-link-btn">
+            🔗 Public Application Portal Link
+          </a>
+        </div>
       </div>
 
       {/* KPI Stage Counter Cards */}
