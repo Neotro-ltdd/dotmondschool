@@ -425,6 +425,221 @@
   letter-spacing: 0.5px;
 }
 
+/* ══════════════════════════════
+   SIMPLIFIED CLEAN STAFF ID CARD DESIGN
+══════════════════════════════ */
+.staff-card {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 2px rgba(20,30,45,.06), 0 12px 28px rgba(20,30,45,.10) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.staff-card .card-header {
+  padding: 16px 18px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.staff-card .card-header img {
+  width: 32px;
+  height: auto;
+  flex: 0 0 32px;
+}
+
+.staff-card .card-header .school-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: .2px;
+  line-height: 1.15;
+}
+
+.staff-card .card-header .school-addr {
+  font-size: 7.5px;
+  color: #6B7684;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.staff-card .accent-rule {
+  height: 2px;
+  background: var(--red);
+  width: 30px;
+  margin-left: 18px;
+}
+
+.staff-card .id-tag {
+  text-align: right;
+  padding: 8px 18px 0;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #6B7684;
+}
+
+.staff-card .photo-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 4px;
+}
+
+.staff-card .photo-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  border: 1.4px solid #DCE3EA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F4F6F8;
+  color: #A9B2BB;
+  font-size: 10px;
+  letter-spacing: 1px;
+  overflow: hidden;
+}
+
+.staff-card .photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.staff-card .name-block {
+  text-align: center;
+  padding: 8px 16px 0;
+}
+
+.staff-card .name-block .name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--navy-deep);
+  letter-spacing: .2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.staff-card .name-underline {
+  width: 32px;
+  height: 2px;
+  background: var(--navy);
+  margin: 5px auto 7px;
+  border-radius: 2px;
+}
+
+.staff-card .meta-row {
+  font-size: 10px;
+  color: #1E2328;
+  margin-bottom: 2px;
+}
+
+.staff-card .meta-row .lbl {
+  color: #6B7684;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.staff-card .front-footer {
+  margin-top: auto;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #DCE3EA;
+}
+
+.staff-card .front-footer .valid-lbl {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #6B7684;
+  font-weight: 700;
+}
+
+.staff-card .front-footer .valid-val {
+  font-size: 10px;
+  color: var(--navy-deep);
+  font-weight: 700;
+}
+
+/* BACK SIDE STAFF CARD */
+.staff-card .back-body {
+  padding: 8px 18px 0;
+}
+
+.staff-card .owner-text {
+  font-size: 8.5px;
+  line-height: 1.5;
+  color: #6B7684;
+  margin-top: 4px;
+}
+
+.staff-card .scan-label {
+  text-align: center;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  color: var(--navy);
+  margin: 10px 0 6px;
+}
+
+.staff-card .qr-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.staff-card .qr-box {
+  width: 95px;
+  height: 95px;
+  border: 1.4px solid #DCE3EA;
+  border-radius: 8px;
+  padding: 6px;
+  background: #FFFFFF;
+}
+
+.staff-card .qr-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.staff-card .encoded-id {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 8.5px;
+  color: var(--navy-deep);
+  letter-spacing: .3px;
+}
+
+.staff-card .encoded-id b {
+  font-weight: 700;
+}
+
+.staff-card .sig-line {
+  margin: 14px 18px 0;
+  border-top: 1px solid #DCE3EA;
+  padding-top: 4px;
+  font-size: 8px;
+  color: #6B7684;
+  text-align: center;
+  letter-spacing: .4px;
+}
+
+.staff-card .back-footer {
+  margin-top: auto;
+  padding: 8px 18px 10px;
+  text-align: center;
+  border-top: 1px solid #DCE3EA;
+  font-size: 7.5px;
+  letter-spacing: .6px;
+  color: #6B7684;
+  font-weight: 700;
+}
+
 /* ─── PRINT MEDIA STYLES ─── */
 @media print {
   @page {
