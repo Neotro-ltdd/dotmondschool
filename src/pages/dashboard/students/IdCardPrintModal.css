@@ -648,13 +648,14 @@
 .staff-card .encoded-id {
   text-align: center;
   margin-top: 3px;
-  font-size: 7px;
-  color: #0B2C4A;
+  font-size: 7.5px;
+  color: #12395F !important;
+  font-weight: 800 !important;
   letter-spacing: .2px;
 }
 
 .staff-card .encoded-id b {
-  font-weight: 700;
+  font-weight: 900 !important;
 }
 
 .staff-card .sig-line {
