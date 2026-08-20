@@ -1019,7 +1019,12 @@ export default function VendorHub() {
                   </div>
                   <div className="encoded-id">ID: <b>{staff.staffCode}</b></div>
 
-                  <div className="sig-line">Authorised Signature</div>
+                  <div className="sig-block">
+                    {principalSig && (
+                      <img src={getFullUrl(principalSig)} alt="Principal Signature" className="sig-img" />
+                    )}
+                    <div className="sig-line-text">Authorised Signature</div>
+                  </div>
 
                   <div className="back-footer">POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
                 </div>
