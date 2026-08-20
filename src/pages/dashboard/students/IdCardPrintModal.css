@@ -556,6 +556,17 @@
   border-radius: 1px;
 }
 
+.staff-card .bottom-school-watermark {
+  font-size: 5.5px;
+  font-style: italic;
+  font-weight: 700;
+  color: #12395F;
+  text-align: right;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
 .staff-card .front-footer {
   margin-top: auto;
   padding: 6px 0.10in 8px;

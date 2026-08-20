@@ -213,6 +213,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 <div className="meta-row"><span className="lbl">ROLE:</span>{(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}</div>
                 <div className="meta-row"><span className="lbl">STAFF ID:</span>{idCardData.formattedStaffCode}</div>
                 <div className="bottom-accent-rule"></div>
+                <div className="bottom-school-watermark">{fullSchoolTitle}</div>
               </div>
             </div>
           </div>
