@@ -145,6 +145,40 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
+  // Helper to calculate Class range based on validity period years (e.g., "JSS 2" + 2 years -> "JSS 2 - JSS 3")
+  const calculateClassRange = (rawClass: string | undefined | null, validPeriodStr: string) => {
+    if (!rawClass) return '';
+    const trimmedClass = rawClass.trim();
+
+    let durationYears = 1;
+    if (validPeriodStr.includes('-')) {
+      const parts = validPeriodStr.split('-').map(s => s.trim());
+      const firstYearMatch = parts[0].match(/(\d{4})/);
+      const lastYearMatch = parts[1].match(/(\d{4})/);
+      if (firstYearMatch && lastYearMatch) {
+        const startYr = parseInt(firstYearMatch[1], 10);
+        const endYr = parseInt(lastYearMatch[1], 10);
+        if (endYr >= startYr) {
+          durationYears = Math.max(1, endYr - startYr + 1);
+        }
+      }
+    }
+
+    if (durationYears <= 1) {
+      return trimmedClass;
+    }
+
+    const match = trimmedClass.match(/^(.*?)\s*(\d+)$/);
+    if (match) {
+      const prefix = match[1].trim();
+      const startNum = parseInt(match[2], 10);
+      const endNum = startNum + durationYears - 1;
+      return `${prefix} ${startNum} - ${prefix} ${endNum}`;
+    }
+
+    return trimmedClass;
+  };
+
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
@@ -234,8 +268,12 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               {/* Slanted Navy Student Name Band */}
               <div className="slanted-name-band">
                 <div className="name">{formatStudentDisplayName(idCardData.fullName)}</div>
-                <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
-                {idCardData.section && <div className="field"><b>Section:</b> {idCardData.section}</div>}
+                <div className="field"><b>Student No:</b> {idCardData.registrationNumber}</div>
+                {idCardData.section && (
+                  <div className="field">
+                    <b>Class:</b> {calculateClassRange(idCardData.section, activeSession)}
+                  </div>
+                )}
               </div>
 
               <div className="red-accent-line"></div>
