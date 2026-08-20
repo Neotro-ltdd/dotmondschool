@@ -960,17 +960,16 @@ export default function VendorHub() {
                   <div className="accent-rule"></div>
                   <div className="id-tag">STAFF IDENTIFICATION</div>
 
-                  <div className="photo-wrap">
-                    <div className="photo-box">
-                      <img 
-                        src={getFullUrl(staff.passportUrl || staff.avatarUrl)} 
-                        alt={staff.surname} 
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.surname + ' ' + staff.firstName)}&background=000080&color=ffffff&size=256`;
-                        }}
-                      />
-                    </div>
+                  <div className="large-photo-box">
+                    <img 
+                      src={getFullUrl(staff.passportUrl || staff.avatarUrl)} 
+                      alt={staff.surname} 
+                      className="student-photo-img"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(staff.surname + ' ' + staff.firstName)}&background=000080&color=ffffff&size=256`;
+                      }}
+                    />
                   </div>
 
                   <div className="name-block">

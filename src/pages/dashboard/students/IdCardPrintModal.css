@@ -493,35 +493,18 @@
   color: #12395F !important;
 }
 
-.staff-card .photo-wrap {
-  display: flex;
-  justify-content: center;
-  padding: 4px 0 2px;
-  width: 100%;
-}
-
-.staff-card .photo-box {
-  width: 1.62in !important;
+.staff-card .large-photo-box {
   height: 1.62in !important;
-  border-radius: 0.10in !important;
+  width: 1.62in !important;
+  margin: 6px auto 0 !important;
   border: 1.8px solid #9F1D2C !important;
+  border-radius: 0.10in !important;
+  overflow: hidden !important;
+  background: #FFFFFF !important;
+  box-sizing: border-box !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: #FFFFFF !important;
-  color: #A9B2BB !important;
-  font-size: 10px !important;
-  letter-spacing: 1px !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  margin: 0 auto !important;
-}
-
-.staff-card .photo-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 .staff-card .name-block {

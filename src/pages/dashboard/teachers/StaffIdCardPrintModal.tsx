@@ -187,24 +187,24 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="accent-rule"></div>
               <div className="id-tag">STAFF IDENTIFICATION</div>
 
-              <div className="photo-wrap">
-                <div className="photo-box">
-                  {idCardData.passportUrl ? (
-                    <img 
-                      src={getFullUrl(idCardData.passportUrl)} 
-                      alt={idCardData.fullName} 
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = getAvatarFallback(idCardData.fullName);
-                      }}
-                    />
-                  ) : (
-                    <img 
-                      src={getAvatarFallback(idCardData.fullName)} 
-                      alt={idCardData.fullName} 
-                    />
-                  )}
-                </div>
+              <div className="large-photo-box">
+                {idCardData.passportUrl ? (
+                  <img 
+                    src={getFullUrl(idCardData.passportUrl)} 
+                    alt={idCardData.fullName} 
+                    className="student-photo-img"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getAvatarFallback(idCardData.fullName);
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={getAvatarFallback(idCardData.fullName)} 
+                    alt={idCardData.fullName} 
+                    className="student-photo-img"
+                  />
+                )}
               </div>
 
               <div className="name-block">
