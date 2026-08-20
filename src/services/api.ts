@@ -64,7 +64,7 @@ async function handleResponse(response: Response) {
                 window.location.href = '/login';
             }
         }
-        let message = data?.message || data?.Message || data?.title || 'An error occurred';
+        let message = data?.detail || data?.Detail || data?.message || data?.Message || data?.title || 'An error occurred';
         if (data?.errors) {
             const validationErrors = Object.values(data.errors).flat() as string[];
             if (validationErrors.length > 0) {
