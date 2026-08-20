@@ -169,14 +169,14 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           <div className="id-card-wrapper">
             <div className="card front">
 
-              {/* Header with single-line school name */}
+              {/* Header with school details */}
               <div className="head">
                 <div className="head-row">
                   <div className="mark-cell">
                     {schoolProfile?.logoUrl ? (
-                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.38in', height: 'auto', display: 'block' }} />
                     ) : (
-                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.38in' }}>
                         <defs>
                           <linearGradient id="fFlame1" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stopColor="#E63946"/><stop offset="100%" stopColor="#F4B740"/></linearGradient>
                           <linearGradient id="fRibbon1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#C4293A"/><stop offset="50%" stopColor="#E63946"/><stop offset="100%" stopColor="#C4293A"/></linearGradient>
@@ -208,17 +208,20 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{fullSchoolTitle}</div>
-                    <div className="subline">{schoolAddress}</div>
+                    <div className="word-dotmond">DOTMOND</div>
+                    <div className="subline-title">PRIMARY &amp; SECONDARY SCHOOL</div>
+                    <div className="subline-addr">{schoolAddress}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="rule"></div>
-              <div className="id-row"><span className="id-pill">STUDENT ID</span></div>
+              <div className="top-divider-row">
+                <div className="divider-line"></div>
+                <span className="id-pill">STUDENT ID</span>
+              </div>
 
-              {/* Passport Box */}
-              <div className="photo-box">
+              {/* Large Passport Box */}
+              <div className="large-photo-box">
                 {idCardData.passportUrl ? (
                   <img src={getFullUrl(idCardData.passportUrl)} alt="Student" className="student-photo-img" />
                 ) : (
@@ -229,13 +232,14 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 )}
               </div>
 
-              {/* Navy Student Name Band */}
-              <div className="name-band">
+              {/* Slanted Navy Student Name Band */}
+              <div className="slanted-name-band">
                 <div className="name">{formatStudentDisplayName(idCardData.fullName)}</div>
-                {idCardData.section && <div className="field"><b>Class:</b> {idCardData.section}</div>}
                 <div className="field"><b>Admission No:</b> {idCardData.registrationNumber}</div>
-                <div className="field"><b>Session:</b> {activeSession}</div>
+                {idCardData.section && <div className="field"><b>Section:</b> {idCardData.section}</div>}
               </div>
+
+              <div className="red-accent-line"></div>
 
               {/* Red Bordered Footer Strip */}
               <div className="foot-strip">
@@ -255,9 +259,9 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 <div className="head-row">
                   <div className="mark-cell">
                     {schoolProfile?.logoUrl ? (
-                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.38in', height: 'auto', display: 'block' }} />
                     ) : (
-                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
+                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.38in' }}>
                         <defs>
                           <linearGradient id="fFlame2" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stopColor="#E63946"/><stop offset="100%" stopColor="#F4B740"/></linearGradient>
                           <linearGradient id="fRibbon2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#C4293A"/><stop offset="50%" stopColor="#E63946"/><stop offset="100%" stopColor="#C4293A"/></linearGradient>
@@ -289,7 +293,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
                   <div className="text-cell">
-                    <div className="word-dotmond">{fullSchoolTitle}</div>
+                    <div className="word-dotmond">DOTMOND SCHOOL</div>
                     <div className="subline">Attendance &amp; Identification System</div>
                   </div>
                 </div>
@@ -298,7 +302,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               <div className="rule"></div>
 
               <p className="notice">
-                This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                This card is the property of Dotmond Primary &amp; Secondary School. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
               </p>
 
               <div className="rule"></div>
@@ -333,7 +337,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   />
                 ) : null}
                 <div className="sig-line-text">
-                  Signed ....................................................
+                  Authorised Signature
                 </div>
               </div>
 
