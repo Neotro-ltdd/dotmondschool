@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api, API_ROOT } from '../../../services/api';
+import { api, API_ROOT, getTenantId } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
 import { useTenant } from '../../../context/TenantContext';
 import './AdmissionsHub.css';
@@ -129,7 +129,8 @@ export default function AdmissionsHub() {
   const [linkModal, setLinkModal] = useState<{ title: string; url: string; copied: boolean } | null>(null);
 
   const handleOpenLinkModal = (title: string, path: string) => {
-    const fullUrl = `${window.location.origin}${path}`;
+    const activeTenantId = getTenantId();
+    const fullUrl = `${window.location.origin}${path}${path.includes('?') ? '&' : '?'}tenant=${encodeURIComponent(activeTenantId)}`;
     setLinkModal({ title, url: fullUrl, copied: false });
   };
 

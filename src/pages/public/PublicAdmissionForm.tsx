@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api, API_ROOT } from '../../services/api';
+import { api, API_ROOT, getTenantId } from '../../services/api';
 import { useTenant } from '../../context/TenantContext';
 import './PublicAdmissionForm.css';
 
@@ -163,6 +163,7 @@ export default function PublicAdmissionForm() {
     try {
       setLoading(true);
       const submitData = new FormData();
+      submitData.append('tenantId', getTenantId());
       Object.entries(formData).forEach(([key, val]) => {
         if (key === 'dateOfBirth' && (!val || val === '')) return;
         submitData.append(key, val !== null && val !== undefined ? val.toString() : '');
