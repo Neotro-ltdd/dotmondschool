@@ -928,12 +928,15 @@ export default function VendorHub() {
                     </div>
                   </div>
 
-                  <div className="foot-strip compact-back-footer" style={{ height: '0.24in', background: '#000040', borderTop: '2px solid #C4293A' }}>
-                    <div className="cell" style={{ textAlign: 'center', width: '100%', fontSize: '7.5px', color: '#FFFFFF', padding: '0 4px', lineHeight: 1 }}>
-                      Powered by NEOTRO ATTENDANCE SYSTEM
-                    </div>
+                  <div className="foot-strip compact-back-footer">
+                    <div>Powered by NEOTRO ATTENDANCE SYSTEM</div>
                   </div>
-                       {/* STAFF CARDS PRINT LOOP */}
+                </div>
+              </div>
+            </React.Fragment>
+          ))}
+
+          {/* STAFF CARDS PRINT LOOP */}
           {selectedStaffToPrint.map(staff => (
             <React.Fragment key={staff.id}>
               {/* FRONT OF STAFF CARD */}
