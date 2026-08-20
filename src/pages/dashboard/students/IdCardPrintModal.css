@@ -487,10 +487,10 @@
 .staff-card .id-tag {
   text-align: right;
   padding: 2px 0.10in 0;
-  font-size: 6.5px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #6B7684;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+  color: #12395F !important;
 }
 
 .staff-card .photo-wrap {
@@ -500,16 +500,16 @@
 }
 
 .staff-card .photo-box {
-  width: 1.10in;
-  height: 1.10in;
-  border-radius: 8px;
-  border: 1.2px solid #DCE3EA;
+  width: 1.35in;
+  height: 1.35in;
+  border-radius: 10px;
+  border: 1.4px solid #DCE3EA;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #F4F6F8;
   color: #A9B2BB;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 1px;
   overflow: hidden;
   box-sizing: border-box;
@@ -524,12 +524,13 @@
 
 .staff-card .name-block {
   text-align: center;
-  padding: 4px 0.08in 0;
+  padding: 6px 0.08in 0;
+  margin-top: 2px;
 }
 
 .staff-card .name-block .name {
-  font-size: 9.5px;
-  font-weight: 800;
+  font-size: 10.5px;
+  font-weight: 900;
   color: #0B2C4A;
   letter-spacing: .2px;
   white-space: nowrap;
@@ -539,29 +540,29 @@
 }
 
 .staff-card .name-underline {
-  width: 24px;
-  height: 1.5px;
+  width: 28px;
+  height: 1.8px;
   background: #12395F;
-  margin: 3px auto 4px;
+  margin: 4px auto 5px;
   border-radius: 1px;
 }
 
 .staff-card .meta-row {
-  font-size: 7.5px;
+  font-size: 8.5px;
   color: #1E2328;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   line-height: 1.2;
 }
 
 .staff-card .meta-row .lbl {
   color: #6B7684;
   font-weight: 600;
-  margin-right: 3px;
+  margin-right: 4px;
 }
 
 .staff-card .front-footer {
   margin-top: auto;
-  padding: 4px 0.10in 6px;
+  padding: 6px 0.10in 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -570,16 +571,16 @@
 }
 
 .staff-card .front-footer .valid-lbl {
-  font-size: 6.5px;
+  font-size: 7px;
   letter-spacing: 0.8px;
   color: #6B7684;
   font-weight: 700;
 }
 
 .staff-card .front-footer .valid-val {
-  font-size: 7.5px;
+  font-size: 8.5px;
   color: #0B2C4A;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* BACK SIDE STAFF CARD */
