@@ -469,7 +469,8 @@
 
 .staff-card .card-header .school-addr {
   font-size: 6px;
-  color: #6B7684;
+  color: #12395F !important;
+  font-weight: 700 !important;
   margin-top: 1px;
   line-height: 1.2;
   white-space: nowrap;
@@ -534,15 +535,25 @@
 
 .staff-card .meta-row {
   font-size: 8.5px;
-  color: #1E2328;
+  color: #12395F !important;
+  font-weight: 800 !important;
   margin-bottom: 2px;
   line-height: 1.2;
 }
 
 .staff-card .meta-row .lbl {
-  color: #6B7684;
-  font-weight: 600;
+  color: #12395F !important;
+  font-weight: 700 !important;
   margin-right: 4px;
+}
+
+.staff-card .bottom-accent-rule {
+  height: 1.8px;
+  background: #B3282D;
+  width: 1.05in;
+  margin-left: auto;
+  margin-top: 5px;
+  border-radius: 1px;
 }
 
 .staff-card .front-footer {

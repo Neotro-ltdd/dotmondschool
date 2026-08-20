@@ -977,6 +977,7 @@ export default function VendorHub() {
                     <div className="name-underline"></div>
                     <div className="meta-row"><span className="lbl">Role</span>{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
                     <div className="meta-row"><span className="lbl">Staff No</span>{staff.staffCode}</div>
+                    <div className="bottom-accent-rule"></div>
                   </div>
                 </div>
               </div>
