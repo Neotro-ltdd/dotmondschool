@@ -149,7 +149,8 @@ export default function PublicAdmissionForm() {
       setLoading(true);
       const submitData = new FormData();
       Object.entries(formData).forEach(([key, val]) => {
-        submitData.append(key, val.toString());
+        if (key === 'dateOfBirth' && (!val || val === '')) return;
+        submitData.append(key, val !== null && val !== undefined ? val.toString() : '');
       });
 
       if (birthCertFile) submitData.append('BirthCertificateFile', birthCertFile);
@@ -160,7 +161,8 @@ export default function PublicAdmissionForm() {
       await api.post('/public/admission', submitData);
       setSubmitted(true);
     } catch (err: any) {
-      setError(err.message || "Failed to submit admission application. Please try again.");
+      console.error("Admission form submission error:", err);
+      setError(err.message || "Failed to submit admission application. Please check required fields and try again.");
     } finally {
       setLoading(false);
     }
