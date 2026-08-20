@@ -609,7 +609,7 @@
   font-weight: 800;
   letter-spacing: 1px;
   color: #12395F;
-  margin: 16px 0 4px;
+  margin: 6px 0 3px;
 }
 
 .staff-card .qr-wrap {
@@ -626,8 +626,8 @@
 }
 
 .staff-card .qr-box {
-  width: 1.30in !important;
-  height: 1.30in !important;
+  width: 1.45in !important;
+  height: 1.45in !important;
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
@@ -647,7 +647,7 @@
 
 .staff-card .encoded-id {
   text-align: center;
-  margin-top: 6px;
+  margin-top: 14px;
   font-size: 7.5px;
   color: #12395F !important;
   font-weight: 800 !important;
