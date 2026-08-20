@@ -8,7 +8,7 @@ import { formatDisplayName } from '../../utils/nameFormatter';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
-  const { userName, userRole, userAvatar, userTitle, availableRoles, setActiveRole, logout } = useAuth();
+  const { userName, userRole, userAvatar, userTitle, isSuperAdmin, availableRoles, setActiveRole, logout } = useAuth();
   const { theme, toggleTheme, isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
@@ -47,8 +47,8 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
       </div>
       
       <div className="header-actions">
-        {/* Developer / SuperAdmin Role Switcher Dropdown */}
-        {availableRoles && availableRoles.length > 1 && (
+        {/* Developer / SuperAdmin Role Switcher Dropdown - Only Visible to SuperAdmin */}
+        {isSuperAdmin && availableRoles && availableRoles.length > 1 && (
           <div className="role-switcher-box" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '4px 10px' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563EB', whiteSpace: 'nowrap' }}>⚡ View Role:</span>
             <select

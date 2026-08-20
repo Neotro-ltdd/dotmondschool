@@ -5,6 +5,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     token: string | null;
     userRole: string | null;
+    isSuperAdmin: boolean;
     availableRoles: string[];
     setActiveRole: (role: string) => void;
     userName: string;
@@ -36,6 +37,7 @@ function parseJwt (token: string) {
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(localStorage.getItem('srms_token'));
     const [userRole, setUserRole] = useState<string | null>(localStorage.getItem('srms_active_role') || null);
+    const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
     const [availableRoles, setAvailableRoles] = useState<string[]>([]);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userName, setUserName] = useState<string>('User');
@@ -52,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (roleClaim) {
                     const roles = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
                     const isDevAccount = roles.some(r => r === 'SuperAdmin' || r === 'Superadmin' || r === 'SystemAdmin');
+                    setIsSuperAdmin(isDevAccount);
                     
                     if (isDevAccount) {
                         const devRoles = ['SuperAdmin', 'Director', 'Admin', 'Accountant', 'Teacher', 'SubjectTeacher', 'Vendor', 'Parent'];
@@ -192,7 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, availableRoles, setActiveRole, userName, userTitle, userEmail, userAvatar, requiresPasswordChange, updateUserInfo, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated: !!token, token, userRole, isSuperAdmin, availableRoles, setActiveRole, userName, userTitle, userEmail, userAvatar, requiresPasswordChange, updateUserInfo, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
