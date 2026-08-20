@@ -103,6 +103,20 @@ export default function AdmissionsHub() {
   // Modal 3: Final Admit State
   const [admitApp, setAdmitApp] = useState<AdmissionApp | null>(null);
 
+  // Modal 4: Public Link Share Popup
+  const [linkModal, setLinkModal] = useState<{ title: string; url: string; copied: boolean } | null>(null);
+
+  const handleOpenLinkModal = (title: string, path: string) => {
+    const fullUrl = `${window.location.origin}${path}`;
+    setLinkModal({ title, url: fullUrl, copied: false });
+  };
+
+  const handleCopyLink = () => {
+    if (!linkModal) return;
+    navigator.clipboard.writeText(linkModal.url);
+    setLinkModal({ ...linkModal, copied: true });
+  };
+
   useEffect(() => {
     fetchApplications();
   }, [statusFilter]);
@@ -227,12 +241,20 @@ export default function AdmissionsHub() {
           <p className="admissions-subtitle">Review online registration submissions, schedule documentation assessments, and admit new intake students.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <a href="/schedule-visit" target="_blank" rel="noreferrer" className="btn btn-secondary">
+          <button 
+            type="button" 
+            onClick={() => handleOpenLinkModal('Schedule a School Visit Link', '/schedule-visit')} 
+            className="btn btn-secondary"
+          >
             📅 Public Schedule Visit Link
-          </a>
-          <a href="/apply-admission" target="_blank" rel="noreferrer" className="btn btn-primary public-apply-link-btn">
+          </button>
+          <button 
+            type="button" 
+            onClick={() => handleOpenLinkModal('Public Admission Application Portal Link', '/apply-admission')} 
+            className="btn btn-primary public-apply-link-btn"
+          >
             🔗 Public Application Portal Link
-          </a>
+          </button>
         </div>
       </div>
 
@@ -631,6 +653,63 @@ export default function AdmissionsHub() {
               <button type="button" className="btn btn-secondary" onClick={() => setAdmitApp(null)}>Cancel</button>
               <button type="button" className="btn btn-success" onClick={() => handleFinalAdmit(admitApp)} disabled={submittingAction}>
                 {submittingAction ? 'Admitting Student...' : '🎉 Confirm Admission & Place in Class'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: PUBLIC SHAREABLE LINK COPY POPUP */}
+      {linkModal && (
+        <div className="modal-overlay" onClick={() => setLinkModal(null)}>
+          <div className="modal-content" style={{ maxWidth: '540px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>🔗 {linkModal.title}</h2>
+              <button className="close-btn" onClick={() => setLinkModal(null)}>✕</button>
+            </div>
+
+            <div className="modal-body" style={{ padding: '20px' }}>
+              <p style={{ color: '#475569', fontSize: '14px', marginBottom: '14px', lineHeight: 1.5 }}>
+                Share this direct URL with parents or publish on social media to allow prospective parents to complete the form:
+              </p>
+
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={linkModal.url} 
+                  className="form-control" 
+                  style={{ fontWeight: 600, color: '#0f172a', background: '#f8fafc', fontSize: '13.5px' }}
+                />
+                <button 
+                  type="button" 
+                  className={`btn ${linkModal.copied ? 'btn-success' : 'btn-primary'}`}
+                  onClick={handleCopyLink}
+                  style={{ whiteSpace: 'nowrap', minWidth: '115px' }}
+                >
+                  {linkModal.copied ? '✅ Copied!' : '📋 Copy Link'}
+                </button>
+              </div>
+
+              {linkModal.copied && (
+                <p style={{ color: '#10b981', fontSize: '13px', fontWeight: 600, margin: 0 }}>
+                  ✓ Link copied to clipboard! You can now paste and send it.
+                </p>
+              )}
+            </div>
+
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <a 
+                href={linkModal.url} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn btn-outline"
+                style={{ fontSize: '13px' }}
+              >
+                ↗ Open Link in New Tab
+              </a>
+              <button type="button" className="btn btn-secondary" onClick={() => setLinkModal(null)}>
+                Close
               </button>
             </div>
           </div>
