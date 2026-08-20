@@ -259,10 +259,10 @@
    BACK CARD
 ══════════════════════════════ */
 .back .head {
-  height: 0.48in;
+  height: 0.42in;
   display: table;
   width: 100%;
-  padding: 0.04in 0.10in 0;
+  padding: 0.03in 0.10in 0;
   box-sizing: border-box;
 }
 
@@ -295,25 +295,25 @@
   margin-top: 1px;
 }
 
+.back .rule {
+  height: 1.5px;
+  background: #0B2545;
+  margin: 0 0.10in;
+}
+
 .back .notice {
-  margin: 0.02in 0.10in 0.02in;
+  margin: 0.02in 0.10in;
+  padding: 0;
   font-size: 6.8px;
-  line-height: 1.25;
+  line-height: 1.22;
   color: #334155;
   font-weight: 500;
   box-sizing: border-box;
   text-align: left;
 }
 
-.rule {
-  height: 1px;
-  background: #e2e8f0;
-  margin: 0.01in 0.10in;
-}
-
 .back .scan-block {
-  height: 1.35in;
-  margin-top: 0.02in;
+  margin-top: 0.04in;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -330,9 +330,9 @@
 }
 
 .back .qr-wrap {
-  width: 0.95in;
-  height: 0.95in;
-  padding: 4px;
+  width: 0.85in;
+  height: 0.85in;
+  padding: 3px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
   border-radius: 8px;
@@ -370,10 +370,11 @@
 }
 
 .back .sig-block {
-  margin-top: 0.04in;
-  padding: 0 0.10in;
+  position: absolute;
+  left: 0.10in;
+  right: 0.10in;
+  bottom: 0.28in;
   text-align: left;
-  position: relative;
   z-index: 5;
 }
 
@@ -390,8 +391,8 @@
 
 .back .sig-line-text {
   font-size: 6.8px;
-  color: #64748b;
-  font-weight: 600;
+  color: #334155;
+  font-weight: 700;
   border-top: 1px solid #94a3b8;
   padding-top: 2px;
 }
