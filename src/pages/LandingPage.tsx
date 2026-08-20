@@ -89,7 +89,7 @@ export default function LandingPage() {
           <nav className="lp-nav">
             <a href="#about">About</a>
             <a href="#academics">Academics</a>
-            <a href="#admissions">Admissions</a>
+            <a href="/apply-admission">Admissions</a>
             <a href="#contact">Contact</a>
           </nav>
           <button onClick={() => navigate('/login')} className="lp-btn lp-btn-primary">
@@ -102,7 +102,7 @@ export default function LandingPage() {
         <div className="lp-inner lp-hero-content">
           <div className="lp-hero-text">
             <div className="lp-badge">
-              ★ Admissions Open for 2025/2026 Session
+              ★ Admissions Open for 2026/2027 Session
             </div>
             <h1 className="lp-title">
               Steady Progress and Brightness Future
@@ -113,7 +113,7 @@ export default function LandingPage() {
               success in secondary. Join us for a journey of growth and achievement.
             </p>
             <div className="lp-btn-group">
-              <button onClick={() => navigate('/login')} className="lp-btn lp-btn-primary">
+              <button onClick={() => navigate('/apply-admission')} className="lp-btn lp-btn-primary">
                 Apply for Admission
               </button>
               <button className="lp-btn lp-btn-outline">
@@ -282,14 +282,14 @@ export default function LandingPage() {
       <section className="lp-cta" id="admissions">
         <div className="lp-inner lp-cta-content">
           <div className="lp-cta-text">
-            <h2 className="lp-cta-title">Admissions for 2025 in Progress!</h2>
+            <h2 className="lp-cta-title">Admissions for 2026/2027 in Progress!</h2>
             <p className="lp-cta-desc">
               Embark on an exciting educational journey with Dotmond
-              School as we open the doors to admissions for the year 2025!
+              School as we open the doors to admissions for the 2026/2027 academic session!
             </p>
           </div>
           <div className="lp-btn-group">
-            <button onClick={() => navigate('/login')} className="lp-btn lp-btn-primary">
+            <button onClick={() => navigate('/apply-admission')} className="lp-btn lp-btn-primary">
               Enroll Now
             </button>
           </div>
@@ -326,8 +326,8 @@ export default function LandingPage() {
 
             <div className="lp-footer-col">
               <span className="lp-footer-heading">Get Help</span>
-              <a href="#register" className="lp-footer-link">Register</a>
-              <a href="#admissions" className="lp-footer-link">Admission</a>
+              <a href="/apply-admission" className="lp-footer-link">Register</a>
+              <a href="/apply-admission" className="lp-footer-link">Admission</a>
               <a href="#contact" className="lp-footer-link">Contact us</a>
             </div>
             
