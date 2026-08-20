@@ -975,8 +975,8 @@ export default function VendorHub() {
                   <div className="name-block">
                     <div className="name">{formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}</div>
                     <div className="name-underline"></div>
-                    <div className="meta-row"><span className="lbl">Role</span>{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
-                    <div className="meta-row"><span className="lbl">Staff No</span>{staff.staffCode}</div>
+                    <div className="meta-row"><span className="lbl">ROLE:</span>{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
+                    <div className="meta-row"><span className="lbl">STAFF ID:</span>{staff.staffCode}</div>
                     <div className="bottom-accent-rule"></div>
                   </div>
                 </div>
