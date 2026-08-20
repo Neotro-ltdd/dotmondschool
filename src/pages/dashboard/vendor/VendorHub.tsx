@@ -953,7 +953,6 @@ export default function VendorHub() {
                     )}
                     <div>
                       <div className="school-name">{fullSchoolTitle}</div>
-                      <div className="school-addr">{schoolAddress}</div>
                     </div>
                   </div>
 
@@ -997,7 +996,7 @@ export default function VendorHub() {
                     )}
                     <div>
                       <div className="school-name">{fullSchoolTitle}</div>
-                      <div className="school-addr">Attendance &amp; Identification System</div>
+                      <div className="school-addr">{schoolAddress}</div>
                     </div>
                   </div>
 
