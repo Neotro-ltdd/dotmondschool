@@ -112,6 +112,31 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=000080&color=ffffff&size=256`;
   };
 
+  const renderSchoolAddress = (addr: string) => {
+    if (!addr) return null;
+    if (addr.includes('Happyland Estate, Ajah')) {
+      return (
+        <>
+          <div>Happyland Estate, Ajah</div>
+          <div>Lagos State, Nigeria</div>
+        </>
+      );
+    }
+    const parts = addr.split(',');
+    if (parts.length >= 2) {
+      const middleIndex = Math.ceil(parts.length / 2);
+      const line1 = parts.slice(0, middleIndex).join(',').trim();
+      const line2 = parts.slice(middleIndex).join(',').trim();
+      return (
+        <>
+          <div>{line1}</div>
+          <div>{line2}</div>
+        </>
+      );
+    }
+    return <div>{addr}</div>;
+  };
+
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
 
   const formatDisplayName = (rawName: string | undefined | null) => {
@@ -231,7 +256,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 )}
                 <div>
                   <div className="school-name">{fullSchoolTitle}</div>
-                  <div className="school-addr">{schoolAddress}</div>
+                  <div className="school-addr">{renderSchoolAddress(schoolAddress)}</div>
                 </div>
               </div>
 

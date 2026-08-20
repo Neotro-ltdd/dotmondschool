@@ -473,9 +473,7 @@
   font-weight: 700 !important;
   margin-top: 2px;
   line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal !important;
 }
 
 .staff-card .accent-rule {

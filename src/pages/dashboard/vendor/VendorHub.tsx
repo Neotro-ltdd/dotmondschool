@@ -374,6 +374,30 @@ export default function VendorHub() {
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
   const fullSchoolTitle = (schoolProfile?.schoolName || schoolName || "DOTMOND SCHOOL").toUpperCase();
   const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const renderSchoolAddress = (addr: string) => {
+    if (!addr) return null;
+    if (addr.includes('Happyland Estate, Ajah')) {
+      return (
+        <>
+          <div>Happyland Estate, Ajah</div>
+          <div>Lagos State, Nigeria</div>
+        </>
+      );
+    }
+    const parts = addr.split(',');
+    if (parts.length >= 2) {
+      const middleIndex = Math.ceil(parts.length / 2);
+      const line1 = parts.slice(0, middleIndex).join(',').trim();
+      const line2 = parts.slice(middleIndex).join(',').trim();
+      return (
+        <>
+          <div>{line1}</div>
+          <div>{line2}</div>
+        </>
+      );
+    }
+    return <div>{addr}</div>;
+  };
   const activeSession = selectedSession || schoolProfile?.currentSession || "2025/2026";
 
   return (
@@ -996,7 +1020,7 @@ export default function VendorHub() {
                     )}
                     <div>
                       <div className="school-name">{fullSchoolTitle}</div>
-                      <div className="school-addr">{schoolAddress}</div>
+                      <div className="school-addr">{renderSchoolAddress(schoolAddress)}</div>
                     </div>
                   </div>
 
