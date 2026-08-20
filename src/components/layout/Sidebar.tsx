@@ -257,6 +257,11 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
               <>
                 <div className="sidebar-section-header">MANAGEMENT MODULES</div>
 
+                <NavLink to="/dashboard/admissions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon-box"><FileText size={18} /></span>
+                  Admission Applications
+                </NavLink>
+
                 {/* 1. USER & ROLE MANAGEMENT */}
                 {userRole !== 'Accountant' && (
                   <div className="nav-group">

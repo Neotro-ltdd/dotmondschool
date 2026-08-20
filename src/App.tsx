@@ -55,6 +55,8 @@ import TeacherResults from './pages/dashboard/teacher/TeacherResults';
 import StaffAttendanceReport from './pages/dashboard/attendance/StaffAttendanceReport';
 import ParentHub from './pages/dashboard/parent/ParentHub';
 import VendorHub from './pages/dashboard/vendor/VendorHub';
+import PublicAdmissionForm from './pages/public/PublicAdmissionForm';
+import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import './App.css';
 
@@ -70,6 +72,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/apply-admission" element={<PublicAdmissionForm />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/master-login" element={<MasterLogin />} />
           
@@ -138,6 +141,7 @@ function App() {
             </Route>
             <Route path="parent-hub" element={<ParentHub />} />
             <Route path="vendor-hub" element={<VendorHub />} />
+            <Route path="admissions" element={<AdmissionsHub />} />
             <Route path="profile" element={<ProfileSettings />} />
             {/* Additional dashboard routes will go here later */}
           </Route>
