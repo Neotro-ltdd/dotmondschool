@@ -204,15 +204,8 @@ export default function PublicAdmissionForm() {
         {/* Target Session & Class Bar */}
         <div className="target-selection-bar">
           <div className="form-group">
-            <label>Academic Session / Term</label>
-            <div className="input-row-2">
-              <input type="text" className="form-control" name="session" value={formData.session} onChange={handleInputChange} placeholder="e.g. 2026/2027" />
-              <select className="form-control" name="term" value={formData.term} onChange={handleInputChange}>
-                <option value="First Term">First Term</option>
-                <option value="Second Term">Second Term</option>
-                <option value="Third Term">Third Term</option>
-              </select>
-            </div>
+            <label>Academic Session *</label>
+            <input type="text" className="form-control" name="session" value={formData.session} onChange={handleInputChange} placeholder="e.g. 2026/2027" required />
           </div>
 
           <div className="form-group">

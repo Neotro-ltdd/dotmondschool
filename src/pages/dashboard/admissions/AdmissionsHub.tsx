@@ -396,7 +396,7 @@ export default function AdmissionsHub() {
                 <div className="paper-header">
                   <h3>DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</h3>
                   <h4>REGISTRATION FORM DETAILS</h4>
-                  <p>Applied Session: <strong>{viewApp.session}</strong> | Term: <strong>{viewApp.term}</strong> | Class: <strong>{viewApp.targetClassName}</strong></p>
+                  <p>Applied Session: <strong>{viewApp.session}</strong> | Class: <strong>{viewApp.targetClassName}</strong></p>
                 </div>
 
                 {/* Section A */}
