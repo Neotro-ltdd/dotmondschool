@@ -75,6 +75,20 @@ interface SummaryStats {
   admittedCount: number;
 }
 
+export interface SchoolVisit {
+  id: string;
+  parentName: string;
+  email: string;
+  phoneNumber: string;
+  childName?: string;
+  classLevelInterested?: string;
+  preferredDate: string;
+  timeSlot: string;
+  notes?: string;
+  status: string; // Pending, Confirmed, Completed, Cancelled
+  requestedAt: string;
+}
+
 export default function AdmissionsHub() {
   const { showAlert } = useDialog();
   const { logoUrl } = useTenant();
@@ -86,6 +100,14 @@ export default function AdmissionsHub() {
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Active Primary Tab: applications | visits
+  const [activeHubTab, setActiveHubTab] = useState<'applications' | 'visits'>('applications');
+  
+  // School Visits State
+  const [schoolVisits, setSchoolVisits] = useState<SchoolVisit[]>([]);
+  const [visitStatusFilter, setVisitStatusFilter] = useState<string>('All');
+  const [viewVisit, setViewVisit] = useState<SchoolVisit | null>(null);
 
   // Selected Application Modals
   const [viewApp, setViewApp] = useState<AdmissionApp | null>(null);
@@ -119,7 +141,38 @@ export default function AdmissionsHub() {
 
   useEffect(() => {
     fetchApplications();
-  }, [statusFilter]);
+    fetchSchoolVisits();
+  }, [statusFilter, visitStatusFilter, activeHubTab]);
+
+  const fetchSchoolVisits = async () => {
+    try {
+      let queryParams = [];
+      if (visitStatusFilter && visitStatusFilter !== 'All') queryParams.push(`status=${visitStatusFilter}`);
+      if (searchQuery.trim()) queryParams.push(`search=${encodeURIComponent(searchQuery)}`);
+
+      const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+      const response = await api.get(`/admin/school-visits${queryString}`);
+      setSchoolVisits(Array.isArray(response) ? response : []);
+    } catch (err) {
+      console.error("Failed to fetch school visit requests", err);
+    }
+  };
+
+  const handleUpdateVisitStatus = async (visitId: string, newStatus: string) => {
+    try {
+      setSubmittingAction(true);
+      await api.put(`/admin/school-visits/${visitId}/status`, { status: newStatus });
+      showAlert(`Campus visit request updated to ${newStatus}.`);
+      fetchSchoolVisits();
+      if (viewVisit && viewVisit.id === visitId) {
+        setViewVisit(prev => prev ? { ...prev, status: newStatus } : null);
+      }
+    } catch (err: any) {
+      showAlert(err.message || "Failed to update visit status.");
+    } finally {
+      setSubmittingAction(false);
+    }
+  };
 
   const fetchApplications = async () => {
     try {
@@ -231,14 +284,29 @@ export default function AdmissionsHub() {
     }
   };
 
+  const formatVisitStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return <span className="status-badge badge-submitted">⏳ Pending</span>;
+      case 'Confirmed':
+        return <span className="status-badge badge-assessment">📅 Confirmed</span>;
+      case 'Completed':
+        return <span className="status-badge badge-admitted">✅ Completed</span>;
+      case 'Cancelled':
+        return <span className="status-badge badge-rejected">❌ Cancelled</span>;
+      default:
+        return <span className="status-badge">{status}</span>;
+    }
+  };
+
   return (
     <div className="admissions-hub-page">
       
       {/* Page Header */}
       <div className="admissions-page-header">
         <div>
-          <h1 className="admissions-title">Admission Applications Hub</h1>
-          <p className="admissions-subtitle">Review online registration submissions, schedule documentation assessments, and admit new intake students.</p>
+          <h1 className="admissions-title">Admission Applications &amp; Campus Visit Hub</h1>
+          <p className="admissions-subtitle">Review online registration submissions, manage prospective parent campus visits, and admit new intake students.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button 
@@ -258,158 +326,311 @@ export default function AdmissionsHub() {
         </div>
       </div>
 
-      {/* KPI Stage Counter Cards */}
-      <div className="kpi-stats-grid">
-        <div className="kpi-card" onClick={() => setStatusFilter('Submitted')}>
-          <div className="kpi-info">
-            <span className="kpi-label">New Submitted</span>
-            <span className="kpi-value">{summary?.submittedCount || 0}</span>
-          </div>
-          <div className="kpi-icon-box icon-blue">📥</div>
-        </div>
+      {/* Top Primary View Toggle Tabs */}
+      <div className="hub-top-tabs">
+        <button 
+          type="button"
+          className={`hub-tab-btn ${activeHubTab === 'applications' ? 'active' : ''}`}
+          onClick={() => setActiveHubTab('applications')}
+        >
+          📄 Admission Applications 
+          <span className="tab-badge-blue">
+            {summary?.totalApplications || applications.length}
+          </span>
+        </button>
 
-        <div className="kpi-card" onClick={() => setStatusFilter('ApprovedForAssessment')}>
-          <div className="kpi-info">
-            <span className="kpi-label">Assessment Scheduled</span>
-            <span className="kpi-value">{summary?.approvedForAssessmentCount || 0}</span>
-          </div>
-          <div className="kpi-icon-box icon-amber">📋</div>
-        </div>
-
-        <div className="kpi-card" onClick={() => setStatusFilter('ReadyForAdmission')}>
-          <div className="kpi-info">
-            <span className="kpi-label">Ready For Admission</span>
-            <span className="kpi-value">{summary?.readyForAdmissionCount || 0}</span>
-          </div>
-          <div className="kpi-icon-box icon-purple">🎓</div>
-        </div>
-
-        <div className="kpi-card" onClick={() => setStatusFilter('Admitted')}>
-          <div className="kpi-info">
-            <span className="kpi-label">Admitted Students</span>
-            <span className="kpi-value">{summary?.admittedCount || 0}</span>
-          </div>
-          <div className="kpi-icon-box icon-green">✅</div>
-        </div>
+        <button 
+          type="button"
+          className={`hub-tab-btn ${activeHubTab === 'visits' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveHubTab('visits');
+            fetchSchoolVisits();
+          }}
+        >
+          🏫 Scheduled Campus Visits 
+          <span className="tab-badge-amber">
+            {schoolVisits.length}
+          </span>
+        </button>
       </div>
 
-      {/* Filter Bar */}
-      <div className="admissions-filter-panel">
-        <div className="status-tabs-row">
-          {['All', 'Submitted', 'ApprovedForAssessment', 'ReadyForAdmission', 'Admitted'].map(st => (
-            <button 
-              key={st}
-              className={`status-tab-btn ${statusFilter === st ? 'active' : ''}`}
-              onClick={() => setStatusFilter(st)}
-            >
-              {st === 'All' ? 'All Applications' : st === 'ApprovedForAssessment' ? 'Assessment Scheduled' : st === 'ReadyForAdmission' ? 'Ready For Admission' : st}
-            </button>
-          ))}
-        </div>
+      {activeHubTab === 'visits' ? (
+        /* Campus Visit Requests Table View */
+        <div className="visits-management-section">
+          {/* Filter Bar for Visits */}
+          <div className="admissions-filter-panel">
+            <div className="status-tabs-row">
+              {['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled'].map((st) => (
+                <button
+                  key={st}
+                  type="button"
+                  className={`status-tab-btn ${visitStatusFilter === st ? 'active' : ''}`}
+                  onClick={() => setVisitStatusFilter(st)}
+                >
+                  {st === 'All' ? 'All Visits' : st}
+                </button>
+              ))}
+            </div>
 
-        <form onSubmit={handleSearchSubmit} className="search-form-row">
-          <input 
-            type="text" 
-            className="form-control search-input" 
-            placeholder="Search applicant name, email, or phone number..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button type="submit" className="btn btn-secondary">🔍 Search</button>
-        </form>
-      </div>
+            <form onSubmit={(e) => { e.preventDefault(); fetchSchoolVisits(); }} className="search-form-row">
+              <input
+                type="text"
+                placeholder="Search visitor name, email, phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="form-control search-input"
+              />
+              <button type="submit" className="btn btn-secondary">🔍 Search</button>
+            </form>
+          </div>
 
-      {/* Main Applications Data Table */}
-      <div className="admissions-table-card">
-        <div className="table-responsive">
-          <table className="table data-table">
-            <thead>
-              <tr>
-                <th>Applicant Name</th>
-                <th>Age / Gender</th>
-                <th>Class Applied</th>
-                <th>Parent Email &amp; Phone</th>
-                <th>Submitted Date</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Lifecycle Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-4">Loading admission applications...</td>
-                </tr>
-              ) : applications.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-4">No admission applications found matching the selected filter.</td>
-                </tr>
-              ) : (
-                applications.map(appItem => (
-                  <tr key={appItem.id}>
-                    <td>
-                      <div className="applicant-name-block">
-                        <span className="applicant-name">{appItem.fullName}</span>
-                        {appItem.assignedRegistrationNumber && (
-                          <span className="code-pill">{appItem.assignedRegistrationNumber}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>{appItem.age} yrs ({appItem.gender})</td>
-                    <td className="font-bold">{appItem.targetClassName}</td>
-                    <td>
-                      <div className="contact-block">
-                        <span>📧 {appItem.parentEmail}</span>
-                        <span className="text-muted">📱 {appItem.parentPhoneNumber}</span>
-                      </div>
-                    </td>
-                    <td>{new Date(appItem.appliedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                    <td>{formatStatusBadge(appItem.status)}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div className="table-action-group">
-                        <button className="btn btn-sm btn-outline-secondary" onClick={() => setViewApp(appItem)}>
-                          👁️ View Form
-                        </button>
-
-                        {/* Lifecycle Stage Action Triggers */}
-                        {appItem.status === 'Submitted' && (
-                          <button 
-                            className="btn btn-sm btn-primary" 
-                            onClick={() => {
-                              setAssessmentApp(appItem);
-                              setRegFeeAmount(appItem.registrationFeeAmount || 10000);
-                            }}
-                          >
-                            📋 Approve for Assessment
-                          </button>
-                        )}
-
-                        {appItem.status === 'ApprovedForAssessment' && (
-                          <button 
-                            className="btn btn-sm btn-warning" 
-                            onClick={() => setCompleteApp(appItem)}
-                          >
-                            ✅ Complete Assessment
-                          </button>
-                        )}
-
-                        {(appItem.status === 'ReadyForAdmission' || appItem.status === 'ApprovedForAssessment') && (
-                          <button 
-                            className="btn btn-sm btn-success" 
-                            onClick={() => setAdmitApp(appItem)}
-                            disabled={submittingAction}
-                          >
-                            🎓 Admit Student
-                          </button>
-                        )}
-                      </div>
-                    </td>
+          {/* Visits Table */}
+          <div className="admissions-table-card">
+            <div className="table-responsive">
+              <table className="table data-table">
+                <thead>
+                  <tr>
+                    <th>Visitor / Parent Name</th>
+                    <th>Contact Details</th>
+                    <th>Child &amp; Interest</th>
+                    <th>Scheduled Date &amp; Time</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-4">Loading campus visit requests...</td>
+                    </tr>
+                  ) : schoolVisits.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-4">No campus visit requests found matching filter.</td>
+                    </tr>
+                  ) : (
+                    schoolVisits.map((visit) => (
+                      <tr key={visit.id}>
+                        <td>
+                          <strong className="applicant-name">{visit.parentName}</strong>
+                        </td>
+                        <td>
+                          <div className="contact-block">
+                            <span>📧 {visit.email}</span>
+                            <span className="text-muted">📱 {visit.phoneNumber}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div><strong>{visit.childName || 'Child Tour'}</strong></div>
+                          <small style={{ color: '#000080', fontWeight: 600 }}>{visit.classLevelInterested}</small>
+                        </td>
+                        <td>
+                          <div>📅 {new Date(visit.preferredDate).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                          <small style={{ color: '#047857', fontWeight: 600 }}>⏰ {visit.timeSlot}</small>
+                        </td>
+                        <td>{formatVisitStatusBadge(visit.status)}</td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div className="table-action-group">
+                            <button 
+                              className="btn btn-sm btn-outline-secondary" 
+                              onClick={() => setViewVisit(visit)}
+                              title="View Visit Details"
+                            >
+                              👁️ View
+                            </button>
+                            {visit.status === 'Pending' && (
+                              <button 
+                                className="btn btn-sm btn-primary" 
+                                onClick={() => handleUpdateVisitStatus(visit.id, 'Confirmed')}
+                                disabled={submittingAction}
+                              >
+                                📅 Confirm
+                              </button>
+                            )}
+                            {(visit.status === 'Confirmed' || visit.status === 'Pending') && (
+                              <button 
+                                className="btn btn-sm btn-success" 
+                                onClick={() => handleUpdateVisitStatus(visit.id, 'Completed')}
+                                disabled={submittingAction}
+                              >
+                                ✅ Complete
+                              </button>
+                            )}
+                            {visit.status !== 'Cancelled' && (
+                              <button 
+                                className="btn btn-sm btn-outline-danger" 
+                                onClick={() => handleUpdateVisitStatus(visit.id, 'Cancelled')}
+                                disabled={submittingAction}
+                              >
+                                ❌ Cancel
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Applications View */
+        <>
+          {/* KPI Stage Counter Cards */}
+          <div className="kpi-stats-grid">
+            <div className="kpi-card" onClick={() => setStatusFilter('Submitted')}>
+              <div className="kpi-info">
+                <span className="kpi-label">New Submitted</span>
+                <span className="kpi-value">{summary?.submittedCount || 0}</span>
+              </div>
+              <div className="kpi-icon-box icon-blue">📥</div>
+            </div>
+
+            <div className="kpi-card" onClick={() => setStatusFilter('ApprovedForAssessment')}>
+              <div className="kpi-info">
+                <span className="kpi-label">Assessment Scheduled</span>
+                <span className="kpi-value">{summary?.approvedForAssessmentCount || 0}</span>
+              </div>
+              <div className="kpi-icon-box icon-amber">📋</div>
+            </div>
+
+            <div className="kpi-card" onClick={() => setStatusFilter('ReadyForAdmission')}>
+              <div className="kpi-info">
+                <span className="kpi-label">Ready For Admission</span>
+                <span className="kpi-value">{summary?.readyForAdmissionCount || 0}</span>
+              </div>
+              <div className="kpi-icon-box icon-purple">🎓</div>
+            </div>
+
+            <div className="kpi-card" onClick={() => setStatusFilter('Admitted')}>
+              <div className="kpi-info">
+                <span className="kpi-label">Admitted Students</span>
+                <span className="kpi-value">{summary?.admittedCount || 0}</span>
+              </div>
+              <div className="kpi-icon-box icon-green">✅</div>
+            </div>
+          </div>
+
+          {/* Filter Bar */}
+          <div className="admissions-filter-panel">
+            <div className="status-tabs-row">
+              {['All', 'Submitted', 'ApprovedForAssessment', 'ReadyForAdmission', 'Admitted'].map(st => (
+                <button 
+                  key={st}
+                  className={`status-tab-btn ${statusFilter === st ? 'active' : ''}`}
+                  onClick={() => setStatusFilter(st)}
+                >
+                  {st === 'All' ? 'All Applications' : st === 'ApprovedForAssessment' ? 'Assessment Scheduled' : st === 'ReadyForAdmission' ? 'Ready For Admission' : st}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleSearchSubmit} className="search-form-row">
+              <input 
+                type="text" 
+                className="form-control search-input" 
+                placeholder="Search applicant name, email, or phone number..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button type="submit" className="btn btn-secondary">🔍 Search</button>
+            </form>
+          </div>
+
+          {/* Main Applications Data Table */}
+          <div className="admissions-table-card">
+            <div className="table-responsive">
+              <table className="table data-table">
+                <thead>
+                  <tr>
+                    <th>Applicant Name</th>
+                    <th>Age / Gender</th>
+                    <th>Class Applied</th>
+                    <th>Parent Email &amp; Phone</th>
+                    <th>Submitted Date</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Lifecycle Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-4">Loading admission applications...</td>
+                    </tr>
+                  ) : applications.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-4">No admission applications found matching the selected filter.</td>
+                    </tr>
+                  ) : (
+                    applications.map(appItem => (
+                      <tr key={appItem.id}>
+                        <td>
+                          <div className="applicant-name-block">
+                            <span className="applicant-name">{appItem.fullName}</span>
+                            {appItem.assignedRegistrationNumber && (
+                              <span className="code-pill">{appItem.assignedRegistrationNumber}</span>
+                            )}
+                          </div>
+                        </td>
+                        <td>{appItem.age} yrs ({appItem.gender})</td>
+                        <td className="font-bold">{appItem.targetClassName}</td>
+                        <td>
+                          <div className="contact-block">
+                            <span>📧 {appItem.parentEmail}</span>
+                            <span className="text-muted">📱 {appItem.parentPhoneNumber}</span>
+                          </div>
+                        </td>
+                        <td>{new Date(appItem.appliedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td>{formatStatusBadge(appItem.status)}</td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div className="table-action-group">
+                            <button className="btn btn-sm btn-outline-secondary" onClick={() => setViewApp(appItem)}>
+                              👁️ View Form
+                            </button>
+
+                            {/* Lifecycle Stage Action Triggers */}
+                            {appItem.status === 'Submitted' && (
+                              <button 
+                                className="btn btn-sm btn-primary" 
+                                onClick={() => {
+                                  setAssessmentApp(appItem);
+                                  setRegFeeAmount(appItem.registrationFeeAmount || 10000);
+                                }}
+                              >
+                                📋 Approve for Assessment
+                              </button>
+                            )}
+
+                            {appItem.status === 'ApprovedForAssessment' && (
+                              <button 
+                                className="btn btn-sm btn-warning" 
+                                onClick={() => setCompleteApp(appItem)}
+                              >
+                                ✅ Complete Assessment
+                              </button>
+                            )}
+
+                            {(appItem.status === 'ReadyForAdmission' || appItem.status === 'ApprovedForAssessment') && (
+                              <button 
+                                className="btn btn-sm btn-success" 
+                                onClick={() => setAdmitApp(appItem)}
+                                disabled={submittingAction}
+                              >
+                                🎓 Admit Student
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* MODAL 1: VIEW DIGITAL REGISTRATION FORM DETAILS */}
       {viewApp && (
@@ -711,6 +932,79 @@ export default function AdmissionsHub() {
               <button type="button" className="btn btn-secondary" onClick={() => setLinkModal(null)}>
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL 6: VIEW VISIT DETAILS */}
+      {viewVisit && (
+        <div className="modal-overlay" onClick={() => setViewVisit(null)}>
+          <div className="modal-content" style={{ maxWidth: '560px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>🏫 Campus Tour Appointment Details</h2>
+              <button className="close-btn" onClick={() => setViewVisit(null)}>✕</button>
+            </div>
+
+            <div className="modal-body" style={{ padding: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>VISITOR NAME</label>
+                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>{viewVisit.parentName}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>STATUS</label>
+                  <div>{formatVisitStatusBadge(viewVisit.status)}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>EMAIL ADDRESS</label>
+                  <div style={{ fontSize: '14px', color: '#334155' }}>📧 {viewVisit.email}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>PHONE NUMBER</label>
+                  <div style={{ fontSize: '14px', color: '#334155' }}>📱 {viewVisit.phoneNumber}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>CHILD'S NAME &amp; AGE</label>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{viewVisit.childName || 'Not specified'}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>CLASS INTERESTED IN</label>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#000080' }}>{viewVisit.classLevelInterested}</div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>PREFERRED DATE</label>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#047857' }}>
+                    📅 {new Date(viewVisit.preferredDate).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>TIME SLOT</label>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#047857' }}>⏰ {viewVisit.timeSlot}</div>
+                </div>
+              </div>
+
+              {viewVisit.notes && (
+                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #000080' }}>
+                  <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>SPECIAL NOTES / QUESTIONS</label>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '13.5px', color: '#1e293b' }}>{viewVisit.notes}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {viewVisit.status === 'Pending' && (
+                  <button className="btn btn-primary" onClick={() => handleUpdateVisitStatus(viewVisit.id, 'Confirmed')}>
+                    📅 Confirm Visit
+                  </button>
+                )}
+                {(viewVisit.status === 'Confirmed' || viewVisit.status === 'Pending') && (
+                  <button className="btn btn-success" onClick={() => handleUpdateVisitStatus(viewVisit.id, 'Completed')}>
+                    ✅ Complete
+                  </button>
+                )}
+              </div>
+              <button className="btn btn-secondary" onClick={() => setViewVisit(null)}>Close</button>
             </div>
           </div>
         </div>

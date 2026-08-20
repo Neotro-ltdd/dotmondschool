@@ -7,6 +7,50 @@
   color: #0f172a;
 }
 
+/* Hub Top Tabs */
+.hub-top-tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 24px;
+  padding-top: 6px;
+}
+
+.hub-tab-btn {
+  padding: 12px 22px;
+  font-weight: 800;
+  font-size: 15px;
+  border: none;
+  background: none;
+  border-bottom: 3px solid transparent;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hub-tab-btn.active {
+  border-bottom-color: #000080;
+  color: #000080;
+}
+
+.tab-badge-blue {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.tab-badge-amber {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
 .admissions-page-header {
   display: flex;
   justify-content: space-between;
