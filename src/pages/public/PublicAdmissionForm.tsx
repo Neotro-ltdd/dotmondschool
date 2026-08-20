@@ -70,7 +70,8 @@ export default function PublicAdmissionForm() {
     previousResultSubmitted: false,
     otherDocuments: '',
 
-    // Section E: Declaration
+    // Section E: Rules & Regulations & Section F: Declaration
+    agreeRules: false,
     declarantFullName: '',
     agreeDeclaration: false
   });
@@ -134,14 +135,28 @@ export default function PublicAdmissionForm() {
       setActiveTab('sectionA');
       return;
     }
+    
+    // Check at least one parent/guardian name is provided
+    const hasParentName = formData.fatherName.trim() || formData.motherName.trim() || formData.guardianName.trim();
+    if (!hasParentName) {
+      setError("Please provide at least one Parent or Guardian Full Name in Section B.");
+      setActiveTab('sectionB');
+      return;
+    }
+
     if (!formData.parentEmail.trim() || !formData.parentPhoneNumber.trim()) {
       setError("Please provide a valid Parent Contact Email and Phone Number in Section B.");
       setActiveTab('sectionB');
       return;
     }
-    if (!formData.agreeDeclaration || !formData.declarantFullName.trim()) {
-      setError("Please complete the Parent/Guardian Declaration in Section E.");
+    if (!formData.agreeRules) {
+      setError("Please review and accept the School Rules and Regulations in Section E.");
       setActiveTab('sectionE');
+      return;
+    }
+    if (!formData.agreeDeclaration || !formData.declarantFullName.trim()) {
+      setError("Please complete the Parent/Guardian Declaration in Section F.");
+      setActiveTab('sectionF');
       return;
     }
 
@@ -251,7 +266,10 @@ export default function PublicAdmissionForm() {
             Section D: Documents
           </button>
           <button type="button" className={`tab-nav-btn ${activeTab === 'sectionE' ? 'active' : ''}`} onClick={() => setActiveTab('sectionE')}>
-            Section E: Declaration
+            Section E: Rules &amp; Regulations
+          </button>
+          <button type="button" className={`tab-nav-btn ${activeTab === 'sectionF' ? 'active' : ''}`} onClick={() => setActiveTab('sectionF')}>
+            Section F: Declaration
           </button>
         </div>
 
@@ -271,13 +289,15 @@ export default function PublicAdmissionForm() {
                 </div>
 
                 <div className="form-group">
-                  <label>Date of Birth *</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <label style={{ margin: 0 }}>Date of Birth *</label>
+                    {formData.age > 0 && (
+                      <span style={{ fontSize: '12px', color: '#047857', background: '#d1fae5', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                        Calculated Age: {formData.age} yrs
+                      </span>
+                    )}
+                  </div>
                   <input type="date" className="form-control" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleDobChange} required />
-                </div>
-
-                <div className="form-group">
-                  <label>Age (Years)</label>
-                  <input type="number" className="form-control" name="age" value={formData.age} readOnly placeholder="Auto-calculated" />
                 </div>
 
                 <div className="form-group">
@@ -542,16 +562,74 @@ export default function PublicAdmissionForm() {
                   ⬅ Back
                 </button>
                 <button type="button" className="btn btn-primary" onClick={() => setActiveTab('sectionE')}>
-                  Next: Section E (Declaration) ➔
+                  Next: Section E (Rules &amp; Regulations) ➔
                 </button>
               </div>
             </div>
           )}
 
-          {/* SECTION E: DECLARATION */}
+          {/* SECTION E: SCHOOL RULES & REGULATIONS */}
           {activeTab === 'sectionE' && (
             <div className="form-section-card">
-              <h3 className="section-heading">SECTION E: DECLARATION</h3>
+              <h3 className="section-heading">SECTION E: SCHOOL RULES AND REGULATIONS</h3>
+              
+              <div className="rules-container" style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+                <h4 style={{ color: '#000080', marginTop: 0, marginBottom: '14px', fontSize: '16px', fontWeight: 800 }}>
+                  📜 DOTMOND SCHOOL CODE OF CONDUCT &amp; REGULATIONS
+                </h4>
+                
+                <ol style={{ paddingLeft: '20px', margin: 0, color: '#334155', fontSize: '13.5px', lineHeight: '1.75' }}>
+                  <li style={{ marginBottom: '8px' }}>
+                    <strong>Attendance &amp; Punctuality:</strong> School gates open at 7:15 AM and close for morning assembly at 7:45 AM. Punctual attendance at all classes, assemblies, and official school events is mandatory.
+                  </li>
+                  <li style={{ marginBottom: '8px' }}>
+                    <strong>Dress Code &amp; Uniform Policy:</strong> Students must wear full, neat, and prescribed school uniforms with black polished shoes and white socks. Hair must be neatly groomed in accordance with school regulations.
+                  </li>
+                  <li style={{ marginBottom: '8px' }}>
+                    <strong>Academic Integrity &amp; Behavior:</strong> Students are expected to demonstrate diligence, respect for staff and peers, and academic honesty. Bullying, fighting, or disruptive conduct on school grounds is strictly prohibited.
+                  </li>
+                  <li style={{ marginBottom: '8px' }}>
+                    <strong>Mobile Phones &amp; Gadgets:</strong> Mobile phones, electronic gaming devices, and non-prescribed valuables are not permitted on campus without prior principal authorization.
+                  </li>
+                  <li style={{ marginBottom: '8px' }}>
+                    <strong>Health &amp; Safety:</strong> Parents must inform the school administration of any chronic medical conditions or emergency medication requirements.
+                  </li>
+                  <li style={{ marginBottom: '8px' }}>
+                    <strong>Assessment &amp; Fee Policy:</strong> Registration form fees and physical document verifications are completed physically at school upon assessment visit.
+                  </li>
+                </ol>
+
+                <div className="declaration-agree-check mt-4" style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
+                  <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      name="agreeRules" 
+                      checked={formData.agreeRules} 
+                      onChange={handleInputChange} 
+                      required 
+                    />
+                    <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>
+                      I have read, understood, and agree to abide by the Dotmond School Rules and Regulations.
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="step-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setActiveTab('sectionD')}>
+                  ⬅ Back
+                </button>
+                <button type="button" className="btn btn-primary" onClick={() => setActiveTab('sectionF')}>
+                  Next: Section F (Declaration) ➔
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION F: DECLARATION */}
+          {activeTab === 'sectionF' && (
+            <div className="form-section-card">
+              <h3 className="section-heading">SECTION F: DECLARATION</h3>
               
               <div className="declaration-box">
                 <p className="declaration-text">
@@ -567,7 +645,7 @@ export default function PublicAdmissionForm() {
               </div>
 
               <div className="step-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setActiveTab('sectionD')}>
+                <button type="button" className="btn btn-secondary" onClick={() => setActiveTab('sectionE')}>
                   ⬅ Back
                 </button>
                 <button type="submit" className="btn btn-success submit-app-btn" disabled={loading}>
