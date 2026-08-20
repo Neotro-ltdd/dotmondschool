@@ -501,20 +501,21 @@
 }
 
 .staff-card .photo-box {
-  width: 1.40in !important;
-  height: 1.20in !important;
-  border-radius: 10px;
-  border: 1.4px solid #DCE3EA;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F4F6F8;
-  color: #A9B2BB;
-  font-size: 10px;
-  letter-spacing: 1px;
-  overflow: hidden;
-  box-sizing: border-box;
-  margin: 0 auto;
+  width: 1.84in !important;
+  height: 1.55in !important;
+  border-radius: 12px !important;
+  border: 2px solid #9F1D2C !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #F1F5F9 !important;
+  color: #A9B2BB !important;
+  font-size: 10px !important;
+  letter-spacing: 1px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
+  margin: 0 auto !important;
 }
 
 .staff-card .photo-box img {
