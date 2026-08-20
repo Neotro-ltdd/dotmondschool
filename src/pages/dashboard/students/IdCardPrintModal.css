@@ -71,7 +71,7 @@
   height: 0.54in;
   display: table;
   width: 100%;
-  padding: 0.05in 0.10in 0;
+  padding: 0.04in 0.10in 0;
   box-sizing: border-box;
 }
 
@@ -82,18 +82,19 @@
 .front .mark-cell {
   display: table-cell;
   width: 0.40in;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
-.front .mark-cell svg {
+.front .mark-cell svg, .front .mark-cell img {
   width: 0.38in;
   height: auto;
+  display: block;
 }
 
 .front .text-cell {
   display: table-cell;
-  vertical-align: top;
-  padding-left: 0.05in;
+  vertical-align: middle;
+  padding-left: 0.06in;
 }
 
 .word-dotmond {
@@ -146,11 +147,11 @@
   line-height: 1;
 }
 
-/* Large Rounded Photo Box matching mockup */
+/* Large Photo Box extending to cover gap above navy cut */
 .large-photo-box {
-  height: 1.48in;
+  height: 1.62in;
   width: 1.62in;
-  margin: 0.04in auto 0;
+  margin: 0.02in auto 0;
   border: 1.8px solid #9F1D2C;
   border-radius: 0.10in;
   overflow: hidden;
@@ -159,6 +160,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 2;
 }
 
 .large-photo-box img.student-photo-img {
@@ -174,7 +177,7 @@
   margin: 0 auto;
 }
 
-/* Slanted Navy Name Band matching mockup */
+/* Slanted Navy Name Band */
 .slanted-name-band {
   position: absolute;
   left: 0;
@@ -256,10 +259,10 @@
    BACK CARD
 ══════════════════════════════ */
 .back .head {
-  height: 0.52in;
+  height: 0.48in;
   display: table;
   width: 100%;
-  padding: 0.05in 0.10in 0;
+  padding: 0.04in 0.10in 0;
   box-sizing: border-box;
 }
 
@@ -270,18 +273,19 @@
 .back .mark-cell {
   display: table-cell;
   width: 0.40in;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
-.back .mark-cell svg {
+.back .mark-cell svg, .back .mark-cell img {
   width: 0.38in;
   height: auto;
+  display: block;
 }
 
 .back .text-cell {
   display: table-cell;
   vertical-align: middle;
-  padding-left: 0.05in;
+  padding-left: 0.06in;
 }
 
 .back .subline {
@@ -292,7 +296,7 @@
 }
 
 .back .notice {
-  margin: 0.02in 0.10in 0.03in;
+  margin: 0.02in 0.10in 0.02in;
   font-size: 6.8px;
   line-height: 1.25;
   color: #334155;
@@ -304,11 +308,11 @@
 .rule {
   height: 1px;
   background: #e2e8f0;
-  margin: 0 0.10in;
+  margin: 0.01in 0.10in;
 }
 
 .back .scan-block {
-  height: 1.65in;
+  height: 1.35in;
   margin-top: 0.02in;
   display: flex;
   flex-direction: column;
@@ -319,19 +323,19 @@
 
 .back .scan-label {
   color: #0B2545;
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 800;
   letter-spacing: 1px;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .back .qr-wrap {
-  width: 1.22in;
-  height: 1.22in;
-  padding: 5px;
+  width: 0.95in;
+  height: 0.95in;
+  padding: 4px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
-  border-radius: 9px;
+  border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   display: block;
   box-sizing: border-box;
@@ -356,26 +360,25 @@
   display: inline-block;
   background: #CBD5E1;
   color: #334155;
-  font-size: 7.5px;
+  font-size: 7px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  padding: 2px 9px;
-  border-radius: 9px;
-  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-top: 3px;
   line-height: 1;
 }
 
 .back .sig-block {
-  position: absolute;
-  left: 0.10in;
-  right: 0.10in;
-  bottom: 0.26in;
+  margin-top: 0.04in;
+  padding: 0 0.10in;
   text-align: left;
+  position: relative;
   z-index: 5;
 }
 
 .back .sig-img {
-  height: 0.22in;
+  height: 0.20in;
   width: auto;
   max-width: 100%;
   display: block;
