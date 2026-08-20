@@ -219,9 +219,12 @@ export default function PublicAdmissionForm() {
             <label>Class Applied For *</label>
             <select className="form-control" name="targetClassId" value={formData.targetClassId} onChange={handleInputChange} required>
               <option value="">-- Select Class --</option>
-              {classes.map(c => (
-                <option key={c.id} value={c.id}>{`${c.level} ${c.name} ${c.section}`.trim()}</option>
-              ))}
+              {classes.map(c => {
+                const displayName = c.section && c.section.trim() !== '' ? `${c.name} ${c.section}`.trim() : c.name;
+                return (
+                  <option key={c.id} value={c.id}>{displayName}</option>
+                );
+              })}
             </select>
           </div>
         </div>
