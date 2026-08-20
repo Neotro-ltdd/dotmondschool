@@ -290,6 +290,13 @@
   padding-bottom: 1rem;
 }
 
+.modal-school-logo {
+  max-height: 65px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
 .paper-header h3 { font-size: 1.1rem; color: #000080; margin: 0 0 4px 0; }
 .paper-header h4 { font-size: 0.95rem; color: #64748b; margin: 0 0 6px 0; }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../services/api';
+import { useTenant } from '../../context/TenantContext';
 import './PublicAdmissionForm.css';
 
 interface ClassItem {
@@ -10,6 +11,7 @@ interface ClassItem {
 }
 
 export default function PublicAdmissionForm() {
+  const { schoolName: tenantSchoolName, logoUrl } = useTenant();
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -196,6 +198,16 @@ export default function PublicAdmissionForm() {
         
         {/* School Banner Header */}
         <div className="admission-header-card">
+          <div className="school-logo-container">
+            <img 
+              src={logoUrl || '/images/dotmond-logo-1.png'} 
+              alt={tenantSchoolName || 'Dotmond School'} 
+              className="admission-school-logo"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/dotmond-logo-1.png';
+              }}
+            />
+          </div>
           <h1 className="school-form-title">DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</h1>
           <h2 className="school-form-subtitle">OFFICIAL ONLINE REGISTRATION FORM</h2>
           <p className="school-address">Happyland Estate, Ajah, Lagos State, Nigeria</p>

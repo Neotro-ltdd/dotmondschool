@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
+import { useTenant } from '../../../context/TenantContext';
 import './AdmissionsHub.css';
 
 interface AdmissionApp {
@@ -76,6 +77,7 @@ interface SummaryStats {
 
 export default function AdmissionsHub() {
   const { showAlert } = useDialog();
+  const { logoUrl } = useTenant();
 
   const [applications, setApplications] = useState<AdmissionApp[]>([]);
   const [summary, setSummary] = useState<SummaryStats | null>(null);
@@ -394,6 +396,7 @@ export default function AdmissionsHub() {
             <div className="modal-body form-preview-body">
               <div className="form-preview-paper">
                 <div className="paper-header">
+                  <img src={logoUrl || '/images/dotmond-logo-1.png'} alt="School Logo" className="modal-school-logo" />
                   <h3>DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</h3>
                   <h4>REGISTRATION FORM DETAILS</h4>
                   <p>Applied Session: <strong>{viewApp.session}</strong> | Class: <strong>{viewApp.targetClassName}</strong></p>
