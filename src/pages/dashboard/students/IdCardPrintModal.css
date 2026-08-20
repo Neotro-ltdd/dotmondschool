@@ -607,7 +607,7 @@
   font-weight: 800;
   letter-spacing: 1px;
   color: #12395F;
-  margin: 6px 0 3px;
+  margin: 6px 0 0;
 }
 
 .staff-card .qr-wrap {
@@ -616,7 +616,7 @@
   align-items: center !important;
   width: 100% !important;
   height: auto !important;
-  margin: 4px 0 !important;
+  margin: 0 0 4px !important;
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
