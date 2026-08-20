@@ -213,11 +213,6 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 <div className="meta-row"><span className="lbl">Role</span>{(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}</div>
                 <div className="meta-row"><span className="lbl">Staff No</span>{idCardData.formattedStaffCode}</div>
               </div>
-
-              <div className="front-footer">
-                <span className="valid-lbl">VALID</span>
-                <span className="valid-val">{idCardData.validPeriod || "PERMANENT"}</span>
-              </div>
             </div>
           </div>
 

@@ -494,9 +494,9 @@
 }
 
 .staff-card .large-photo-box {
-  height: 1.62in !important;
+  height: 1.95in !important;
   width: 1.62in !important;
-  margin: 6px auto 0 !important;
+  margin: 4px auto 0 !important;
   border: 1.8px solid #9F1D2C !important;
   border-radius: 0.10in !important;
   overflow: hidden !important;
@@ -509,8 +509,8 @@
 
 .staff-card .name-block {
   text-align: center;
-  padding: 6px 0.08in 0;
-  margin-top: 2px;
+  padding: 0 0.08in 0.12in;
+  margin-top: auto;
 }
 
 .staff-card .name-block .name {

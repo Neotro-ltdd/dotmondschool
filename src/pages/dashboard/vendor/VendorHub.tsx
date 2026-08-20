@@ -978,11 +978,6 @@ export default function VendorHub() {
                     <div className="meta-row"><span className="lbl">Role</span>{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
                     <div className="meta-row"><span className="lbl">Staff No</span>{staff.staffCode}</div>
                   </div>
-
-                  <div className="front-footer">
-                    <span className="valid-lbl">VALID</span>
-                    <span className="valid-val">PERMANENT</span>
-                  </div>
                 </div>
               </div>
 
