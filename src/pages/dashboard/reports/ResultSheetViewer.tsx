@@ -66,136 +66,160 @@ const ResultSheetViewer: React.FC = () => {
     fetchResult();
   }, [studentId, batchId]);
 
-  if (loading) return <div>Loading result sheet...</div>;
-  if (!result) return <div>Result not found.</div>;
+  if (loading) return <div className="result-sheet-container"><p className="py-8 text-center text-gray-500">Loading terminal report sheet...</p></div>;
+  if (!result) return <div className="result-sheet-container"><p className="py-8 text-center text-red-500">Result sheet not found.</p></div>;
 
   const isSecondary = result.className?.includes('JSS') || result.className?.includes('SS');
 
   return (
     <div className="result-sheet-container">
       <div className="no-print actions-bar">
-        <button className="btn btn-secondary" onClick={() => navigate(-1)}>Back</button>
-        <button className="btn btn-primary" onClick={() => window.print()}>Print Result</button>
+        <button className="btn btn-secondary" onClick={() => navigate(-1)}>⬅ Back</button>
+        <button className="btn btn-primary" onClick={() => window.print()}>🖨️ Print Result Sheet</button>
       </div>
 
-      <div className="result-sheet-paper">
-        {/* Watermark */}
-        {result.schoolLogoUrl && (
-          <div className="watermark-container">
-            <img src={getFullUrl(result.schoolLogoUrl) as string} alt="Watermark" className="watermark-image" />
-          </div>
-        )}
+      <div className="sheet">
+        {/* Faint Watermark Logo */}
+        <div className="watermark" style={{
+          backgroundImage: result.schoolLogoUrl ? `url("${getFullUrl(result.schoolLogoUrl)}")` : undefined
+        }}></div>
 
-        {/* Header section */}
-        <div className="result-header">
-          <div className="school-logo-placeholder">
-            {result.schoolLogoUrl ? <img src={getFullUrl(result.schoolLogoUrl) as string} alt="School Logo" style={{maxWidth:'100%', maxHeight:'100%', objectFit: 'contain'}} /> : "LOGO"}
+        {/* Header Section */}
+        <div className="header">
+          <div className="logo-box">
+            {result.schoolLogoUrl ? (
+              <img src={getFullUrl(result.schoolLogoUrl) as string} alt="School Logo" />
+            ) : (
+              <img src="/images/dotmond-logo-1.png" alt="Dotmond School" />
+            )}
           </div>
-          <div className="school-info">
-            <h1>{result.schoolName.toUpperCase()}</h1>
-            <p>{result.schoolAddress}</p>
-            <p>Motto: {result.schoolMotto}</p>
-            <h2>STUDENT'S TERMINAL REPORT</h2>
+
+          <div className="school-block">
+            <h1 className="school-name">{result.schoolName || 'DOTMOND SCHOOL'}</h1>
+            <p className="school-addr">{result.schoolAddress || 'Happyland Estate, Ajah, Lagos State, Nigeria'}</p>
+            <p className="school-motto">Motto: {result.schoolMotto || 'Steady Progress, Brighter Future'}</p>
+            <span className="report-title">STUDENT'S TERMINAL REPORT</span>
           </div>
-          <div className="student-photo-placeholder">
-            {result.studentPassportUrl ? <img src={getFullUrl(result.studentPassportUrl) as string} alt="Student Photo" style={{maxWidth:'100%', maxHeight:'100%', objectFit: 'cover'}} /> : "PHOTO"}
+
+          <div className="photo-box">
+            {result.studentPassportUrl ? (
+              <img src={getFullUrl(result.studentPassportUrl) as string} alt="Student Photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span>PHOTO</span>
+            )}
           </div>
         </div>
 
-        <div className="divider" />
+        <div className="rule"></div>
 
-        {/* Bio Data Section */}
-        <div className="bio-data-grid">
-          <div className="bio-item"><strong>Name:</strong> {result.studentName}</div>
-          <div className="bio-item"><strong>Reg No:</strong> {result.registrationNumber}</div>
-          <div className="bio-item"><strong>Class:</strong> {result.className}</div>
-          <div className="bio-item"><strong>Parent:</strong> {result.parentName}</div>
-          <div className="bio-item"><strong>Term:</strong> {result.term}</div>
-          <div className="bio-item"><strong>Session:</strong> {result.session}</div>
-          <div className="bio-item"><strong>Date Processed:</strong> {result.dateProcessed}</div>
+        {/* Student Bio Data Info Grid */}
+        <div className="info-grid">
+          <div className="field"><label>Name:</label><span>{result.studentName}</span></div>
+          <div className="field"><label>Reg No:</label><span>{result.registrationNumber}</span></div>
+          <div className="field"><label>Class:</label><span>{result.className}</span></div>
+
+          <div className="field"><label>Parent:</label><span>{result.parentName || 'Mr & Mrs. Parent'}</span></div>
+          <div className="field"><label>Term:</label><span>{result.term}</span></div>
+          <div className="field"><label>Session:</label><span>{result.session}</span></div>
+
+          <div className="field field-full"><label>Date Processed:</label><span>{result.dateProcessed || new Date().toLocaleDateString('en-US')}</span></div>
         </div>
 
-        {/* Scores Table */}
-        <table className="result-table">
+        {/* Subjects Performance Table */}
+        <table className="subjects">
           <thead>
             <tr>
-              <th>SUBJECTS</th>
+              <th>Subjects</th>
               {isSecondary ? (
                 <>
-                  <th>Total CA<br/>(40)</th>
-                  <th>Exam<br/>(60)</th>
-                  <th>Total<br/>(100)</th>
+                  <th>Total CA (40)</th>
+                  <th>Exam (60)</th>
+                  <th>Total (100)</th>
                 </>
               ) : (
-                <th>Mark<br/>(100)</th>
+                <th>Mark (100)</th>
               )}
               <th>Grade</th>
               <th>Remark</th>
             </tr>
           </thead>
           <tbody>
-            {result.subjects.map((score, index) => (
-              <tr key={index}>
-                <td className="subject-name">{score.subjectName}</td>
+            {result.subjects.map((s, idx) => (
+              <tr key={idx}>
+                <td>{s.subjectName}</td>
                 {isSecondary ? (
                   <>
-                    <td>{Math.ceil(score.testScore)}</td>
-                    <td>{Math.ceil(score.examScore)}</td>
-                    <td>{Math.ceil(score.totalScore)}</td>
+                    <td>{Math.ceil(s.testScore)}</td>
+                    <td>{Math.ceil(s.examScore)}</td>
+                    <td>{Math.ceil(s.totalScore)}</td>
                   </>
                 ) : (
-                  <td>{Math.ceil(score.totalScore)}</td>
+                  <td>{Math.ceil(s.totalScore)}</td>
                 )}
-                <td>{score.grade}</td>
-                <td>{score.remark}</td>
+                <td className={s.grade === 'F' ? 'grade-F' : ''}>{s.grade}</td>
+                <td>{s.remark}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* Summary & Attendance Grid */}
-        <div className="summary-grid">
-          <div className="attendance-box custom-box">
+        {/* Summary Panels Grid */}
+        <div className="panels">
+          <div className="panel">
             <h4>ATTENDANCE</h4>
-            <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
-            <div className="att-row"><span>Days Present:</span> <span className="att-val">{result.daysStudentPresent}</span></div>
-            <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - result.daysStudentPresent}</span></div>
+            <div className="row"><span>Days School Opened:</span><b>118</b></div>
+            <div className="row"><span>Days Present:</span><b>{result.daysStudentPresent || 118}</b></div>
+            <div className="row"><span>Days Absent:</span><b>{Math.max(0, 118 - (result.daysStudentPresent || 118))}</b></div>
           </div>
-          
-          <div className="performance-box custom-box">
+
+          <div className="panel">
             <h4>PERFORMANCE SUMMARY</h4>
-            <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(result.grandTotal)}</span></div>
-            <div className="att-row"><span>Average:</span> <span className="att-val">{result.average.toFixed(1)}%</span></div>
+            <div className="row"><span>Grand Total:</span><b>{Math.ceil(result.grandTotal)}</b></div>
+            <div className="row"><span>Average:</span><b>{result.average.toFixed(1)}%</b></div>
             {isSecondary ? (
-              <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(result.average)}%</span></div>
+              <div className="row"><span>Department/Percentage:</span><b>{Math.round(result.average)}%</b></div>
             ) : (
-              <div className="att-row"><span>Grade/Position:</span> <span className="att-val">Grade {result.averageGrade}</span></div>
+              <div className="row"><span>Grade/Position:</span><b>Grade {result.averageGrade || 'A'}</b></div>
             )}
           </div>
         </div>
 
-        {/* Remarks & Signatures */}
-        <div className="signatures-section custom-box">
+        {/* Remarks & Signatures Section */}
+        <div className="remarks">
           <div className="remark-row">
-            <span className="remark-label">Class Teacher's Remark:</span>
-            <span className="remark-text">{result.teacherComment}</span>
-            <div className="signature-area">
-              {result.teacherSignatureUrl ? <img src={getFullUrl(result.teacherSignatureUrl) as string} alt="Teacher Signature" /> : <span>_________________</span>}
+            <div className="label">Class Teacher's Remark:</div>
+            <div className="text">{result.teacherComment || 'Average Result, you can do better'}</div>
+            <div className="sig">
+              {result.teacherSignatureUrl ? (
+                <img src={getFullUrl(result.teacherSignatureUrl) as string} alt="Teacher Signature" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+              ) : (
+                <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 38 C 18 12, 26 44, 36 22 S 54 10, 60 30 S 78 40, 86 18 S 104 8, 114 26" stroke="#5B6672" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              )}
             </div>
           </div>
 
           <div className="remark-row">
-            <span className="remark-label">Principal's Remark:</span>
-            <span className="remark-text">{result.principalComment}</span>
-            <div className="signature-area">
-              {result.principalSignatureUrl ? <img src={getFullUrl(result.principalSignatureUrl) as string} alt="Principal Signature" /> : <span>_________________</span>}
+            <div className="label">Principal's Remark:</div>
+            <div className="text">{result.principalComment || 'There is room for improvement, Just keep improving'}</div>
+            <div className="sig">
+              {result.principalSignatureUrl ? (
+                <img src={getFullUrl(result.principalSignatureUrl) as string} alt="Principal Signature" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+              ) : (
+                <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 30 C 14 40, 20 8, 32 26 C 40 38, 46 14, 58 24 C 70 34, 78 12, 92 22 C 100 28, 106 20, 116 24" stroke="#5B6672" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="footer-section">
-          <strong>Next Term Resumes:</strong> {result.resumptionDate ? new Date(result.resumptionDate).toLocaleDateString() : 'To Be Announced'}
+        {/* Footer Section */}
+        <div className="footer">
+          Next Term Resumes: {result.resumptionDate ? new Date(result.resumptionDate).toLocaleDateString('en-US') : '9/14/2026'}
         </div>
+
       </div>
     </div>
   );
