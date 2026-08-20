@@ -672,11 +672,12 @@
   margin-top: auto;
   padding: 4px 0.10in 6px;
   text-align: center;
-  border-top: 1px solid #DCE3EA;
+  border-top: 1.8px solid #B3282D !important;
   font-size: 6.5px;
   letter-spacing: .5px;
-  color: #6B7684;
-  font-weight: 700;
+  color: #12395F !important;
+  font-weight: 900 !important;
+  font-style: italic !important;
 }
 
 /* ─── PRINT MEDIA STYLES ─── */
