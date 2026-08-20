@@ -617,7 +617,12 @@
   justify-content: center !important;
   align-items: center !important;
   width: 100% !important;
+  height: auto !important;
   margin: 4px 0 !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
 .staff-card .qr-box {
