@@ -151,15 +151,17 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     const trimmedClass = rawClass.trim();
 
     let durationYears = 1;
-    if (validPeriodStr.includes('-')) {
-      const parts = validPeriodStr.split('-').map(s => s.trim());
-      const firstYearMatch = parts[0].match(/(\d{4})/);
-      const lastYearMatch = parts[1].match(/(\d{4})/);
-      if (firstYearMatch && lastYearMatch) {
-        const startYr = parseInt(firstYearMatch[1], 10);
-        const endYr = parseInt(lastYearMatch[1], 10);
-        if (endYr >= startYr) {
-          durationYears = Math.max(1, endYr - startYr + 1);
+    if (validPeriodStr) {
+      const parts = validPeriodStr.split(/[-–—]|to/i).map(s => s.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        const firstMatch = parts[0].match(/(\d{4})/);
+        const secondMatch = parts[parts.length - 1].match(/(\d{4})/);
+        if (firstMatch && secondMatch) {
+          const startYr = parseInt(firstMatch[1], 10);
+          const endYr = parseInt(secondMatch[1], 10);
+          if (endYr > startYr) {
+            durationYears = endYr - startYr + 1;
+          }
         }
       }
     }
@@ -168,12 +170,14 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
       return trimmedClass;
     }
 
-    const match = trimmedClass.match(/^(.*?)\s*(\d+)$/);
+    const match = trimmedClass.match(/^([A-Za-z\s]+?)\s*(\d+)$/);
     if (match) {
       const prefix = match[1].trim();
       const startNum = parseInt(match[2], 10);
       const endNum = startNum + durationYears - 1;
-      return `${prefix} ${startNum} - ${prefix} ${endNum}`;
+      const hasSpace = /\s\d+$/.test(trimmedClass);
+      const sep = hasSpace ? ' ' : '';
+      return `${prefix}${sep}${startNum} - ${prefix}${sep}${endNum}`;
     }
 
     return trimmedClass;
