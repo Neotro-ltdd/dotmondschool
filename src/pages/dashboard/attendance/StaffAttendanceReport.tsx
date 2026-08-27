@@ -35,6 +35,9 @@ interface StaffAttendanceReportData {
   totalActiveStaff: number;
   totalPresentToday: number;
   totalAbsentToday: number;
+  totalHolidayToday?: number;
+  isHolidayOrBreak?: boolean;
+  holidayNotice?: string;
   teachingPresent: number;
   nonTeachingPresent: number;
   contractPresent: number;
@@ -77,7 +80,9 @@ export default function StaffAttendanceReport() {
     const matchesSearch = item.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
+    const matchesStatus = statusFilter === 'All' || 
+                          item.status === statusFilter ||
+                          (statusFilter === 'On Holiday' && (item.status === 'On Holiday' || item.status === 'Weekend Off'));
     return matchesSearch && matchesStatus;
   });
 
@@ -139,6 +144,16 @@ export default function StaffAttendanceReport() {
         </div>
       </div>
 
+      {/* School Holiday / Non-Working Day Notice Banner */}
+      {reportData?.isHolidayOrBreak && (
+        <div style={{ background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '12px', padding: '12px 16px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', color: '#6B21A8', fontWeight: 600, fontSize: '0.88rem' }}>
+          <Calendar size={18} />
+          <span>
+            <strong>Holiday Notice:</strong> Selected date ({reportData.date}) is a <strong>{reportData.holidayNotice || 'School Holiday / Non-Working Day'}</strong>. Staff tap-in gate scans are optional and un-scanned staff are designated <strong>On Holiday</strong> rather than Absent.
+          </span>
+        </div>
+      )}
+
       {/* ════════ EXECUTIVE METRIC CARDS ════════ */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
@@ -173,15 +188,19 @@ export default function StaffAttendanceReport() {
 
         <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Absent Today</span>
-            <div style={{ background: '#FEF2F2', padding: '8px', borderRadius: '10px', color: '#DC2626' }}>
-              <UserX size={20} />
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {reportData?.isHolidayOrBreak ? 'On Holiday / Off Duty' : 'Absent Today'}
+            </span>
+            <div style={{ background: reportData?.isHolidayOrBreak ? '#FAF5FF' : '#FEF2F2', padding: '8px', borderRadius: '10px', color: reportData?.isHolidayOrBreak ? '#7E22CE' : '#DC2626' }}>
+              {reportData?.isHolidayOrBreak ? <Calendar size={20} /> : <UserX size={20} />}
             </div>
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#DC2626' }}>
-            {loading ? '...' : (reportData?.totalAbsentToday ?? 0)}
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: reportData?.isHolidayOrBreak ? '#7E22CE' : '#DC2626' }}>
+            {loading ? '...' : (reportData?.isHolidayOrBreak ? (reportData?.totalHolidayToday ?? reportData?.totalActiveStaff ?? 0) : (reportData?.totalAbsentToday ?? 0))}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#DC2626', fontWeight: 600, marginTop: '4px' }}>No morning gate scan</div>
+          <div style={{ fontSize: '0.75rem', color: reportData?.isHolidayOrBreak ? '#7E22CE' : '#DC2626', fontWeight: 600, marginTop: '4px' }}>
+            {reportData?.isHolidayOrBreak ? 'School Holiday / Non-Working Day' : 'No morning gate scan'}
+          </div>
         </div>
 
         <div style={{ background: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
@@ -227,12 +246,21 @@ export default function StaffAttendanceReport() {
             >
               Present ({reportData?.totalPresentToday ?? 0})
             </button>
-            <button 
-              onClick={() => setStatusFilter('Absent')} 
-              style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer', background: statusFilter === 'Absent' ? '#DC2626' : '#F1F5F9', color: statusFilter === 'Absent' ? '#FFF' : '#475569' }}
-            >
-              Absent ({reportData?.totalAbsentToday ?? 0})
-            </button>
+            {reportData?.isHolidayOrBreak ? (
+              <button 
+                onClick={() => setStatusFilter('On Holiday')} 
+                style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer', background: (statusFilter === 'On Holiday' || statusFilter === 'Weekend Off') ? '#7E22CE' : '#F1F5F9', color: (statusFilter === 'On Holiday' || statusFilter === 'Weekend Off') ? '#FFF' : '#475569' }}
+              >
+                On Holiday ({reportData?.totalHolidayToday ?? reportData?.totalActiveStaff ?? 0})
+              </button>
+            ) : (
+              <button 
+                onClick={() => setStatusFilter('Absent')} 
+                style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer', background: statusFilter === 'Absent' ? '#DC2626' : '#F1F5F9', color: statusFilter === 'Absent' ? '#FFF' : '#475569' }}
+              >
+                Absent ({reportData?.totalAbsentToday ?? 0})
+              </button>
+            )}
           </div>
         </div>
 
@@ -303,6 +331,10 @@ export default function StaffAttendanceReport() {
                       {staff.status === 'Present' ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#059669', fontWeight: 700, fontSize: '0.8rem' }}>
                           <CheckCircle size={14} /> Present
+                        </span>
+                      ) : staff.status === 'On Holiday' || staff.status === 'Weekend Off' ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#7E22CE', background: '#FAF5FF', border: '1px solid #E9D5FF', padding: '3px 8px', borderRadius: '12px', fontWeight: 700, fontSize: '0.78rem' }}>
+                          <Calendar size={13} /> {staff.status}
                         </span>
                       ) : (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#DC2626', fontWeight: 700, fontSize: '0.8rem' }}>
