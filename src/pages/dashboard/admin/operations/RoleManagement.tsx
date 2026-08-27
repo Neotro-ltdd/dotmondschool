@@ -257,7 +257,7 @@ export default function RoleManagement() {
 
   const handleRejectEmailRequest = async (req: EmailChangeRequestItem) => {
     const reasonPrompt = window.prompt("Enter rejection reason (optional):", "Incorrect email request");
-    if (reasonPrompt === null) return; // User cancelled
+    if (reasonPrompt === null) return;
 
     try {
       setProcessingId(req.id);
@@ -339,7 +339,6 @@ export default function RoleManagement() {
     );
   });
 
-  // Metrics
   const totalStaff = teachers.length;
   const adminCount = teachers.filter(t => t.role === 'Admin' || t.role === 'Principal').length;
   const pendingRequestsCount = emailRequests.filter(r => r.status === 'Pending').length;
@@ -354,7 +353,7 @@ export default function RoleManagement() {
         </div>
 
         {/* Tab Switcher */}
-        <div style={{ display: 'flex', background: '#F1F5F9', padding: '4px', borderRadius: '10px', gap: '4px' }}>
+        <div style={{ display: 'flex', background: '#F1F5F9', padding: '4px', borderRadius: '10px', gap: '4px', flexWrap: 'wrap' }}>
           <button
             onClick={() => setActiveTab('roles')}
             style={{
@@ -376,9 +375,12 @@ export default function RoleManagement() {
             <Shield size={16} />
             Role Assignment
           </button>
-          
+
           <button
-            onClick={() => setActiveTab('email-requests')}
+            onClick={() => {
+              setActiveTab('permissions');
+              fetchRolePermissions();
+            }}
             style={{
               padding: '0.55rem 1.1rem',
               borderRadius: '8px',
@@ -390,424 +392,15 @@ export default function RoleManagement() {
               alignItems: 'center',
               gap: '0.45rem',
               transition: 'all 0.2s ease',
-              background: activeTab === 'email-requests' ? '#000080' : 'transparent',
-              color: activeTab === 'email-requests' ? '#FFFFFF' : '#64748B',
-              boxShadow: activeTab === 'email-requests' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
-              position: 'relative'
+              background: activeTab === 'permissions' ? '#000080' : 'transparent',
+              color: activeTab === 'permissions' ? '#FFFFFF' : '#64748B',
+              boxShadow: activeTab === 'permissions' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none'
             }}
           >
-            <Mail size={16} />
-            Staff Email Change Requests
-            {pendingRequestsCount > 0 && (
-              <span style={{
-                background: '#EF4444',
-                color: '#FFFFFF',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                padding: '2px 7px',
-                borderRadius: '999px',
-                lineHeight: 1
-              }}>
-                {pendingRequestsCount}
-              </span>
-            )}
+            <Sliders size={16} />
+            Permission Control Matrix
           </button>
-        </div>
-      </div>
-
-      {/* KPI Metrics Banner */}
-      <div className="role-metrics-grid">
-        <div className="role-metric-card">
-          <div className="metric-info-box">
-            <span className="metric-label">Total Staff Profiles</span>
-            <span className="metric-number">{totalStaff}</span>
-          </div>
-          <div className="metric-icon-badge staff">
-            <Users size={24} />
-          </div>
-        </div>
-
-        <div className="role-metric-card">
-          <div className="metric-info-box">
-            <span className="metric-label">Admins & Principals</span>
-            <span className="metric-number" style={{ color: '#6B21A8' }}>{adminCount}</span>
-          </div>
-          <div className="metric-icon-badge admin">
-            <ShieldCheck size={24} />
-          </div>
-        </div>
-
-        <div className="role-metric-card">
-          <div className="metric-info-box">
-            <span className="metric-label">Pending Email Requests</span>
-            <span className="metric-number" style={{ color: pendingRequestsCount > 0 ? '#DC2626' : '#047857' }}>
-              {pendingRequestsCount}
-            </span>
-          </div>
-          <div className="metric-icon-badge finance">
-            <Mail size={24} />
-          </div>
-        </div>
-      </div>
-
-      {/* ════════════════ TAB 1: ROLE ASSIGNMENT CONTROL ════════════════ */}
-      {activeTab === 'roles' && (
-        <div className="role-workspace-grid">
-          {/* Left Column: Role Assignment Form */}
-          <div className="role-card-wrapper">
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Shield size={20} color="#000080" /> Role Assignment Control
-              </h2>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748B' }}>
-                Grant or revoke operational privileges for staff users.
-              </p>
-            </div>
-
-            {/* Select Teacher Dropdown */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#475569' }}>
-                Target Staff Member
-              </label>
-              <select 
-                className="select-filter-input"
-                style={{ width: '100%', padding: '0.65rem 0.85rem' }}
-                value={roleEmail} 
-                onChange={(e) => setRoleEmail(e.target.value)} 
-              >
-                <option value="">-- Select a Staff Member --</option>
-                {teachers.map(t => (
-                  <option key={t.id} value={t.email}>
-                    {`${t.firstName} ${t.surname} (${t.email})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Select Role Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#475569' }}>
-                Select Security Role
-              </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {AVAILABLE_ROLES.map(role => {
-                  const IconComp = role.icon;
-                  const isSelected = selectedRole === role.id;
-                  return (
-                    <div 
-                      key={role.id}
-                      onClick={() => setSelectedRole(role.id)}
-                      style={{
-                        padding: '0.85rem 1rem',
-                        borderRadius: '10px',
-                        border: isSelected ? '2px solid #000080' : '1px solid #E2E8F0',
-                        background: isSelected ? '#EFF6FF' : '#FFFFFF',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <div style={{ 
-                        width: '34px', 
-                        height: '34px', 
-                        borderRadius: '8px', 
-                        background: isSelected ? '#000080' : '#F1F5F9',
-                        color: isSelected ? '#FFFFFF' : '#475569',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0
-                      }}>
-                        <IconComp size={18} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>{role.name}</div>
-                        <div style={{ fontSize: '0.74rem', color: '#64748B', lineHeight: '1.3' }}>{role.description}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-              <button
-                disabled={managingRole}
-                onClick={() => handleManageRole('Assign')}
-                className="btn btn-primary"
-                style={{ flex: 1, padding: '0.75rem', fontWeight: 700, fontSize: '0.88rem', background: '#000080' }}
-              >
-                {managingRole ? 'Processing...' : `Assign ${selectedRole}`}
-              </button>
-              <button
-                disabled={managingRole}
-                onClick={() => handleManageRole('Unassign')}
-                className="btn btn-outline"
-                style={{ flex: 1, padding: '0.75rem', fontWeight: 700, fontSize: '0.88rem', color: '#DC2626', borderColor: '#FCA5A5' }}
-              >
-                {managingRole ? 'Processing...' : `Revoke ${selectedRole}`}
-              </button>
-            </div>
-
-          </div>
-
-          {/* Right Column: Active Staff Directory */}
-          <div className="role-card-wrapper">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>Staff Roles Directory</h2>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748B' }}>Overview of active staff accounts and assigned privileges</p>
-              </div>
-
-              {/* Search filter */}
-              <div style={{ position: 'relative', width: '220px' }}>
-                <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-                <input
-                  type="text"
-                  placeholder="Filter staff..."
-                  value={searchFilter}
-                  onChange={e => setSearchFilter(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.45rem 0.65rem 0.45rem 2rem',
-                    borderRadius: '8px',
-                    border: '1px solid #CBD5E1',
-                    fontSize: '0.82rem',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1rem', maxHeight: '480px', overflowY: 'auto' }}>
-              {filteredTeachers.map(staff => (
-                <div 
-                  key={staff.id} 
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.85rem 1rem',
-                    borderRadius: '10px',
-                    border: '1px solid #F1F5F9',
-                    background: '#F8FAFC'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      background: '#000080',
-                      color: '#FFFFFF',
-                      fontSize: '0.88rem',
-                      fontWeight: 800,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      {getInitials(staff.firstName, staff.surname)}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0F172A' }}>
-                        {`${staff.surname}, ${staff.firstName}`}
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{staff.email}</div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      fontSize: '0.75rem',
-                      fontWeight: 800,
-                      background: staff.role === 'Admin' || staff.role === 'Principal' ? '#F3E8FF' : '#E0F2FE',
-                      color: staff.role === 'Admin' || staff.role === 'Principal' ? '#6B21A8' : '#0369A1'
-                    }}>
-                      {staff.role || 'Teacher'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* ════════════════ TAB 2: EMAIL CHANGE REQUESTS ════════════════ */}
-      {activeTab === 'email-requests' && (
-        <div className="role-card-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
-          {/* Header & Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
-                <Mail size={22} color="#000080" /> Staff Email Change Requests
-              </h2>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748B' }}>
-                Review and approve staff email updates. Preserves existing passwords seamlessly.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              {/* Direct Edit Staff Email Button */}
-              <button
-                onClick={() => {
-                  setSelectedStaffId('');
-                  setDirectNewEmail('');
-                  setDirectEditModalOpen(true);
-                }}
-                className="btn btn-outline"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.55rem 1rem',
-                  fontSize: '0.83rem',
-                  fontWeight: 700,
-                  borderColor: '#000080',
-                  color: '#000080'
-                }}
-              >
-                <Edit size={16} />
-                Direct Edit Staff Email
-              </button>
-
-              {/* Status Filter Pills */}
-              <div style={{ display: 'flex', background: '#F1F5F9', padding: '3px', borderRadius: '8px', gap: '3px' }}>
-                {(['ALL', 'Pending', 'Approved', 'Rejected'] as const).map(st => (
-                  <button
-                    key={st}
-                    onClick={() => setStatusFilter(st)}
-                    style={{
-                      padding: '0.4rem 0.8rem',
-                      borderRadius: '6px',
-                      border: 'none',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      background: statusFilter === st ? '#FFFFFF' : 'transparent',
-                      color: statusFilter === st ? '#000080' : '#64748B',
-                      boxShadow: statusFilter === st ? '0 1px 4px rgba(0,0,0,0.08)' : 'none'
-                    }}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Requests Table */}
-          {requestsLoading ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B', fontWeight: 600 }}>
-              Loading email change requests...
-            </div>
-          ) : filteredRequests.length === 0 ? (
-            <div style={{ padding: '3rem', textAlign: 'center', background: '#F8FAFC', borderRadius: '12px', border: '1px dashed #CBD5E1' }}>
-              <Mail size={36} style={{ color: '#94A3B8', marginBottom: '0.5rem' }} />
-              <h4 style={{ margin: 0, color: '#0F172A', fontWeight: 700 }}>No Email Requests Found</h4>
-              <p style={{ margin: '0.25rem 0 0', fontSize: '0.84rem', color: '#64748B' }}>
-                {statusFilter === 'ALL' ? 'No staff members have submitted email change requests yet.' : `No ${statusFilter.toLowerCase()} requests match your filter.`}
-              </p>
-            </div>
-          ) : (
-            <div style={{ overflowX: 'auto', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
-                <thead>
-                  <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', textTransform: 'uppercase', fontSize: '0.72rem', letterSpacing: '0.05em' }}>
-                    <th style={{ padding: '0.85rem 1rem' }}>Staff Member</th>
-                    <th style={{ padding: '0.85rem 1rem' }}>Current Email</th>
-                    <th style={{ padding: '0.85rem 1rem' }}>Requested New Email</th>
-                    <th style={{ padding: '0.85rem 1rem' }}>Reason & Date</th>
-                    <th style={{ padding: '0.85rem 1rem' }}>Status</th>
-                    <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRequests.map(req => (
-                    <tr key={req.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                      <td style={{ padding: '0.85rem 1rem' }}>
-                        <div style={{ fontWeight: 800, color: '#0F172A' }}>{req.staffName}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '2px' }}>
-                          <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#000080', background: '#EFF6FF', padding: '1px 6px', borderRadius: '4px' }}>
-                            {req.staffCode}
-                          </span>
-                          <span style={{ fontSize: '0.72rem', color: '#64748B' }}>{req.staffRole}</span>
-                        </div>
-                      </td>
-
-                      <td style={{ padding: '0.85rem 1rem', color: '#64748B', fontWeight: 600 }}>
-                        {req.oldEmail}
-                      </td>
-
-                      <td style={{ padding: '0.85rem 1rem', color: '#0F172A', fontWeight: 700 }}>
-                        {req.newEmail}
-                      </td>
-
-                      <td style={{ padding: '0.85rem 1rem', maxWidth: '240px' }}>
-                        <div style={{ color: '#334155', fontWeight: 500, fontSize: '0.82rem', lineHeight: '1.3' }}>
-                          {req.reason}
-                        </div>
-                        <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <Clock size={12} />
-                          {new Date(req.requestedAt).toLocaleDateString()} at {new Date(req.requestedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                      </td>
-
-                      <td style={{ padding: '0.85rem 1rem' }}>
-                        {req.status === 'Pending' && (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#92400E', padding: '3px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800 }}>
-                            <Clock size={13} /> Pending Review
-                          </span>
-                        )}
-                        {req.status === 'Approved' && (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#DCFCE7', color: '#166534', padding: '3px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800 }}>
-                            <CheckCircle2 size={13} /> Approved
-                          </span>
-                        )}
-                        {req.status === 'Rejected' && (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEE2E2', color: '#991B1B', padding: '3px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800 }}>
-                            <XCircle size={13} /> Rejected
-                          </span>
-                        )}
-                      </td>
-
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
-                        {req.status === 'Pending' ? (
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                            <button
-                              disabled={processingId === req.id}
-                              onClick={() => handleApproveEmailRequest(req)}
-                              className="btn"
-                              style={{
-                                padding: '0.45rem 0.85rem',
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                background: '#166534',
-                                color: '#FFFFFF',
-                                borderRadius: '6px'
-                              }}
-                            >
-                              Approve & Update
-                            </button>
-                            <button
-                              disabled={processingId === req.id}
-                              onClick={() => handleRejectEmailRequest(req)}
-                              className="btn btn-outline"
-                              style={{
-                                padding: '0.45rem 0.75rem',
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                color: '#DC2626',
-                                borderColor: '#FCA5A5',
-                                borderRadius: '6px'
-                              }}
           <button
             onClick={() => setActiveTab('email-requests')}
             style={{
@@ -849,7 +442,6 @@ export default function RoleManagement() {
       {/* TAB 1: ROLE ASSIGNMENT */}
       {activeTab === 'roles' && (
         <>
-          {/* KPI Metrics Banner */}
           <div className="role-metrics-grid">
             <div className="role-metric-card">
               <div className="metric-info-box">
@@ -883,7 +475,6 @@ export default function RoleManagement() {
           </div>
 
           <div className="role-workspace-grid">
-            {/* Left Control Card */}
             <div className="role-card-wrapper">
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>Assign User Role</h3>
@@ -939,7 +530,6 @@ export default function RoleManagement() {
                 </select>
               </div>
 
-              {/* Role Meta Description Box */}
               <div style={{
                 background: '#F8FAFC',
                 border: '1px solid #E2E8F0',
@@ -956,7 +546,6 @@ export default function RoleManagement() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
                 <button
                   onClick={() => handleManageRole('Assign')}
@@ -994,7 +583,6 @@ export default function RoleManagement() {
               </div>
             </div>
 
-            {/* Right Roster Table */}
             <div className="role-card-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
               <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>Active Staff Role Roster</h3>
@@ -1009,7 +597,7 @@ export default function RoleManagement() {
                       width: '100%',
                       padding: '0.45rem 0.65rem 0.45rem 2rem',
                       borderRadius: '8px',
-                      border: '1px solid #CBD5E1',
+                      border: '1.5px solid #CBD5E1',
                       fontSize: '0.82rem'
                     }}
                   />
@@ -1085,7 +673,6 @@ export default function RoleManagement() {
       {/* TAB 2: PERMISSION CONTROL MATRIX */}
       {activeTab === 'permissions' && (
         <div className="permission-matrix-container">
-          {/* Role Toolbar */}
           <div className="permission-roles-toolbar">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
@@ -1123,7 +710,6 @@ export default function RoleManagement() {
               </div>
             </div>
 
-            {/* Role Chips Bar */}
             <div className="permission-roles-flex">
               {rbacRoles.map(role => (
                 <button
@@ -1148,7 +734,6 @@ export default function RoleManagement() {
             </div>
           </div>
 
-          {/* Active Role Meta Card */}
           <div className="permission-card-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#EEF2FF', color: '#000080', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
@@ -1162,7 +747,6 @@ export default function RoleManagement() {
               </div>
             </div>
 
-            {/* Rule Callout Banner for Chairman */}
             {selectedMatrixRole === 'Chairman' && (
               <div className="permission-rule-banner">
                 <AlertCircle size={20} style={{ color: '#D97706', flexShrink: 0, marginTop: '1px' }} />
@@ -1173,7 +757,6 @@ export default function RoleManagement() {
             )}
           </div>
 
-          {/* Modules Grid */}
           {matrixLoading ? (
             <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748B' }}>
               Loading permission matrix configuration...
@@ -1187,7 +770,6 @@ export default function RoleManagement() {
 
                 return (
                   <div key={mod.moduleId} className="permission-module-card">
-                    {/* Header */}
                     <div className="permission-module-header">
                       <div className="permission-module-title">
                         <BookOpen size={17} style={{ color: '#000080' }} />
@@ -1209,7 +791,6 @@ export default function RoleManagement() {
                       </button>
                     </div>
 
-                    {/* Permissions List */}
                     <div className="permission-items-list">
                       {mod.permissions.map((perm: any) => {
                         const isChecked = activeRoleKeys.includes(perm.key);
@@ -1597,7 +1178,6 @@ export default function RoleManagement() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
