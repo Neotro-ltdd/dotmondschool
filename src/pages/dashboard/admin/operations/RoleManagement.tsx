@@ -24,7 +24,16 @@ import {
   Send,
   Sliders,
   Plus,
-  Save
+  Save,
+  FileText,
+  GraduationCap,
+  Award,
+  QrCode,
+  BarChart2,
+  Settings,
+  Sparkles,
+  RotateCcw,
+  Check
 } from 'lucide-react';
 
 interface TeacherItem {
@@ -108,6 +117,21 @@ export default function RoleManagement() {
   const [selectedMatrixRole, setSelectedMatrixRole] = useState<string>('Chairman');
   const [matrixLoading, setMatrixLoading] = useState<boolean>(false);
   const [savingPermissions, setSavingPermissions] = useState<boolean>(false);
+  const [matrixSearchQuery, setMatrixSearchQuery] = useState<string>('');
+
+  const MODULE_ICONS: Record<string, any> = {
+    users: UserCheck,
+    admissions: FileText,
+    academics: GraduationCap,
+    subjects: BookOpen,
+    results: Award,
+    promotions: ShieldCheck,
+    attendance: QrCode,
+    setups: Sliders,
+    finance: DollarSign,
+    reports: BarChart2,
+    settings: Settings
+  };
 
   // Custom Role Modal State
   const [customRoleModalOpen, setCustomRoleModalOpen] = useState(false);
@@ -161,6 +185,15 @@ export default function RoleManagement() {
       }
       return { ...prev, [roleName]: updated };
     });
+  };
+
+  const handleGrantAllPermissions = (roleName: string) => {
+    const allKeys = rbacModules.flatMap(m => (m.permissions || []).map((p: any) => p.key));
+    setRbacMappings(prev => ({ ...prev, [roleName]: Array.from(new Set(allKeys)) }));
+  };
+
+  const handleRevokeAllPermissions = (roleName: string) => {
+    setRbacMappings(prev => ({ ...prev, [roleName]: [] }));
   };
 
   const handleSaveRolePermissions = async () => {
@@ -689,18 +722,49 @@ export default function RoleManagement() {
       {/* TAB 2: PERMISSION CONTROL MATRIX */}
       {activeTab === 'permissions' && (
         <div className="permission-matrix-container">
+          {/* Top Role Selector Toolbar */}
           <div className="permission-roles-toolbar">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>Select Role to Configure</h3>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#64748B' }}>Choose an existing role or create a custom role to toggle specific feature access</p>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <Sliders size={20} style={{ color: '#000080' }} /> Select Role to Configure
+                </h3>
+                <p style={{ margin: '0.2rem 0 0', fontSize: '0.83rem', color: '#64748B' }}>
+                  Choose an existing role or create a custom role to toggle feature access across all system modules
+                </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative', width: '220px' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                  <input
+                    type="text"
+                    placeholder="Search permissions..."
+                    value={matrixSearchQuery}
+                    onChange={e => setMatrixSearchQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.55rem 0.75rem 0.55rem 2.25rem',
+                      borderRadius: '10px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.82rem',
+                      outline: 'none'
+                    }}
+                  />
+                  {matrixSearchQuery && (
+                    <button
+                      onClick={() => setMatrixSearchQuery('')}
+                      style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
                 <button
                   onClick={() => setCustomRoleModalOpen(true)}
                   className="btn btn-outline"
-                  style={{ fontWeight: 700, padding: '0.6rem 1.1rem', display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
+                  style={{ fontWeight: 700, padding: '0.58rem 1.1rem', display: 'inline-flex', alignItems: 'center', gap: '0.45rem', borderRadius: '10px' }}
                 >
                   <Plus size={16} />
                   Add Custom Role
@@ -712,12 +776,14 @@ export default function RoleManagement() {
                   className="btn"
                   style={{
                     fontWeight: 700,
-                    padding: '0.6rem 1.25rem',
+                    padding: '0.58rem 1.25rem',
                     background: '#10B981',
                     color: '#FFFFFF',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.45rem'
+                    gap: '0.45rem',
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
                   }}
                 >
                   <Save size={16} />
@@ -727,113 +793,194 @@ export default function RoleManagement() {
             </div>
 
             <div className="permission-roles-flex">
-              {rbacRoles.map(role => (
-                <button
-                  key={role}
-                  onClick={() => setSelectedMatrixRole(role)}
-                  className={`permission-role-chip ${selectedMatrixRole === role ? 'active' : ''}`}
-                >
-                  <Shield size={14} />
-                  {role}
-                  <span style={{
-                    fontSize: '0.72rem',
-                    opacity: 0.85,
-                    background: selectedMatrixRole === role ? 'rgba(255,255,255,0.2)' : '#E2E8F0',
-                    padding: '1px 6px',
-                    borderRadius: '999px',
-                    marginLeft: '4px'
-                  }}>
-                    {(rbacMappings[role] || []).length}
-                  </span>
-                </button>
-              ))}
+              {rbacRoles.map(role => {
+                const rolePermCount = (rbacMappings[role] || []).length;
+                const totalSystemPerms = rbacModules.reduce((sum, m) => sum + (m.permissions?.length || 0), 0);
+                const isSelected = selectedMatrixRole === role;
+
+                return (
+                  <button
+                    key={role}
+                    onClick={() => setSelectedMatrixRole(role)}
+                    className={`permission-role-chip ${isSelected ? 'active' : ''}`}
+                  >
+                    <Shield size={14} />
+                    <span>{role}</span>
+                    <span className="role-count-badge">
+                      {rolePermCount}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="permission-card-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#EEF2FF', color: '#000080', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
-                <Shield size={24} />
-              </div>
-              <div>
-                <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#0F172A' }}>{selectedMatrixRole} Role Governance</h2>
-                <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                  {(rbacMappings[selectedMatrixRole] || []).length} permissions currently enabled for {selectedMatrixRole} users
-                </span>
-              </div>
-            </div>
+          {/* Selected Role Governance Banner Card */}
+          {(() => {
+            const currentRolePerms = rbacMappings[selectedMatrixRole] || [];
+            const totalAvailablePerms = rbacModules.reduce((sum, m) => sum + (m.permissions?.length || 0), 0);
+            const percentage = totalAvailablePerms > 0 ? Math.round((currentRolePerms.length / totalAvailablePerms) * 100) : 0;
 
-            {selectedMatrixRole === 'Chairman' && (
-              <div className="permission-rule-banner">
-                <AlertCircle size={20} style={{ color: '#D97706', flexShrink: 0, marginTop: '1px' }} />
-                <div>
-                  <strong>Client Specification:</strong> Chairman role has executive academic & result oversight, but financial module permissions (`finance.*` and `reports.finance`) are restricted by default.
+            return (
+              <div className="permission-card-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: '#000080', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0, 0, 128, 0.2)' }}>
+                    <Shield size={26} />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>{selectedMatrixRole} Role Governance</h2>
+                      <span style={{ background: '#EEF2FF', color: '#000080', fontWeight: 800, fontSize: '0.78rem', padding: '0.2rem 0.65rem', borderRadius: '20px', border: '1px solid #C7D2FE' }}>
+                        {percentage}% Access Granted
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.85rem', color: '#64748B', display: 'block', marginTop: '0.15rem' }}>
+                      <strong>{currentRolePerms.length}</strong> of <strong>{totalAvailablePerms}</strong> system feature permissions currently assigned to <strong>{selectedMatrixRole}</strong> users
+                    </span>
+                  </div>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => handleGrantAllPermissions(selectedMatrixRole)}
+                    style={{
+                      background: '#ECFDF5',
+                      color: '#047857',
+                      border: '1px solid #A7F3D0',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                    title="Grant all 28 feature permissions to this role"
+                  >
+                    <CheckCircle2 size={15} /> Grant All Permissions
+                  </button>
+
+                  <button
+                    onClick={() => handleRevokeAllPermissions(selectedMatrixRole)}
+                    style={{
+                      background: '#FEF2F2',
+                      color: '#DC2626',
+                      border: '1px solid #FCA5A5',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}
+                    title="Revoke all permissions from this role"
+                  >
+                    <XCircle size={15} /> Revoke All
+                  </button>
+                </div>
+
+                {selectedMatrixRole === 'Chairman' && (
+                  <div className="permission-rule-banner" style={{ width: '100%', marginTop: '0.5rem' }}>
+                    <AlertCircle size={20} style={{ color: '#D97706', flexShrink: 0, marginTop: '1px' }} />
+                    <div>
+                      <strong>Client Specification:</strong> Chairman role has executive academic & result oversight, but financial module permissions (`finance.*` and `reports.finance`) are restricted by default.
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
 
           {matrixLoading ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748B' }}>
-              Loading permission matrix configuration...
+            <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748B', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem' }} />
+              <span>Loading system permission matrix configuration...</span>
             </div>
           ) : (
             <div className="permission-modules-grid">
-              {rbacModules.map(mod => {
-                const moduleKeys = mod.permissions.map((p: any) => p.key);
-                const activeRoleKeys = rbacMappings[selectedMatrixRole] || [];
-                const isAllSelected = moduleKeys.every((k: string) => activeRoleKeys.includes(k));
+              {rbacModules
+                .map(mod => {
+                  const filteredPerms = (mod.permissions || []).filter((p: any) => {
+                    if (!matrixSearchQuery.trim()) return true;
+                    const q = matrixSearchQuery.toLowerCase();
+                    return p.name.toLowerCase().includes(q) || 
+                           p.key.toLowerCase().includes(q) || 
+                           p.description.toLowerCase().includes(q) ||
+                           mod.moduleName.toLowerCase().includes(q);
+                  });
 
-                return (
-                  <div key={mod.moduleId} className="permission-module-card">
-                    <div className="permission-module-header">
-                      <div className="permission-module-title">
-                        <BookOpen size={17} style={{ color: '#000080' }} />
-                        {mod.moduleName}
+                  if (matrixSearchQuery.trim() && filteredPerms.length === 0) {
+                    return null;
+                  }
+
+                  const moduleKeys = mod.permissions.map((p: any) => p.key);
+                  const activeRoleKeys = rbacMappings[selectedMatrixRole] || [];
+                  const activeInModuleCount = moduleKeys.filter((k: string) => activeRoleKeys.includes(k)).length;
+                  const isAllSelected = moduleKeys.length > 0 && moduleKeys.every((k: string) => activeRoleKeys.includes(k));
+                  const IconComp = MODULE_ICONS[mod.moduleId] || BookOpen;
+
+                  return (
+                    <div key={mod.moduleId} className="permission-module-card">
+                      <div className="permission-module-header">
+                        <div className="permission-module-title">
+                          <div className={`module-icon-wrapper ${mod.moduleId}`}>
+                            <IconComp size={18} />
+                          </div>
+                          <div>
+                            <span style={{ display: 'block', fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>{mod.moduleName}</span>
+                            <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>
+                              {activeInModuleCount} of {moduleKeys.length} Enabled
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleBulkModuleToggle(selectedMatrixRole, moduleKeys, !isAllSelected)}
+                          className={`btn-module-bulk-toggle ${isAllSelected ? 'deselect' : 'select'}`}
+                        >
+                          {isAllSelected ? 'Deselect All' : 'Select All'}
+                        </button>
                       </div>
 
-                      <button
-                        onClick={() => handleBulkModuleToggle(selectedMatrixRole, moduleKeys, !isAllSelected)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          fontSize: '0.78rem',
-                          fontWeight: 700,
-                          color: isAllSelected ? '#EF4444' : '#000080',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        {isAllSelected ? 'Deselect All' : 'Select All'}
-                      </button>
-                    </div>
+                      <div className="permission-items-list">
+                        {filteredPerms.map((perm: any) => {
+                          const isChecked = activeRoleKeys.includes(perm.key);
 
-                    <div className="permission-items-list">
-                      {mod.permissions.map((perm: any) => {
-                        const isChecked = activeRoleKeys.includes(perm.key);
-
-                        return (
-                          <div key={perm.key} className="permission-item-row">
-                            <div className="permission-item-info">
-                              <div className="permission-item-name">
-                                {perm.name}
-                                <span className="permission-key-tag">{perm.key}</span>
+                          return (
+                            <div 
+                              key={perm.key} 
+                              className={`permission-item-row ${isChecked ? 'active' : ''}`}
+                              onClick={() => handleTogglePermission(selectedMatrixRole, perm.key)}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <div className="permission-item-info">
+                                <div className="permission-item-name">
+                                  <span>{perm.name}</span>
+                                  <span className="permission-key-tag">{perm.key}</span>
+                                </div>
+                                <div className="permission-item-desc">{perm.description}</div>
                               </div>
-                              <div className="permission-item-desc">{perm.description}</div>
-                            </div>
 
-                            <input
-                              type="checkbox"
-                              className="toggle-switch-input"
-                              checked={isChecked}
-                              onChange={() => handleTogglePermission(selectedMatrixRole, perm.key)}
-                            />
-                          </div>
-                        );
-                      })}
+                              <input
+                                type="checkbox"
+                                className="toggle-switch-input"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  handleTogglePermission(selectedMatrixRole, perm.key);
+                                }}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+                .filter(Boolean)}
             </div>
           )}
         </div>
