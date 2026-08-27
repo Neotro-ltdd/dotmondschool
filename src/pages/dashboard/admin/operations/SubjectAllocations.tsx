@@ -15,6 +15,8 @@ import {
   GraduationCap 
 } from 'lucide-react';
 
+import { useAuth } from '../../../../context/AuthContext';
+
 interface TeacherItem {
   id: string;
   surname: string;
@@ -40,6 +42,8 @@ interface ClassAllocationItem {
 
 export default function SubjectAllocations() {
   const { showAlert } = useDialog();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
 
   const [allocations, setAllocations] = useState<ClassAllocationItem[]>([]);
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
@@ -326,13 +330,15 @@ export default function SubjectAllocations() {
                         </span>
                       </td>
                       <td style={{ textAlign: 'center' }}>
-                        <button 
-                          className={`btn-assign-action ${sub.assignedTeacher ? 'change' : 'new'}`}
-                          onClick={() => openAssignModal(sub)}
-                        >
-                          <UserPlus size={15} />
-                          {sub.assignedTeacher ? 'Change Teacher' : 'Assign Teacher'}
-                        </button>
+                        {!isReadOnly && (
+                          <button 
+                            className={`btn-assign-action ${sub.assignedTeacher ? 'change' : 'new'}`}
+                            onClick={() => openAssignModal(sub)}
+                          >
+                            <UserPlus size={15} />
+                            {sub.assignedTeacher ? 'Change Teacher' : 'Assign Teacher'}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -370,14 +376,16 @@ export default function SubjectAllocations() {
                   )}
                 </div>
 
-                <button 
-                  className={`btn-assign-action ${sub.assignedTeacher ? 'change' : 'new'}`}
-                  onClick={() => openAssignModal(sub)}
-                  style={{ width: '100%', justifyContent: 'center', marginTop: 'auto' }}
-                >
-                  <UserPlus size={15} />
-                  {sub.assignedTeacher ? 'Change Subject Teacher' : 'Assign Subject Teacher'}
-                </button>
+                {!isReadOnly && (
+                  <button 
+                    className={`btn-assign-action ${sub.assignedTeacher ? 'change' : 'new'}`}
+                    onClick={() => openAssignModal(sub)}
+                    style={{ width: '100%', justifyContent: 'center', marginTop: 'auto' }}
+                  >
+                    <UserPlus size={15} />
+                    {sub.assignedTeacher ? 'Change Subject Teacher' : 'Assign Subject Teacher'}
+                  </button>
+                )}
               </div>
             ))}
           </div>

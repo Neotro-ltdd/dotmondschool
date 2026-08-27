@@ -18,6 +18,8 @@ import {
   AlertCircle 
 } from 'lucide-react';
 
+import { useAuth } from '../../../context/AuthContext';
+
 interface ClassItem {
   id: string;
   session: string;
@@ -31,6 +33,8 @@ interface ClassItem {
 
 export default function Classes() {
   const { showAlert, showConfirm } = useDialog();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
 
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -228,9 +232,11 @@ export default function Classes() {
           <h1 className="classes-page-title">Class Management</h1>
           <p className="classes-page-subtitle">Configure class structures, form teacher assignments, and student rosters</p>
         </div>
-        <button className="btn-add-class" onClick={openCreateModal}>
-          <Plus size={18} /> Add New Class
-        </button>
+        {!isReadOnly && (
+          <button className="btn-add-class" onClick={openCreateModal}>
+            <Plus size={18} /> Add New Class
+          </button>
+        )}
       </div>
 
       {/* KPI Metrics Banner */}
@@ -421,7 +427,7 @@ export default function Classes() {
                           <MoreVertical size={18} />
                         </button>
 
-                        {isDropdownOpen && (
+                        {isDropdownOpen && !isReadOnly && (
                           <div className="action-dropdown-menu">
                             <button 
                               className="dropdown-action-item" 

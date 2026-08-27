@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import './ClassAllocations.css';
 
+import { useAuth } from '../../../../context/AuthContext';
+
 interface TeacherItem {
   id: string;
   surname: string;
@@ -36,6 +38,8 @@ interface ClassItem {
 
 export default function ClassAllocations() {
   const { showAlert } = useDialog();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
 
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
@@ -350,13 +354,15 @@ export default function ClassAllocations() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <button 
-                      className={`btn-assign-action ${formatTeacherName(cls.classTeacherName) ? 'change' : 'new'}`}
-                      onClick={() => openAssignModal(cls)}
-                    >
-                      <UserPlus size={15} />
-                      {formatTeacherName(cls.classTeacherName) ? 'Change Teacher' : 'Assign Teacher'}
-                    </button>
+                    {!isReadOnly && (
+                      <button 
+                        className={`btn-assign-action ${formatTeacherName(cls.classTeacherName) ? 'change' : 'new'}`}
+                        onClick={() => openAssignModal(cls)}
+                      >
+                        <UserPlus size={15} />
+                        {formatTeacherName(cls.classTeacherName) ? 'Change Teacher' : 'Assign Teacher'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

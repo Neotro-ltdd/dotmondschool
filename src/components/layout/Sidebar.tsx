@@ -271,10 +271,12 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
               <>
                 <div className="sidebar-section-header">MANAGEMENT MODULES</div>
 
-                <NavLink to="/dashboard/admissions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><FileText size={18} /></span>
-                  Admission Applications
-                </NavLink>
+                {userRole !== 'Chairman' && (
+                  <NavLink to="/dashboard/admissions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                    <span className="nav-icon-box"><FileText size={18} /></span>
+                    Admission Applications
+                  </NavLink>
+                )}
 
                 {/* 1. USER & ROLE MANAGEMENT */}
                 {userRole !== 'Accountant' && (
@@ -330,7 +332,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                             Class Allocation
                           </NavLink>
                         )}
-                        {(userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Principal') && (
+                        {(userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Principal' || userRole === 'Chairman') && (
                           <NavLink to="/dashboard/operations/promotions" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Student Promotions
                           </NavLink>
@@ -383,20 +385,20 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     </button>
                     {isResultMgmtOpen && (
                       <div className="submenu">
-                        {userRole !== 'Principal' && (
+                        {userRole !== 'Principal' && userRole !== 'Chairman' && (
                           <NavLink to="/dashboard/operations/result-management" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                             Compute Result
                           </NavLink>
                         )}
                         <NavLink to="/dashboard/operations/review-results" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Review Results
+                          {userRole === 'Chairman' ? 'View Results' : 'Review Results'}
                         </NavLink>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* 5. APPROVAL MANAGEMENT (PRINCIPAL ONLY) */}
+                {/* 5. APPROVAL MANAGEMENT (PRINCIPAL / SUPERADMIN) */}
                 {(userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
                   <div className="nav-group">
                     <button 
@@ -423,7 +425,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 5. SETUPS */}
-                {userRole !== 'Accountant' && userRole !== 'Principal' && (
+                {userRole !== 'Accountant' && userRole !== 'Principal' && userRole !== 'Chairman' && (
                   <div className="nav-group">
                     <button 
                       className={`nav-item dropdown-toggle ${isSetupsOpen ? 'open' : ''}`} 
@@ -468,15 +470,15 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </button>
                   {isAttendanceOpen && (
                     <div className="submenu">
+                      {userRole !== 'Accountant' && userRole !== 'Principal' && userRole !== 'Chairman' && (
+                        <NavLink to="/dashboard/operations/gate-scanner" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          Gate Scanner
+                        </NavLink>
+                      )}
                       {userRole !== 'Accountant' && userRole !== 'Principal' && (
-                        <>
-                          <NavLink to="/dashboard/operations/gate-scanner" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                            Gate Scanner
-                          </NavLink>
-                          <NavLink to="/dashboard/operations/gate-logs" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                            Gate Logs
-                          </NavLink>
-                        </>
+                        <NavLink to="/dashboard/operations/gate-logs" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          Gate Logs
+                        </NavLink>
                       )}
                       <NavLink to="/dashboard/staff-attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                         Staff Attendance Log

@@ -74,7 +74,11 @@ interface ReportData {
   records: StudentRecord[];
 }
 
+import { useAuth } from '../../../context/AuthContext';
+
 export default function PromotionManagement() {
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
   const queryClient = useQueryClient();
   const { showConfirm } = useDialog();
   const year = new Date().getFullYear();
@@ -609,10 +613,12 @@ export default function PromotionManagement() {
                     </button>
                   </div>
 
-                  <button className="btn-save-grading" onClick={handleApprove} disabled={approveBatchMutation.isPending}>
-                    <CheckCircle size={18} />
-                    {approveBatchMutation.isPending ? 'Executing...' : 'Execute & Approve Promotions'}
-                  </button>
+                  {!isReadOnly && (
+                    <button className="btn-save-grading" onClick={handleApprove} disabled={approveBatchMutation.isPending}>
+                      <CheckCircle size={18} />
+                      {approveBatchMutation.isPending ? 'Executing...' : 'Execute & Approve Promotions'}
+                    </button>
+                  )}
                 </div>
               </div>
 

@@ -29,6 +29,8 @@ interface SubjectItem {
   departmentTrack?: string;
 }
 
+import { useAuth } from '../../../context/AuthContext';
+
 interface ClassItem {
   id: string;
   level: string;
@@ -38,6 +40,8 @@ interface ClassItem {
 
 export default function Subjects() {
   const { showAlert, showConfirm } = useDialog();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
 
   const [subjects, setSubjects] = useState<SubjectItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -198,9 +202,11 @@ export default function Subjects() {
           <h1 className="subjects-page-title">Subject Management</h1>
           <p className="subjects-page-subtitle">Configure academic subjects, target levels, and department track mappings</p>
         </div>
-        <button className="btn-add-subject" onClick={openCreateModal}>
-          <Plus size={18} /> Add New Subject
-        </button>
+        {!isReadOnly && (
+          <button className="btn-add-subject" onClick={openCreateModal}>
+            <Plus size={18} /> Add New Subject
+          </button>
+        )}
       </div>
 
       {/* KPI Metrics Banner */}
@@ -358,7 +364,7 @@ export default function Subjects() {
                           <MoreVertical size={18} />
                         </button>
 
-                        {isDropdownOpen && (
+                        {isDropdownOpen && !isReadOnly && (
                           <div className="action-dropdown-menu">
                             <button 
                               className="dropdown-action-item" 
