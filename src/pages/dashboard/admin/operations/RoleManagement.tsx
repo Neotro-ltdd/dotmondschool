@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import './RoleManagement.css';
 import { useDialog } from '../../../../context/DialogContext';
+import { useAuth } from '../../../../context/AuthContext';
 import { 
   Shield, 
   ShieldCheck, 
@@ -64,6 +65,21 @@ const AVAILABLE_ROLES = [
 
 export default function RoleManagement() {
   const { showAlert, showConfirm } = useDialog();
+  const { userRole } = useAuth();
+
+  if (userRole === 'Chairman') {
+    return (
+      <div className="role-page-container">
+        <div className="role-card-wrapper" style={{ padding: '3rem', textAlign: 'center' }}>
+          <ShieldAlert size={48} style={{ color: '#DC2626', marginBottom: '1rem', display: 'inline-block' }} />
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>Access Restricted</h2>
+          <p style={{ color: '#64748B', maxWidth: '480px', margin: '0.5rem auto 0', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            User Role & Access Governance is restricted to Administrators and Directors. As Chairman, you have read-only executive oversight across academic results, classes, attendance, and reports.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const [activeTab, setActiveTab] = useState<'roles' | 'email-requests' | 'permissions'>('roles');
 

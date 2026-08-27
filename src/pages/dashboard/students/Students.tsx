@@ -48,6 +48,8 @@ interface StudentItem {
   departmentTrack?: string;
 }
 
+import { useAuth } from '../../../context/AuthContext';
+
 interface ClassItem {
   id: string;
   level: string;
@@ -57,6 +59,8 @@ interface ClassItem {
 
 export default function Students() {
   const { showAlert, showConfirm } = useDialog();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
 
   const [students, setStudents] = useState<StudentItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -325,51 +329,53 @@ export default function Students() {
           <p className="students-page-subtitle">Manage student enrollment, class placements, clearance status, and credentials</p>
         </div>
         
-        <div className="header-action-buttons">
-          <input 
-            type="file" 
-            accept=".xlsx,.xls" 
-            ref={fileInputRef} 
-            style={{ display: 'none' }} 
-            onChange={handleFileUpload} 
-          />
-          <button 
-            className="btn-upload-excel" 
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            title="Bulk import students via Excel template"
-          >
-            <FileSpreadsheet size={18} />
-            {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
-          </button>
+        {!isReadOnly && (
+          <div className="header-action-buttons">
+            <input 
+              type="file" 
+              accept=".xlsx,.xls" 
+              ref={fileInputRef} 
+              style={{ display: 'none' }} 
+              onChange={handleFileUpload} 
+            />
+            <button 
+              className="btn-upload-excel" 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              title="Bulk import students via Excel template"
+            >
+              <FileSpreadsheet size={18} />
+              {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
+            </button>
 
-          <button 
-            className="btn-upload-excel"
-            style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fcd34d' }}
-            onClick={handleStandardizeRegNumbers}
-            disabled={standardizing}
-            title="Audit and re-format all student registration numbers to standard DOT format"
-          >
-            <ShieldCheck size={18} />
-            {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
-          </button>
+            <button 
+              className="btn-upload-excel"
+              style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fcd34d' }}
+              onClick={handleStandardizeRegNumbers}
+              disabled={standardizing}
+              title="Audit and re-format all student registration numbers to standard DOT format"
+            >
+              <ShieldCheck size={18} />
+              {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
+            </button>
 
-          <button 
-            className="btn-upload-excel"
-            style={{ background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}
-            onClick={handleSendFeeReminders}
-            disabled={sendingReminders}
-            title="Dispatch fee reminder emails to uncleared students in current view"
-          >
-            <Mail size={18} />
-            {sendingReminders ? 'Sending...' : `Send Fee Reminders (${filteredStudents.filter(s => !s.isCleared).length})`}
-          </button>
+            <button 
+              className="btn-upload-excel"
+              style={{ background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}
+              onClick={handleSendFeeReminders}
+              disabled={sendingReminders}
+              title="Dispatch fee reminder emails to uncleared students in current view"
+            >
+              <Mail size={18} />
+              {sendingReminders ? 'Sending...' : `Send Fee Reminders (${filteredStudents.filter(s => !s.isCleared).length})`}
+            </button>
 
-          <button className="btn-add-student" onClick={() => setShowModal(true)}>
-            <UserPlus size={18} />
-            Admit New Student
-          </button>
-        </div>
+            <button className="btn-add-student" onClick={() => setShowModal(true)}>
+              <UserPlus size={18} />
+              Admit New Student
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Top Metrics Banner */}
@@ -584,30 +590,34 @@ export default function Students() {
                             </button>
                             <button 
                               className="dropdown-action-item" 
-                              onClick={() => { setEditingStudent(student); setOpenDropdownId(null); }}
-                            >
-                              <Edit3 size={15} color="#000080" /> Edit Details
-                            </button>
-                            <button 
-                              className="dropdown-action-item" 
                               onClick={() => { setPrintStudentId(student.id); setOpenDropdownId(null); }}
                             >
                               <QrCode size={15} color="#059669" /> Print ID Card
                             </button>
-                            <button 
-                              className="dropdown-action-item" 
-                              onClick={() => handleRegenerateCredentials(student.parentIdentityUserId!, fullName)}
-                              disabled={generatingId === student.parentIdentityUserId || !student.parentIdentityUserId}
-                            >
-                              <KeyRound size={15} color="#D97706" /> Parent Credentials
-                            </button>
-                            <div className="dropdown-divider" />
-                            <button 
-                              className="dropdown-action-item danger" 
-                              onClick={() => handleDelete(student.id, fullName)}
-                            >
-                              <Trash2 size={15} /> Delete Student
-                            </button>
+                            {!isReadOnly && (
+                              <>
+                                <button 
+                                  className="dropdown-action-item" 
+                                  onClick={() => { setEditingStudent(student); setOpenDropdownId(null); }}
+                                >
+                                  <Edit3 size={15} color="#000080" /> Edit Details
+                                </button>
+                                <button 
+                                  className="dropdown-action-item" 
+                                  onClick={() => handleRegenerateCredentials(student.parentIdentityUserId!, fullName)}
+                                  disabled={generatingId === student.parentIdentityUserId || !student.parentIdentityUserId}
+                                >
+                                  <KeyRound size={15} color="#D97706" /> Parent Credentials
+                                </button>
+                                <div className="dropdown-divider" />
+                                <button 
+                                  className="dropdown-action-item danger" 
+                                  onClick={() => handleDelete(student.id, fullName)}
+                                >
+                                  <Trash2 size={15} /> Delete Student
+                                </button>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>

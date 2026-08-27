@@ -9,6 +9,8 @@ import AvatarCropper from '../../../components/dashboard/settings/AvatarCropper'
 import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical, CreditCard, Camera } from 'lucide-react';
 
 
+import { useAuth } from '../../../context/AuthContext';
+
 interface TeacherItem {
   id: string;
   staffCode?: string;
@@ -30,6 +32,8 @@ interface TeacherItem {
 
 export default function Teachers() {
   const { showAlert, showConfirm } = useDialog();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'Chairman';
   const queryClient = useQueryClient();
 
   // View Switcher & Dropdown State
@@ -304,12 +308,14 @@ export default function Teachers() {
           <h1 className="page-title">Staff Management</h1>
           <p className="page-subtitle">Onboard and manage staff members across academic departments</p>
         </div>
-        <button className="btn-executive-onboard" onClick={handleAddNewClick} title="Open interactive clearance & role onboarding panel">
-          <span className="onboard-icon-wrapper">
-            <UserPlus size={16} />
-          </span>
-          <span>Onboard Staff Member</span>
-        </button>
+        {!isReadOnly && (
+          <button className="btn-executive-onboard" onClick={handleAddNewClick} title="Open interactive clearance & role onboarding panel">
+            <span className="onboard-icon-wrapper">
+              <UserPlus size={16} />
+            </span>
+            <span>Onboard Staff Member</span>
+          </button>
+        )}
       </div>
 
       {error && <div className="alert-error">{error}</div>}
@@ -466,16 +472,18 @@ export default function Teachers() {
 
                           {isDropdownOpen && (
                             <div className="action-dropdown-menu">
-                              <button 
-                                className="dropdown-action-item" 
-                                onClick={() => {
-                                  setOpenDropdownId(null);
-                                  handleRegenerateCredentials(teacher.identityUserId!, fullName);
-                                }}
-                                disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
-                              >
-                                <Key size={15} color="#2563EB" /> Credentials
-                              </button>
+                              {!isReadOnly && (
+                                <button 
+                                  className="dropdown-action-item" 
+                                  onClick={() => {
+                                    setOpenDropdownId(null);
+                                    handleRegenerateCredentials(teacher.identityUserId!, fullName);
+                                  }}
+                                  disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                                >
+                                  <Key size={15} color="#2563EB" /> Credentials
+                                </button>
+                              )}
                               <button 
                                 className="dropdown-action-item" 
                                 onClick={() => {
@@ -485,39 +493,43 @@ export default function Teachers() {
                               >
                                 <CreditCard size={15} color="#000080" /> Print Staff ID Card
                               </button>
-                              <button 
-                                className="dropdown-action-item" 
-                                onClick={() => {
-                                  setOpenDropdownId(null);
-                                  handleEditClick(teacher);
-                                }}
-                              >
-                                <Edit2 size={15} color="#000080" /> Edit Details
-                              </button>
-                              <button 
-                                className="dropdown-action-item" 
-                                onClick={() => {
-                                  setOpenDropdownId(null);
-                                  if (teacher.isActive) {
-                                    handleRemove(teacher.id, fullName);
-                                  } else {
-                                    handleActivate(teacher.id, fullName);
-                                  }
-                                }}
-                              >
-                                <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} /> 
-                                {teacher.isActive ? 'Suspend Access' : 'Activate Access'}
-                              </button>
-                              <div className="dropdown-divider" />
-                              <button 
-                                className="dropdown-action-item danger" 
-                                onClick={() => {
-                                  setOpenDropdownId(null);
-                                  handleDelete(teacher.id, fullName);
-                                }}
-                              >
-                                <Trash2 size={15} /> Delete Staff
-                              </button>
+                              {!isReadOnly && (
+                                <>
+                                  <button 
+                                    className="dropdown-action-item" 
+                                    onClick={() => {
+                                      setOpenDropdownId(null);
+                                      handleEditClick(teacher);
+                                    }}
+                                  >
+                                    <Edit2 size={15} color="#000080" /> Edit Details
+                                  </button>
+                                  <button 
+                                    className="dropdown-action-item" 
+                                    onClick={() => {
+                                      setOpenDropdownId(null);
+                                      if (teacher.isActive) {
+                                        handleRemove(teacher.id, fullName);
+                                      } else {
+                                        handleActivate(teacher.id, fullName);
+                                      }
+                                    }}
+                                  >
+                                    <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} /> 
+                                    {teacher.isActive ? 'Suspend Access' : 'Activate Access'}
+                                  </button>
+                                  <div className="dropdown-divider" />
+                                  <button 
+                                    className="dropdown-action-item danger" 
+                                    onClick={() => {
+                                      setOpenDropdownId(null);
+                                      handleDelete(teacher.id, fullName);
+                                    }}
+                                  >
+                                    <Trash2 size={15} /> Delete Staff
+                                  </button>
+                                </>
+                              )}
                             </div>
                           )}
                         </div>

@@ -294,9 +294,11 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                         <NavLink to="/dashboard/teachers" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                           Staff Roster
                         </NavLink>
-                        <NavLink to="/dashboard/operations/roles" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Role Management
-                        </NavLink>
+                        {userRole !== 'Chairman' && (
+                          <NavLink to="/dashboard/operations/roles" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            Role Management
+                          </NavLink>
+                        )}
                       </div>
                     )}
                   </div>
