@@ -99,6 +99,7 @@ export default function Students() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [standardizing, setStandardizing] = useState(false);
+  const [sendingReminders, setSendingReminders] = useState(false);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -229,6 +230,45 @@ export default function Students() {
     }
   };
 
+  const handleSendFeeReminders = async () => {
+    const unclearedFiltered = filteredStudents.filter(s => !s.isCleared);
+    if (unclearedFiltered.length === 0) {
+      showAlert('No uncleared students in the current selection to send fee reminders to.');
+      return;
+    }
+
+    const targetClassObj = classes.find(c => c.id === filterClassId);
+    const targetLabel = targetClassObj 
+      ? `${targetClassObj.level} ${targetClassObj.name} ${targetClassObj.section}`.trim()
+      : (filterLevel ? `Level ${filterLevel}` : 'all classes');
+
+    const confirmed = await showConfirm(
+      `Send fee reminder emails to ${unclearedFiltered.length} uncleared student(s) in ${targetLabel} for ${filterSession} - ${filterTerm}?`,
+      { title: 'Send Fee Reminders', type: 'warning' }
+    );
+    if (!confirmed) return;
+
+    try {
+      setSendingReminders(true);
+      const res = await api.post('/invoices/send-reminders', {
+        session: filterSession,
+        term: filterTerm,
+        classId: filterClassId || null,
+        level: filterLevel || null
+      });
+
+      if (res && res.success) {
+        showAlert(res.message || `Fee reminders dispatched to ${res.data?.sentCount || 0} parents.`);
+      } else {
+        showAlert(res?.message || 'Failed to send fee reminders.');
+      }
+    } catch (err: any) {
+      showAlert(err.message || 'Failed to send fee reminders. Please try again.');
+    } finally {
+      setSendingReminders(false);
+    }
+  };
+
   const handleDelete = async (studentId: string, studentName: string) => {
     setOpenDropdownId(null);
     if (!await showConfirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
@@ -313,7 +353,18 @@ export default function Students() {
             <ShieldCheck size={18} />
             {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
           </button>
-          
+
+          <button 
+            className="btn-upload-excel"
+            style={{ background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}
+            onClick={handleSendFeeReminders}
+            disabled={sendingReminders}
+            title="Dispatch fee reminder emails to uncleared students in current view"
+          >
+            <Mail size={18} />
+            {sendingReminders ? 'Sending...' : `Send Fee Reminders (${filteredStudents.filter(s => !s.isCleared).length})`}
+          </button>
+
           <button className="btn-add-student" onClick={() => setShowModal(true)}>
             <UserPlus size={18} />
             Admit New Student

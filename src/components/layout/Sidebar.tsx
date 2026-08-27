@@ -36,9 +36,23 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSuperAdmin = userRole === 'Director' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
+  const isSuperAdmin = userRole === 'Director' || userRole === 'Chairman' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
   const isDeveloperRoot = userRole === 'SuperAdmin' || userRole === 'Superadmin' || userRole === 'SystemAdmin';
   const [isFormClassTeacher, setIsFormClassTeacher] = useState<boolean | null>(null);
+  const [userPermissions, setUserPermissions] = useState<string[]>([]);
+
+  useEffect(() => {
+    api.get('/identity/my-permissions')
+      .then((res: any) => {
+        if (res && Array.isArray(res.permissions)) {
+          setUserPermissions(res.permissions);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const canAccessFinance = userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Director' || (userRole !== 'Chairman' && userPermissions.includes('finance.overview'));
+  const canAccessFinancialReports = userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Director' || (userRole !== 'Chairman' && userPermissions.includes('reports.finance'));
 
   useEffect(() => {
     if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
@@ -560,9 +574,11 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                               Academic Reports
                             </NavLink>
                           )}
-                          <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                            Financial Reports Hub
-                          </NavLink>
+                          {canAccessFinancialReports && (
+                            <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                              Financial Reports Hub
+                            </NavLink>
+                          )}
                         </div>
                       )}
                     </div>
