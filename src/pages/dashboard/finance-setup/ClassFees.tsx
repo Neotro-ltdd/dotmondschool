@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../../../services/api';
+import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import '../finance/Finance.css';
+import './ClassFees.css';
 import { useDialog } from '../../../context/DialogContext';
+import { useTenant } from '../../../context/TenantContext';
+import { Building2, Sparkles, Printer } from 'lucide-react';
 
 interface FeeTemplateListDto {
   id: string;
@@ -27,6 +30,8 @@ interface FeeTemplateDetailDto {
 
 export default function ClassFees() {
   const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
+  const { schoolName: tenantSchoolName, logoUrl: tenantLogoUrl } = useTenant();
+
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>('');
   const [classes, setClasses] = useState<{ id: string; level: string; name: string; section: string }[]>([]);
@@ -35,10 +40,17 @@ export default function ClassFees() {
   const [error, setError] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<FeeTemplateDetailDto | null>(null);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
+
+  // Asset states for official printable receipt layout (Image 1 format)
+  const [setupLogoUrl, setSetupLogoUrl] = useState<string | null>(null);
+  const [principalSigUrl, setPrincipalSigUrl] = useState<string | null>(null);
+  const [accountantSigUrl, setAccountantSigUrl] = useState<string | null>(null);
+
   const { showAlert } = useDialog();
 
   useEffect(() => {
     fetchClasses();
+    fetchSetupAssets();
   }, []);
 
   useEffect(() => {
@@ -51,6 +63,19 @@ export default function ClassFees() {
       setClasses(data || []);
     } catch (err) {
       console.error('Failed to load classes', err);
+    }
+  };
+
+  const fetchSetupAssets = async () => {
+    try {
+      const data = await api.get('/finance/setup');
+      if (data) {
+        if (data.schoolLogoUrl) setSetupLogoUrl(data.schoolLogoUrl);
+        if (data.principalSignatureUrl) setPrincipalSigUrl(data.principalSignatureUrl);
+        if (data.accountantSignatureUrl) setAccountantSigUrl(data.accountantSignatureUrl);
+      }
+    } catch (err) {
+      console.error('Failed to load setup assets', err);
     }
   };
 
@@ -79,6 +104,15 @@ export default function ClassFees() {
     }
   };
 
+  const resolveUrl = (url: string | null) => {
+    if (!url) return null;
+    return url.startsWith('http') || url.startsWith('/') ? url : `${API_ROOT}${url}`;
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   let filteredTemplates = [...feeTemplates];
   if (filterLevel) {
     filteredTemplates = filteredTemplates.filter(t => t.level === filterLevel);
@@ -90,16 +124,19 @@ export default function ClassFees() {
   // Generate options for classes based on selected level
   const classOptions = filterLevel ? classes.filter(c => c.level === filterLevel) : classes;
 
+  const displayLogo = resolveUrl(setupLogoUrl) || tenantLogoUrl || '/images/dotmond-logo-1.png';
+  const displaySchoolName = tenantSchoolName || 'Dotmond International School';
+
   return (
     <div className="finance-page fade-in">
-      <div className="page-header">
+      <div className="page-header no-print">
         <div>
           <h1 className="page-title">Class Fees</h1>
           <p className="page-subtitle">View official fee configurations by class.</p>
         </div>
       </div>
 
-      <div className="filter-bar glass-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+      <div className="filter-bar glass-panel no-print" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
         <div style={{ flex: 1, minWidth: '150px' }}>
           <label>Filter by Level:</label>
           <select value={filterLevel} onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} className="filter-select">
@@ -143,9 +180,9 @@ export default function ClassFees() {
         </div>
       </div>
 
-      {error && <div className="alert-error">{error}</div>}
+      {error && <div className="alert-error no-print">{error}</div>}
 
-      <div className="table-container glass-panel">
+      <div className="table-container glass-panel no-print">
         {loading ? (
           <p className="loading-text">Loading templates...</p>
         ) : filteredTemplates.length === 0 ? (
@@ -181,51 +218,132 @@ export default function ClassFees() {
         )}
       </div>
 
+      {/* Official Printable Fee Breakdown Receipt Modal (Image 1 Design) */}
       {selectedTemplate && (
-        <div className="modal-overlay" onClick={() => setSelectedTemplate(null)}>
-          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
-            <h2>Fee Breakdown: {selectedTemplate.className}</h2>
-            <p className="text-muted">{selectedTemplate.term} • {selectedTemplate.session}</p>
+        <div className="class-fee-modal-overlay" onClick={() => setSelectedTemplate(null)}>
+          <div className="class-fee-modal-card" onClick={e => e.stopPropagation()}>
             
-            <div style={{ marginTop: '1.5rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px' }}>
-              <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            {/* Top Bar Preview Status (No-Print) */}
+            <div className="receipt-preview-topbar no-print">
+              <span className="receipt-preview-topbar-title">
+                <Sparkles size={15} /> OFFICIAL FEE BREAKDOWN PREVIEW
+              </span>
+              <span className="receipt-preview-topbar-badge">
+                Official Print Layout
+              </span>
+            </div>
+
+            {/* School Crest & Header */}
+            <div className="receipt-preview-header">
+              {displayLogo ? (
+                <img src={displayLogo} alt="School Logo" className="receipt-logo-thumb" />
+              ) : (
+                <Building2 size={42} color="#000080" />
+              )}
+              <strong className="receipt-school-title">{displaySchoolName}</strong>
+              <span className="receipt-doc-subtitle">
+                OFFICIAL CLASS FEE BREAKDOWN
+              </span>
+            </div>
+
+            {/* Metadata Rows */}
+            <div className="receipt-preview-body">
+              <div className="receipt-preview-row">
+                <span className="receipt-row-label">Class Name:</span>
+                <strong className="receipt-row-val">{selectedTemplate.className} {selectedTemplate.level ? `(${selectedTemplate.level})` : ''}</strong>
+              </div>
+              <div className="receipt-preview-row">
+                <span className="receipt-row-label">Term / Session:</span>
+                <span className="receipt-row-val">{selectedTemplate.session} - {selectedTemplate.term}</span>
+              </div>
+              <div className="receipt-preview-row highlight-amount">
+                <span className="receipt-row-label">Total Official Fee:</span>
+                <span className="receipt-row-val">₦{selectedTemplate.totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 0 })}</span>
+              </div>
+            </div>
+
+            {/* Component Fee Table */}
+            <div className="receipt-table-wrapper">
+              <table className="receipt-fee-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <th style={{ padding: '0.8rem' }}>Fee Item</th>
-                    <th style={{ padding: '0.8rem', textAlign: 'right' }}>Amount</th>
+                  <tr>
+                    <th>Fee Item</th>
+                    <th style={{ textAlign: 'right' }}>Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedTemplate.items.map((item, index) => (
-                    <tr key={index} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                      <td style={{ padding: '0.8rem' }}>{item.name}</td>
-                      <td style={{ padding: '0.8rem', textAlign: 'right' }}>₦{item.amount.toLocaleString()}</td>
+                    <tr key={index}>
+                      <td>{item.name}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 600 }}>₦{item.amount.toLocaleString('en-NG', { minimumFractionDigits: 0 })}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr>
-                    <td style={{ padding: '1rem 0.8rem', fontWeight: 'bold', fontSize: '1.1rem' }}>Total</td>
-                    <td style={{ padding: '1rem 0.8rem', textAlign: 'right', fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--primary-light)' }}>
-                      ₦{selectedTemplate.totalAmount.toLocaleString()}
+                  <tr className="receipt-table-total-row">
+                    <td>Total</td>
+                    <td style={{ textAlign: 'right' }}>
+                      ₦{selectedTemplate.totalAmount.toLocaleString('en-NG', { minimumFractionDigits: 0 })}
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
 
-            <div className="modal-actions" style={{ marginTop: '2rem' }}>
-              <button type="button" className="btn btn-primary" onClick={() => setSelectedTemplate(null)}>Close</button>
+            {/* Official Stamped Authorization Signatures (Image 1 Style) */}
+            <div className="receipt-signature-stamps-grid">
+              <div className="signature-stamp-box">
+                <div className="signature-img-frame">
+                  {principalSigUrl ? (
+                    <img src={resolveUrl(principalSigUrl)!} alt="Principal Stamp" />
+                  ) : (
+                    <span className="signature-pending-text">Pending Signature</span>
+                  )}
+                </div>
+                <div className="signature-label">PRINCIPAL SIGNATURE</div>
+              </div>
+
+              <div className="signature-stamp-box">
+                <div className="signature-img-frame">
+                  {accountantSigUrl ? (
+                    <img src={resolveUrl(accountantSigUrl)!} alt="Accountant Stamp" />
+                  ) : (
+                    <span className="signature-pending-text">Pending Signature</span>
+                  )}
+                </div>
+                <div className="signature-label">ACCOUNTANT SIGNATURE</div>
+              </div>
+            </div>
+
+            {/* Modal Actions Footer (No-Print) */}
+            <div className="receipt-modal-actions no-print">
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={handlePrint}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Printer size={16} />
+                Print Breakdown
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setSelectedTemplate(null)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
       )}
       
       {loadingDetail && (
-        <div className="modal-overlay">
+        <div className="modal-overlay no-print">
           <div className="loading-screen">Loading Breakdown...</div>
         </div>
       )}
     </div>
   );
 }
+
