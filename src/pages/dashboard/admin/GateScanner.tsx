@@ -5,7 +5,8 @@ import { useAuth } from '../../../context/AuthContext';
 
 interface ScanResult {
   message: string;
-  studentName: string;
+  studentName?: string;
+  staffName?: string;
   time: string;
   status: string;
 }
@@ -15,6 +16,7 @@ const GateScanner: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
+  const [manualPayload, setManualPayload] = useState('');
   const { userName } = useAuth();
   
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -271,7 +273,9 @@ const GateScanner: React.FC = () => {
                     <svg className="w-16 h-16 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d={scanResult.status === 'Offline' ? "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" : "M5 13l4 4L19 7"} />
                     </svg>
-                    <p className="text-white font-bold text-xl text-center px-4">{scanResult.studentName}</p>
+                    <p className="text-white font-bold text-xl text-center px-4">
+                      {scanResult.studentName || scanResult.staffName || "Attendance Logged"}
+                    </p>
                     <p className="text-white text-md text-center font-medium mt-1">{scanResult.message}</p>
                 </div>
             )}
@@ -286,10 +290,41 @@ const GateScanner: React.FC = () => {
             )}
         </div>
 
-        <div className="mt-8 w-full flex flex-col items-center justify-center">
+        {/* Manual Test Input for Rapid Admin Testing */}
+        <div className="mt-6 w-full max-w-[350px]">
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="Paste / type QR Payload or ID to test..." 
+              value={manualPayload}
+              onChange={(e) => setManualPayload(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && manualPayload.trim()) {
+                  onScanSuccess(manualPayload.trim());
+                  setManualPayload('');
+                }
+              }}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800"
+            />
+            <button 
+              type="button"
+              onClick={() => {
+                if (manualPayload.trim()) {
+                  onScanSuccess(manualPayload.trim());
+                  setManualPayload('');
+                }
+              }}
+              className="px-3 py-2 bg-blue-900 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition-colors shadow-sm"
+            >
+              Test Scan
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 w-full flex flex-col items-center justify-center">
           {!scanResult && !error && (
             <p className="text-gray-500 text-sm text-center px-4">
-              {isProcessing ? "Processing scan..." : "Align the student's ID card within the scanning frame above."}
+              {isProcessing ? "Processing scan..." : "Align a Student or Staff ID card within the scanning frame above or use the test box."}
             </p>
           )}
         </div>

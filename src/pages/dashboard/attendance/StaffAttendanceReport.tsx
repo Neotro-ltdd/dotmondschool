@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../../services/api';
 import { 
   Users, 
@@ -12,7 +13,8 @@ import {
   Briefcase,
   Sparkles,
   CheckCircle,
-  XCircle
+  XCircle,
+  QrCode
 } from 'lucide-react';
 import '../Dashboard.css';
 
@@ -45,6 +47,7 @@ interface StaffAttendanceReportData {
 }
 
 export default function StaffAttendanceReport() {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -116,8 +119,16 @@ export default function StaffAttendanceReport() {
           </p>
         </div>
 
-        {/* Filters bar */}
+        {/* Action Buttons & Filters bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <button 
+            type="button"
+            onClick={() => navigate('/dashboard/gate-scanner')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#000080', color: '#FFFFFF', padding: '8px 16px', borderRadius: '8px', border: 'none', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+          >
+            <QrCode size={16} /> Open Gate Scanner
+          </button>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FFFFFF', border: '1px solid #CBD5E1', padding: '6px 12px', borderRadius: '8px' }}>
             <Calendar size={16} color="#64748B" />
             <input 
