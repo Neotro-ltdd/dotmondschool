@@ -17,6 +17,7 @@ const GateScanner: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
   const [manualPayload, setManualPayload] = useState('');
+  const [cameraError, setCameraError] = useState<boolean>(false);
   const { userName } = useAuth();
   
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -73,6 +74,7 @@ const GateScanner: React.FC = () => {
 
     const startScanner = async () => {
       try {
+        setCameraError(false);
         const scanner = new Html5Qrcode("qr-reader");
         scannerRef.current = scanner;
         
@@ -88,6 +90,7 @@ const GateScanner: React.FC = () => {
         );
       } catch (err) {
         console.error("Camera startup failed:", err);
+        if (isMounted) setCameraError(true);
       }
     };
 

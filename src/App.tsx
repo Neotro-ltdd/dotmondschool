@@ -97,6 +97,8 @@ function App() {
             <Route path="admin/staff" element={<Teachers />} />
             <Route path="admin/students" element={<Students />} />
             <Route path="staff-attendance" element={<StaffAttendanceReport />} />
+            <Route path="gate-scanner" element={<GateScanner />} />
+            <Route path="gate-logs" element={<GateAttendanceLog />} />
             <Route path="students" element={<Students />} />
             <Route path="approvals" element={<Approvals />} />
             <Route path="finance">
