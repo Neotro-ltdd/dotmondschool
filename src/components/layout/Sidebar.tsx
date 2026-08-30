@@ -155,7 +155,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
         </div>
       </div>
       
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav" onClick={(e) => { if ((e.target as HTMLElement).closest('a')) setIsSidebarOpen?.(false); }}>
         {userRole === 'Vendor' ? (
           <>
             <div className="sidebar-section-header">VENDOR HUB</div>
