@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { api } from '../../../services/api';
+import { api, getTenantId } from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
 
 interface ScanResult {
@@ -11,6 +11,12 @@ interface ScanResult {
   status: string;
 }
 
+interface StaffOption {
+  staffId: string;
+  fullName: string;
+  designation: string;
+}
+
 const GateScanner: React.FC = () => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,11 +24,52 @@ const GateScanner: React.FC = () => {
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
   const [manualPayload, setManualPayload] = useState('');
   const [cameraError, setCameraError] = useState<boolean>(false);
+  const [staffList, setStaffList] = useState<StaffOption[]>([]);
+  const [selectedStaffId, setSelectedStaffId] = useState<string>('');
   const { userName } = useAuth();
   
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isProcessingRef = useRef(false);
+
+  const [loadingStaff, setLoadingStaff] = useState(true);
+
+  // Load staff list for quick test dropdown
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        setLoadingStaff(true);
+        let list: StaffOption[] = [];
+        try {
+          const res = await api.get('/setup/staff');
+          if (Array.isArray(res)) {
+            list = res.map((s: any) => ({
+              staffId: s.id,
+              fullName: `${s.surname || ''} ${s.firstName || ''}`.trim() || s.fullName || 'Staff Member',
+              designation: s.designation || s.staffCategory || 'Staff'
+            }));
+          }
+        } catch {
+          // Fallback to staff report
+          const todayStr = new Date().toISOString().split('T')[0];
+          const res = await api.get(`/attendance/staff-report?date=${todayStr}`);
+          if (res && Array.isArray(res.staffAttendanceList)) {
+            list = res.staffAttendanceList.map((s: any) => ({
+              staffId: s.staffId,
+              fullName: s.fullName,
+              designation: s.designation || 'Staff'
+            }));
+          }
+        }
+        setStaffList(list);
+      } catch (e) {
+        console.error("Failed to load staff list for gate scanner", e);
+      } finally {
+        setLoadingStaff(false);
+      }
+    };
+    fetchStaff();
+  }, []);
 
   // Load offline queue on mount
   useEffect(() => {
@@ -142,7 +189,34 @@ const GateScanner: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const onScanSuccess = async (decodedText: string) => {
+  const formatPayload = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return trimmed;
+
+    // Check if it's already a valid Base64 string starting with RMS|
+    try {
+      const decoded = atob(trimmed);
+      if (decoded.startsWith('RMS|')) {
+        return trimmed;
+      }
+    } catch (e) {}
+
+    // Check if it's plain text starting with RMS|
+    if (trimmed.startsWith('RMS|')) {
+      return btoa(trimmed);
+    }
+
+    // Check if it's a Guid (36 chars: 8-4-4-4-12)
+    const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (guidRegex.test(trimmed)) {
+      const tenantId = getTenantId() || '1';
+      return btoa(`RMS|${tenantId}|${trimmed}`);
+    }
+
+    return trimmed;
+  };
+
+  const onScanSuccess = async (rawDecodedText: string) => {
     if (isProcessingRef.current) return;
     
     isProcessingRef.current = true;
@@ -152,9 +226,11 @@ const GateScanner: React.FC = () => {
         scannerRef.current.pause(true);
     }
 
+    const payloadToSend = formatPayload(rawDecodedText);
+
     try {
       setError(null);
-      const res = await api.post('/attendance/scan', { qrPayload: decodedText, scannedById: userName });
+      const res = await api.post('/attendance/scan', { qrPayload: payloadToSend, scannedById: userName });
       setScanResult(res.data);
       
       // Play a success beep
@@ -321,6 +397,43 @@ const GateScanner: React.FC = () => {
             >
               Test Scan
             </button>
+          </div>
+
+          {/* Quick Staff Select Dropdown for Instant 1-Click Testing */}
+          <div className="mt-4 w-full bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">
+            <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wide">
+              ⚡ Quick Staff Tap-In Test Dropdown:
+            </label>
+            <div className="flex gap-2">
+              <select
+                value={selectedStaffId}
+                onChange={(e) => setSelectedStaffId(e.target.value)}
+                disabled={loadingStaff}
+                className="flex-1 px-2.5 py-2 border border-slate-300 rounded text-xs bg-white text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">
+                  {loadingStaff ? '-- Loading Staff Roster... --' : (staffList.length === 0 ? '-- No Staff Members Found --' : '-- Select Staff Member to Test --')}
+                </option>
+                {staffList.map((s) => (
+                  <option key={s.staffId} value={s.staffId}>
+                    {s.fullName} ({s.designation})
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                disabled={!selectedStaffId || loadingStaff}
+                onClick={() => {
+                  if (selectedStaffId) {
+                    onScanSuccess(selectedStaffId);
+                    setSelectedStaffId('');
+                  }
+                }}
+                className="px-3 py-2 bg-emerald-700 text-white rounded text-xs font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 shadow-sm flex-shrink-0"
+              >
+                Tap-In
+              </button>
+            </div>
           </div>
         </div>
 
