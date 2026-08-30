@@ -298,7 +298,7 @@ const GateScanner: React.FC = () => {
           <div className="flex gap-2">
             <input 
               type="text" 
-              placeholder="Paste / type QR Payload or ID to test..." 
+              placeholder="Type Staff Email, Phone, Staff Guid, or QR Payload..." 
               value={manualPayload}
               onChange={(e) => setManualPayload(e.target.value)}
               onKeyDown={(e) => {
