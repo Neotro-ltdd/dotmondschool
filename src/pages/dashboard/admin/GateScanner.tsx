@@ -261,8 +261,8 @@ const GateScanner: React.FC = () => {
         if (savedQueue) {
             try { queue = JSON.parse(savedQueue); } catch(e){}
         }
-        if (!queue.includes(decodedText)) {
-            queue.push(decodedText);
+        if (!queue.includes(rawDecodedText)) {
+            queue.push(rawDecodedText);
             localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
             setOfflineQueue(queue);
         }
