@@ -250,7 +250,7 @@ const GateScanner: React.FC = () => {
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       scanTimeoutRef.current = setTimeout(() => {
         setScanResult(null);
-      }, 3000);
+      }, 6000);
 
     } catch (err: any) {
       if (!err.response) {
@@ -276,7 +276,7 @@ const GateScanner: React.FC = () => {
         if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
         scanTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
-        }, 3000);
+        }, 6000);
       } else {
         setError(err.response?.data?.message || 'Failed to scan ID.');
         
@@ -297,7 +297,7 @@ const GateScanner: React.FC = () => {
         if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
         scanTimeoutRef.current = setTimeout(() => {
           setError(null);
-        }, 3000);
+        }, 6000);
       }
     } finally {
         // Reduced debounce timeout to keep the line moving, but still prevents double-fires
@@ -377,6 +377,46 @@ const GateScanner: React.FC = () => {
                 </div>
             )}
         </div>
+
+        {/* PROMINENT ATTENDANCE CAPTURED PILL BANNER (Matching Image 1 Design) */}
+        {scanResult && (
+          <div className={`mt-3 w-full max-w-[350px] ${scanResult.status === 'Offline' ? 'bg-amber-600 border-amber-400' : 'bg-emerald-600 border-emerald-400'} text-white rounded-xl p-3.5 shadow-lg border flex flex-col items-center justify-center text-center transition-all animate-bounce-once`}>
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="bg-white text-emerald-800 p-0.5 px-1.5 rounded-full text-[11px] font-black shadow-inner">
+                ✓
+              </span>
+              <span className="text-[11px] uppercase font-black tracking-widest text-emerald-100">
+                ATTENDANCE CAPTURED
+              </span>
+            </div>
+            <h3 className="text-base font-extrabold tracking-tight text-white leading-tight">
+              {scanResult.staffName || scanResult.studentName || "Attendance Logged"}
+            </h3>
+            <p className="text-xs font-medium text-emerald-100 mt-0.5 px-2">
+              {scanResult.message}
+            </p>
+            {scanResult.time && (
+              <span className="mt-2 inline-flex items-center gap-1 bg-black bg-opacity-20 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-100 border border-white/20">
+                🕒 Clocked in at {new Date(scanResult.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* ERROR NOTIFICATION CARD */}
+        {error && (
+          <div className="mt-3 w-full max-w-[350px] bg-red-600 text-white rounded-xl p-3.5 shadow-lg border border-red-400 flex flex-col items-center justify-center text-center animate-pulse">
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="bg-white text-red-700 p-0.5 px-1.5 rounded-full text-[11px] font-black">
+                ✕
+              </span>
+              <span className="text-[11px] uppercase font-black tracking-widest text-red-100">
+                SCAN REJECTED
+              </span>
+            </div>
+            <p className="text-xs font-bold text-white mt-0.5 px-2 leading-snug">{error}</p>
+          </div>
+        )}
 
         {/* Manual Test Input for Rapid Admin Testing */}
         <div className="mt-6 w-full max-w-[350px]">
