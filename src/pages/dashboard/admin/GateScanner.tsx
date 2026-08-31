@@ -230,7 +230,8 @@ const GateScanner: React.FC = () => {
     try {
       setError(null);
       const res = await api.post('/attendance/scan', { qrPayload: payloadToSend, scannedById: userName });
-      setScanResult(res.data);
+      const resultData = res?.data || res;
+      setScanResult(resultData);
       
       // Play a success beep
       try {
@@ -253,7 +254,9 @@ const GateScanner: React.FC = () => {
       }, 6000);
 
     } catch (err: any) {
-      if (!err.response) {
+      const errorMsg = err?.data?.message || err?.data?.Message || err?.message || 'Failed to scan ID.';
+
+      if (!err.response && !err.status && err.message === 'Failed to fetch') {
         // Network Error -> Queue Offline
         const savedQueue = localStorage.getItem('offline_scans_queue');
         let queue: string[] = [];
@@ -278,7 +281,7 @@ const GateScanner: React.FC = () => {
             setScanResult(null);
         }, 6000);
       } else {
-        setError(err.response?.data?.message || 'Failed to scan ID.');
+        setError(errorMsg);
         
         // Play error beep
         try {
@@ -357,7 +360,7 @@ const GateScanner: React.FC = () => {
             
             {/* OVERLAYS */}
             {scanResult && !isProcessing && (
-                <div className={`absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in ${scanResult.status === 'Offline' ? 'bg-orange-500 bg-opacity-95' : 'bg-green-500 bg-opacity-95'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in ${scanResult.status === 'Offline' ? 'bg-orange-500 bg-opacity-95' : scanResult.status === 'AlreadyClockedIn' ? 'bg-amber-500 bg-opacity-95' : 'bg-green-500 bg-opacity-95'}`}>
                     <svg className="w-16 h-16 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d={scanResult.status === 'Offline' ? "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" : "M5 13l4 4L19 7"} />
                     </svg>
@@ -378,25 +381,31 @@ const GateScanner: React.FC = () => {
             )}
         </div>
 
-        {/* PROMINENT ATTENDANCE CAPTURED PILL BANNER (Matching Image 1 Design) */}
+        {/* PROMINENT ATTENDANCE CAPTURED PILL BANNER (Matching Sample Design) */}
         {scanResult && (
-          <div className={`mt-3 w-full max-w-[350px] ${scanResult.status === 'Offline' ? 'bg-amber-600 border-amber-400' : 'bg-emerald-600 border-emerald-400'} text-white rounded-xl p-3.5 shadow-lg border flex flex-col items-center justify-center text-center transition-all animate-bounce-once`}>
+          <div className={`mt-4 w-full max-w-[350px] ${
+            scanResult.status === 'AlreadyClockedIn' 
+              ? 'bg-amber-600 border-amber-400' 
+              : scanResult.status === 'Offline' 
+              ? 'bg-orange-600 border-orange-400' 
+              : 'bg-emerald-600 border-emerald-400'
+          } text-white rounded-xl p-4 shadow-xl border flex flex-col items-center justify-center text-center transition-all animate-bounce-short`}>
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="bg-white text-emerald-800 p-0.5 px-1.5 rounded-full text-[11px] font-black shadow-inner">
-                ✓
+              <span className="bg-white text-gray-900 px-2 py-0.5 rounded-full text-[11px] font-black shadow-inner">
+                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️' : scanResult.status === 'Offline' ? '⏳' : '✓'}
               </span>
-              <span className="text-[11px] uppercase font-black tracking-widest text-emerald-100">
-                ATTENDANCE CAPTURED
+              <span className="text-[11px] uppercase font-black tracking-widest text-white">
+                {scanResult.status === 'AlreadyClockedIn' ? 'ALREADY CLOCKED IN' : scanResult.status === 'Offline' ? 'SAVED OFFLINE' : 'ATTENDANCE CAPTURED'}
               </span>
             </div>
-            <h3 className="text-base font-extrabold tracking-tight text-white leading-tight">
+            <h3 className="text-lg font-black tracking-tight text-white leading-tight mt-1">
               {scanResult.staffName || scanResult.studentName || "Attendance Logged"}
             </h3>
-            <p className="text-xs font-medium text-emerald-100 mt-0.5 px-2">
+            <p className="text-xs font-semibold text-white/95 mt-1 px-2">
               {scanResult.message}
             </p>
             {scanResult.time && (
-              <span className="mt-2 inline-flex items-center gap-1 bg-black bg-opacity-20 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-100 border border-white/20">
+              <span className="mt-2.5 inline-flex items-center gap-1 bg-black bg-opacity-25 px-3 py-1 rounded-full text-xs font-bold text-white border border-white/30 shadow-xs">
                 🕒 Clocked in at {new Date(scanResult.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
               </span>
             )}
@@ -405,16 +414,16 @@ const GateScanner: React.FC = () => {
 
         {/* ERROR NOTIFICATION CARD */}
         {error && (
-          <div className="mt-3 w-full max-w-[350px] bg-red-600 text-white rounded-xl p-3.5 shadow-lg border border-red-400 flex flex-col items-center justify-center text-center animate-pulse">
+          <div className="mt-4 w-full max-w-[350px] bg-red-600 text-white rounded-xl p-4 shadow-xl border border-red-400 flex flex-col items-center justify-center text-center">
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="bg-white text-red-700 p-0.5 px-1.5 rounded-full text-[11px] font-black">
+              <span className="bg-white text-red-700 px-2 py-0.5 rounded-full text-[11px] font-black">
                 ✕
               </span>
               <span className="text-[11px] uppercase font-black tracking-widest text-red-100">
                 SCAN REJECTED
               </span>
             </div>
-            <p className="text-xs font-bold text-white mt-0.5 px-2 leading-snug">{error}</p>
+            <p className="text-sm font-bold text-white mt-1 px-2 leading-snug">{error}</p>
           </div>
         )}
 
