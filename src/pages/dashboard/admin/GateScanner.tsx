@@ -9,6 +9,8 @@ interface ScanResult {
   staffName?: string;
   time: string;
   status: string;
+  staffCategory?: string;
+  designation?: string;
 }
 
 interface StaffOption {
