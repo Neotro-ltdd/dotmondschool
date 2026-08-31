@@ -81,6 +81,11 @@ const GateScanner: React.FC = () => {
     }
   }, []);
 
+  const clearOfflineQueue = () => {
+    localStorage.removeItem('offline_scans_queue');
+    setOfflineQueue([]);
+  };
+
   // Background sync interval for offline scans
   useEffect(() => {
     const syncOfflineScans = async () => {
@@ -94,21 +99,15 @@ const GateScanner: React.FC = () => {
       
       if (queue.length === 0) return;
 
-      // Try to sync the oldest scan
       const payload = queue[0];
       try {
         await api.post('/attendance/scan', { qrPayload: payload, scannedById: userName });
-        // Success, remove from queue
+      } catch (err: any) {
+        console.warn("Offline scan sync processed/discarded:", err);
+      } finally {
         queue.shift();
         localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
-        setOfflineQueue(queue);
-      } catch (err: any) {
-        // If it's a validation error (400) or not found (404), it will never succeed, discard it.
-        if (err.response && err.response.status >= 400 && err.response.status < 500) {
-            queue.shift();
-            localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
-            setOfflineQueue(queue);
-        }
+        setOfflineQueue([...queue]);
       }
     };
 
@@ -323,8 +322,18 @@ const GateScanner: React.FC = () => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 flex flex-col items-center relative">
         
         {offlineQueue.length > 0 && (
-            <div className="absolute top-6 right-6 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-xs font-bold border border-orange-300 shadow-sm animate-pulse">
-                {offlineQueue.length} Offline Scan(s)
+            <div className="absolute top-6 right-6 flex items-center gap-1.5 z-20">
+                <span className="bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-300 shadow-sm animate-pulse">
+                    {offlineQueue.length} Offline Scan(s)
+                </span>
+                <button
+                  type="button"
+                  onClick={clearOfflineQueue}
+                  className="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-bold transition-colors shadow-xs"
+                  title="Clear saved offline queue"
+                >
+                  Clear
+                </button>
             </div>
         )}
 
