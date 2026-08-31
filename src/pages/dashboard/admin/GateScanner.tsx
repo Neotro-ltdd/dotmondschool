@@ -381,18 +381,19 @@ const GateScanner: React.FC = () => {
             )}
         </div>
 
-        {/* PROMINENT ATTENDANCE NOTIFICATION CARDS (Fully Mobile Responsive) */}
+        {/* PROMINENT ATTENDANCE NOTIFICATION CARDS (Guaranteed Colors & Mobile Responsive) */}
         {scanResult && (
-          <div className={`mt-4 w-full max-w-[360px] ${
-            scanResult.status === 'AlreadyClockedIn' 
-              ? 'bg-orange-600 border-orange-400 shadow-orange-900/20' 
-              : scanResult.status === 'Offline' 
-              ? 'bg-amber-600 border-amber-400 shadow-amber-900/20' 
-              : 'bg-emerald-600 border-emerald-400 shadow-emerald-900/20'
-          } text-white rounded-2xl p-4 shadow-xl border flex flex-col items-center justify-center text-center transition-all animate-bounce-once`}>
+          <div 
+            className="mt-4 w-full max-w-[360px] text-white rounded-2xl p-4 shadow-xl border flex flex-col items-center justify-center text-center transition-all animate-bounce-once"
+            style={{
+              backgroundColor: scanResult.status === 'AlreadyClockedIn' ? '#ea580c' : scanResult.status === 'Offline' ? '#d97706' : '#059669',
+              borderColor: scanResult.status === 'AlreadyClockedIn' ? '#f97316' : scanResult.status === 'Offline' ? '#f59e0b' : '#10b981',
+              color: '#ffffff'
+            }}
+          >
             <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wide border border-white/30">
-                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️ ALREADY CAPTURED' : scanResult.status === 'Offline' ? '⏳ SAVED OFFLINE' : '✓ ATTENDANCE CAPTURED'}
+              <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-0.5 rounded-full text-[11px] font-extrabold tracking-wide border border-white/30">
+                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️ ALREADY CAPTURED TODAY' : scanResult.status === 'Offline' ? '⏳ SAVED OFFLINE' : '✓ ATTENDANCE CAPTURED'}
               </span>
             </div>
             <h3 className="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight mt-1">
@@ -411,9 +412,16 @@ const GateScanner: React.FC = () => {
 
         {/* ERROR NOTIFICATION CARD */}
         {error && (
-          <div className="mt-4 w-full max-w-[360px] bg-red-600 text-white rounded-2xl p-4 shadow-xl border border-red-400 shadow-red-900/20 flex flex-col items-center justify-center text-center animate-shake">
+          <div 
+            className="mt-4 w-full max-w-[360px] text-white rounded-2xl p-4 shadow-xl border flex flex-col items-center justify-center text-center animate-shake"
+            style={{
+              backgroundColor: '#dc2626',
+              borderColor: '#ef4444',
+              color: '#ffffff'
+            }}
+          >
             <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wide border border-white/30">
+              <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-0.5 rounded-full text-[11px] font-extrabold tracking-wide border border-white/30">
                 ✕ COULD NOT BE CAPTURED
               </span>
             </div>
