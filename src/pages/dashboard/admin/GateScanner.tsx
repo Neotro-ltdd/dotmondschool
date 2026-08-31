@@ -188,6 +188,38 @@ const GateScanner: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const getInitials = (name: string) => {
+    if (!name) return 'ID';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  const getCleanMessage = (result: ScanResult) => {
+    if (result.status === 'AlreadyClockedIn') {
+      return result.message || 'Staff member already clocked in today.';
+    }
+    if (result.status === 'ClockIn') {
+      return 'Morning gate attendance successfully verified and recorded.';
+    }
+    if (result.status === 'ClockOut') {
+      return 'Evening gate checkout successfully verified and recorded.';
+    }
+    return result.message || 'Gate attendance recorded.';
+  };
+
+  const formatTime = (timeStr: string) => {
+    try {
+      const d = new Date(timeStr);
+      if (isNaN(d.getTime())) return timeStr;
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    } catch {
+      return timeStr;
+    }
+  };
+
   const formatPayload = (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return trimmed;
@@ -381,31 +413,57 @@ const GateScanner: React.FC = () => {
             )}
         </div>
 
-        {/* PROMINENT ATTENDANCE NOTIFICATION CARDS (Guaranteed Colors & Mobile Responsive) */}
+        {/* EXECUTIVE ENTERPRISE ATTENDANCE CARD */}
         {scanResult && (
           <div 
-            className="mt-4 w-full max-w-[360px] text-white rounded-2xl p-4 shadow-xl border flex flex-col items-center justify-center text-center transition-all animate-bounce-once"
+            className="mt-4 w-full max-w-[360px] rounded-2xl p-4 sm:p-5 shadow-2xl border flex flex-col items-center text-center transition-all animate-bounce-once relative overflow-hidden"
             style={{
-              backgroundColor: scanResult.status === 'AlreadyClockedIn' ? '#ea580c' : scanResult.status === 'Offline' ? '#d97706' : '#059669',
+              background: scanResult.status === 'AlreadyClockedIn' 
+                ? 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)' 
+                : scanResult.status === 'Offline' 
+                ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)' 
+                : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
               borderColor: scanResult.status === 'AlreadyClockedIn' ? '#f97316' : scanResult.status === 'Offline' ? '#f59e0b' : '#10b981',
               color: '#ffffff'
             }}
           >
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-0.5 rounded-full text-[11px] font-extrabold tracking-wide border border-white/30">
-                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️ ALREADY CAPTURED TODAY' : scanResult.status === 'Offline' ? '⏳ SAVED OFFLINE' : '✓ ATTENDANCE CAPTURED'}
+            {/* Top Status Header Pill */}
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border border-white/30 flex items-center gap-1 shadow-xs">
+                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️ ALREADY CLOCKED IN TODAY' : scanResult.status === 'Offline' ? '⏳ SAVED OFFLINE' : '✓ ATTENDANCE RECORDED'}
               </span>
             </div>
-            <h3 className="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight mt-1">
-              {scanResult.staffName || scanResult.studentName || "Attendance Logged"}
-            </h3>
-            <p className="text-xs sm:text-sm font-medium text-white/95 mt-1 px-1 leading-snug">
-              {scanResult.message}
+
+            {/* Profile Avatar & Name */}
+            <div className="flex items-center justify-center gap-3 my-1 w-full">
+              {(scanResult.staffName || scanResult.studentName) && (
+                <div className="w-11 h-11 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white font-black text-sm shadow-inner shrink-0">
+                  {getInitials(scanResult.staffName || scanResult.studentName || '')}
+                </div>
+              )}
+              <div className="text-left">
+                <h3 className="text-lg sm:text-xl font-black text-white leading-tight">
+                  {scanResult.staffName || scanResult.studentName || "Attendance Logged"}
+                </h3>
+                {(scanResult.staffCategory || scanResult.designation) && (
+                  <span className="inline-block mt-0.5 text-[11px] font-bold text-white/95 bg-white/20 px-2 py-0.5 rounded border border-white/25">
+                    {scanResult.staffCategory ? `${scanResult.staffCategory} Staff` : scanResult.designation}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Professional Verified Status Text */}
+            <p className="text-xs sm:text-sm font-medium text-white/95 mt-2.5 px-2.5 leading-relaxed bg-black/15 py-2 rounded-xl w-full border border-white/10">
+              {getCleanMessage(scanResult)}
             </p>
+
+            {/* Timestamp Badge */}
             {scanResult.time && (
-              <span className="mt-3 inline-flex items-center gap-1 bg-black/25 px-3.5 py-1 rounded-full text-xs font-bold text-white border border-white/20 shadow-xs">
-                🕒 Clocked in at {new Date(scanResult.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-              </span>
+              <div className="mt-3 inline-flex items-center gap-1.5 bg-black/30 px-3.5 py-1 rounded-full text-xs font-bold text-white border border-white/25 shadow-xs">
+                <span>🕒</span>
+                <span>Clocked in at {formatTime(scanResult.time)}</span>
+              </div>
             )}
           </div>
         )}
@@ -413,19 +471,24 @@ const GateScanner: React.FC = () => {
         {/* ERROR NOTIFICATION CARD */}
         {error && (
           <div 
-            className="mt-4 w-full max-w-[360px] text-white rounded-2xl p-4 shadow-xl border flex flex-col items-center justify-center text-center animate-shake"
+            className="mt-4 w-full max-w-[360px] rounded-2xl p-4 sm:p-5 shadow-2xl border flex flex-col items-center text-center transition-all animate-shake relative overflow-hidden"
             style={{
-              backgroundColor: '#dc2626',
+              background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
               borderColor: '#ef4444',
               color: '#ffffff'
             }}
           >
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-0.5 rounded-full text-[11px] font-extrabold tracking-wide border border-white/30">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border border-white/30 flex items-center gap-1">
                 ✕ COULD NOT BE CAPTURED
               </span>
             </div>
-            <p className="text-xs sm:text-sm font-bold text-white mt-1 px-2 leading-snug">{error}</p>
+            <h3 className="text-base font-black text-white leading-snug my-1 px-1">
+              Identity Verification Failed
+            </h3>
+            <p className="text-xs sm:text-sm font-medium text-white/95 px-2 leading-relaxed bg-black/15 py-2 rounded-xl w-full border border-white/10 mt-1">
+              {error}
+            </p>
           </div>
         )}
 
