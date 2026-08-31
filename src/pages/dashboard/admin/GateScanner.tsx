@@ -381,31 +381,28 @@ const GateScanner: React.FC = () => {
             )}
         </div>
 
-        {/* PROMINENT ATTENDANCE CAPTURED PILL BANNER (Matching Sample Design) */}
+        {/* PROMINENT ATTENDANCE NOTIFICATION CARDS (Fully Mobile Responsive) */}
         {scanResult && (
-          <div className={`mt-4 w-full max-w-[350px] ${
+          <div className={`mt-4 w-full max-w-[360px] ${
             scanResult.status === 'AlreadyClockedIn' 
-              ? 'bg-amber-600 border-amber-400' 
+              ? 'bg-orange-600 border-orange-400 shadow-orange-900/20' 
               : scanResult.status === 'Offline' 
-              ? 'bg-orange-600 border-orange-400' 
-              : 'bg-emerald-600 border-emerald-400'
-          } text-white rounded-xl p-4 shadow-xl border flex flex-col items-center justify-center text-center transition-all animate-bounce-short`}>
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="bg-white text-gray-900 px-2 py-0.5 rounded-full text-[11px] font-black shadow-inner">
-                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️' : scanResult.status === 'Offline' ? '⏳' : '✓'}
-              </span>
-              <span className="text-[11px] uppercase font-black tracking-widest text-white">
-                {scanResult.status === 'AlreadyClockedIn' ? 'ALREADY CLOCKED IN' : scanResult.status === 'Offline' ? 'SAVED OFFLINE' : 'ATTENDANCE CAPTURED'}
+              ? 'bg-amber-600 border-amber-400 shadow-amber-900/20' 
+              : 'bg-emerald-600 border-emerald-400 shadow-emerald-900/20'
+          } text-white rounded-2xl p-4 shadow-xl border flex flex-col items-center justify-center text-center transition-all animate-bounce-once`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wide border border-white/30">
+                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️ ALREADY CAPTURED' : scanResult.status === 'Offline' ? '⏳ SAVED OFFLINE' : '✓ ATTENDANCE CAPTURED'}
               </span>
             </div>
-            <h3 className="text-lg font-black tracking-tight text-white leading-tight mt-1">
+            <h3 className="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight mt-1">
               {scanResult.staffName || scanResult.studentName || "Attendance Logged"}
             </h3>
-            <p className="text-xs font-semibold text-white/95 mt-1 px-2">
+            <p className="text-xs sm:text-sm font-medium text-white/95 mt-1 px-1 leading-snug">
               {scanResult.message}
             </p>
             {scanResult.time && (
-              <span className="mt-2.5 inline-flex items-center gap-1 bg-black bg-opacity-25 px-3 py-1 rounded-full text-xs font-bold text-white border border-white/30 shadow-xs">
+              <span className="mt-3 inline-flex items-center gap-1 bg-black/25 px-3.5 py-1 rounded-full text-xs font-bold text-white border border-white/20 shadow-xs">
                 🕒 Clocked in at {new Date(scanResult.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
               </span>
             )}
@@ -414,25 +411,22 @@ const GateScanner: React.FC = () => {
 
         {/* ERROR NOTIFICATION CARD */}
         {error && (
-          <div className="mt-4 w-full max-w-[350px] bg-red-600 text-white rounded-xl p-4 shadow-xl border border-red-400 flex flex-col items-center justify-center text-center">
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="bg-white text-red-700 px-2 py-0.5 rounded-full text-[11px] font-black">
-                ✕
-              </span>
-              <span className="text-[11px] uppercase font-black tracking-widest text-red-100">
-                SCAN REJECTED
+          <div className="mt-4 w-full max-w-[360px] bg-red-600 text-white rounded-2xl p-4 shadow-xl border border-red-400 shadow-red-900/20 flex flex-col items-center justify-center text-center animate-shake">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wide border border-white/30">
+                ✕ COULD NOT BE CAPTURED
               </span>
             </div>
-            <p className="text-sm font-bold text-white mt-1 px-2 leading-snug">{error}</p>
+            <p className="text-xs sm:text-sm font-bold text-white mt-1 px-2 leading-snug">{error}</p>
           </div>
         )}
 
-        {/* Manual Test Input for Rapid Admin Testing */}
-        <div className="mt-6 w-full max-w-[350px]">
-          <div className="flex gap-2">
+        {/* Manual Test Input for Rapid Admin Testing (Mobile Responsive) */}
+        <div className="mt-6 w-full max-w-[360px]">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input 
               type="text" 
-              placeholder="Type Staff Email, Phone, Staff Guid, or QR Payload..." 
+              placeholder="Search staff email, phone, or ID..." 
               value={manualPayload}
               onChange={(e) => setManualPayload(e.target.value)}
               onKeyDown={(e) => {
@@ -441,7 +435,7 @@ const GateScanner: React.FC = () => {
                   setManualPayload('');
                 }
               }}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800"
+              className="w-full sm:flex-1 px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white text-slate-800 font-medium shadow-xs"
             />
             <button 
               type="button"
@@ -451,23 +445,23 @@ const GateScanner: React.FC = () => {
                   setManualPayload('');
                 }
               }}
-              className="px-3 py-2 bg-blue-900 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition-colors shadow-sm"
+              className="w-full sm:w-auto px-4 py-2.5 bg-blue-900 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-colors shadow-sm shrink-0"
             >
               Test Scan
             </button>
           </div>
 
           {/* Quick Staff Select Dropdown for Instant 1-Click Testing */}
-          <div className="mt-4 w-full bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">
-            <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wide">
+          <div className="mt-3.5 w-full bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-xs">
+            <label className="block text-[11px] font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
               ⚡ Quick Staff Tap-In Test Dropdown:
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <select
                 value={selectedStaffId}
                 onChange={(e) => setSelectedStaffId(e.target.value)}
                 disabled={loadingStaff}
-                className="flex-1 px-2.5 py-2 border border-slate-300 rounded text-xs bg-white text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full sm:flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
               >
                 <option value="">
                   {loadingStaff ? '-- Loading Staff Roster... --' : (staffList.length === 0 ? '-- No Staff Members Found --' : '-- Select Staff Member to Test --')}
@@ -487,7 +481,7 @@ const GateScanner: React.FC = () => {
                     setSelectedStaffId('');
                   }
                 }}
-                className="px-3 py-2 bg-emerald-700 text-white rounded text-xs font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 shadow-sm flex-shrink-0"
+                className="w-full sm:w-auto px-4 py-2 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 shadow-sm shrink-0"
               >
                 Tap-In
               </button>
