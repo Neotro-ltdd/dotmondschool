@@ -16,8 +16,6 @@ import {
   Loader2,
   Building
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
-
 export interface Branch {
   id: string;
   name: string;
@@ -35,6 +33,14 @@ export const BranchManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
+
+  // Notification Banner State
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -63,12 +69,12 @@ export const BranchManagement: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
-      toast.success('Campus branch created successfully!');
+      showNotification('Campus branch created successfully!', 'success');
       setIsAddModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to create campus branch.');
+      showNotification(err.response?.data?.message || 'Failed to create campus branch.', 'error');
     },
   });
 
@@ -80,11 +86,11 @@ export const BranchManagement: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
-      toast.success('Campus details updated successfully!');
+      showNotification('Campus details updated successfully!', 'success');
       setEditingBranch(null);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to update campus branch.');
+      showNotification(err.response?.data?.message || 'Failed to update campus branch.', 'error');
     },
   });
 
@@ -102,7 +108,7 @@ export const BranchManagement: React.FC = () => {
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      toast.error('Campus name is required.');
+      showNotification('Campus name is required.', 'error');
       return;
     }
     createMutation.mutate(formData);
@@ -111,7 +117,7 @@ export const BranchManagement: React.FC = () => {
   const handleUpdateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBranch || !editingBranch.name.trim()) {
-      toast.error('Campus name is required.');
+      showNotification('Campus name is required.', 'error');
       return;
     }
     updateMutation.mutate(editingBranch);
@@ -127,6 +133,20 @@ export const BranchManagement: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
+      {/* Floating Notification */}
+      {notification && (
+        <div className={`p-4 rounded-xl shadow-lg border flex justify-between items-center text-sm font-medium animate-in fade-in duration-200 ${
+          notification.type === 'success'
+            ? 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
+            : 'bg-rose-50 dark:bg-rose-950/80 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800'
+        }`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)} className="text-current opacity-70 hover:opacity-100">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
