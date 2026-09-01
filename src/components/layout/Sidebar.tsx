@@ -442,6 +442,9 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                         <NavLink to="/dashboard/operations/term-setup" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                           Term & Session Setup
                         </NavLink>
+                        <NavLink to="/dashboard/operations/branches" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          Campus Branches
+                        </NavLink>
                         <NavLink to="/dashboard/operations/session" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
                           Session Operations
                         </NavLink>
