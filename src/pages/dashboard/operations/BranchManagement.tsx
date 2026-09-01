@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../services/api';
+import './BranchManagement.css';
 import { 
   Building2, 
   MapPin, 
@@ -15,7 +16,6 @@ import {
   X, 
   Loader2,
   Building,
-  Sparkles,
   AlertCircle
 } from 'lucide-react';
 
@@ -37,12 +37,12 @@ export const BranchManagement: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
 
-  // Toast / Notification State
+  // Notification State
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 4500);
+    setTimeout(() => setNotification(null), 4000);
   };
 
   // Form State
@@ -56,7 +56,7 @@ export const BranchManagement: React.FC = () => {
   });
 
   // Fetch Branches
-  const { data: branches = [], isLoading, isError } = useQuery<Branch[]>({
+  const { data: branches = [], isLoading } = useQuery<Branch[]>({
     queryKey: ['branches'],
     queryFn: async () => {
       const res = await api.get('/setup/branches');
@@ -135,39 +135,38 @@ export const BranchManagement: React.FC = () => {
   const mainBranch = branches.find(b => b.isMainBranch);
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900/50">
+    <div className="branch-page-container">
       {/* Toast Notification */}
       {notification && (
-        <div className={`fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl border flex items-center gap-3 text-sm font-semibold max-w-md animate-in slide-in-from-top-2 duration-300 ${
-          notification.type === 'success'
-            ? 'bg-emerald-600 text-white border-emerald-500 shadow-emerald-600/20'
-            : 'bg-rose-600 text-white border-rose-500 shadow-rose-600/20'
-        }`}>
-          {notification.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
-          <span className="flex-1">{notification.message}</span>
-          <button 
-            type="button"
-            onClick={() => setNotification(null)} 
-            className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <X className="w-4 h-4" />
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          zIndex: 9999,
+          background: notification.type === 'success' ? '#10B981' : '#EF4444',
+          color: '#FFFFFF',
+          padding: '0.85rem 1.25rem',
+          borderRadius: '12px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          fontSize: '0.88rem',
+          fontWeight: 700
+        }}>
+          {notification.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+          <span>{notification.message}</span>
+          <button type="button" onClick={() => setNotification(null)} style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', marginLeft: '0.5rem' }}>
+            <X size={16} />
           </button>
         </div>
       )}
 
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 rounded-3xl p-6 md:p-8 text-white shadow-xl border border-indigo-800/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
-        {/* Decorative Glow Background */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-400/30">
-            <Sparkles className="w-3.5 h-3.5" /> Multi-Branch Enterprise Setup
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Campus & Branch Management</h1>
-          <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-            Configure school campuses, locations, campus addresses, and branch-specific setups under one unified tenant portal.
-          </p>
+      {/* Page Header */}
+      <div className="branch-page-header">
+        <div>
+          <h1 className="branch-page-title">Campus & Branch Management</h1>
+          <p className="branch-page-subtitle">Manage multiple school campuses, locations, addresses, and branch setups under one unified system.</p>
         </div>
 
         <button
@@ -176,187 +175,150 @@ export const BranchManagement: React.FC = () => {
             resetForm();
             setIsAddModalOpen(true);
           }}
-          className="relative z-10 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-2xl shadow-lg shadow-blue-600/30 hover:shadow-blue-500/40 active:scale-95 transition-all flex items-center gap-2 text-sm shrink-0 border border-blue-400/30"
+          className="btn-primary-action"
         >
-          <Plus className="w-4 h-4 stroke-[3]" />
+          <Plus size={16} />
           Add New Campus
         </button>
       </div>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="bg-white dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-2xl border border-blue-100 dark:border-blue-900/50">
-            <Building className="w-7 h-7" />
+      {/* Metric Cards Row */}
+      <div className="branch-metrics-grid">
+        <div className="branch-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Total Campuses</span>
+            <span className="metric-number">{branches.length}</span>
           </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Campuses</p>
-            <h3 className="text-3xl font-black text-slate-900 dark:text-white mt-1">{branches.length}</h3>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
-          <div className="p-4 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-2xl border border-amber-100 dark:border-amber-900/50">
-            <Star className="w-7 h-7 fill-amber-400" />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Primary Campus</p>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white truncate mt-1">
-              {mainBranch?.name || (branches.length > 0 ? branches[0].name : 'Not Configured')}
-            </h3>
+          <div className="metric-icon-badge total">
+            <Building size={24} />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/90 backdrop-blur-xl p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
-          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
-            <ShieldCheck className="w-7 h-7" />
+        <div className="branch-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Primary Campus</span>
+            <span className="metric-number" style={{ fontSize: '1.25rem', marginTop: '0.35rem' }}>
+              {mainBranch?.name || (branches.length > 0 ? branches[0].name : 'Main Campus')}
+            </span>
           </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Active Status</p>
-            <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-              {branches.filter(b => b.isActive).length} Operational
-            </h3>
+          <div className="metric-icon-badge primary">
+            <Star size={24} />
+          </div>
+        </div>
+
+        <div className="branch-metric-card">
+          <div className="metric-info-box">
+            <span className="metric-label">Active Status</span>
+            <span className="metric-number" style={{ color: '#047857' }}>
+              {branches.filter(b => b.isActive).length} Active
+            </span>
+          </div>
+          <div className="metric-icon-badge active">
+            <ShieldCheck size={24} />
           </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="bg-white dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm overflow-hidden">
-        {/* Search Toolbar */}
-        <div className="p-6 border-b border-slate-200/80 dark:border-slate-700/80 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/50 dark:bg-slate-900/40">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              Registered School Campuses
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Overview of all active and inactive branch locations for this school institution.
-            </p>
+      {/* Main Container Card */}
+      <div className="branch-main-card">
+        <div className="card-header-bar">
+          <div className="card-title-box">
+            <h2 className="card-title">Registered School Campuses</h2>
+            <p className="card-subtitle">Overview of all active and inactive branch locations for this school institution.</p>
           </div>
 
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
+          <div className="branch-search-input">
+            <Search size={16} color="#94A3B8" />
             <input
               type="text"
-              placeholder="Search campus name, code, or address..."
+              placeholder="Search campus name or address..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
             />
           </div>
         </div>
 
-        {/* Content States */}
         {isLoading ? (
-          <div className="p-16 text-center text-slate-500 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Loading registered school campuses...</p>
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+            <Loader2 size={20} className="animate-spin" />
+            <span>Loading registered school campuses...</span>
           </div>
         ) : filteredBranches.length === 0 ? (
-          <div className="p-16 text-center flex flex-col items-center justify-center gap-4">
-            <div className="w-20 h-20 rounded-3xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 shadow-inner">
-              <Building2 className="w-10 h-10 stroke-[1.5]" />
-            </div>
-            <div className="max-w-md space-y-1">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {searchTerm ? 'No Campuses Match Your Search' : 'No School Campuses Added Yet'}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                {searchTerm 
-                  ? `No branch records were found matching "${searchTerm}". Try clearing your search.`
-                  : 'Add your primary campus and secondary branch locations to enable location-based fee setups, staff management, and student ID cards.'}
-              </p>
-            </div>
-            {!searchTerm && (
-              <button
-                type="button"
-                onClick={() => {
-                  resetForm();
-                  setFormData(prev => ({ ...prev, isMainBranch: true, name: 'Main Campus' }));
-                  setIsAddModalOpen(true);
-                }}
-                className="mt-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-md transition-all flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" /> Add Primary Campus
-              </button>
-            )}
+          <div style={{ padding: '3.5rem 2rem', textAlign: 'center', color: '#64748B', background: '#F8FAFC', borderRadius: '16px', border: '1px border #E2E8F0' }}>
+            <Building2 size={42} color="#94A3B8" style={{ margin: '0 auto 0.75rem auto' }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              {searchTerm ? 'No Campuses Match Your Search' : 'No School Campuses Added Yet'}
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
+              {searchTerm 
+                ? `No branch records were found matching "${searchTerm}".`
+                : 'Click "Add New Campus" above to configure your primary campus and satellite locations.'}
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+          <div className="branch-grid-container">
             {filteredBranches.map((branch) => (
               <div
                 key={branch.id}
-                className={`relative bg-white dark:bg-slate-900/80 rounded-3xl p-6 border transition-all duration-200 hover:shadow-lg flex flex-col justify-between ${
-                  branch.isMainBranch
-                    ? 'border-blue-500/60 shadow-blue-500/5 ring-1 ring-blue-500/30'
-                    : 'border-slate-200 dark:border-slate-700/80'
-                }`}
+                className={`campus-item-card ${branch.isMainBranch ? 'is-main' : ''}`}
               >
-                <div>
-                  {/* Top Badges */}
-                  <div className="flex justify-between items-start gap-2 mb-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-xl shadow-md shadow-blue-600/20 uppercase tracking-wider shrink-0">
-                      {branch.code ? branch.code.substring(0, 3) : 'MAIN'}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {branch.isMainBranch && (
-                        <span className="bg-amber-500/10 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full text-xs font-bold border border-amber-500/30 flex items-center gap-1">
-                          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                          Primary Campus
-                        </span>
-                      )}
-                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border ${
-                        branch.isActive 
-                          ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
-                      }`}>
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        {branch.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
+                {branch.isMainBranch && (
+                  <div className="campus-badge-main">
+                    <Star size={12} fill="#B45309" />
+                    Primary Campus
                   </div>
+                )}
 
-                  {/* Campus Info */}
-                  <div className="space-y-1 mb-4">
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
-                      {branch.name}
-                    </h3>
-                    <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                      Campus Code: <span className="font-mono bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded text-blue-700 dark:text-blue-300">{branch.code || 'MAIN'}</span>
-                    </p>
+                <div className="campus-card-header">
+                  <div className="campus-code-box">
+                    {branch.code ? branch.code.substring(0, 3) : 'SCH'}
                   </div>
-
-                  {/* Contact & Location Details */}
-                  <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 mb-6 bg-slate-50 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/80">
-                    <div className="flex items-start gap-2.5">
-                      <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                      <span className="font-medium leading-relaxed">{branch.address || 'Address not specified'}</span>
-                    </div>
-
-                    {branch.phoneNumber && (
-                      <div className="flex items-center gap-2.5">
-                        <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span className="font-medium">{branch.phoneNumber}</span>
-                      </div>
-                    )}
-
-                    {branch.email && (
-                      <div className="flex items-center gap-2.5">
-                        <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span className="font-medium">{branch.email}</span>
-                      </div>
-                    )}
+                  <div className="campus-title-area">
+                    <h3 className="campus-name">{branch.name}</h3>
+                    <span className="campus-code-sub">Code: {branch.code || 'MAIN'}</span>
                   </div>
                 </div>
 
-                {/* Footer Action */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end items-center gap-2">
+                <div className="campus-detail-list">
+                  <div className="campus-detail-row">
+                    <MapPin size={15} color="#94A3B8" style={{ marginTop: '2px', flexShrink: 0 }} />
+                    <span>{branch.address || 'Address not specified'}</span>
+                  </div>
+
+                  {branch.phoneNumber && (
+                    <div className="campus-detail-row">
+                      <Phone size={15} color="#94A3B8" style={{ flexShrink: 0 }} />
+                      <span>{branch.phoneNumber}</span>
+                    </div>
+                  )}
+
+                  {branch.email && (
+                    <div className="campus-detail-row">
+                      <Mail size={15} color="#94A3B8" style={{ flexShrink: 0 }} />
+                      <span>{branch.email}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #E2E8F0' }}>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '12px',
+                    background: branch.isActive ? '#ECFDF5' : '#F1F5F9',
+                    color: branch.isActive ? '#047857' : '#64748B'
+                  }}>
+                    {branch.isActive ? 'Active Campus' : 'Inactive'}
+                  </span>
+
                   <button
                     type="button"
                     onClick={() => setEditingBranch(branch)}
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl text-xs transition-all flex items-center gap-1.5"
+                    className="btn-cancel"
+                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
                   >
-                    <Edit3 className="w-3.5 h-3.5" /> Edit Details
+                    <Edit3 size={13} style={{ marginRight: '4px' }} /> Edit
                   </button>
                 </div>
               </div>
@@ -367,124 +329,105 @@ export const BranchManagement: React.FC = () => {
 
       {/* ADD CAMPUS MODAL */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden">
-            <div className="p-6 bg-gradient-to-r from-slate-900 to-blue-900 text-white flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-white/10 rounded-xl">
-                  <Building2 className="w-5 h-5 text-blue-300" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Add New School Campus</h3>
-                  <p className="text-xs text-blue-200">Register a new branch or campus location</p>
-                </div>
-              </div>
+        <div className="modal-overlay">
+          <div className="modal-content-box">
+            <div className="modal-header">
+              <h3>Add New School Campus</h3>
               <button 
                 type="button"
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer' }}
               >
-                <X className="w-5 h-5" />
+                <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Campus / Branch Name *
-                </label>
+            <form onSubmit={handleCreateSubmit} className="modal-body">
+              <div className="form-group">
+                <label>Campus / Branch Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Annex Campus / Ikeja Branch"
+                  placeholder="e.g. Main Campus / Ikeja Annex"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="form-control-input"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                    Branch Code
-                  </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group">
+                  <label>Branch Code</label>
                   <input
                     type="text"
-                    placeholder="e.g. MAIN, ANX, IKJ"
+                    placeholder="e.g. MAIN, IKJ"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase font-mono"
+                    className="form-control-input"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                    Phone Number
-                  </label>
+                <div className="form-group">
+                  <label>Phone Number</label>
                   <input
                     type="text"
                     placeholder="e.g. 08012345678"
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="form-control-input"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Campus Address *
-                </label>
+              <div className="form-group">
+                <label>Campus Address *</label>
                 <textarea
                   rows={2}
                   required
-                  placeholder="Full physical street address for this campus location..."
+                  placeholder="Physical street address..."
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="form-control-input"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Official Branch Email
-                </label>
+              <div className="form-group">
+                <label>Official Branch Email</label>
                 <input
                   type="email"
                   placeholder="e.g. branch@school.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="form-control-input"
                 />
               </div>
 
-              <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', padding: '0.75rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
                 <input
                   type="checkbox"
                   id="isMainBranch"
                   checked={formData.isMainBranch}
                   onChange={(e) => setFormData({ ...formData, isMainBranch: e.target.checked })}
-                  className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
                 />
-                <label htmlFor="isMainBranch" className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label htmlFor="isMainBranch" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', cursor: 'pointer', textTransform: 'none' }}>
                   Set as Primary School Campus
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-colors"
+                  className="btn-cancel"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createMutation.isPending}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-md transition-colors flex items-center gap-2"
+                  className="btn-submit"
                 >
-                  {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {createMutation.isPending && <Loader2 size={16} className="animate-spin" />}
                   Save Campus
                 </button>
               </div>
@@ -495,119 +438,100 @@ export const BranchManagement: React.FC = () => {
 
       {/* EDIT CAMPUS MODAL */}
       {editingBranch && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden">
-            <div className="p-6 bg-gradient-to-r from-slate-900 to-blue-900 text-white flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-white/10 rounded-xl">
-                  <Edit3 className="w-5 h-5 text-blue-300" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Edit Campus Details</h3>
-                  <p className="text-xs text-blue-200">Update information for {editingBranch.name}</p>
-                </div>
-              </div>
+        <div className="modal-overlay">
+          <div className="modal-content-box">
+            <div className="modal-header">
+              <h3>Edit Campus Details</h3>
               <button 
                 type="button"
                 onClick={() => setEditingBranch(null)}
-                className="p-1 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer' }}
               >
-                <X className="w-5 h-5" />
+                <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleUpdateSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Campus / Branch Name *
-                </label>
+            <form onSubmit={handleUpdateSubmit} className="modal-body">
+              <div className="form-group">
+                <label>Campus / Branch Name *</label>
                 <input
                   type="text"
                   required
                   value={editingBranch.name}
                   onChange={(e) => setEditingBranch({ ...editingBranch, name: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="form-control-input"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                    Branch Code
-                  </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group">
+                  <label>Branch Code</label>
                   <input
                     type="text"
                     value={editingBranch.code}
                     onChange={(e) => setEditingBranch({ ...editingBranch, code: e.target.value.toUpperCase() })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase font-mono"
+                    className="form-control-input"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                    Phone Number
-                  </label>
+                <div className="form-group">
+                  <label>Phone Number</label>
                   <input
                     type="text"
                     value={editingBranch.phoneNumber}
                     onChange={(e) => setEditingBranch({ ...editingBranch, phoneNumber: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="form-control-input"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Campus Address *
-                </label>
+              <div className="form-group">
+                <label>Campus Address *</label>
                 <textarea
                   rows={2}
                   required
                   value={editingBranch.address}
                   onChange={(e) => setEditingBranch({ ...editingBranch, address: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="form-control-input"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Official Branch Email
-                </label>
+              <div className="form-group">
+                <label>Official Branch Email</label>
                 <input
                   type="email"
                   value={editingBranch.email}
                   onChange={(e) => setEditingBranch({ ...editingBranch, email: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="form-control-input"
                 />
               </div>
 
-              <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', padding: '0.75rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
                 <input
                   type="checkbox"
                   id="editIsMainBranch"
                   checked={editingBranch.isMainBranch}
                   onChange={(e) => setEditingBranch({ ...editingBranch, isMainBranch: e.target.checked })}
-                  className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
                 />
-                <label htmlFor="editIsMainBranch" className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label htmlFor="editIsMainBranch" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', cursor: 'pointer', textTransform: 'none' }}>
                   Set as Primary School Campus
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
                 <button
                   type="button"
                   onClick={() => setEditingBranch(null)}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-colors"
+                  className="btn-cancel"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updateMutation.isPending}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm shadow-md transition-colors flex items-center gap-2"
+                  className="btn-submit"
                 >
-                  {updateMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {updateMutation.isPending && <Loader2 size={16} className="animate-spin" />}
                   Update Changes
                 </button>
               </div>
