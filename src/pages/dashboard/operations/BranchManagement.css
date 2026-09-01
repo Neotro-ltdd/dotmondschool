@@ -134,32 +134,35 @@
   margin-top: 0.2rem;
 }
 
-/* Buttons */
+/* Primary Action Button - Solid Blue with Bold White Font */
 .btn-primary-action {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #F1F5F9;
-  color: #0F172A;
-  border: 1px solid #CBD5E1;
-  padding: 0.6rem 1.25rem;
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  padding: 0.65rem 1.35rem;
   border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
   transition: all 0.2s ease;
 }
 
 .btn-primary-action:hover {
-  background: #E2E8F0;
-  border-color: #94A3B8;
+  background: #1D4ED8 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4) !important;
+  transform: translateY(-1px);
 }
 
 .btn-submit {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #D97706;
+  background: #2563EB;
   color: #FFFFFF;
   border: none;
   padding: 0.65rem 1.5rem;
@@ -171,7 +174,7 @@
 }
 
 .btn-submit:hover {
-  background: #B45309;
+  background: #1D4ED8;
 }
 
 .btn-cancel {

@@ -60,7 +60,9 @@ export const BranchManagement: React.FC = () => {
     queryKey: ['branches'],
     queryFn: async () => {
       const res = await api.get('/setup/branches');
-      return res.data;
+      if (Array.isArray(res)) return res;
+      if (res && Array.isArray(res.data)) return res.data;
+      return [];
     },
   });
 
@@ -68,7 +70,7 @@ export const BranchManagement: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       const res = await api.post('/setup/branches', data);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
@@ -77,7 +79,7 @@ export const BranchManagement: React.FC = () => {
       resetForm();
     },
     onError: (err: any) => {
-      showNotification(err.response?.data?.message || 'Failed to create campus branch.', 'error');
+      showNotification(err.message || err.response?.data?.message || 'Failed to create campus branch.', 'error');
     },
   });
 
@@ -85,7 +87,7 @@ export const BranchManagement: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: async (branch: Branch) => {
       const res = await api.put(`/setup/branches/${branch.id}`, branch);
-      return res.data;
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
@@ -93,7 +95,7 @@ export const BranchManagement: React.FC = () => {
       setEditingBranch(null);
     },
     onError: (err: any) => {
-      showNotification(err.response?.data?.message || 'Failed to update campus branch.', 'error');
+      showNotification(err.message || err.response?.data?.message || 'Failed to update campus branch.', 'error');
     },
   });
 
@@ -244,7 +246,7 @@ export const BranchManagement: React.FC = () => {
             <span>Loading registered school campuses...</span>
           </div>
         ) : filteredBranches.length === 0 ? (
-          <div style={{ padding: '3.5rem 2rem', textAlign: 'center', color: '#64748B', background: '#F8FAFC', borderRadius: '16px', border: '1px border #E2E8F0' }}>
+          <div style={{ padding: '3.5rem 2rem', textAlign: 'center', color: '#64748B', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
             <Building2 size={42} color="#94A3B8" style={{ margin: '0 auto 0.75rem auto' }} />
             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
               {searchTerm ? 'No Campuses Match Your Search' : 'No School Campuses Added Yet'}
@@ -252,7 +254,7 @@ export const BranchManagement: React.FC = () => {
             <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
               {searchTerm 
                 ? `No branch records were found matching "${searchTerm}".`
-                : 'Click "Add New Campus" above to configure your primary campus and satellite locations.'}
+                : 'Click "+ Add New Campus" above to configure your primary campus and satellite locations.'}
             </p>
           </div>
         ) : (
