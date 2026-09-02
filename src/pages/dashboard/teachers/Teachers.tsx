@@ -92,13 +92,14 @@ export default function Teachers() {
   const [rawPassportFile, setRawPassportFile] = useState<File | null>(null);
   const [passportPreviewUrl, setPassportPreviewUrl] = useState<string | null>(null);
   const [existingPassportUrl, setExistingPassportUrl] = useState<string | null>(null);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>(['Teacher']);
+  const { activeBranchId, branches } = useBranchContext();
+
   const [formData, setFormData] = useState({
     title: '',
     surname: '',
     firstName: '',
     otherNames: '',
-    gender: 'Female',
+    gender: '',
     phoneNumber: '',
     email: '',
     designation: '',
@@ -175,7 +176,7 @@ export default function Teachers() {
       surname: teacher.surname || '',
       firstName: teacher.firstName || '',
       otherNames: teacher.otherNames || '',
-      gender: teacher.gender || 'Female',
+      gender: teacher.gender || '',
       phoneNumber: teacher.phoneNumber || '',
       email: teacher.email || '',
       designation: teacher.designation || '',
@@ -200,7 +201,7 @@ export default function Teachers() {
       surname: '',
       firstName: '',
       otherNames: '',
-      gender: 'Female',
+      gender: '',
       phoneNumber: '',
       email: '',
       designation: '',
@@ -221,8 +222,8 @@ export default function Teachers() {
 
   const handleNextStep = () => {
     if (formStep === 1) {
-      if (!formData.surname || !formData.firstName || !formData.phoneNumber || !formData.email) {
-        showAlert('Please complete all required personal details (Surname, First Name, Phone, and Email) before continuing.');
+      if (!formData.surname || !formData.firstName || !formData.gender || !formData.phoneNumber || !formData.email) {
+        showAlert('Please complete all required personal details (Surname, First Name, Gender, Phone, and Email) before continuing.');
         return;
       }
       setFormStep(2);
@@ -785,7 +786,8 @@ export default function Teachers() {
               </div>
               <div className="form-group">
                 <label>Gender <span style={{ color: '#ef4444' }}>*</span></label>
-                <select name="gender" value={formData.gender} onChange={handleInputChange} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                <select name="gender" value={formData.gender} onChange={handleInputChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                  <option value="">-- Select Gender --</option>
                   <option value="Female">Female</option>
                   <option value="Male">Male</option>
                 </select>

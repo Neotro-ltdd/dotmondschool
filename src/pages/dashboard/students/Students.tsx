@@ -49,6 +49,7 @@ interface StudentItem {
 }
 
 import { useAuth } from '../../../context/AuthContext';
+import { useBranchContext } from '../../../context/BranchContext';
 
 interface ClassItem {
   id: string;
@@ -60,6 +61,7 @@ interface ClassItem {
 export default function Students() {
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
+  const { activeBranchId, branches } = useBranchContext();
   const isReadOnly = userRole === 'Chairman';
 
   const [students, setStudents] = useState<StudentItem[]>([]);
@@ -87,6 +89,8 @@ export default function Students() {
     surname: '',
     firstName: '',
     otherNames: '',
+    gender: '',
+    branchId: '',
     parentPhoneNumber: '',
     parentEmail: '',
     classId: '',
@@ -150,8 +154,26 @@ export default function Students() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleOpenAdmitModal = () => {
+    setFormData({
+      surname: '',
+      firstName: '',
+      otherNames: '',
+      gender: '',
+      parentPhoneNumber: '',
+      parentEmail: '',
+      classId: '',
+      departmentTrack: 'General'
+    });
+    setShowModal(true);
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.gender) {
+      showAlert('Please select student gender before admitting.');
+      return;
+    }
     try {
       setSubmitting(true);
       await api.post('/setup/students', formData);
@@ -160,6 +182,7 @@ export default function Students() {
         surname: '',
         firstName: '',
         otherNames: '',
+        gender: '',
         parentPhoneNumber: '',
         parentEmail: '',
         classId: formData.classId,
@@ -866,6 +889,25 @@ export default function Students() {
                     {classes.map(cls => (
                       <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
                     ))}
+                  </select>
+                </div>
+
+                {/* Gender */}
+                <div className="form-group">
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                    Gender <span style={{ color: '#E11D48' }}>*</span>
+                  </label>
+                  <select 
+                    name="gender" 
+                    value={formData.gender} 
+                    onChange={handleInputChange} 
+                    required
+                    className="select-filter-input"
+                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                  >
+                    <option value="">-- Select Gender --</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
                   </select>
                 </div>
 
