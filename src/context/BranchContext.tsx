@@ -23,7 +23,7 @@ interface BranchContextType {
     refreshBranches: () => Promise<void>;
 }
 
-const GLOBAL_ROLES = ['SuperAdmin', 'Superadmin', 'SystemAdmin', 'Director', 'Chairman', 'Vendor'];
+const GLOBAL_ROLES = ['SuperAdmin', 'Superadmin', 'SystemAdmin', 'Director', 'Principal', 'Chairman', 'Vendor'];
 
 const BranchContext = createContext<BranchContextType | undefined>(undefined);
 
