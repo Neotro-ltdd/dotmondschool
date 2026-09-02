@@ -671,7 +671,7 @@ export default function PromotionManagement() {
                           <td style={{ textAlign: 'center' }}>
                             <button 
                               className="btn-action-override"
-                              onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                              onClick={() => openOverrideModal(rec.recommendationId || rec.studentId, rec.finalDecision)}
                             >
                               <Edit3 size={14} />
                               Override
@@ -723,7 +723,7 @@ export default function PromotionManagement() {
                           <span className="system-rec-lbl">System: {rec.systemRecommendation}</span>
                           <button 
                             className="btn-action-override"
-                            onClick={() => openOverrideModal(rec.recommendationId, rec.finalDecision)}
+                            onClick={() => openOverrideModal(rec.recommendationId || rec.studentId, rec.finalDecision)}
                           >
                             <Edit3 size={14} /> Override
                           </button>
