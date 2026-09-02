@@ -184,6 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('srms_override_avatar');
         localStorage.removeItem('srms_override_name');
         localStorage.removeItem('srms_override_title');
+        localStorage.removeItem('srms_activeBranchId');
         setToken(null);
     };
 

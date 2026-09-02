@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { TenantProvider } from './context/TenantContext';
 import { DialogProvider } from './context/DialogContext';
+import { BranchProvider } from './context/BranchContext';
+import { ThemeProvider } from './context/ThemeContext';
+
 import LandingPage from './pages/LandingPage';
 import Login from './pages/auth/Login';
 import ChangePassword from './pages/auth/ChangePassword';
@@ -33,7 +36,6 @@ import SubjectAllocations from './pages/dashboard/admin/operations/SubjectAlloca
 import ClassAllocations from './pages/dashboard/admin/operations/ClassAllocations';
 import SessionOperation from './pages/dashboard/admin/operations/SessionOperation';
 import TermSetup from './pages/dashboard/admin/operations/TermSetup';
-
 import TemplateGallery from './pages/dashboard/admin/operations/TemplateGallery';
 import GradingRules from './pages/dashboard/admin/operations/GradingRules';
 import GateScanner from './pages/dashboard/admin/GateScanner';
@@ -47,7 +49,6 @@ import SchoolManagement from './pages/dashboard/admin/SchoolManagement';
 import SystemSettings from './pages/dashboard/admin/SystemSettings';
 import PromotionManagement from './pages/dashboard/operations/PromotionManagement';
 import { BranchManagement } from './pages/dashboard/operations/BranchManagement';
-
 import MyClass from './pages/dashboard/teacher/MyClass';
 import ContinuousAssessment from './pages/dashboard/teacher/ContinuousAssessment';
 import AttendanceRegister from './pages/dashboard/teacher/AttendanceRegister';
@@ -62,101 +63,99 @@ import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import './App.css';
 
-import { ThemeProvider } from './context/ThemeContext';
-
 function App() {
   return (
     <ThemeProvider>
       <TenantProvider>
         <AuthProvider>
-          <DialogProvider>
-        <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/apply-admission" element={<PublicAdmissionForm />} />
-          <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/master-login" element={<MasterLogin />} />
-          
-          <Route path="/system-admin" element={<SystemLayout />}>
-            <Route index element={<SystemOverview />} />
-            <Route path="schools" element={<SystemSchools />} />
-            <Route path="schools/:id" element={<SchoolManagement />} />
-            <Route path="settings" element={<SystemSettings />} />
-          </Route>
-          
-          {/* Protected Dashboard Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Overview />} />
-            <Route path="settings/school" element={<SchoolConfig />} />
-            <Route path="classes" element={<Classes />} />
-            <Route path="subjects" element={<Subjects />} />
-            <Route path="test-result-sample" element={<ResultSample />} />
-            <Route path="teachers" element={<Teachers />} />
-            <Route path="staff" element={<Teachers />} />
-            <Route path="admin/staff" element={<Teachers />} />
-            <Route path="admin/students" element={<Students />} />
-            <Route path="staff-attendance" element={<StaffAttendanceReport />} />
-            <Route path="gate-scanner" element={<GateScanner />} />
-            <Route path="scanner-preview" element={<GateScanner />} />
-            <Route path="gate-logs" element={<GateAttendanceLog />} />
-            <Route path="students" element={<Students />} />
-            <Route path="approvals" element={<Approvals />} />
-            <Route path="finance">
-              <Route path="verifications" element={<OnlineVerifications />} />
-              <Route path="pos" element={<PointOfSale />} />
-              <Route path="proxy-upload" element={<ProxyPaymentUpload />} />
-              <Route path="ledger" element={<StudentLedger />} />
-              <Route path="reports" element={<FinancialReportsHub />} />
-              <Route path="receipt/:paymentId" element={<ReceiptViewer />} />
-            </Route>
-            <Route path="finance-setup">
-              <Route path="assets" element={<FinanceAssets />} />
-              <Route path="builder" element={<FinanceFeeBuilder />} />
-              <Route path="class-fees" element={<ClassFees />} />
-            </Route>
-            <Route path="reports">
-              <Route index element={<Reports />} />
-              <Route path="result/:studentId/:batchId" element={<ResultSheetViewer />} />
-            </Route>
-            <Route path="operations">
-              <Route path="roles" element={<RoleManagement />} />
-              <Route path="term-setup" element={<TermSetup />} />
-              <Route path="session" element={<SessionOperation />} />
-
-              <Route path="template-gallery" element={<TemplateGallery />} />
-              <Route path="grading" element={<GradingRules />} />
-              <Route path="gate-scanner" element={<GateScanner />} />
-              <Route path="gate-logs" element={<GateAttendanceLog />} />
-              <Route path="result-management" element={<ResultManagement />} />
-              <Route path="review-results" element={<AdminReviewResults />} />
-              <Route path="manual-clearance" element={<ManualClearance />} />
-              <Route path="promotions" element={<PromotionManagement />} />
-              <Route path="branches" element={<BranchManagement />} />
-            </Route>
-            <Route path="allocations">
-              <Route path="class-allocations" element={<ClassAllocations />} />
-              <Route path="subject-allocations" element={<SubjectAllocations />} />
-            </Route>
-            <Route path="teacher">
-              <Route path="my-class" element={<MyClass />} />
-              <Route path="attendance" element={<AttendanceRegister />} />
-              <Route path="assessment" element={<ContinuousAssessment />} />
-              <Route path="utilities" element={<Utilities />} />
-              <Route path="results" element={<TeacherResults />} />
-            </Route>
-            <Route path="parent-hub" element={<ParentHub />} />
-            <Route path="vendor-hub" element={<VendorHub />} />
-            <Route path="admissions" element={<AdmissionsHub />} />
-            <Route path="profile" element={<ProfileSettings />} />
-            {/* Additional dashboard routes will go here later */}
-          </Route>
-        </Routes>
-      </BrowserRouter>
-        </DialogProvider>
-      </AuthProvider>
-    </TenantProvider>
+          <BranchProvider>
+            <DialogProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/apply-admission" element={<PublicAdmissionForm />} />
+                  <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />
+                  <Route path="/change-password" element={<ChangePassword />} />
+                  <Route path="/master-login" element={<MasterLogin />} />
+                  
+                  <Route path="/system-admin" element={<SystemLayout />}>
+                    <Route index element={<SystemOverview />} />
+                    <Route path="schools" element={<SystemSchools />} />
+                    <Route path="schools/:id" element={<SchoolManagement />} />
+                    <Route path="settings" element={<SystemSettings />} />
+                  </Route>
+                  
+                  {/* Protected Dashboard Routes */}
+                  <Route path="/dashboard" element={<DashboardLayout />}>
+                    <Route index element={<Overview />} />
+                    <Route path="settings/school" element={<SchoolConfig />} />
+                    <Route path="classes" element={<Classes />} />
+                    <Route path="subjects" element={<Subjects />} />
+                    <Route path="test-result-sample" element={<ResultSample />} />
+                    <Route path="teachers" element={<Teachers />} />
+                    <Route path="staff" element={<Teachers />} />
+                    <Route path="admin/staff" element={<Teachers />} />
+                    <Route path="admin/students" element={<Students />} />
+                    <Route path="staff-attendance" element={<StaffAttendanceReport />} />
+                    <Route path="gate-scanner" element={<GateScanner />} />
+                    <Route path="scanner-preview" element={<GateScanner />} />
+                    <Route path="gate-logs" element={<GateAttendanceLog />} />
+                    <Route path="students" element={<Students />} />
+                    <Route path="approvals" element={<Approvals />} />
+                    <Route path="finance">
+                      <Route path="verifications" element={<OnlineVerifications />} />
+                      <Route path="pos" element={<PointOfSale />} />
+                      <Route path="proxy-upload" element={<ProxyPaymentUpload />} />
+                      <Route path="ledger" element={<StudentLedger />} />
+                      <Route path="reports" element={<FinancialReportsHub />} />
+                      <Route path="receipt/:paymentId" element={<ReceiptViewer />} />
+                    </Route>
+                    <Route path="finance-setup">
+                      <Route path="assets" element={<FinanceAssets />} />
+                      <Route path="builder" element={<FinanceFeeBuilder />} />
+                      <Route path="class-fees" element={<ClassFees />} />
+                    </Route>
+                    <Route path="reports">
+                      <Route index element={<Reports />} />
+                      <Route path="result/:studentId/:batchId" element={<ResultSheetViewer />} />
+                    </Route>
+                    <Route path="operations">
+                      <Route path="roles" element={<RoleManagement />} />
+                      <Route path="term-setup" element={<TermSetup />} />
+                      <Route path="session" element={<SessionOperation />} />
+                      <Route path="template-gallery" element={<TemplateGallery />} />
+                      <Route path="grading" element={<GradingRules />} />
+                      <Route path="gate-scanner" element={<GateScanner />} />
+                      <Route path="gate-logs" element={<GateAttendanceLog />} />
+                      <Route path="result-management" element={<ResultManagement />} />
+                      <Route path="review-results" element={<AdminReviewResults />} />
+                      <Route path="manual-clearance" element={<ManualClearance />} />
+                      <Route path="promotions" element={<PromotionManagement />} />
+                      <Route path="branches" element={<BranchManagement />} />
+                    </Route>
+                    <Route path="allocations">
+                      <Route path="class-allocations" element={<ClassAllocations />} />
+                      <Route path="subject-allocations" element={<SubjectAllocations />} />
+                    </Route>
+                    <Route path="teacher">
+                      <Route path="my-class" element={<MyClass />} />
+                      <Route path="attendance" element={<AttendanceRegister />} />
+                      <Route path="assessment" element={<ContinuousAssessment />} />
+                      <Route path="utilities" element={<Utilities />} />
+                      <Route path="results" element={<TeacherResults />} />
+                    </Route>
+                    <Route path="parent-hub" element={<ParentHub />} />
+                    <Route path="vendor-hub" element={<VendorHub />} />
+                    <Route path="admissions" element={<AdmissionsHub />} />
+                    <Route path="profile" element={<ProfileSettings />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </DialogProvider>
+          </BranchProvider>
+        </AuthProvider>
+      </TenantProvider>
     </ThemeProvider>
   );
 }

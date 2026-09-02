@@ -77,10 +77,15 @@ async function handleResponse(response: Response) {
     return data;
 }
 
+export function getActiveBranchId(): string | null {
+    return localStorage.getItem('srms_activeBranchId') || null;
+}
+
 export const api = {
     async post(endpoint: string, body: any) {
         const token = localStorage.getItem('srms_token');
         const tenantId = getTenantId();
+        const branchId = getActiveBranchId();
         const isFormData = body instanceof FormData;
         
         const headers: Record<string, string> = {};
@@ -92,6 +97,9 @@ export const api = {
         }
         if (tenantId) {
             headers['X-Tenant-ID'] = tenantId;
+        }
+        if (branchId) {
+            headers['X-Branch-ID'] = branchId;
         }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -106,6 +114,7 @@ export const api = {
     async put(endpoint: string, body: any) {
         const token = localStorage.getItem('srms_token');
         const tenantId = getTenantId();
+        const branchId = getActiveBranchId();
         const isFormData = body instanceof FormData;
         
         const headers: Record<string, string> = {};
@@ -117,6 +126,9 @@ export const api = {
         }
         if (tenantId) {
             headers['X-Tenant-ID'] = tenantId;
+        }
+        if (branchId) {
+            headers['X-Branch-ID'] = branchId;
         }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -131,6 +143,7 @@ export const api = {
     async get(endpoint: string) {
         const token = localStorage.getItem('srms_token');
         const tenantId = getTenantId();
+        const branchId = getActiveBranchId();
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
         };
@@ -140,6 +153,9 @@ export const api = {
         }
         if (tenantId) {
             headers['X-Tenant-ID'] = tenantId;
+        }
+        if (branchId) {
+            headers['X-Branch-ID'] = branchId;
         }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -153,6 +169,7 @@ export const api = {
     async delete(endpoint: string) {
         const token = localStorage.getItem('srms_token');
         const tenantId = getTenantId();
+        const branchId = getActiveBranchId();
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
         };
@@ -162,6 +179,9 @@ export const api = {
         }
         if (tenantId) {
             headers['X-Tenant-ID'] = tenantId;
+        }
+        if (branchId) {
+            headers['X-Branch-ID'] = branchId;
         }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -175,6 +195,7 @@ export const api = {
     async download(endpoint: string) {
         const token = localStorage.getItem('srms_token');
         const tenantId = getTenantId();
+        const branchId = getActiveBranchId();
         const headers: Record<string, string> = {};
         
         if (token) {
@@ -182,6 +203,9 @@ export const api = {
         }
         if (tenantId) {
             headers['X-Tenant-ID'] = tenantId;
+        }
+        if (branchId) {
+            headers['X-Branch-ID'] = branchId;
         }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {

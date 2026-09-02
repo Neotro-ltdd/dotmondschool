@@ -10,6 +10,7 @@ import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mai
 
 
 import { useAuth } from '../../../context/AuthContext';
+import { useBranchContext } from '../../../context/BranchContext';
 
 interface TeacherItem {
   id: string;
@@ -33,6 +34,7 @@ interface TeacherItem {
 export default function Teachers() {
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
+  const { activeBranchId } = useBranchContext();
   const isReadOnly = userRole === 'Chairman';
   const queryClient = useQueryClient();
 
@@ -54,7 +56,7 @@ export default function Teachers() {
 
   // TanStack Query for Server State (Vatebra Enterprise Standard 5.4)
   const { data: teachers = [], isLoading: loading, error: queryError } = useQuery<TeacherItem[]>({
-    queryKey: ['staffList'],
+    queryKey: ['staffList', activeBranchId],
     queryFn: async () => {
       const res = await api.get('/setup/staff');
       return res;

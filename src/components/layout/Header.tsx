@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, Sun, Moon } from 'lucide-react';
 import { API_ROOT } from '../../services/api';
 import { formatDisplayName } from '../../utils/nameFormatter';
+import { BranchSwitcher } from './BranchSwitcher';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
@@ -47,6 +48,8 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
       </div>
       
       <div className="header-actions">
+        {/* Multi-Branch Context Switcher Toggle */}
+        <BranchSwitcher />
         {/* Developer / SuperAdmin Role Switcher Dropdown - Only Visible to SuperAdmin */}
         {isSuperAdmin && availableRoles && availableRoles.length > 1 && (
           <div className="role-switcher-box" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '4px 10px' }}>
