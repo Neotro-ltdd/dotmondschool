@@ -681,8 +681,8 @@
 /* ─── PRINT MEDIA STYLES ─── */
 @media print {
   @page {
-    size: A4 landscape;
-    margin: 10mm;
+    size: A4 portrait;
+    margin: 8mm;
   }
 
   body, html {
@@ -716,12 +716,14 @@
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
-    align-items: center !important;
-    gap: 0.5in !important;
+    align-items: flex-start !important;
+    gap: 0.35in !important;
     margin: 0 auto !important;
-    padding: 0.25in 0 !important;
+    padding: 0.35in 0 0 !important;
     width: 100% !important;
     page-break-inside: avoid !important;
+    transform: scale(1.48) !important;
+    transform-origin: top center !important;
   }
 
   .id-card-wrapper {
