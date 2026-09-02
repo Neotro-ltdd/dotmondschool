@@ -17,6 +17,8 @@ interface IdCardData {
   validPeriod: string;
   passportUrl: string;
   qrCodeSvg: string;
+  branchName?: string;
+  branchAddress?: string;
 }
 
 interface SchoolProfile {
@@ -103,7 +105,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   // 1. School Name Single Line Display ("DOTMOND SCHOOL")
   const rawSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
   const fullSchoolTitle = rawSchoolName.toUpperCase();
-  const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const schoolAddress = idCardData?.branchAddress || schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
   
   // 2. Active System Academic Session / Calculated Validity Period (e.g. "2026/2027 - 2028/2029")
   const activeSession = idCardData.validPeriod || schoolProfile?.currentSession || "2026/2027";

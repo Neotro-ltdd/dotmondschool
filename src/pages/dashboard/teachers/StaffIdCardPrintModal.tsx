@@ -19,6 +19,8 @@ interface StaffIdCardData {
   validPeriod: string;
   passportUrl: string;
   qrCodeSvg: string;
+  branchName?: string;
+  branchAddress?: string;
 }
 
 interface SchoolProfile {
@@ -105,7 +107,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
   const rawSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
   const fullSchoolTitle = rawSchoolName.toUpperCase();
-  const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const schoolAddress = idCardData?.branchAddress || schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
 
   // Avatar Fallback URL generator
   const getAvatarFallback = (name: string) => {
