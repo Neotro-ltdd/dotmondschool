@@ -92,7 +92,6 @@ export default function Teachers() {
   const [rawPassportFile, setRawPassportFile] = useState<File | null>(null);
   const [passportPreviewUrl, setPassportPreviewUrl] = useState<string | null>(null);
   const [existingPassportUrl, setExistingPassportUrl] = useState<string | null>(null);
-  const { activeBranchId, branches } = useBranchContext();
 
   const [formData, setFormData] = useState({
     title: '',
