@@ -160,6 +160,7 @@ export default function Students() {
       firstName: '',
       otherNames: '',
       gender: '',
+      branchId: activeBranchId || '',
       parentPhoneNumber: '',
       parentEmail: '',
       classId: '',
@@ -183,6 +184,7 @@ export default function Students() {
         firstName: '',
         otherNames: '',
         gender: '',
+        branchId: activeBranchId || '',
         parentPhoneNumber: '',
         parentEmail: '',
         classId: formData.classId,
@@ -316,6 +318,23 @@ export default function Students() {
     return `${f}${l}`.toUpperCase() || 'ST';
   };
 
+  const getAvatarStyle = (name: string) => {
+    const gradients = [
+      { bg: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)', color: '#FFFFFF', border: '1px solid #93C5FD' },
+      { bg: 'linear-gradient(135deg, #047857 0%, #10B981 100%)', color: '#FFFFFF', border: '1px solid #6EE7B7' },
+      { bg: 'linear-gradient(135deg, #6B21A8 0%, #A855F7 100%)', color: '#FFFFFF', border: '1px solid #D8B4FE' },
+      { bg: 'linear-gradient(135deg, #B45309 0%, #F59E0B 100%)', color: '#FFFFFF', border: '1px solid #FDE68A' },
+      { bg: 'linear-gradient(135deg, #0369A1 0%, #0EA5E9 100%)', color: '#FFFFFF', border: '1px solid #7DD3FC' },
+      { bg: 'linear-gradient(135deg, #BE123C 0%, #F43F5E 100%)', color: '#FFFFFF', border: '1px solid #FDA4AF' },
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
+  };
+
   // Filter Computation
   let filteredStudents = students;
   if (filterSearch) {
@@ -354,46 +373,7 @@ export default function Students() {
         
         {!isReadOnly && (
           <div className="header-action-buttons">
-            <input 
-              type="file" 
-              accept=".xlsx,.xls" 
-              ref={fileInputRef} 
-              style={{ display: 'none' }} 
-              onChange={handleFileUpload} 
-            />
-            <button 
-              className="btn-upload-excel" 
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              title="Bulk import students via Excel template"
-            >
-              <FileSpreadsheet size={18} />
-              {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
-            </button>
-
-            <button 
-              className="btn-upload-excel"
-              style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fcd34d' }}
-              onClick={handleStandardizeRegNumbers}
-              disabled={standardizing}
-              title="Audit and re-format all student registration numbers to standard DOT format"
-            >
-              <ShieldCheck size={18} />
-              {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
-            </button>
-
-            <button 
-              className="btn-upload-excel"
-              style={{ background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}
-              onClick={handleSendFeeReminders}
-              disabled={sendingReminders}
-              title="Dispatch fee reminder emails to uncleared students in current view"
-            >
-              <Mail size={18} />
-              {sendingReminders ? 'Sending...' : `Send Fee Reminders (${filteredStudents.filter(s => !s.isCleared).length})`}
-            </button>
-
-            <button className="btn-add-student" onClick={() => setShowModal(true)}>
+            <button className="btn-add-student" onClick={handleOpenAdmitModal}>
               <UserPlus size={18} />
               Admit New Student
             </button>
@@ -403,7 +383,7 @@ export default function Students() {
 
       {/* Top Metrics Banner */}
       <div className="students-metrics-grid">
-        <div className="students-metric-card">
+        <div className="students-metric-card total">
           <div className="metric-info-box">
             <span className="metric-label">TOTAL STUDENTS</span>
             <span className="metric-number">{totalCount}</span>
@@ -413,7 +393,7 @@ export default function Students() {
           </div>
         </div>
 
-        <div className="students-metric-card">
+        <div className="students-metric-card cleared">
           <div className="metric-info-box">
             <span className="metric-label">CLEARED STUDENTS</span>
             <span className="metric-number">{clearedCount}</span>
@@ -423,7 +403,7 @@ export default function Students() {
           </div>
         </div>
 
-        <div className="students-metric-card">
+        <div className="students-metric-card pending">
           <div className="metric-info-box">
             <span className="metric-label">NOT CLEARED</span>
             <span className="metric-number">{pendingCount}</span>
@@ -433,7 +413,7 @@ export default function Students() {
           </div>
         </div>
 
-        <div className="students-metric-card">
+        <div className="students-metric-card classes">
           <div className="metric-info-box">
             <span className="metric-label">CLASSES & LEVELS</span>
             <span className="metric-number">{uniqueClassesCount || classes.length}</span>
@@ -444,76 +424,123 @@ export default function Students() {
         </div>
       </div>
 
-      {/* Controls & Filter Bar */}
+      {/* Two-Tier Controls Card */}
       <div className="students-controls-card">
-        <div className="search-filter-group">
-          <div className="students-search-box">
-            <Search size={16} className="students-search-icon" />
-            <input 
-              type="text" 
-              value={filterSearch} 
-              onChange={(e) => setFilterSearch(e.target.value)} 
-              placeholder="Search by name or reg. number..."
-            />
+        {/* Tier 1: Search, Fast Filters & View Toggle */}
+        <div className="controls-top-row">
+          <div className="search-filter-group">
+            <div className="students-search-box">
+              <Search size={16} className="students-search-icon" />
+              <input 
+                type="text" 
+                value={filterSearch} 
+                onChange={(e) => setFilterSearch(e.target.value)} 
+                placeholder="Search by name, reg. number, email..."
+              />
+            </div>
+
+            <select 
+              value={filterLevel} 
+              onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} 
+              className="select-filter-input"
+            >
+              <option value="">All Levels</option>
+              <option value="Senior Secondary">Senior Secondary</option>
+              <option value="Junior Secondary">Junior Secondary</option>
+              <option value="Primary">Primary</option>
+              <option value="Upper Primary">Upper Primary</option>
+              <option value="Lower Primary">Lower Primary</option>
+              <option value="Middle Primary">Middle Primary</option>
+              <option value="Nursery">Nursery</option>
+              <option value="Kindergarten">Kindergarten</option>
+            </select>
+
+            <select 
+              value={filterClassId} 
+              onChange={(e) => setFilterClassId(e.target.value)} 
+              className="select-filter-input"
+            >
+              <option value="">All Classes</option>
+              {classOptions.map(cls => (
+                <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
+              ))}
+            </select>
+
+            <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="select-filter-input">
+              {getSessionOptions(filterSession).map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+
+            <select value={filterTerm} onChange={(e) => setFilterTerm(e.target.value)} className="select-filter-input">
+              <option value="First Term">First Term</option>
+              <option value="Second Term">Second Term</option>
+              <option value="Third Term">Third Term</option>
+            </select>
           </div>
 
-          <select 
-            value={filterLevel} 
-            onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }} 
-            className="select-filter-input"
-          >
-            <option value="">All Levels</option>
-            <option value="Senior Secondary">Senior Secondary</option>
-            <option value="Junior Secondary">Junior Secondary</option>
-            <option value="Primary">Primary</option>
-            <option value="Upper Primary">Upper Primary</option>
-            <option value="Lower Primary">Lower Primary</option>
-            <option value="Middle Primary">Middle Primary</option>
-            <option value="Nursery">Nursery</option>
-            <option value="Nursery 2">Nursery 2</option>
-            <option value="Nursery 1">Nursery 1</option>
-            <option value="Kindergarten">Kindergarten</option>
-          </select>
-
-          <select 
-            value={filterClassId} 
-            onChange={(e) => setFilterClassId(e.target.value)} 
-            className="select-filter-input"
-          >
-            <option value="">All Classes</option>
-            {classOptions.map(cls => (
-              <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
-            ))}
-          </select>
-
-          <select value={filterSession} onChange={(e) => setFilterSession(e.target.value)} className="select-filter-input">
-            {getSessionOptions(filterSession).map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-
-          <select value={filterTerm} onChange={(e) => setFilterTerm(e.target.value)} className="select-filter-input">
-            <option value="First Term">First Term</option>
-            <option value="Second Term">Second Term</option>
-            <option value="Third Term">Third Term</option>
-          </select>
+          <div className="view-mode-toggle">
+            <button 
+              className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+              title="Table View"
+            >
+              <LayoutList size={16} /> Table
+            </button>
+            <button 
+              className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Grid Cards View"
+            >
+              <LayoutGrid size={16} /> Grid
+            </button>
+          </div>
         </div>
 
-        {/* View Switcher */}
-        <div className="view-mode-toggle">
-          <button 
-            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
-            onClick={() => setViewMode('table')}
-          >
-            <LayoutList size={16} /> Table View
-          </button>
-          <button 
-            className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-            onClick={() => setViewMode('grid')}
-          >
-            <LayoutGrid size={16} /> Grid Cards
-          </button>
-        </div>
+        {/* Tier 2: Secondary Batch Operations */}
+        {!isReadOnly && (
+          <div className="controls-batch-row">
+            <span className="batch-actions-label">Batch Operations:</span>
+            <div className="batch-buttons-group">
+              <input 
+                type="file" 
+                accept=".xlsx,.xls" 
+                ref={fileInputRef} 
+                style={{ display: 'none' }} 
+                onChange={handleFileUpload} 
+              />
+              <button 
+                className="btn-batch-action" 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                title="Bulk import students via Excel template"
+              >
+                <FileSpreadsheet size={16} />
+                {uploading ? 'Uploading...' : 'Bulk Upload (Excel)'}
+              </button>
+
+              <button 
+                className="btn-batch-action warning"
+                onClick={handleStandardizeRegNumbers}
+                disabled={standardizing}
+                title="Audit and re-format all student registration numbers to standard DOT format"
+              >
+                <ShieldCheck size={16} />
+                {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
+              </button>
+
+              <button 
+                className="btn-batch-action info"
+                onClick={handleSendFeeReminders}
+                disabled={sendingReminders}
+                title="Dispatch fee reminder emails to uncleared students in current view"
+              >
+                <Mail size={16} />
+                {sendingReminders ? 'Sending...' : `Send Fee Reminders (${filteredStudents.filter(s => !s.isCleared).length})`}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {error && <div className="alert-error" style={{ padding: '0.85rem 1rem', borderRadius: '10px', background: '#FEE2E2', color: '#991B1B' }}>{error}</div>}
@@ -546,17 +573,23 @@ export default function Students() {
               {filteredStudents.map(student => {
                 const fullName = `${student.firstName} ${student.surname}`;
                 const isDropdownOpen = openDropdownId === student.id;
+                const avatarStyle = getAvatarStyle(fullName);
 
                 return (
                   <tr key={student.id}>
                     <td>
-                      <span style={{ fontWeight: 800, color: '#0F172A', fontFamily: 'monospace' }}>
+                      <span className="student-reg-badge">
                         {student.registrationNumber || 'Pending'}
                       </span>
                     </td>
                     <td>
                       <div className="student-profile-cell">
-                        <div className="student-avatar">{getStudentInitials(student)}</div>
+                        <div 
+                          className="student-avatar" 
+                          style={{ background: avatarStyle.bg, color: avatarStyle.color, border: avatarStyle.border }}
+                        >
+                          {getStudentInitials(student)}
+                        </div>
                         <div className="student-name-box">
                           <span className="student-full-name">{fullName}</span>
                           {student.otherNames && <span className="student-other-names">{student.otherNames}</span>}
@@ -657,17 +690,21 @@ export default function Students() {
           {filteredStudents.map(student => {
             const fullName = `${student.firstName} ${student.surname}`;
             const isDropdownOpen = openDropdownId === student.id;
+            const avatarStyle = getAvatarStyle(fullName);
 
             return (
               <div key={student.id} className="student-card-item">
                 <div className="student-card-header">
                   <div className="student-profile-cell">
-                    <div className="student-avatar" style={{ width: '46px', height: '46px', fontSize: '1rem' }}>
+                    <div 
+                      className="student-avatar" 
+                      style={{ width: '46px', height: '46px', fontSize: '1rem', background: avatarStyle.bg, color: avatarStyle.color, border: avatarStyle.border }}
+                    >
                       {getStudentInitials(student)}
                     </div>
                     <div className="student-name-box">
                       <span className="student-full-name" style={{ fontSize: '1rem' }}>{fullName}</span>
-                      <span style={{ fontSize: '0.78rem', color: '#64748B', fontFamily: 'monospace' }}>
+                      <span className="student-reg-badge" style={{ fontSize: '0.72rem', padding: '0.15rem 0.45rem', marginTop: '0.2rem' }}>
                         {student.registrationNumber || 'Pending Reg'}
                       </span>
                     </div>
@@ -872,144 +909,154 @@ export default function Students() {
 
             <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
               <div className="student-slideover-body">
-                {/* Class Assignment */}
-                <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                    Assign to Class <span style={{ color: '#E11D48' }}>*</span>
-                  </label>
-                  <select 
-                    name="classId" 
-                    value={formData.classId} 
-                    onChange={handleInputChange} 
-                    required
-                    className="select-filter-input"
-                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
-                  >
-                    <option value="">-- Select Class --</option>
-                    {classes.map(cls => (
-                      <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Gender */}
-                <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                    Gender <span style={{ color: '#E11D48' }}>*</span>
-                  </label>
-                  <select 
-                    name="gender" 
-                    value={formData.gender} 
-                    onChange={handleInputChange} 
-                    required
-                    className="select-filter-input"
-                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
-                  >
-                    <option value="">-- Select Gender --</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                  </select>
-                </div>
-
-                {/* Department Track */}
-                <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                    Department / Track (For Senior Secondary)
-                  </label>
-                  <select 
-                    name="departmentTrack" 
-                    value={formData.departmentTrack} 
-                    onChange={handleInputChange}
-                    className="select-filter-input"
-                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
-                  >
-                    <option value="General">General (Junior / Primary / Nursery)</option>
-                    <option value="Science">Science</option>
-                    <option value="Arts">Arts</option>
-                    <option value="Commercial">Commercial</option>
-                  </select>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="form-group">
-                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                      First Name <span style={{ color: '#E11D48' }}>*</span>
-                    </label>
-                    <input 
-                      type="text" 
-                      name="firstName" 
-                      value={formData.firstName} 
-                      onChange={handleInputChange} 
-                      required 
-                      placeholder="e.g. Olufunke"
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
-                    />
+                {/* Section 01: Academic Placement */}
+                <div className="drawer-form-section">
+                  <div className="drawer-section-header">
+                    <span className="drawer-section-num">01</span>
+                    <span className="drawer-section-title">Academic Placement</span>
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                      Surname <span style={{ color: '#E11D48' }}>*</span>
+                  <div className="drawer-form-group">
+                    <label className="drawer-form-label">
+                      Assign to Class <span style={{ color: '#E11D48' }}>*</span>
                     </label>
-                    <input 
-                      type="text" 
-                      name="surname" 
-                      value={formData.surname} 
+                    <select 
+                      name="classId" 
+                      value={formData.classId} 
                       onChange={handleInputChange} 
-                      required 
-                      placeholder="e.g. Ikang"
-                      style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
-                    />
+                      required
+                      className="drawer-form-select"
+                    >
+                      <option value="">-- Select Class --</option>
+                      {classes.map(cls => (
+                        <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section}`}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="drawer-form-group">
+                    <label className="drawer-form-label">
+                      Gender <span style={{ color: '#E11D48' }}>*</span>
+                    </label>
+                    <select 
+                      name="gender" 
+                      value={formData.gender} 
+                      onChange={handleInputChange} 
+                      required
+                      className="drawer-form-select"
+                    >
+                      <option value="">-- Select Gender --</option>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                    </select>
+                  </div>
+
+                  <div className="drawer-form-group">
+                    <label className="drawer-form-label">
+                      Department / Track (For Senior Secondary)
+                    </label>
+                    <select 
+                      name="departmentTrack" 
+                      value={formData.departmentTrack} 
+                      onChange={handleInputChange}
+                      className="drawer-form-select"
+                    >
+                      <option value="General">General (Junior / Primary / Nursery)</option>
+                      <option value="Science">Science</option>
+                      <option value="Arts">Arts</option>
+                      <option value="Commercial">Commercial</option>
+                    </select>
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                    Other Names
-                  </label>
-                  <input 
-                    type="text" 
-                    name="otherNames" 
-                    value={formData.otherNames} 
-                    onChange={handleInputChange} 
-                    placeholder="e.g. Elizabeth"
-                    style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
-                  />
-                </div>
+                {/* Section 02: Bio Data */}
+                <div className="drawer-form-section">
+                  <div className="drawer-section-header">
+                    <span className="drawer-section-num">02</span>
+                    <span className="drawer-section-title">Student Bio-Data</span>
+                  </div>
 
-                <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '0.5rem' }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', display: 'block', marginBottom: '1rem' }}>
-                    Parent / Guardian Info
-                  </span>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div className="form-group">
-                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                        Parent Phone Number <span style={{ color: '#E11D48' }}>*</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                    <div className="drawer-form-group">
+                      <label className="drawer-form-label">
+                        First Name <span style={{ color: '#E11D48' }}>*</span>
                       </label>
                       <input 
-                        type="tel" 
-                        name="parentPhoneNumber" 
-                        value={formData.parentPhoneNumber} 
+                        type="text" 
+                        name="firstName" 
+                        value={formData.firstName} 
                         onChange={handleInputChange} 
                         required 
-                        placeholder="08012345678"
-                        style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                        placeholder="e.g. Olufunke"
+                        className="drawer-form-input"
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                        Parent Email Address (Optional)
+                    <div className="drawer-form-group">
+                      <label className="drawer-form-label">
+                        Surname <span style={{ color: '#E11D48' }}>*</span>
                       </label>
                       <input 
-                        type="email" 
-                        name="parentEmail" 
-                        value={formData.parentEmail} 
+                        type="text" 
+                        name="surname" 
+                        value={formData.surname} 
                         onChange={handleInputChange} 
-                        placeholder="parent@example.com"
-                        style={{ width: '100%', padding: '0.65rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                        required 
+                        placeholder="e.g. Ikang"
+                        className="drawer-form-input"
                       />
                     </div>
+                  </div>
+
+                  <div className="drawer-form-group">
+                    <label className="drawer-form-label">
+                      Other Names
+                    </label>
+                    <input 
+                      type="text" 
+                      name="otherNames" 
+                      value={formData.otherNames} 
+                      onChange={handleInputChange} 
+                      placeholder="e.g. Elizabeth"
+                      className="drawer-form-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Section 03: Parent / Guardian Contact */}
+                <div className="drawer-form-section">
+                  <div className="drawer-section-header">
+                    <span className="drawer-section-num">03</span>
+                    <span className="drawer-section-title">Parent / Guardian Contact</span>
+                  </div>
+
+                  <div className="drawer-form-group">
+                    <label className="drawer-form-label">
+                      Parent Phone Number <span style={{ color: '#E11D48' }}>*</span>
+                    </label>
+                    <input 
+                      type="tel" 
+                      name="parentPhoneNumber" 
+                      value={formData.parentPhoneNumber} 
+                      onChange={handleInputChange} 
+                      required 
+                      placeholder="08012345678"
+                      className="drawer-form-input"
+                    />
+                  </div>
+
+                  <div className="drawer-form-group">
+                    <label className="drawer-form-label">
+                      Parent Email Address (Optional)
+                    </label>
+                    <input 
+                      type="email" 
+                      name="parentEmail" 
+                      value={formData.parentEmail} 
+                      onChange={handleInputChange} 
+                      placeholder="parent@example.com"
+                      className="drawer-form-input"
+                    />
                   </div>
                 </div>
               </div>
