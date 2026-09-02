@@ -41,6 +41,12 @@ export default function Login() {
       setIsOtpMode(true);
       if (emailParam) setEmail(emailParam);
     }
+
+    const authErr = sessionStorage.getItem('srms_auth_error');
+    if (authErr) {
+      setError(authErr);
+      sessionStorage.removeItem('srms_auth_error');
+    }
   }, []);
 
   useEffect(() => {

@@ -56,14 +56,6 @@ async function handleResponse(response: Response) {
     }
 
     if (!response.ok) {
-        if (response.status === 401) {
-            localStorage.removeItem('srms_token');
-            localStorage.removeItem('srms_user');
-            // If we are not already on the login page, redirect
-            if (!window.location.pathname.includes('/login')) {
-                window.location.href = '/login';
-            }
-        }
         let message = data?.detail || data?.Detail || data?.message || data?.Message || data?.title || 'An error occurred';
         if (data?.errors) {
             const validationErrors = Object.values(data.errors).flat() as string[];
@@ -71,6 +63,17 @@ async function handleResponse(response: Response) {
                 message = validationErrors.join(' ');
             }
         }
+
+        if (response.status === 401) {
+            localStorage.removeItem('srms_token');
+            localStorage.removeItem('srms_user');
+            sessionStorage.setItem('srms_auth_error', message || 'Session expired or authorization failed. Please log in again.');
+            // If we are not already on the login page, redirect
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
+        }
+
         throw new ApiError(response.status, message, data);
     }
 

@@ -177,14 +177,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('srms_override_avatar');
         localStorage.removeItem('srms_override_name');
         localStorage.removeItem('srms_override_title');
+        localStorage.setItem('srms_token', newToken);
         setToken(newToken);
     };
 
     const logout = () => {
+        localStorage.removeItem('srms_token');
         localStorage.removeItem('srms_override_avatar');
         localStorage.removeItem('srms_override_name');
         localStorage.removeItem('srms_override_title');
         localStorage.removeItem('srms_activeBranchId');
+        localStorage.removeItem('srms_active_role');
         setToken(null);
     };
 
