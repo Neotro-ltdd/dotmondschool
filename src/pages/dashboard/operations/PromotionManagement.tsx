@@ -325,7 +325,8 @@ export default function PromotionManagement() {
 
   const openOverrideModal = (recId: string, currentDecision: string) => {
     setOverrideRecId(recId);
-    setOverrideDecision(currentDecision);
+    const defaultTargetDecision = (currentDecision === 'Held Back' || currentDecision === 'Repeat') ? 'Promotable' : 'Held Back';
+    setOverrideDecision(defaultTargetDecision);
     setOverrideReason('');
     setShowOverrideModal(true);
   };
@@ -1044,8 +1045,10 @@ export default function PromotionManagement() {
                 <div className="promo-input-wrapper">
                   <UserCheck className="field-icon" size={16} />
                   <select className="promo-select-input" value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)}>
-                    <option value="Promotable">Promotable</option>
-                    <option value="Repeat">Repeat / Hold Back</option>
+                    <option value="Promotable">Promotable (Promote to Next Class)</option>
+                    <option value="Held Back">Held Back (Repeat Current Class)</option>
+                    <option value="Graduating">Graduating</option>
+                    <option value="Withdrawn">Withdrawn</option>
                   </select>
                 </div>
               </div>
