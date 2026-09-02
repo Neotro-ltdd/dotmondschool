@@ -570,10 +570,11 @@ export default function Students() {
               </tr>
             </thead>
             <tbody>
-              {filteredStudents.map(student => {
+              {filteredStudents.map((student, index) => {
                 const fullName = `${student.firstName} ${student.surname}`;
                 const isDropdownOpen = openDropdownId === student.id;
                 const avatarStyle = getAvatarStyle(fullName);
+                const isDropUp = filteredStudents.length <= 3 || index >= filteredStudents.length - 2;
 
                 return (
                   <tr key={student.id}>
@@ -602,17 +603,9 @@ export default function Students() {
                       </span>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', fontSize: '0.82rem' }}>
-                        {student.parentEmail && (
-                          <span style={{ color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                            <Mail size={12} color="#94A3B8" /> {student.parentEmail}
-                          </span>
-                        )}
-                        {student.parentPhoneNumber && (
-                          <span style={{ color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                            <Phone size={12} color="#94A3B8" /> {student.parentPhoneNumber}
-                          </span>
-                        )}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '0.84rem' }}>
+                        <span style={{ color: '#334155', fontWeight: 600 }}>{student.parentPhoneNumber || 'No phone recorded'}</span>
+                        {student.parentEmail && <span style={{ color: '#64748B', fontSize: '0.78rem' }}>{student.parentEmail}</span>}
                       </div>
                     </td>
                     <td>
@@ -637,7 +630,7 @@ export default function Students() {
                         </button>
 
                         {isDropdownOpen && (
-                          <div className="action-dropdown-menu">
+                          <div className={`action-dropdown-menu ${isDropUp ? 'dropup' : ''}`}>
                             <button 
                               className="dropdown-action-item" 
                               onClick={() => { setViewingStudent(student); setOpenDropdownId(null); }}
@@ -687,10 +680,11 @@ export default function Students() {
       ) : (
         /* GRID CARDS VIEW */
         <div className="students-grid-wrapper" ref={dropdownRef}>
-          {filteredStudents.map(student => {
+          {filteredStudents.map((student, index) => {
             const fullName = `${student.firstName} ${student.surname}`;
             const isDropdownOpen = openDropdownId === student.id;
             const avatarStyle = getAvatarStyle(fullName);
+            const isDropUp = filteredStudents.length <= 3 || index >= filteredStudents.length - 2;
 
             return (
               <div key={student.id} className="student-card-item">
@@ -719,7 +713,7 @@ export default function Students() {
                     </button>
 
                     {isDropdownOpen && (
-                      <div className="action-dropdown-menu">
+                      <div className={`action-dropdown-menu ${isDropUp ? 'dropup' : ''}`}>
                         <button 
                           className="dropdown-action-item" 
                           onClick={() => { setViewingStudent(student); setOpenDropdownId(null); }}

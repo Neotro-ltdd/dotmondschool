@@ -399,9 +399,10 @@ export default function Teachers() {
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map(teacher => {
+                {filteredTeachers.map((teacher, index) => {
                   const fullName = `${teacher.title ? teacher.title + ' ' : ''}${teacher.firstName} ${teacher.surname}`;
                   const isDropdownOpen = openDropdownId === teacher.id;
+                  const isDropUp = filteredTeachers.length <= 3 || index >= filteredTeachers.length - 2;
 
                   return (
                     <tr key={teacher.id}>
@@ -473,7 +474,7 @@ export default function Teachers() {
                           </button>
 
                           {isDropdownOpen && (
-                            <div className="action-dropdown-menu">
+                            <div className={`action-dropdown-menu ${isDropUp ? 'dropup' : ''}`}>
                               {!isReadOnly && (
                                 <button 
                                   className="dropdown-action-item" 
@@ -545,9 +546,10 @@ export default function Teachers() {
         ) : (
           /* GRID CARDS VIEW */
           <div className="staff-grid-wrapper" ref={dropdownRef}>
-            {filteredTeachers.map(teacher => {
+            {filteredTeachers.map((teacher, index) => {
               const fullName = `${teacher.title ? teacher.title + ' ' : ''}${teacher.firstName} ${teacher.surname}`;
               const isDropdownOpen = openDropdownId === teacher.id;
+              const isDropUp = filteredTeachers.length <= 3 || index >= filteredTeachers.length - 2;
 
               return (
                 <div key={teacher.id} className="staff-card-item">
@@ -578,7 +580,7 @@ export default function Teachers() {
                       </button>
 
                       {isDropdownOpen && (
-                        <div className="action-dropdown-menu">
+                        <div className={`action-dropdown-menu ${isDropUp ? 'dropup' : ''}`}>
                           <button 
                             className="dropdown-action-item" 
                             onClick={() => {

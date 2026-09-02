@@ -230,3 +230,59 @@ body {
   box-shadow: var(--shadow-lg);
   border-radius: var(--border-radius-lg);
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   GLOBAL DROPDOWN POSITIONING & OVERFLOW INTEGRITY
+   Ensures 3-dots action dropdown menus never clip under table footers
+══════════════════════════════════════════════════════════════════ */
+.action-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.action-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.35rem;
+  width: 210px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1000 !important;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* Automatic Upward Opening for Rows Near Bottom of Table or short tables */
+tbody tr:last-child .action-dropdown-menu,
+tbody tr:nth-last-child(-n+2) .action-dropdown-menu,
+.action-dropdown-menu.dropup {
+  top: auto !important;
+  bottom: 100% !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.35rem !important;
+  box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Dark mode compatibility for dropdowns */
+body[data-theme='dark'] .action-dropdown-menu,
+body.dark-theme .action-dropdown-menu {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
+body[data-theme='dark'] .dropdown-action-item,
+body.dark-theme .dropdown-action-item {
+  color: #E2E8F0 !important;
+}
+
+body[data-theme='dark'] .dropdown-action-item:hover,
+body.dark-theme .dropdown-action-item:hover {
+  background: #334155 !important;
+  color: #60A5FA !important;
+}

@@ -97,8 +97,9 @@
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
   border: 1px solid #E2E8F0;
-  overflow: hidden;
+  overflow: visible;
   margin-top: 1.5rem;
+  min-height: 240px;
 }
 
 .desk-toolbar {
