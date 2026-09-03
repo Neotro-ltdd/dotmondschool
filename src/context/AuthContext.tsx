@@ -180,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('srms_activeBranchId');
 
         try {
-            const decoded: any = jwtDecode(newToken);
+            const decoded: any = parseJwt(newToken);
             if (decoded && decoded['branch_id']) {
                 localStorage.setItem('srms_activeBranchId', decoded['branch_id']);
             }
