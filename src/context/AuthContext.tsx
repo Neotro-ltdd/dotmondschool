@@ -177,6 +177,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('srms_override_avatar');
         localStorage.removeItem('srms_override_name');
         localStorage.removeItem('srms_override_title');
+        localStorage.removeItem('srms_activeBranchId');
+
+        try {
+            const decoded: any = jwtDecode(newToken);
+            if (decoded && decoded['branch_id']) {
+                localStorage.setItem('srms_activeBranchId', decoded['branch_id']);
+            }
+        } catch (e) {
+            console.warn('Failed to parse branch_id from token on login', e);
+        }
+
         localStorage.setItem('srms_token', newToken);
         setToken(newToken);
     };
