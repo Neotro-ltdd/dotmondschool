@@ -302,74 +302,102 @@ export default function Reports() {
         ) : (
           <>
             {/* 1. EXECUTIVE PERFORMANCE SUMMARY TAB */}
-            {activeTab === 'overview' && overviewData && (
+            {activeTab === 'overview' && (
               <div>
                 <div className="executive-stat-grid">
-                  <div className="exec-stat-card border-indigo-100">
+                  <div className="exec-stat-card theme-indigo">
                     <div className="exec-stat-top">
                       <div className="exec-stat-title">Institution Mean Score</div>
-                      <div className="exec-stat-icon-wrapper bg-indigo-50 text-indigo-600">
+                      <div className="exec-stat-icon-wrapper theme-indigo">
                         <TrendingUp size={20} />
                       </div>
                     </div>
-                    <div className="exec-stat-value text-indigo-950">
-                      {overviewData.summary?.schoolAverageScore || 0}%
+                    <div className="exec-stat-value-container">
+                      <div className="exec-stat-value">
+                        {overviewData?.summary?.schoolAverageScore ? `${overviewData.summary.schoolAverageScore}%` : '0%'}
+                      </div>
+                      {overviewData?.summary?.schoolAverageScore > 0 ? (
+                        <span className="stat-trend-badge positive">
+                          <ArrowUpRight size={12} /> Active Benchmark
+                        </span>
+                      ) : (
+                        <span className="stat-trend-badge neutral">Pending Evaluation</span>
+                      )}
                     </div>
-                    <span className="exec-stat-sub text-emerald-600">
-                      ● Overall Academic Benchmark
-                    </span>
+                    <div className="exec-stat-sub">
+                      <span className="dot-indicator theme-indigo"></span> Overall Academic Benchmark
+                    </div>
                   </div>
 
-                  <div className="exec-stat-card border-blue-100">
+                  <div className="exec-stat-card theme-blue">
                     <div className="exec-stat-top">
                       <div className="exec-stat-title">Classes Evaluated</div>
-                      <div className="exec-stat-icon-wrapper bg-blue-50 text-blue-600">
+                      <div className="exec-stat-icon-wrapper theme-blue">
                         <Layers size={20} />
                       </div>
                     </div>
-                    <div className="exec-stat-value text-navy-900">
-                      {overviewData.summary?.totalClassesRecorded || 0}
+                    <div className="exec-stat-value-container">
+                      <div className="exec-stat-value">
+                        {overviewData?.summary?.totalClassesRecorded || 0}
+                      </div>
+                      <span className="stat-trend-badge neutral">Active Batches</span>
                     </div>
-                    <span className="exec-stat-sub text-gray-500">Active Broadsheet Batches</span>
+                    <div className="exec-stat-sub">
+                      <span className="dot-indicator theme-blue"></span> Active Broadsheet Batches
+                    </div>
                   </div>
 
-                  <div className="exec-stat-card border-emerald-100">
+                  <div className="exec-stat-card theme-emerald">
                     <div className="exec-stat-top">
                       <div className="exec-stat-title">Highest Performing Class</div>
-                      <div className="exec-stat-icon-wrapper bg-emerald-50 text-emerald-600">
+                      <div className="exec-stat-icon-wrapper theme-emerald">
                         <Award size={20} />
                       </div>
                     </div>
-                    <div className="exec-stat-value text-emerald-900 text-xl truncate">
-                      {overviewData.summary?.highestPerformingClass || 'N/A'}
+                    <div className="exec-stat-value-container">
+                      <div className={`exec-stat-value ${!overviewData?.summary?.highestPerformingClass || overviewData.summary.highestPerformingClass === 'N/A' ? 'is-na' : ''}`}>
+                        {overviewData?.summary?.highestPerformingClass || 'N/A'}
+                      </div>
                     </div>
-                    <span className="exec-stat-sub text-emerald-700">Top Academic Leader</span>
+                    <div className="exec-stat-sub">
+                      <span className="dot-indicator theme-emerald"></span> Top Academic Leader
+                    </div>
                   </div>
 
-                  <div className="exec-stat-card border-rose-100">
+                  <div className="exec-stat-card theme-rose">
                     <div className="exec-stat-top">
                       <div className="exec-stat-title">Lowest Performing Class</div>
-                      <div className="exec-stat-icon-wrapper bg-rose-50 text-rose-600">
+                      <div className="exec-stat-icon-wrapper theme-rose">
                         <TrendingDown size={20} />
                       </div>
                     </div>
-                    <div className="exec-stat-value text-rose-900 text-xl truncate">
-                      {overviewData.summary?.lowestPerformingClass || 'N/A'}
+                    <div className="exec-stat-value-container">
+                      <div className={`exec-stat-value ${!overviewData?.summary?.lowestPerformingClass || overviewData.summary.lowestPerformingClass === 'N/A' ? 'is-na' : ''}`}>
+                        {overviewData?.summary?.lowestPerformingClass || 'N/A'}
+                      </div>
                     </div>
-                    <span className="exec-stat-sub text-rose-700">Requires Intervention</span>
+                    <div className="exec-stat-sub">
+                      <span className="dot-indicator theme-rose"></span> Requires Academic Intervention
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                    <Award size={18} className="text-navy-900" /> Class Academic Ranking Broadsheet
-                  </h3>
-                  <span className="text-xs font-semibold text-gray-500">
+                <div className="broadsheet-section-header">
+                  <div className="broadsheet-header-left">
+                    <div className="broadsheet-header-icon">
+                      <Award size={20} />
+                    </div>
+                    <div>
+                      <h3>Class Academic Ranking Broadsheet</h3>
+                      <p>Institutional ranking and mean score distribution across all class arms</p>
+                    </div>
+                  </div>
+                  <div className="session-term-pill">
                     Session: {session} • {term}
-                  </span>
+                  </div>
                 </div>
 
-                {overviewData.classPerformances && overviewData.classPerformances.length > 0 ? (
+                {overviewData?.classPerformances && overviewData.classPerformances.length > 0 ? (
                   <div className="broadsheet-table-wrapper">
                     <table className="broadsheet-table">
                       <thead>
@@ -434,8 +462,41 @@ export default function Reports() {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-gray-50 rounded-xl text-sm text-gray-500 font-medium">
-                    No compiled class rankings available for {session} ({term}).
+                  <div className="executive-empty-broadsheet">
+                    <div className="empty-broadsheet-halo">
+                      <BarChart2 size={36} className="text-navy-900" />
+                    </div>
+                    <h4>Broadsheet Analytics Pending</h4>
+                    <p>
+                      Class performance broadsheets for <strong>{session} ({term})</strong> have not been compiled yet.
+                      Broadsheets compile automatically as subject teachers submit scores and administrators approve results.
+                    </p>
+
+                    <div className="broadsheet-workflow-pipeline">
+                      <div className="pipeline-step">
+                        <span className="step-num">1</span>
+                        <span className="step-text">Teacher Score Submission</span>
+                      </div>
+                      <div className="pipeline-arrow">➔</div>
+                      <div className="pipeline-step">
+                        <span className="step-num">2</span>
+                        <span className="step-text">Admin Result Approval</span>
+                      </div>
+                      <div className="pipeline-arrow">➔</div>
+                      <div className="pipeline-step active">
+                        <span className="step-num">3</span>
+                        <span className="step-text">Broadsheet Compilation</span>
+                      </div>
+                    </div>
+
+                    <div className="empty-broadsheet-actions">
+                      <button className="btn-refresh-broadsheet" onClick={loadCurrentTab} disabled={loading}>
+                        <Activity size={15} /> {loading ? 'Refreshing...' : 'Refresh Intelligence'}
+                      </button>
+                      <Link to="/dashboard/approvals" className="btn-view-approvals">
+                        View Result Approvals <ChevronRight size={15} />
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
