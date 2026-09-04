@@ -62,7 +62,7 @@ export default function AttendanceReport() {
 
   // Fetch Class List
   useEffect(() => {
-    api.get('/classes')
+    api.get('/setup/classes')
       .then((res: any) => {
         const list = Array.isArray(res) ? res : (res?.data || []);
         setClasses(list);
