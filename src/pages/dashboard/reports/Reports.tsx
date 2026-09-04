@@ -17,6 +17,10 @@ import {
   BarChart2,
   Sparkles,
   Layers,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  AlertTriangle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './Reports.css';
@@ -85,7 +89,6 @@ export default function Reports() {
       setClassReportData(payload);
       setError(null);
     } catch (err: any) {
-      // Fallback: try fetching class broadsheet batch via admin API
       try {
         const broadsheetRes = await api.get(
           `/academics/admin/class-results?classId=${selectedClassId}&session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`,
@@ -165,27 +168,28 @@ export default function Reports() {
     <div className="reports-page">
       {/* ════════ EXECUTIVE HERO BANNER ════════ */}
       <div className="reports-header-banner">
-        <div>
-          <h1>
-            <BarChart2 size={28} /> Academic Reports & Governance Intelligence
-          </h1>
-          <p>
-            Institutional performance benchmarks, class broadsheet distributions, subject mastery
-            trends, and audit trails.
-          </p>
+        <div className="reports-header-title-box">
+          <div className="reports-header-icon-badge">
+            <BarChart2 size={26} />
+          </div>
+          <div>
+            <h1>Academic Reports & Governance Intelligence</h1>
+            <p>
+              Institutional performance benchmarks, class broadsheet distributions, subject mastery
+              trends, and governance audit trails.
+            </p>
+          </div>
         </div>
-        <div className="no-print">
-          <button
-            className="btn btn-secondary flex items-center gap-2 text-xs font-bold"
-            onClick={() => window.print()}
-          >
+
+        <div className="reports-header-actions no-print">
+          <button className="btn-print-report" onClick={() => window.print()}>
             <Printer size={16} /> Print Official Report
           </button>
         </div>
       </div>
 
-      {/* ════════ REBRANDED TAB NAVIGATION ════════ */}
-      <div className="reports-tab-nav">
+      {/* ════════ NAVIGATION TAB PILLS ════════ */}
+      <div className="reports-tab-nav no-print">
         <button
           className={`reports-tab-item ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => {
@@ -215,11 +219,11 @@ export default function Reports() {
         </button>
       </div>
 
-      {/* ════════ FILTER CONTROL BAR ════════ */}
-      <div className="reports-filter-bar">
+      {/* ════════ FILTER CONTROL PANEL ════════ */}
+      <div className="reports-filter-bar no-print">
         <div className="filter-group">
           <label>
-            <Filter size={12} /> Academic Session
+            <Filter size={13} /> Academic Session
           </label>
           <select value={session} onChange={(e) => setSession(e.target.value)}>
             {getSessionOptions(session).map((s) => (
@@ -232,7 +236,7 @@ export default function Reports() {
 
         <div className="filter-group">
           <label>
-            <BookOpen size={12} /> Academic Term
+            <BookOpen size={13} /> Academic Term
           </label>
           <select value={term} onChange={(e) => setTerm(e.target.value)}>
             <option value="First Term">First Term</option>
@@ -243,7 +247,7 @@ export default function Reports() {
 
         <div className="filter-group">
           <label>
-            <Users size={12} /> Target Class Scope
+            <Users size={13} /> Target Class Scope
           </label>
           <select
             value={selectedClassId}
@@ -265,6 +269,7 @@ export default function Reports() {
         </div>
 
         <button className="btn-apply-filters" onClick={loadCurrentTab} disabled={loading}>
+          <Activity size={16} />
           {loading ? 'Refreshing...' : 'Apply Filters'}
         </button>
       </div>
@@ -281,7 +286,7 @@ export default function Reports() {
         ) : error ? (
           <div className="empty-state text-center py-16">
             <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-3 text-amber-500 text-2xl font-bold">
-              ⚠️
+              <AlertTriangle size={32} />
             </div>
             <h3 className="text-lg font-bold text-gray-800">No Compiled Data Available</h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto mt-1 mb-4">{error}</p>
@@ -300,34 +305,54 @@ export default function Reports() {
             {activeTab === 'overview' && overviewData && (
               <div>
                 <div className="executive-stat-grid">
-                  <div className="exec-stat-card border-blue-100 bg-blue-50/30">
-                    <div className="exec-stat-title">Institution Mean Score</div>
-                    <div className="exec-stat-value text-navy-900">
+                  <div className="exec-stat-card border-indigo-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Institution Mean Score</div>
+                      <div className="exec-stat-icon-wrapper bg-indigo-50 text-indigo-600">
+                        <TrendingUp size={20} />
+                      </div>
+                    </div>
+                    <div className="exec-stat-value text-indigo-950">
                       {overviewData.summary?.schoolAverageScore || 0}%
                     </div>
                     <span className="exec-stat-sub text-emerald-600">
-                      ● Overall Academic Standard
+                      ● Overall Academic Benchmark
                     </span>
                   </div>
 
-                  <div className="exec-stat-card border-indigo-100 bg-indigo-50/30">
-                    <div className="exec-stat-title">Classes Evaluated</div>
-                    <div className="exec-stat-value text-indigo-950">
+                  <div className="exec-stat-card border-blue-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Classes Evaluated</div>
+                      <div className="exec-stat-icon-wrapper bg-blue-50 text-blue-600">
+                        <Layers size={20} />
+                      </div>
+                    </div>
+                    <div className="exec-stat-value text-navy-900">
                       {overviewData.summary?.totalClassesRecorded || 0}
                     </div>
                     <span className="exec-stat-sub text-gray-500">Active Broadsheet Batches</span>
                   </div>
 
-                  <div className="exec-stat-card border-emerald-100 bg-emerald-50/30">
-                    <div className="exec-stat-title">Highest Performing Class</div>
+                  <div className="exec-stat-card border-emerald-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Highest Performing Class</div>
+                      <div className="exec-stat-icon-wrapper bg-emerald-50 text-emerald-600">
+                        <Award size={20} />
+                      </div>
+                    </div>
                     <div className="exec-stat-value text-emerald-900 text-xl truncate">
                       {overviewData.summary?.highestPerformingClass || 'N/A'}
                     </div>
                     <span className="exec-stat-sub text-emerald-700">Top Academic Leader</span>
                   </div>
 
-                  <div className="exec-stat-card border-rose-100 bg-rose-50/30">
-                    <div className="exec-stat-title">Lowest Performing Class</div>
+                  <div className="exec-stat-card border-rose-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Lowest Performing Class</div>
+                      <div className="exec-stat-icon-wrapper bg-rose-50 text-rose-600">
+                        <TrendingDown size={20} />
+                      </div>
+                    </div>
                     <div className="exec-stat-value text-rose-900 text-xl truncate">
                       {overviewData.summary?.lowestPerformingClass || 'N/A'}
                     </div>
@@ -359,7 +384,9 @@ export default function Reports() {
                         {overviewData.classPerformances.map((c: any, index: number) => (
                           <tr key={c.classId || index}>
                             <td className="font-bold">
-                              <span className={`rank-badge mr-3 ${index === 0 ? 'top-rank' : ''}`}>
+                              <span
+                                className={`rank-badge mr-3 ${index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : ''}`}
+                              >
                                 #{index + 1}
                               </span>
                               {c.className}
@@ -437,7 +464,7 @@ export default function Reports() {
                           Session: {classReportData.session} • {classReportData.term}
                         </p>
                       </div>
-                      <div className="mt-3 md:mt-0 flex gap-2">
+                      <div className="mt-3 md:mt-0 flex gap-2 no-print">
                         <button
                           className="btn btn-secondary text-xs font-bold flex items-center gap-1"
                           onClick={() => window.print()}
@@ -449,25 +476,45 @@ export default function Reports() {
 
                     <div className="executive-stat-grid">
                       <div className="exec-stat-card">
-                        <div className="exec-stat-title">Enrolled Students</div>
+                        <div className="exec-stat-top">
+                          <div className="exec-stat-title">Enrolled Students</div>
+                          <div className="exec-stat-icon-wrapper bg-slate-100 text-slate-600">
+                            <Users size={18} />
+                          </div>
+                        </div>
                         <div className="exec-stat-value">
                           {classReportData.summary?.totalStudents || 0}
                         </div>
                       </div>
-                      <div className="exec-stat-card border-blue-100 bg-blue-50/20">
-                        <div className="exec-stat-title">Class Mean Score</div>
+                      <div className="exec-stat-card border-blue-100">
+                        <div className="exec-stat-top">
+                          <div className="exec-stat-title">Class Mean Score</div>
+                          <div className="exec-stat-icon-wrapper bg-blue-50 text-blue-600">
+                            <Activity size={18} />
+                          </div>
+                        </div>
                         <div className="exec-stat-value text-navy-900">
                           {classReportData.summary?.classAverage || 0}%
                         </div>
                       </div>
-                      <div className="exec-stat-card border-emerald-100 bg-emerald-50/20">
-                        <div className="exec-stat-title">Overall Pass Rate</div>
+                      <div className="exec-stat-card border-emerald-100">
+                        <div className="exec-stat-top">
+                          <div className="exec-stat-title">Overall Pass Rate</div>
+                          <div className="exec-stat-icon-wrapper bg-emerald-50 text-emerald-600">
+                            <CheckCircle2 size={18} />
+                          </div>
+                        </div>
                         <div className="exec-stat-value text-emerald-800">
                           {classReportData.summary?.passRatePercentage || 100}%
                         </div>
                       </div>
-                      <div className="exec-stat-card border-amber-100 bg-amber-50/20">
-                        <div className="exec-stat-title">Highest / Lowest</div>
+                      <div className="exec-stat-card border-amber-100">
+                        <div className="exec-stat-top">
+                          <div className="exec-stat-title">Highest / Lowest</div>
+                          <div className="exec-stat-icon-wrapper bg-amber-50 text-amber-600">
+                            <Award size={18} />
+                          </div>
+                        </div>
                         <div className="exec-stat-value text-lg font-bold">
                           {classReportData.summary?.highestAverage || 0}% /{' '}
                           {classReportData.summary?.lowestAverage || 0}%
@@ -494,7 +541,15 @@ export default function Reports() {
                               <tr key={st.id || idx}>
                                 <td className="font-extrabold text-navy-900">
                                   <span
-                                    className={`rank-badge ${st.positionInClass === 1 ? 'top-rank' : ''}`}
+                                    className={`rank-badge ${
+                                      st.positionInClass === 1
+                                        ? 'rank-1'
+                                        : st.positionInClass === 2
+                                          ? 'rank-2'
+                                          : st.positionInClass === 3
+                                            ? 'rank-3'
+                                            : ''
+                                    }`}
                                   >
                                     {st.positionInClass
                                       ? `${st.positionInClass}${st.positionInClass === 1 ? 'st' : st.positionInClass === 2 ? 'nd' : st.positionInClass === 3 ? 'rd' : 'th'}`
@@ -575,15 +630,25 @@ export default function Reports() {
                 </div>
 
                 <div className="executive-stat-grid">
-                  <div className="exec-stat-card border-indigo-100 bg-indigo-50/20">
-                    <div className="exec-stat-title">Total Active Subjects</div>
+                  <div className="exec-stat-card border-indigo-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Total Active Subjects</div>
+                      <div className="exec-stat-icon-wrapper bg-indigo-50 text-indigo-600">
+                        <BookOpen size={18} />
+                      </div>
+                    </div>
                     <div className="exec-stat-value text-indigo-950">118</div>
                     <span className="exec-stat-sub text-gray-500">
                       Across All Class Arm Allocations
                     </span>
                   </div>
-                  <div className="exec-stat-card border-emerald-100 bg-emerald-50/20">
-                    <div className="exec-stat-title">Top Mastery Subject</div>
+                  <div className="exec-stat-card border-emerald-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Top Mastery Subject</div>
+                      <div className="exec-stat-icon-wrapper bg-emerald-50 text-emerald-600">
+                        <Award size={18} />
+                      </div>
+                    </div>
                     <div className="exec-stat-value text-emerald-900 text-xl font-bold">
                       Mathematics
                     </div>
@@ -591,8 +656,13 @@ export default function Reports() {
                       84.2% Institution Pass Average
                     </span>
                   </div>
-                  <div className="exec-stat-card border-amber-100 bg-amber-50/20">
-                    <div className="exec-stat-title">Focus Subject</div>
+                  <div className="exec-stat-card border-amber-100">
+                    <div className="exec-stat-top">
+                      <div className="exec-stat-title">Focus Subject</div>
+                      <div className="exec-stat-icon-wrapper bg-amber-50 text-amber-600">
+                        <Activity size={18} />
+                      </div>
+                    </div>
                     <div className="exec-stat-value text-amber-900 text-xl font-bold">
                       Basic Technology
                     </div>
