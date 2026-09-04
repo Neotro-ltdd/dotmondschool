@@ -1,15 +1,15 @@
 :root {
-  --navy: #12395F;
-  --navy-deep: #0B2C4A;
-  --sky: #2A6FA8;
-  --ash: #5B6672;
-  --ash-light: #8C97A3;
-  --line: #D7DEE5;
-  --table-head: #E7EEF5;
-  --panel: #F4F7FA;
-  --panel-border: #DCE4EB;
-  --credit: #1F7A3D;
-  --fail: #B3261E;
+  --navy: #12395f;
+  --navy-deep: #0b2c4a;
+  --sky: #2a6fa8;
+  --ash: #5b6672;
+  --ash-light: #8c97a3;
+  --line: #d7dee5;
+  --table-head: #e7eef5;
+  --panel: #f4f7fa;
+  --panel-border: #dce4eb;
+  --credit: #1f7a3d;
+  --fail: #b3261e;
 }
 
 * {
@@ -18,13 +18,13 @@
 
 .result-sheet-container {
   padding: 32px 12px;
-  background: #EDF1F5;
+  background: #edf1f5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-  color: #1E2328;
+  color: #1e2328;
 }
 
 .actions-bar {
@@ -42,7 +42,9 @@
   background: #fff;
   padding: 36px 44px 40px;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(20, 30, 40, .08), 0 8px 24px rgba(20, 30, 40, .06);
+  box-shadow:
+    0 1px 3px rgba(20, 30, 40, 0.08),
+    0 8px 24px rgba(20, 30, 40, 0.06);
   position: relative;
   overflow: hidden;
 }
@@ -57,7 +59,7 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  opacity: .06;
+  opacity: 0.06;
   filter: grayscale(100%);
   pointer-events: none;
   z-index: 0;
@@ -97,28 +99,28 @@
   margin: 0;
   font-size: 23px;
   font-weight: 800;
-  letter-spacing: .3px;
+  letter-spacing: 0.3px;
   color: var(--navy);
 }
 
 .school-addr {
   margin: 5px 0 1px;
   font-size: 12.5px;
-  color: #6B7684;
+  color: #6b7684;
 }
 
 .school-motto {
   margin: 0 0 10px;
   font-size: 12.5px;
-  color: #6B7684;
+  color: #6b7684;
 }
 
 .report-title {
   display: inline-block;
   font-size: 14.5px;
   font-weight: 700;
-  letter-spacing: .4px;
-  color: #1E2328;
+  letter-spacing: 0.4px;
+  color: #1e2328;
   text-decoration: underline;
   text-underline-offset: 5px;
 }
@@ -127,14 +129,14 @@
   width: 78px;
   height: 88px;
   flex: 0 0 78px;
-  border: 1.4px dashed #B7C0C9;
+  border: 1.4px dashed #b7c0c9;
   border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10.5px;
-  color: #9AA5B0;
-  letter-spacing: .5px;
+  color: #9aa5b0;
+  letter-spacing: 0.5px;
   text-align: center;
   overflow: hidden;
 }
@@ -179,7 +181,7 @@ table.subjects th {
   background: var(--table-head);
   color: var(--navy-deep);
   font-size: 11.3px;
-  letter-spacing: .3px;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
   font-weight: 700;
   padding: 10px 12px;
@@ -200,11 +202,11 @@ table.subjects td {
 table.subjects td:first-child {
   text-align: left;
   font-weight: 600;
-  color: #232A30;
+  color: #232a30;
 }
 
 table.subjects tbody tr:nth-child(even) {
-  background: #FAFBFC;
+  background: #fafbfc;
 }
 
 .grade-F {
@@ -229,7 +231,7 @@ table.subjects tbody tr:nth-child(even) {
 .panel h4 {
   margin: 0 0 10px;
   font-size: 12px;
-  letter-spacing: .4px;
+  letter-spacing: 0.4px;
   color: var(--navy);
   font-weight: 800;
   border-bottom: 1px solid var(--panel-border);
@@ -241,11 +243,11 @@ table.subjects tbody tr:nth-child(even) {
   justify-content: space-between;
   font-size: 13px;
   padding: 3px 0;
-  color: #333B42;
+  color: #333b42;
 }
 
 .panel .row b {
-  color: #14181C;
+  color: #14181c;
   font-weight: 700;
 }
 
@@ -279,7 +281,7 @@ table.subjects tbody tr:nth-child(even) {
   flex: 1 1 auto;
   font-style: italic;
   font-size: 13.5px;
-  color: #2B323A;
+  color: #2b323a;
 }
 
 .sig {
@@ -311,13 +313,15 @@ table.subjects tbody tr:nth-child(even) {
     margin: 4mm 6mm;
   }
 
-  body, html {
+  body,
+  html {
     background: #fff !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
-  .no-print, .actions-bar {
+  .no-print,
+  .actions-bar {
     display: none !important;
   }
 
@@ -333,7 +337,10 @@ table.subjects tbody tr:nth-child(even) {
     padding: 24px 36px !important;
   }
 
-  .sheet > *:not(.watermark), table.subjects th, .panel, .remarks {
+  .sheet > *:not(.watermark),
+  table.subjects th,
+  .panel,
+  .remarks {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

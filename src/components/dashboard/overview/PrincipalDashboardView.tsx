@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Award, 
-  Users, 
-  GraduationCap, 
-  CheckCircle, 
-  Calendar, 
-  BookOpen, 
-  LayoutDashboard 
+import {
+  Award,
+  Users,
+  GraduationCap,
+  CheckCircle,
+  Calendar,
+  BookOpen,
+  LayoutDashboard,
 } from 'lucide-react';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import StatCard from './StatCard';
 import { formatDisplayName } from '../../../utils/nameFormatter';
 import HolidayBanner from '../../ui/HolidayBanner';
@@ -33,7 +44,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
   isHolidayMode,
   resumptionDate,
   principalData,
-  loading
+  loading,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -55,13 +66,15 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
-  const totalStudents = principalData?.metrics?.totalStudents ?? principalData?.totalStudents ?? 269;
+  const totalStudents =
+    principalData?.metrics?.totalStudents ?? principalData?.totalStudents ?? 269;
   const totalStaff = principalData?.metrics?.totalStaff ?? principalData?.totalStaff ?? 19;
   const totalClasses = principalData?.metrics?.totalClasses ?? principalData?.totalClasses ?? 14;
-  const totalSubjects = principalData?.metrics?.totalSubjects ?? principalData?.totalSubjects ?? 118;
+  const totalSubjects =
+    principalData?.metrics?.totalSubjects ?? principalData?.totalSubjects ?? 118;
   const pendingApprovals = principalData?.pendingApprovals ?? 3;
 
   if (loading) {
@@ -88,7 +101,8 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
               {getGreeting()}, {formatDisplayName(userTitle, userName)} 👋
             </h2>
             <p>
-              Academic Leadership & Executive Governance Control: Review result sheet broadsheets, approve term grade distributions, and monitor institution performance standards.
+              Academic Leadership & Executive Governance Control: Review result sheet broadsheets,
+              approve term grade distributions, and monitor institution performance standards.
             </p>
           </div>
 
@@ -105,7 +119,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
 
       {/* ════════ EXECUTIVE STAT CARDS GRID ════════ */}
       <div className="stats-grid">
-        <StatCard 
+        <StatCard
           label="TOTAL ACTIVE STUDENTS"
           value={totalStudents}
           icon={GraduationCap}
@@ -116,7 +130,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
           subText="Active Portal Records"
         />
 
-        <StatCard 
+        <StatCard
           label="TOTAL STAFF & FACULTY"
           value={totalStaff}
           icon={Users}
@@ -127,7 +141,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
           subText="Teaching & Administrative"
         />
 
-        <StatCard 
+        <StatCard
           label="CLASSES & SUBJECTS"
           value={`${totalClasses} / ${totalSubjects}`}
           icon={BookOpen}
@@ -138,7 +152,7 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
           subText="Academic Infrastructure"
         />
 
-        <StatCard 
+        <StatCard
           label="PENDING BATCH APPROVALS"
           value={pendingApprovals}
           icon={Award}
@@ -155,7 +169,10 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
         <div className="shortcuts-header">
           <div>
             <h3>Academic Governance & Executive Shortcuts</h3>
-            <p>Direct access to result approvals, staff rosters, and institutional performance reports.</p>
+            <p>
+              Direct access to result approvals, staff rosters, and institutional performance
+              reports.
+            </p>
           </div>
           <span className="quick-action-pill">Quick Actions</span>
         </div>
@@ -208,45 +225,71 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
         {/* Result Sheet Approval Status */}
         <div className="chart-card">
           <div className="chart-card-header">
-            <h3><Award size={18} style={{ color: '#000080' }} /> Result Sheet Approvals</h3>
+            <h3>
+              <Award size={18} style={{ color: '#000080' }} /> Result Sheet Approvals
+            </h3>
             <span>Distribution</span>
           </div>
-          
+
           <div style={{ height: 260, position: 'relative' }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
-                <Pie 
+                <Pie
                   data={[
                     { name: 'Approved', value: 15 },
-                    { name: 'Pending Review', value: pendingApprovals }
-                  ]} 
-                  cx="50%" 
-                  cy="50%" 
-                  innerRadius={65} 
-                  outerRadius={95} 
-                  paddingAngle={5} 
+                    { name: 'Pending Review', value: pendingApprovals },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={65}
+                  outerRadius={95}
+                  paddingAngle={5}
                   dataKey="value"
                 >
                   <Cell fill="#000080" />
                   <Cell fill="#F59E0B" />
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0F172A',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#fff',
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
 
             {/* Donut Center Overlay */}
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              textAlign: 'center',
-              pointerEvents: 'none'
-            }}>
-              <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0F172A', display: 'block', lineHeight: 1 }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '1.6rem',
+                  fontWeight: 900,
+                  color: '#0F172A',
+                  display: 'block',
+                  lineHeight: 1,
+                }}
+              >
                 {15 + pendingApprovals}
               </span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: '#64748B',
+                  textTransform: 'uppercase',
+                }}
+              >
                 Total Classes
               </span>
             </div>
@@ -255,11 +298,15 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
           <div className="chart-summary-pills">
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
-              <span>Approved: <strong>15</strong></span>
+              <span>
+                Approved: <strong>15</strong>
+              </span>
             </div>
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#F59E0B' }}></span>
-              <span>Pending: <strong>{pendingApprovals}</strong></span>
+              <span>
+                Pending: <strong>{pendingApprovals}</strong>
+              </span>
             </div>
           </div>
         </div>
@@ -267,26 +314,35 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
         {/* Academic Level Mean Score Bar Chart */}
         <div className="chart-card">
           <div className="chart-card-header">
-            <h3><LayoutDashboard size={18} style={{ color: '#10B981' }} /> Class Level Performance</h3>
+            <h3>
+              <LayoutDashboard size={18} style={{ color: '#10B981' }} /> Class Level Performance
+            </h3>
             <span>Average Scores</span>
           </div>
-          
+
           <div style={{ height: 260 }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-              <BarChart 
+              <BarChart
                 data={[
                   { name: 'JSS 1', Average: 71 },
                   { name: 'JSS 2', Average: 68 },
                   { name: 'JSS 3', Average: 74 },
                   { name: 'SSS 1', Average: 65 },
-                  { name: 'SSS 2', Average: 70 }
+                  { name: 'SSS 2', Average: 70 },
                 ]}
                 margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} domain={[0, 100]} />
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0F172A',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#fff',
+                  }}
+                />
                 <Bar dataKey="Average" fill="#000080" radius={[6, 6, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
@@ -295,7 +351,9 @@ export const PrincipalDashboardView: React.FC<PrincipalDashboardViewProps> = ({
           <div className="chart-summary-pills">
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
-              <span>Top Level: <strong>JSS 3 (74%)</strong></span>
+              <span>
+                Top Level: <strong>JSS 3 (74%)</strong>
+              </span>
             </div>
           </div>
         </div>

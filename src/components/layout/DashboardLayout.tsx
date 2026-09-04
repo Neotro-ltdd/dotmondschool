@@ -16,29 +16,33 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      api.get('/setup/school-profile')
-        .then(data => {
+      api
+        .get('/setup/school-profile')
+        .then((data) => {
           if (data?.logoUrl) {
-            const fullLogoUrl = data.logoUrl 
-                ? (data.logoUrl.startsWith('http') ? data.logoUrl : `${API_ROOT}${data.logoUrl}`)
-                : null;
-              setLogoUrl(fullLogoUrl);
+            const fullLogoUrl = data.logoUrl
+              ? data.logoUrl.startsWith('http')
+                ? data.logoUrl
+                : `${API_ROOT}${data.logoUrl}`
+              : null;
+            setLogoUrl(fullLogoUrl);
           }
         })
-        .catch(err => console.error("Could not load school profile", err));
+        .catch((err) => console.error('Could not load school profile', err));
 
-      api.get('/profile')
-        .then(data => {
+      api
+        .get('/profile')
+        .then((data) => {
           if (data && updateUserInfo) {
             updateUserInfo({
               avatarUrl: data.avatarUrl,
               firstName: data.firstName,
               lastName: data.lastName,
-              title: data.title
+              title: data.title,
             });
           }
         })
-        .catch(err => console.error("Could not load user profile", err));
+        .catch((err) => console.error('Could not load user profile', err));
     }
   }, [isAuthenticated]);
 
@@ -56,13 +60,13 @@ export default function DashboardLayout() {
       {isSidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
       )}
-      
+
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-      
+
       <div className="dashboard-main" style={{ position: 'relative' }}>
         {logoUrl && (
-          <div 
-            className="dashboard-watermark" 
+          <div
+            className="dashboard-watermark"
             style={{
               position: 'fixed',
               top: '50%',
@@ -76,7 +80,7 @@ export default function DashboardLayout() {
               backgroundSize: 'contain',
               opacity: 0.05,
               pointerEvents: 'none',
-              zIndex: 0
+              zIndex: 0,
             }}
           />
         )}

@@ -9,11 +9,20 @@ import { BranchSwitcher } from './BranchSwitcher';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
-  const { userName, userRole, userAvatar, userTitle, isSuperAdmin, availableRoles, setActiveRole, logout } = useAuth();
+  const {
+    userName,
+    userRole,
+    userAvatar,
+    userTitle,
+    isSuperAdmin,
+    availableRoles,
+    setActiveRole,
+    logout,
+  } = useAuth();
   const { theme, toggleTheme, isDarkMode } = useTheme();
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
-  
+
   useEffect(() => {
     setImgError(false);
   }, [userAvatar]);
@@ -23,8 +32,9 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
     navigate('/login');
   };
 
-  const displayRole = (userRole === 'Director' || userRole === 'Principal') ? 'Director' : userRole || 'User';
-  
+  const displayRole =
+    userRole === 'Director' || userRole === 'Principal' ? 'Director' : userRole || 'User';
+
   const displayUserName = formatDisplayName(userTitle, userName);
 
   const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
@@ -46,14 +56,34 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
           </button>
         )}
       </div>
-      
+
       <div className="header-actions">
         {/* Multi-Branch Context Switcher Toggle */}
         <BranchSwitcher />
         {/* Developer / SuperAdmin Role Switcher Dropdown - Only Visible to SuperAdmin */}
         {isSuperAdmin && availableRoles && availableRoles.length > 1 && (
-          <div className="role-switcher-box" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '8px', padding: '4px 10px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563EB', whiteSpace: 'nowrap' }}>⚡ View Role:</span>
+          <div
+            className="role-switcher-box"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: '#F1F5F9',
+              border: '1px solid #CBD5E1',
+              borderRadius: '8px',
+              padding: '4px 10px',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                color: '#2563EB',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              ⚡ View Role:
+            </span>
             <select
               value={userRole || ''}
               onChange={(e) => setActiveRole(e.target.value)}
@@ -64,7 +94,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
                 fontWeight: 700,
                 color: '#0F172A',
                 cursor: 'pointer',
-                outline: 'none'
+                outline: 'none',
               }}
             >
               <option value="SuperAdmin">👑 SuperAdmin (All Sidebars)</option>
@@ -85,8 +115,8 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         </button>
 
         {/* Dark / Light Theme Mode Switcher beside Profile */}
-        <button 
-          onClick={toggleTheme} 
+        <button
+          onClick={toggleTheme}
           className="theme-toggle-btn"
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           aria-label="Toggle theme mode"
@@ -97,20 +127,30 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
             <Moon size={19} className="theme-icon moon" />
           )}
         </button>
-        
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Link to="/dashboard/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="user-profile" style={{ cursor: 'pointer' }}>
               {avatarUrl && !imgError ? (
-                <img 
-                  src={avatarUrl} 
-                  alt="Profile" 
+                <img
+                  src={avatarUrl}
+                  alt="Profile"
                   onError={() => setImgError(true)}
-                  className="avatar" 
-                  style={{ objectFit: 'cover', width: '40px', height: '40px', borderRadius: '50%' }} 
+                  className="avatar"
+                  style={{ objectFit: 'cover', width: '40px', height: '40px', borderRadius: '50%' }}
                 />
               ) : (
-                <div className="avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{initial}</div>
+                <div
+                  className="avatar"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                  }}
+                >
+                  {initial}
+                </div>
               )}
               <div className="user-info">
                 <span className="user-name">{displayUserName}</span>
@@ -118,9 +158,9 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
               </div>
             </div>
           </Link>
-          <button 
-            onClick={handleLogout} 
-            title="Log out" 
+          <button
+            onClick={handleLogout}
+            title="Log out"
             className="icon-btn logout-header-btn"
             style={{
               background: 'transparent',
@@ -132,7 +172,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: '8px',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
             }}
           >
             <LogOut size={20} />

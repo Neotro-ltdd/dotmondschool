@@ -4,15 +4,15 @@ import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import './FinanceFeeBuilder.css';
 import { useDialog } from '../../../context/DialogContext';
-import { 
-  Wrench, 
-  Plus, 
-  Trash2, 
-  Save, 
-  Building2, 
-  Copy, 
-  Printer, 
-  BarChart3, 
+import {
+  Wrench,
+  Plus,
+  Trash2,
+  Save,
+  Building2,
+  Copy,
+  Printer,
+  BarChart3,
   Filter,
   DollarSign,
   PieChart,
@@ -22,7 +22,7 @@ import {
   Tag,
   Calculator,
   Info,
-  X
+  X,
 } from 'lucide-react';
 
 type FeeApplicability = 'Compulsory' | 'SectionalTransition' | 'NewIntakeOnly' | 'Optional';
@@ -63,11 +63,11 @@ export default function FinanceFeeBuilder() {
 
   const [activeTab, setActiveTab] = useState<'builder' | 'report' | 'gifts'>('builder');
   const [classes, setClasses] = useState<any[]>([]);
-  
+
   // Form State
   const { session, term, setSession, setTerm } = useActiveTerm();
   const [classId, setClassId] = useState('');
-  
+
   const [feeItems, setFeeItems] = useState<FeeTemplateItem[]>([
     { name: 'Tuition Fees', amount: 0, applicability: 'Compulsory' },
     { name: 'Development Fees', amount: 0, applicability: 'Compulsory' },
@@ -78,9 +78,9 @@ export default function FinanceFeeBuilder() {
     { name: 'Textbook', amount: 0, applicability: 'Compulsory' },
     { name: 'Uniform', amount: 0, applicability: 'SectionalTransition' },
     { name: 'Sport Wear', amount: 0, applicability: 'SectionalTransition' },
-    { name: 'Christmas Party (Optional)', amount: 0, applicability: 'Optional' }
+    { name: 'Christmas Party (Optional)', amount: 0, applicability: 'Optional' },
   ]);
-  
+
   // Batch copy targets
   const [copyTargetClassIds, setCopyTargetClassIds] = useState<string[]>([]);
   const [showBatchCopy, setShowBatchCopy] = useState(false);
@@ -93,7 +93,8 @@ export default function FinanceFeeBuilder() {
 
   // Breakdown Modal state
   const [showBreakdownModal, setShowBreakdownModal] = useState(false);
-  const [selectedTemplateForBreakdown, setSelectedTemplateForBreakdown] = useState<FeeTemplateReport | null>(null);
+  const [selectedTemplateForBreakdown, setSelectedTemplateForBreakdown] =
+    useState<FeeTemplateReport | null>(null);
 
   // Gift List tab state
   const [giftRecipients, setGiftRecipients] = useState<GiftRecipient[]>([]);
@@ -104,13 +105,21 @@ export default function FinanceFeeBuilder() {
   const [saving, setSaving] = useState(false);
 
   const detectApplicability = (name: string, app?: string): FeeApplicability => {
-    if (app && ['SectionalTransition', 'NewIntakeOnly', 'Optional'].includes(app)) {
-      return app as FeeApplicability;
+    if (app === 'SectionalTransition' || app === 'NewIntakeOnly' || app === 'Optional') {
+      return app;
     }
     const lower = (name || '').toLowerCase();
-    if (lower.includes('registration form') || lower.includes('registration')) return 'NewIntakeOnly';
-    if (lower.includes('uniform') || lower.includes('sport wear') || lower.includes('sportwear')) return 'SectionalTransition';
-    if (lower.includes('optional') || lower.includes('party') || lower.includes('excursion') || lower.includes('christmas')) return 'Optional';
+    if (lower.includes('registration form') || lower.includes('registration'))
+      return 'NewIntakeOnly';
+    if (lower.includes('uniform') || lower.includes('sport wear') || lower.includes('sportwear'))
+      return 'SectionalTransition';
+    if (
+      lower.includes('optional') ||
+      lower.includes('party') ||
+      lower.includes('excursion') ||
+      lower.includes('christmas')
+    )
+      return 'Optional';
     return 'Compulsory';
   };
 
@@ -127,7 +136,7 @@ export default function FinanceFeeBuilder() {
       }
       setLoading(false);
     } catch (err) {
-      console.error("Failed to fetch classes:", err);
+      console.error('Failed to fetch classes:', err);
       setLoading(false);
     }
   };
@@ -141,14 +150,18 @@ export default function FinanceFeeBuilder() {
 
   const loadExistingClassFeeTemplate = async () => {
     try {
-      const data: FeeTemplateReport[] = await api.get(`/finance/setup/fee-templates?session=${session}&term=${term}`);
-      const match = data.find(t => t.classId === classId);
+      const data: FeeTemplateReport[] = await api.get(
+        `/finance/setup/fee-templates?session=${session}&term=${term}`,
+      );
+      const match = data.find((t) => t.classId === classId);
       if (match && match.items && match.items.length > 0) {
-        setFeeItems(match.items.map(i => ({
-          name: i.name,
-          amount: Number(i.amount) || 0,
-          applicability: detectApplicability(i.name, i.applicability)
-        })));
+        setFeeItems(
+          match.items.map((i) => ({
+            name: i.name,
+            amount: Number(i.amount) || 0,
+            applicability: detectApplicability(i.name, i.applicability),
+          })),
+        );
       }
     } catch (err) {
       // Ignore if no existing template
@@ -159,10 +172,12 @@ export default function FinanceFeeBuilder() {
   const fetchReportData = async () => {
     setReportLoading(true);
     try {
-      const data: FeeTemplateReport[] = await api.get(`/finance/setup/fee-templates?session=${session}&term=${term}`);
+      const data: FeeTemplateReport[] = await api.get(
+        `/finance/setup/fee-templates?session=${session}&term=${term}`,
+      );
       setReportTemplates(data || []);
     } catch (err) {
-      console.error("Failed to load fee template report:", err);
+      console.error('Failed to load fee template report:', err);
     } finally {
       setReportLoading(false);
     }
@@ -172,10 +187,12 @@ export default function FinanceFeeBuilder() {
   const fetchGiftRecipients = async () => {
     setGiftLoading(true);
     try {
-      const data: GiftRecipient[] = await api.get(`/finance/reports/optional-fees?session=${session}&term=${term}&item=Christmas Party`);
+      const data: GiftRecipient[] = await api.get(
+        `/finance/reports/optional-fees?session=${session}&term=${term}&item=Christmas Party`,
+      );
       setGiftRecipients(data || []);
     } catch (err) {
-      console.error("Failed to load gift recipients:", err);
+      console.error('Failed to load gift recipients:', err);
     } finally {
       setGiftLoading(false);
     }
@@ -188,12 +205,12 @@ export default function FinanceFeeBuilder() {
 
   const handleAddItem = (presetName?: string, presetApp?: FeeApplicability) => {
     setFeeItems([
-      ...feeItems, 
-      { 
-        name: presetName || '', 
-        amount: 0, 
-        applicability: presetApp || (presetName ? detectApplicability(presetName) : 'Compulsory') 
-      }
+      ...feeItems,
+      {
+        name: presetName || '',
+        amount: 0,
+        applicability: presetApp || (presetName ? detectApplicability(presetName) : 'Compulsory'),
+      },
     ]);
   };
 
@@ -201,7 +218,11 @@ export default function FinanceFeeBuilder() {
     setFeeItems(feeItems.filter((_, i) => i !== index));
   };
 
-  const handleItemChange = (index: number, field: 'name' | 'amount' | 'applicability', value: any) => {
+  const handleItemChange = (
+    index: number,
+    field: 'name' | 'amount' | 'applicability',
+    value: any,
+  ) => {
     const newItems = [...feeItems];
     newItems[index] = { ...newItems[index], [field]: value };
     setFeeItems(newItems);
@@ -209,13 +230,13 @@ export default function FinanceFeeBuilder() {
 
   const handleSaveFeeTemplate = async () => {
     if (!classId) return showAlert('Please select a target class');
-    
+
     const validItems = feeItems
-      .filter(i => i.name.trim() !== '' && i.amount >= 0)
-      .map(i => ({
+      .filter((i) => i.name.trim() !== '' && i.amount >= 0)
+      .map((i) => ({
         name: i.name.trim(),
         amount: Number(i.amount) || 0,
-        applicability: i.applicability
+        applicability: i.applicability,
       }));
 
     if (validItems.length === 0) return showAlert('Please provide at least one valid fee item.');
@@ -227,7 +248,7 @@ export default function FinanceFeeBuilder() {
         session,
         term,
         classId,
-        items: validItems
+        items: validItems,
       });
 
       // Save for batch copy target classes if selected
@@ -238,13 +259,13 @@ export default function FinanceFeeBuilder() {
               session,
               term,
               classId: targetId,
-              items: validItems
+              items: validItems,
             });
           }
         }
       }
 
-      let msg = `Fee structure saved successfully for ${classes.find(c => c.id === classId)?.level || ''} ${classes.find(c => c.id === classId)?.name || ''}!`;
+      let msg = `Fee structure saved successfully for ${classes.find((c) => c.id === classId)?.level || ''} ${classes.find((c) => c.id === classId)?.name || ''}!`;
       if (copyTargetClassIds.length > 0) {
         msg += `\n\nAlso copied to ${copyTargetClassIds.length} additional classes.`;
       }
@@ -263,19 +284,19 @@ export default function FinanceFeeBuilder() {
 
   // Categorized Segment Calculations
   const compulsoryTotal = feeItems
-    .filter(i => i.applicability === 'Compulsory')
+    .filter((i) => i.applicability === 'Compulsory')
     .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
   const transitionTotal = feeItems
-    .filter(i => i.applicability === 'SectionalTransition')
+    .filter((i) => i.applicability === 'SectionalTransition')
     .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
   const newIntakeOnlyTotal = feeItems
-    .filter(i => i.applicability === 'NewIntakeOnly')
+    .filter((i) => i.applicability === 'NewIntakeOnly')
     .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
   const optionalTotal = feeItems
-    .filter(i => i.applicability === 'Optional')
+    .filter((i) => i.applicability === 'Optional')
     .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
   const continuingStudentTotal = compulsoryTotal;
@@ -284,18 +305,20 @@ export default function FinanceFeeBuilder() {
   const maxPossibleFee = directNewIntakeTotal + optionalTotal;
 
   // Unique Levels & Classes for Filtering
-  const uniqueLevels = Array.from(new Set(classes.map(c => c.level))).filter(Boolean);
-  const uniqueClassNames = Array.from(new Set(classes.map(c => c.name))).filter(Boolean);
+  const uniqueLevels = Array.from(new Set(classes.map((c) => c.level))).filter(Boolean);
+  const uniqueClassNames = Array.from(new Set(classes.map((c) => c.name))).filter(Boolean);
 
   // Filtered Templates for Class Fees Matrix
-  const filteredReportTemplates = reportTemplates.filter(t => {
+  const filteredReportTemplates = reportTemplates.filter((t) => {
     const levelMatch = filterLevel === 'All Levels' || t.level === filterLevel;
-    const classMatch = filterClass === 'All Classes' || t.className.toLowerCase().includes(filterClass.toLowerCase());
+    const classMatch =
+      filterClass === 'All Classes' ||
+      t.className.toLowerCase().includes(filterClass.toLowerCase());
     return levelMatch && classMatch;
   });
 
   // Filter gift recipients
-  const filteredGiftRecipients = giftRecipients.filter(r => {
+  const filteredGiftRecipients = giftRecipients.filter((r) => {
     const q = giftSearchQuery.toLowerCase();
     return (
       r.studentName.toLowerCase().includes(q) ||
@@ -324,31 +347,35 @@ export default function FinanceFeeBuilder() {
             <Wrench size={28} color="#000080" />
             Class Fee Structure Builder & Report Hub
           </h1>
-          <p className="builder-page-subtitle">Configure official itemized term fees per class segment and view institutional fee breakdowns</p>
+          <p className="builder-page-subtitle">
+            Configure official itemized term fees per class segment and view institutional fee
+            breakdowns
+          </p>
         </div>
       </div>
 
       {/* Navigation Tab Bar */}
       <div className="builder-tabs-bar">
-        <button 
+        <button
           className={`builder-tab-button ${activeTab === 'builder' ? 'active' : ''}`}
           onClick={() => setActiveTab('builder')}
         >
           <Wrench size={16} /> Fee Structure Builder
         </button>
 
-        <button 
+        <button
           className={`builder-tab-button ${activeTab === 'report' ? 'active' : ''}`}
           onClick={() => setActiveTab('report')}
         >
           <BarChart3 size={16} /> Class Fees Matrix ({reportTemplates.length}/{classes.length})
         </button>
 
-        <button 
+        <button
           className={`builder-tab-button ${activeTab === 'gifts' ? 'active' : ''}`}
           onClick={() => setActiveTab('gifts')}
         >
-          <Gift size={16} color="#B45309" /> 🎁 Christmas Party Gift Recipients ({giftRecipients.length})
+          <Gift size={16} color="#B45309" /> 🎁 Christmas Party Gift Recipients (
+          {giftRecipients.length})
         </button>
       </div>
 
@@ -357,7 +384,15 @@ export default function FinanceFeeBuilder() {
         <div className="fee-builder-workspace-grid">
           {/* LEFT WORKSPACE COLUMN (65% Width) */}
           <div className="builder-card-wrapper">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1rem',
+              }}
+            >
               <div>
                 <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
                   🛠️ Itemized Fee Configuration Workspace
@@ -368,9 +403,9 @@ export default function FinanceFeeBuilder() {
               </div>
 
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <button 
-                  type="button" 
-                  className="btn-select-all-family" 
+                <button
+                  type="button"
+                  className="btn-select-all-family"
                   onClick={() => setShowBatchCopy(!showBatchCopy)}
                   style={{ padding: '0.5rem 0.85rem', fontSize: '0.82rem' }}
                 >
@@ -380,21 +415,35 @@ export default function FinanceFeeBuilder() {
             </div>
 
             {/* Session, Term & Target Class Selector Bar */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', background: '#F8FAFC', padding: '1.1rem', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: '1rem',
+                background: '#F8FAFC',
+                padding: '1.1rem',
+                borderRadius: '14px',
+                border: '1px solid #E2E8F0',
+              }}
+            >
               <div className="verify-form-group">
                 <label>Academic Session</label>
-                <input 
-                  type="text" 
-                  className="select-filter-input" 
-                  value={session} 
-                  onChange={e => setSession(e.target.value)} 
-                  required 
+                <input
+                  type="text"
+                  className="select-filter-input"
+                  value={session}
+                  onChange={(e) => setSession(e.target.value)}
+                  required
                 />
               </div>
 
               <div className="verify-form-group">
                 <label>Academic Term</label>
-                <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
+                <select
+                  className="select-filter-input"
+                  value={term}
+                  onChange={(e) => setTerm(e.target.value)}
+                >
                   <option value="First Term">First Term</option>
                   <option value="Second Term">Second Term</option>
                   <option value="Third Term">Third Term</option>
@@ -403,8 +452,12 @@ export default function FinanceFeeBuilder() {
 
               <div className="verify-form-group">
                 <label>Target Class *</label>
-                <select className="select-filter-input" value={classId} onChange={e => setClassId(e.target.value)}>
-                  {classes.map(c => (
+                <select
+                  className="select-filter-input"
+                  value={classId}
+                  onChange={(e) => setClassId(e.target.value)}
+                >
+                  {classes.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.level} {c.name} {c.section}
                     </option>
@@ -416,7 +469,9 @@ export default function FinanceFeeBuilder() {
             {/* Optional Batch Copy Section */}
             {showBatchCopy && (
               <div className="batch-copy-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <strong style={{ fontSize: '0.88rem', color: '#1E40AF' }}>
                     <Copy size={15} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
                     Batch Copy Fee Structure:
@@ -426,44 +481,118 @@ export default function FinanceFeeBuilder() {
                   </span>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.4rem', marginTop: '0.5rem' }}>
-                  {classes.filter(c => c.id !== classId).map(c => {
-                    const isChecked = copyTargetClassIds.includes(c.id);
-                    return (
-                      <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', cursor: 'pointer', background: '#FFFFFF', padding: '0.3rem 0.5rem', borderRadius: '6px', border: '1px solid #BFDBFE' }}>
-                        <input 
-                          type="checkbox" 
-                          checked={isChecked}
-                          onChange={() => {
-                            if (isChecked) {
-                              setCopyTargetClassIds(prev => prev.filter(id => id !== c.id));
-                            } else {
-                              setCopyTargetClassIds(prev => [...prev, c.id]);
-                            }
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                    gap: '0.4rem',
+                    marginTop: '0.5rem',
+                  }}
+                >
+                  {classes
+                    .filter((c) => c.id !== classId)
+                    .map((c) => {
+                      const isChecked = copyTargetClassIds.includes(c.id);
+                      return (
+                        <label
+                          key={c.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            background: '#FFFFFF',
+                            padding: '0.3rem 0.5rem',
+                            borderRadius: '6px',
+                            border: '1px solid #BFDBFE',
                           }}
-                        />
-                        <span>{c.level} {c.name} {c.section}</span>
-                      </label>
-                    );
-                  })}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              if (isChecked) {
+                                setCopyTargetClassIds((prev) => prev.filter((id) => id !== c.id));
+                              } else {
+                                setCopyTargetClassIds((prev) => [...prev, c.id]);
+                              }
+                            }}
+                          />
+                          <span>
+                            {c.level} {c.name} {c.section}
+                          </span>
+                        </label>
+                      );
+                    })}
                 </div>
               </div>
             )}
 
             {/* Preset Quick Add Bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', background: '#EFF6FF', padding: '0.65rem 0.85rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.8rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                flexWrap: 'wrap',
+                background: '#EFF6FF',
+                padding: '0.65rem 0.85rem',
+                borderRadius: '12px',
+                border: '1px solid #BFDBFE',
+                fontSize: '0.8rem',
+              }}
+            >
               <strong style={{ color: '#1E40AF', marginRight: '4px' }}>⚡ Presets:</strong>
-              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Tuition Fees', 'Compulsory')}>+ Tuition</button>
-              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Development Fees', 'Compulsory')}>+ Development</button>
-              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Uniform', 'SectionalTransition')}>+ Uniform</button>
-              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Sport Wear', 'SectionalTransition')}>+ Sport Wear</button>
-              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Registration Form', 'NewIntakeOnly')}>+ Registration</button>
-              <button type="button" className="btn-select-all-family" onClick={() => handleAddItem('Christmas Party (Optional)', 'Optional')}>+ Party</button>
+              <button
+                type="button"
+                className="btn-select-all-family"
+                onClick={() => handleAddItem('Tuition Fees', 'Compulsory')}
+              >
+                + Tuition
+              </button>
+              <button
+                type="button"
+                className="btn-select-all-family"
+                onClick={() => handleAddItem('Development Fees', 'Compulsory')}
+              >
+                + Development
+              </button>
+              <button
+                type="button"
+                className="btn-select-all-family"
+                onClick={() => handleAddItem('Uniform', 'SectionalTransition')}
+              >
+                + Uniform
+              </button>
+              <button
+                type="button"
+                className="btn-select-all-family"
+                onClick={() => handleAddItem('Sport Wear', 'SectionalTransition')}
+              >
+                + Sport Wear
+              </button>
+              <button
+                type="button"
+                className="btn-select-all-family"
+                onClick={() => handleAddItem('Registration Form', 'NewIntakeOnly')}
+              >
+                + Registration
+              </button>
+              <button
+                type="button"
+                className="btn-select-all-family"
+                onClick={() => handleAddItem('Christmas Party (Optional)', 'Optional')}
+              >
+                + Party
+              </button>
             </div>
 
             {/* Fee Breakdown Container */}
             <div className="fee-breakdown-container">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
                 <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
                   Itemized Fee Components Breakdown ({feeItems.length} Items)
                 </h3>
@@ -478,25 +607,33 @@ export default function FinanceFeeBuilder() {
                   <div key={index} className="fee-row-item">
                     {/* Item Name */}
                     <div>
-                      <input 
-                        type="text" 
-                        className="select-filter-input" 
-                        placeholder="Fee Name (e.g. Tuition, Uniform, Party)" 
-                        value={item.name} 
-                        onChange={e => handleItemChange(index, 'name', e.target.value)}
+                      <input
+                        type="text"
+                        className="select-filter-input"
+                        placeholder="Fee Name (e.g. Tuition, Uniform, Party)"
+                        value={item.name}
+                        onChange={(e) => handleItemChange(index, 'name', e.target.value)}
                       />
                     </div>
 
                     {/* Applicability Category */}
                     <div>
-                      <select 
+                      <select
                         className="select-filter-input"
                         style={{ fontSize: '0.78rem', fontWeight: 700 }}
                         value={currentApp}
-                        onChange={e => handleItemChange(index, 'applicability', e.target.value as FeeApplicability)}
+                        onChange={(e) =>
+                          handleItemChange(
+                            index,
+                            'applicability',
+                            detectApplicability(e.target.value, e.target.value),
+                          )
+                        }
                       >
                         <option value="Compulsory">📌 Compulsory (All Students)</option>
-                        <option value="SectionalTransition">🎓 Sectional Entry (Pry 1, JSS 1, SS 1)</option>
+                        <option value="SectionalTransition">
+                          🎓 Sectional Entry (Pry 1, JSS 1, SS 1)
+                        </option>
                         <option value="NewIntakeOnly">🆕 Direct New Intake Only</option>
                         <option value="Optional">🌟 Optional Add-on (Opt-in)</option>
                       </select>
@@ -504,21 +641,33 @@ export default function FinanceFeeBuilder() {
 
                     {/* Amount Input */}
                     <div style={{ position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: '#64748B', fontSize: '0.85rem' }}>₦</span>
-                      <input 
-                        type="number" 
-                        className="select-filter-input" 
+                      <span
+                        style={{
+                          position: 'absolute',
+                          left: '10px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          fontWeight: 900,
+                          color: '#64748B',
+                          fontSize: '0.85rem',
+                        }}
+                      >
+                        ₦
+                      </span>
+                      <input
+                        type="number"
+                        className="select-filter-input"
                         style={{ paddingLeft: '2.2rem' }}
-                        placeholder="0.00" 
+                        placeholder="0.00"
                         min="0"
-                        value={item.amount || ''} 
-                        onChange={e => handleItemChange(index, 'amount', Number(e.target.value))}
+                        value={item.amount || ''}
+                        onChange={(e) => handleItemChange(index, 'amount', Number(e.target.value))}
                       />
                     </div>
 
                     {/* Remove Button */}
-                    <button 
-                      className="btn-remove-fee-row" 
+                    <button
+                      className="btn-remove-fee-row"
                       onClick={() => handleRemoveItem(index)}
                       title="Remove item"
                     >
@@ -529,7 +678,11 @@ export default function FinanceFeeBuilder() {
               })}
 
               <div style={{ paddingTop: '0.5rem' }}>
-                <button className="btn-select-all-family" style={{ width: '100%', justifyContent: 'center', padding: '0.65rem' }} onClick={() => handleAddItem()}>
+                <button
+                  className="btn-select-all-family"
+                  style={{ width: '100%', justifyContent: 'center', padding: '0.65rem' }}
+                  onClick={() => handleAddItem()}
+                >
                   <Plus size={14} style={{ marginRight: '6px' }} /> Add Another Fee Line Item
                 </button>
               </div>
@@ -572,7 +725,8 @@ export default function FinanceFeeBuilder() {
                   </span>
                 </div>
                 <span className="fee-segment-desc">
-                  Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1). Includes uniforms & sportswear, excludes Registration Form.
+                  Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1). Includes uniforms &
+                  sportswear, excludes Registration Form.
                 </span>
               </div>
 
@@ -585,7 +739,8 @@ export default function FinanceFeeBuilder() {
                   </span>
                 </div>
                 <span className="fee-segment-desc">
-                  Direct new admissions into any class. Includes Registration Form, Uniforms & Sportswear.
+                  Direct new admissions into any class. Includes Registration Form, Uniforms &
+                  Sportswear.
                 </span>
               </div>
 
@@ -598,7 +753,8 @@ export default function FinanceFeeBuilder() {
                   </span>
                 </div>
                 <span className="fee-segment-desc">
-                  Opt-in items (e.g. Christmas Party ₦{optionalTotal.toLocaleString()}). Opted by parents or accountant.
+                  Opt-in items (e.g. Christmas Party ₦{optionalTotal.toLocaleString()}). Opted by
+                  parents or accountant.
                 </span>
               </div>
             </div>
@@ -612,9 +768,15 @@ export default function FinanceFeeBuilder() {
             </div>
 
             {/* Primary Action Save Button */}
-            <button 
-              className="btn-proxy-search" 
-              style={{ width: '100%', justifyContent: 'center', padding: '0.95rem', fontSize: '1.05rem', marginTop: '0.25rem' }} 
+            <button
+              className="btn-proxy-search"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                padding: '0.95rem',
+                fontSize: '1.05rem',
+                marginTop: '0.25rem',
+              }}
               onClick={handleSaveFeeTemplate}
               disabled={saving}
             >
@@ -639,39 +801,80 @@ export default function FinanceFeeBuilder() {
             </div>
 
             {/* Filter Bar (Level, Class, Session, Term) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', background: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0', alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: '0.85rem',
+                background: '#F8FAFC',
+                padding: '1rem 1.25rem',
+                borderRadius: '12px',
+                border: '1px solid #E2E8F0',
+                alignItems: 'center',
+              }}
+            >
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Filter by Level:</label>
-                <select className="select-filter-input" value={filterLevel} onChange={e => setFilterLevel(e.target.value)}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>
+                  Filter by Level:
+                </label>
+                <select
+                  className="select-filter-input"
+                  value={filterLevel}
+                  onChange={(e) => setFilterLevel(e.target.value)}
+                >
                   <option value="All Levels">All Levels</option>
-                  {uniqueLevels.map(lvl => (
-                    <option key={lvl} value={lvl}>{lvl}</option>
+                  {uniqueLevels.map((lvl) => (
+                    <option key={lvl} value={lvl}>
+                      {lvl}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Filter by Class:</label>
-                <select className="select-filter-input" value={filterClass} onChange={e => setFilterClass(e.target.value)}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>
+                  Filter by Class:
+                </label>
+                <select
+                  className="select-filter-input"
+                  value={filterClass}
+                  onChange={(e) => setFilterClass(e.target.value)}
+                >
                   <option value="All Classes">All Classes</option>
-                  {uniqueClassNames.map(cls => (
-                    <option key={cls} value={cls}>{cls}</option>
+                  {uniqueClassNames.map((cls) => (
+                    <option key={cls} value={cls}>
+                      {cls}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Session:</label>
-                <select className="select-filter-input" value={session} onChange={e => setSession(e.target.value)}>
-                  {getSessionOptions(session).map(s => (
-                    <option key={s} value={s}>{s}</option>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>
+                  Session:
+                </label>
+                <select
+                  className="select-filter-input"
+                  value={session}
+                  onChange={(e) => setSession(e.target.value)}
+                >
+                  {getSessionOptions(session).map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Term:</label>
-                <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>
+                  Term:
+                </label>
+                <select
+                  className="select-filter-input"
+                  value={term}
+                  onChange={(e) => setTerm(e.target.value)}
+                >
                   <option value="First Term">First Term</option>
                   <option value="Second Term">Second Term</option>
                   <option value="Third Term">Third Term</option>
@@ -685,9 +888,20 @@ export default function FinanceFeeBuilder() {
                 Loading class fees matrix...
               </div>
             ) : filteredReportTemplates.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#F8FAFC', borderRadius: '12px', border: '1px border-dashed #CBD5E1', color: '#64748B' }}>
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '3.5rem 1rem',
+                  background: '#F8FAFC',
+                  borderRadius: '12px',
+                  border: '1px border-dashed #CBD5E1',
+                  color: '#64748B',
+                }}
+              >
                 <Building2 size={42} color="#94A3B8" style={{ marginBottom: '0.75rem' }} />
-                <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>No Fee Configurations Found</h3>
+                <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+                  No Fee Configurations Found
+                </h3>
                 <p style={{ fontSize: '0.88rem', marginTop: '0.4rem' }}>
                   No fee templates configured matching selected filters for {session} ({term}).
                 </p>
@@ -705,26 +919,20 @@ export default function FinanceFeeBuilder() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredReportTemplates.map(t => (
+                    {filteredReportTemplates.map((t) => (
                       <tr key={t.id}>
-                        <td style={{ color: '#64748B', fontWeight: 600 }}>
-                          {t.level || 'N/A'}
-                        </td>
+                        <td style={{ color: '#64748B', fontWeight: 600 }}>{t.level || 'N/A'}</td>
 
-                        <td style={{ fontWeight: 800, color: '#0F172A' }}>
-                          {t.className}
-                        </td>
+                        <td style={{ fontWeight: 800, color: '#0F172A' }}>{t.className}</td>
 
-                        <td style={{ color: '#64748B' }}>
-                          {t.section || 'General'}
-                        </td>
+                        <td style={{ color: '#64748B' }}>{t.section || 'General'}</td>
 
                         <td style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A' }}>
                           ₦{t.totalAmount.toLocaleString()}
                         </td>
 
                         <td style={{ textAlign: 'right' }}>
-                          <button 
+                          <button
                             className="btn-view-breakdown-navy"
                             onClick={() => {
                               setSelectedTemplateForBreakdown(t);
@@ -745,200 +953,277 @@ export default function FinanceFeeBuilder() {
       )}
 
       {/* POP-UP BREAKDOWN MODAL DIALOG (WITH ACCURATE SEGMENT CARDS & TAGS) */}
-      {showBreakdownModal && selectedTemplateForBreakdown && (() => {
-        const modalItems = selectedTemplateForBreakdown.items || [];
-        const modalCompulsory = modalItems
-          .filter(i => detectApplicability(i.name, i.applicability) === 'Compulsory')
-          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+      {showBreakdownModal &&
+        selectedTemplateForBreakdown &&
+        (() => {
+          const modalItems = selectedTemplateForBreakdown.items || [];
+          const modalCompulsory = modalItems
+            .filter((i) => detectApplicability(i.name, i.applicability) === 'Compulsory')
+            .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
 
-        const modalTransition = modalItems
-          .filter(i => detectApplicability(i.name, i.applicability) === 'SectionalTransition')
-          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+          const modalTransition = modalItems
+            .filter((i) => detectApplicability(i.name, i.applicability) === 'SectionalTransition')
+            .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
 
-        const modalNewIntake = modalItems
-          .filter(i => detectApplicability(i.name, i.applicability) === 'NewIntakeOnly')
-          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+          const modalNewIntake = modalItems
+            .filter((i) => detectApplicability(i.name, i.applicability) === 'NewIntakeOnly')
+            .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
 
-        const modalOptional = modalItems
-          .filter(i => detectApplicability(i.name, i.applicability) === 'Optional')
-          .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+          const modalOptional = modalItems
+            .filter((i) => detectApplicability(i.name, i.applicability) === 'Optional')
+            .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
 
-        const modalContinuingTotal = modalCompulsory;
-        const modalSectionalTotal = modalCompulsory + modalTransition;
-        const modalDirectNewIntakeTotal = modalCompulsory + modalTransition + modalNewIntake;
-        const modalMaxTotal = modalDirectNewIntakeTotal + modalOptional;
+          const modalContinuingTotal = modalCompulsory;
+          const modalSectionalTotal = modalCompulsory + modalTransition;
+          const modalDirectNewIntakeTotal = modalCompulsory + modalTransition + modalNewIntake;
+          const modalMaxTotal = modalDirectNewIntakeTotal + modalOptional;
 
-        return (
-          <div className="fee-modal-overlay" onClick={() => setShowBreakdownModal(false)}>
-            <div className="fee-modal-container" onClick={e => e.stopPropagation()}>
-              {/* Top Bar with Title and Close X Button */}
-              <div className="fee-modal-top-bar">
-                <div className="fee-modal-header">
-                  <h3 className="fee-modal-title">
-                    Fee Breakdown: {selectedTemplateForBreakdown.className}
-                  </h3>
-                  <span className="fee-modal-subtitle-pill">
-                    <Building2 size={13} /> {term} • {session}
-                  </span>
-                </div>
-
-                <button 
-                  type="button" 
-                  className="btn-modal-close-icon"
-                  onClick={() => setShowBreakdownModal(false)}
-                  title="Close modal"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              {/* Executive Segment Cards Stack (Matching Second Image) */}
-              <div className="fee-segment-stack">
-                {/* 1. Continuing Student */}
-                <div className="fee-segment-card continuing">
-                  <div className="fee-segment-card-header">
-                    <span className="fee-segment-name">📌 Continuing Student Fee</span>
-                    <span className="fee-segment-amount" style={{ color: '#1E40AF' }}>
-                      ₦{modalContinuingTotal.toLocaleString()}
+          return (
+            <div className="fee-modal-overlay" onClick={() => setShowBreakdownModal(false)}>
+              <div className="fee-modal-container" onClick={(e) => e.stopPropagation()}>
+                {/* Top Bar with Title and Close X Button */}
+                <div className="fee-modal-top-bar">
+                  <div className="fee-modal-header">
+                    <h3 className="fee-modal-title">
+                      Fee Breakdown: {selectedTemplateForBreakdown.className}
+                    </h3>
+                    <span className="fee-modal-subtitle-pill">
+                      <Building2 size={13} /> {term} • {session}
                     </span>
                   </div>
-                  <span className="fee-segment-desc">
-                    In-section promotions (e.g. JSS 1 → JSS 2). Excludes uniforms/sportswear.
-                  </span>
+
+                  <button
+                    type="button"
+                    className="btn-modal-close-icon"
+                    onClick={() => setShowBreakdownModal(false)}
+                    title="Close modal"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
 
-                {/* 2. Sectional Entry */}
-                <div className="fee-segment-card sectional">
-                  <div className="fee-segment-card-header">
-                    <span className="fee-segment-name">🎓 Sectional Entry Fee</span>
-                    <span className="fee-segment-amount" style={{ color: '#047857' }}>
-                      ₦{modalSectionalTotal.toLocaleString()}
+                {/* Executive Segment Cards Stack (Matching Second Image) */}
+                <div className="fee-segment-stack">
+                  {/* 1. Continuing Student */}
+                  <div className="fee-segment-card continuing">
+                    <div className="fee-segment-card-header">
+                      <span className="fee-segment-name">📌 Continuing Student Fee</span>
+                      <span className="fee-segment-amount" style={{ color: '#1E40AF' }}>
+                        ₦{modalContinuingTotal.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="fee-segment-desc">
+                      In-section promotions (e.g. JSS 1 → JSS 2). Excludes uniforms/sportswear.
                     </span>
                   </div>
-                  <span className="fee-segment-desc">
-                    Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1). Includes uniforms & sportswear, excludes Registration Form.
-                  </span>
-                </div>
 
-                {/* 3. Direct New Intake */}
-                <div className="fee-segment-card direct">
-                  <div className="fee-segment-card-header">
-                    <span className="fee-segment-name">🆕 Direct New Intake Fee</span>
-                    <span className="fee-segment-amount" style={{ color: '#B45309' }}>
-                      ₦{modalDirectNewIntakeTotal.toLocaleString()}
+                  {/* 2. Sectional Entry */}
+                  <div className="fee-segment-card sectional">
+                    <div className="fee-segment-card-header">
+                      <span className="fee-segment-name">🎓 Sectional Entry Fee</span>
+                      <span className="fee-segment-amount" style={{ color: '#047857' }}>
+                        ₦{modalSectionalTotal.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="fee-segment-desc">
+                      Level transitions (KG→Pry 1, Pry→JSS 1, JSS 3→SS 1). Includes uniforms &
+                      sportswear, excludes Registration Form.
                     </span>
                   </div>
-                  <span className="fee-segment-desc">
-                    Direct new admissions into any class. Includes Registration Form, Uniforms & Sportswear.
-                  </span>
-                </div>
 
-                {/* 4. Optional Add-ons */}
-                <div className="fee-segment-card optional">
-                  <div className="fee-segment-card-header">
-                    <span className="fee-segment-name">🌟 Optional Add-ons Total</span>
-                    <span className="fee-segment-amount" style={{ color: '#4F46E5' }}>
-                      ₦{modalOptional.toLocaleString()}
+                  {/* 3. Direct New Intake */}
+                  <div className="fee-segment-card direct">
+                    <div className="fee-segment-card-header">
+                      <span className="fee-segment-name">🆕 Direct New Intake Fee</span>
+                      <span className="fee-segment-amount" style={{ color: '#B45309' }}>
+                        ₦{modalDirectNewIntakeTotal.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="fee-segment-desc">
+                      Direct new admissions into any class. Includes Registration Form, Uniforms &
+                      Sportswear.
                     </span>
                   </div>
-                  <span className="fee-segment-desc">
-                    Opt-in items (e.g. Christmas Party ₦{modalOptional.toLocaleString()}). Opted by parents or accountant.
+
+                  {/* 4. Optional Add-ons */}
+                  <div className="fee-segment-card optional">
+                    <div className="fee-segment-card-header">
+                      <span className="fee-segment-name">🌟 Optional Add-ons Total</span>
+                      <span className="fee-segment-amount" style={{ color: '#4F46E5' }}>
+                        ₦{modalOptional.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="fee-segment-desc">
+                      Opt-in items (e.g. Christmas Party ₦{modalOptional.toLocaleString()}). Opted
+                      by parents or accountant.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Total Fee Range Banner */}
+                <div className="fee-range-banner">
+                  <span className="fee-range-label">TOTAL FEE RANGE FOR CLASS</span>
+                  <span className="fee-range-val">
+                    ₦{modalContinuingTotal.toLocaleString()} – ₦{modalMaxTotal.toLocaleString()}
                   </span>
                 </div>
-              </div>
 
-              {/* Total Fee Range Banner */}
-              <div className="fee-range-banner">
-                <span className="fee-range-label">TOTAL FEE RANGE FOR CLASS</span>
-                <span className="fee-range-val">
-                  ₦{modalContinuingTotal.toLocaleString()} – ₦{modalMaxTotal.toLocaleString()}
-                </span>
-              </div>
+                {/* Executive Itemized Table Card */}
+                <div className="fee-modal-breakdown-card">
+                  <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>
+                    Itemized Component Breakdown ({modalItems.length} Items)
+                  </h4>
+                  <table className="fee-modal-table">
+                    <thead>
+                      <tr>
+                        <th>Fee Component & Tag</th>
+                        <th style={{ textAlign: 'right' }}>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {modalItems.map((item, idx) => {
+                        const appTag = detectApplicability(item.name, item.applicability);
+                        return (
+                          <tr key={idx}>
+                            <td>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  flexWrap: 'wrap',
+                                }}
+                              >
+                                <span style={{ fontWeight: 700, color: '#0F172A' }}>
+                                  {item.name}
+                                </span>
+                                {appTag === 'Compulsory' && (
+                                  <span
+                                    style={{
+                                      background: '#EFF6FF',
+                                      color: '#1E40AF',
+                                      padding: '0.1rem 0.4rem',
+                                      borderRadius: '4px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 800,
+                                    }}
+                                  >
+                                    📌 Compulsory
+                                  </span>
+                                )}
+                                {appTag === 'SectionalTransition' && (
+                                  <span
+                                    style={{
+                                      background: '#ECFDF5',
+                                      color: '#047857',
+                                      padding: '0.1rem 0.4rem',
+                                      borderRadius: '4px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 800,
+                                    }}
+                                  >
+                                    🎓 Level Entry
+                                  </span>
+                                )}
+                                {appTag === 'NewIntakeOnly' && (
+                                  <span
+                                    style={{
+                                      background: '#FFFBEB',
+                                      color: '#B45309',
+                                      padding: '0.1rem 0.4rem',
+                                      borderRadius: '4px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 800,
+                                    }}
+                                  >
+                                    🆕 Direct Intake
+                                  </span>
+                                )}
+                                {appTag === 'Optional' && (
+                                  <span
+                                    style={{
+                                      background: '#EEF2FF',
+                                      color: '#4F46E5',
+                                      padding: '0.1rem 0.4rem',
+                                      borderRadius: '4px',
+                                      fontSize: '0.72rem',
+                                      fontWeight: 800,
+                                    }}
+                                  >
+                                    🌟 Optional
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                              ₦{Number(item.amount).toLocaleString()}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
 
-              {/* Executive Itemized Table Card */}
-              <div className="fee-modal-breakdown-card">
-                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>
-                  Itemized Component Breakdown ({modalItems.length} Items)
-                </h4>
-                <table className="fee-modal-table">
-                  <thead>
-                    <tr>
-                      <th>Fee Component & Tag</th>
-                      <th style={{ textAlign: 'right' }}>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {modalItems.map((item, idx) => {
-                      const appTag = detectApplicability(item.name, item.applicability);
-                      return (
-                        <tr key={idx}>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                              <span style={{ fontWeight: 700, color: '#0F172A' }}>{item.name}</span>
-                              {appTag === 'Compulsory' && (
-                                <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>📌 Compulsory</span>
-                              )}
-                              {appTag === 'SectionalTransition' && (
-                                <span style={{ background: '#ECFDF5', color: '#047857', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🎓 Level Entry</span>
-                              )}
-                              {appTag === 'NewIntakeOnly' && (
-                                <span style={{ background: '#FFFBEB', color: '#B45309', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🆕 Direct Intake</span>
-                              )}
-                              {appTag === 'Optional' && (
-                                <span style={{ background: '#EEF2FF', color: '#4F46E5', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>🌟 Optional</span>
-                              )}
-                            </div>
-                          </td>
-                          <td style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
-                            ₦{Number(item.amount).toLocaleString()}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                {/* Footer Action Buttons */}
+                <div className="fee-modal-footer-actions">
+                  <button
+                    type="button"
+                    className="btn-select-all-family"
+                    onClick={() => window.print()}
+                    style={{ padding: '0.6rem 1.1rem', fontSize: '0.85rem' }}
+                  >
+                    <Printer size={15} style={{ marginRight: '5px' }} /> Print Fee Breakdown
+                  </button>
 
-              {/* Footer Action Buttons */}
-              <div className="fee-modal-footer-actions">
-                <button 
-                  type="button"
-                  className="btn-select-all-family"
-                  onClick={() => window.print()}
-                  style={{ padding: '0.6rem 1.1rem', fontSize: '0.85rem' }}
-                >
-                  <Printer size={15} style={{ marginRight: '5px' }} /> Print Fee Breakdown
-                </button>
-
-                <button 
-                  type="button"
-                  className="btn-modal-close-blue"
-                  onClick={() => setShowBreakdownModal(false)}
-                >
-                  Close
-                </button>
+                  <button
+                    type="button"
+                    className="btn-modal-close-blue"
+                    onClick={() => setShowBreakdownModal(false)}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       {/* TAB 3: CHRISTMAS PARTY GIFT RECIPIENTS REPORT */}
       {activeTab === 'gifts' && (
         <div className="builder-card-wrapper">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+            }}
+          >
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: '1.2rem',
+                  fontWeight: 800,
+                  color: '#0F172A',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
                 <Gift size={22} color="#B45309" /> 🎁 Christmas Party Gift Recipients List
               </h2>
               <span style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                Confirmed list of students whose parents paid for the Christmas Party for gift package preparation.
+                Confirmed list of students whose parents paid for the Christmas Party for gift
+                package preparation.
               </span>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-              <button 
-                className="btn-select-all-family" 
+              <button
+                className="btn-select-all-family"
                 onClick={() => window.print()}
                 style={{ padding: '0.5rem 0.85rem', fontSize: '0.82rem' }}
               >
@@ -948,20 +1233,58 @@ export default function FinanceFeeBuilder() {
           </div>
 
           {/* Session & Term Filter Bar */}
-          <div style={{ display: 'flex', gap: '1rem', background: '#FEF3C7', padding: '1rem', borderRadius: '12px', border: '1px solid #FDE68A', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              background: '#FEF3C7',
+              padding: '1rem',
+              borderRadius: '12px',
+              border: '1px solid #FDE68A',
+              alignItems: 'center',
+            }}
+          >
             <Filter size={18} color="#B45309" />
             <div style={{ display: 'flex', gap: '1rem', flex: 1 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase' }}>Academic Session</label>
-                <select className="select-filter-input" value={session} onChange={e => setSession(e.target.value)}>
-                  {getSessionOptions(session).map(s => (
-                    <option key={s} value={s}>{s}</option>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    color: '#B45309',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Academic Session
+                </label>
+                <select
+                  className="select-filter-input"
+                  value={session}
+                  onChange={(e) => setSession(e.target.value)}
+                >
+                  {getSessionOptions(session).map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase' }}>Academic Term</label>
-                <select className="select-filter-input" value={term} onChange={e => setTerm(e.target.value)}>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    color: '#B45309',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Academic Term
+                </label>
+                <select
+                  className="select-filter-input"
+                  value={term}
+                  onChange={(e) => setTerm(e.target.value)}
+                >
                   <option value="First Term">First Term</option>
                   <option value="Second Term">Second Term</option>
                   <option value="Third Term">Third Term</option>
@@ -970,14 +1293,23 @@ export default function FinanceFeeBuilder() {
             </div>
 
             <div style={{ position: 'relative', width: '220px' }}>
-              <Search style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} size={14} />
-              <input 
-                type="text" 
-                className="select-filter-input" 
+              <Search
+                style={{
+                  position: 'absolute',
+                  left: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#94A3B8',
+                }}
+                size={14}
+              />
+              <input
+                type="text"
+                className="select-filter-input"
                 style={{ paddingLeft: '2.2rem' }}
                 placeholder="Search student..."
                 value={giftSearchQuery}
-                onChange={e => setGiftSearchQuery(e.target.value)}
+                onChange={(e) => setGiftSearchQuery(e.target.value)}
               />
             </div>
           </div>
@@ -987,9 +1319,20 @@ export default function FinanceFeeBuilder() {
               Loading Christmas party gift recipients...
             </div>
           ) : filteredGiftRecipients.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#F8FAFC', borderRadius: '12px', border: '1px border-dashed #CBD5E1', color: '#64748B' }}>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '3.5rem 1rem',
+                background: '#F8FAFC',
+                borderRadius: '12px',
+                border: '1px border-dashed #CBD5E1',
+                color: '#64748B',
+              }}
+            >
               <Gift size={42} color="#94A3B8" style={{ marginBottom: '0.75rem' }} />
-              <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>No Gift Recipients Found</h3>
+              <h3 style={{ margin: 0, fontWeight: 800, color: '#0F172A' }}>
+                No Gift Recipients Found
+              </h3>
               <p style={{ fontSize: '0.88rem', marginTop: '0.4rem' }}>
                 No students found with confirmed Christmas Party payments for {session} ({term}).
               </p>
@@ -1009,16 +1352,18 @@ export default function FinanceFeeBuilder() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredGiftRecipients.map(r => (
+                  {filteredGiftRecipients.map((r) => (
                     <tr key={r.id}>
                       <td>
-                        <strong style={{ fontSize: '0.95rem', color: '#0F172A', display: 'block' }}>{r.studentName}</strong>
-                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>Reg: {r.registrationNumber}</span>
+                        <strong style={{ fontSize: '0.95rem', color: '#0F172A', display: 'block' }}>
+                          {r.studentName}
+                        </strong>
+                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                          Reg: {r.registrationNumber}
+                        </span>
                       </td>
 
-                      <td style={{ fontWeight: 800, color: '#0F172A' }}>
-                        {r.className}
-                      </td>
+                      <td style={{ fontWeight: 800, color: '#0F172A' }}>{r.className}</td>
 
                       <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>
                         {r.receiptNumber}
@@ -1028,17 +1373,24 @@ export default function FinanceFeeBuilder() {
                         ₦{r.amountPaid.toLocaleString()}
                       </td>
 
-                      <td style={{ fontSize: '0.82rem', color: '#64748B' }}>
-                        {r.datePaid}
-                      </td>
+                      <td style={{ fontSize: '0.82rem', color: '#64748B' }}>{r.datePaid}</td>
 
                       <td>
                         <div style={{ fontSize: '0.85rem', color: '#0F172A' }}>{r.parentEmail}</div>
-                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>{r.parentPhone}</span>
+                        <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                          {r.parentPhone}
+                        </span>
                       </td>
 
                       <td style={{ textAlign: 'right' }}>
-                        <span className="status-pill active" style={{ background: '#FEF3C7', color: '#B45309', border: '1px solid #FDE68A' }}>
+                        <span
+                          className="status-pill active"
+                          style={{
+                            background: '#FEF3C7',
+                            color: '#B45309',
+                            border: '1px solid #FDE68A',
+                          }}
+                        >
                           🎁 Confirmed (Prepare Gift)
                         </span>
                       </td>

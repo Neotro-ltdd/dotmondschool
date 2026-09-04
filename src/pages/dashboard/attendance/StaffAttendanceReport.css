@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  background-color: var(--bg-color, #F8FAFC);
+  background-color: var(--bg-color, #f8fafc);
   min-height: 100vh;
 }
 
@@ -11,8 +11,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
   padding: 1.5rem 1.75rem;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
@@ -28,7 +28,7 @@
 
 .report-subtitle {
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: #94a3b8;
   margin: 0;
 }
 
@@ -48,7 +48,7 @@
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
-  color: #FFFFFF;
+  color: #ffffff;
   transition: all 0.2s ease;
 }
 
@@ -57,8 +57,8 @@
 }
 
 .btn-report-action.primary {
-  background: var(--secondary-color, #FACC15);
-  color: #0F172A;
+  background: var(--secondary-color, #facc15);
+  color: #0f172a;
   border: none;
   font-weight: 800;
 }
@@ -71,10 +71,10 @@
 .report-filter-bar {
   display: flex;
   gap: 1rem;
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 1rem 1.25rem;
   border-radius: 14px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   flex-wrap: wrap;
   align-items: center;
@@ -100,11 +100,11 @@
 .filter-search-input {
   padding: 0.55rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid #CBD5E1;
+  border: 1px solid #cbd5e1;
   font-size: 0.85rem;
-  color: #0F172A;
+  color: #0f172a;
   outline: none;
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 .filter-group.search {
@@ -125,10 +125,10 @@
 }
 
 .stat-card {
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 1.2rem;
   border-radius: 14px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -145,15 +145,27 @@
   flex-shrink: 0;
 }
 
-.stat-icon-wrapper.active-staff { background: #EFF6FF; color: #2563EB; }
-.stat-icon-wrapper.present { background: #ECFDF5; color: #10B981; }
-.stat-icon-wrapper.absent { background: #FEF2F2; color: #EF4444; }
-.stat-icon-wrapper.breakdown { background: #FEF3C7; color: #D97706; }
+.stat-icon-wrapper.active-staff {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.stat-icon-wrapper.present {
+  background: #ecfdf5;
+  color: #10b981;
+}
+.stat-icon-wrapper.absent {
+  background: #fef2f2;
+  color: #ef4444;
+}
+.stat-icon-wrapper.breakdown {
+  background: #fef3c7;
+  color: #d97706;
+}
 
 .stat-label {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #64748B;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -162,11 +174,15 @@
   font-size: 1.4rem;
   font-weight: 800;
   margin: 0.1rem 0 0 0;
-  color: #0F172A;
+  color: #0f172a;
 }
 
-.stat-value.present { color: #10B981; }
-.stat-value.absent { color: #EF4444; }
+.stat-value.present {
+  color: #10b981;
+}
+.stat-value.absent {
+  color: #ef4444;
+}
 
 .breakdown-pills {
   display: flex;
@@ -182,39 +198,48 @@
   border-radius: 6px;
 }
 
-.pill.teaching { background: #DBEAFE; color: #1E40AF; }
-.pill.non-teaching { background: #F3E8FF; color: #6B21A8; }
-.pill.contract { background: #FEF3C7; color: #92400E; }
+.pill.teaching {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.pill.non-teaching {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+.pill.contract {
+  background: #fef3c7;
+  color: #92400e;
+}
 
 /* Table Container */
 .report-table-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 14px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
 .table-card-header {
   padding: 1.1rem 1.4rem;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 .table-card-header h3 {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
 }
 
 .record-count-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  background: #E2E8F0;
+  background: #e2e8f0;
   color: #334155;
   padding: 0.25rem 0.6rem;
   border-radius: 12px;
@@ -228,11 +253,11 @@
 }
 
 .staff-attendance-table th {
-  background: #F1F5F9;
+  background: #f1f5f9;
   color: #475569;
   font-weight: 700;
   padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   text-transform: uppercase;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
@@ -240,8 +265,8 @@
 
 .staff-attendance-table td {
   padding: 0.95rem 1.25rem;
-  border-bottom: 1px solid #F1F5F9;
-  color: #1E293B;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
 }
 
 .staff-profile-cell {
@@ -255,24 +280,24 @@
   height: 38px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #CBD5E1;
+  border: 1px solid #cbd5e1;
 }
 
 .staff-name {
   display: block;
   font-weight: 700;
-  color: #0F172A;
+  color: #0f172a;
 }
 
 .staff-contact {
   font-size: 0.75rem;
-  color: #64748B;
+  color: #64748b;
 }
 
 .designation-text {
   display: block;
   font-size: 0.83rem;
-  color: #0F172A;
+  color: #0f172a;
 }
 
 .role-tags {
@@ -285,7 +310,7 @@
 .role-badge {
   font-size: 0.68rem;
   font-weight: 700;
-  background: #E2E8F0;
+  background: #e2e8f0;
   color: #334155;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
@@ -299,15 +324,24 @@
   text-transform: capitalize;
 }
 
-.category-badge.teaching { background: #DBEAFE; color: #1E40AF; }
-.category-badge.nonteaching { background: #F3E8FF; color: #6B21A8; }
-.category-badge.contract { background: #FEF3C7; color: #92400E; }
+.category-badge.teaching {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.category-badge.nonteaching {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+.category-badge.contract {
+  background: #fef3c7;
+  color: #92400e;
+}
 
 .employment-badge {
   font-size: 0.72rem;
   font-weight: 600;
   color: #475569;
-  background: #F1F5F9;
+  background: #f1f5f9;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
 }
@@ -317,11 +351,11 @@
   align-items: center;
   gap: 0.35rem;
   font-weight: 700;
-  color: #10B981;
+  color: #10b981;
 }
 
 .time-cell-absent {
-  color: #94A3B8;
+  color: #94a3b8;
   font-weight: 600;
 }
 
@@ -335,14 +369,20 @@
   border-radius: 20px;
 }
 
-.status-badge.present { background: #ECFDF5; color: #059669; }
-.status-badge.absent { background: #FEF2F2; color: #DC2626; }
+.status-badge.present {
+  background: #ecfdf5;
+  color: #059669;
+}
+.status-badge.absent {
+  background: #fef2f2;
+  color: #dc2626;
+}
 
 .table-loading-container,
 .table-empty-container {
   padding: 3rem;
   text-align: center;
-  color: #64748B;
+  color: #64748b;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -354,12 +394,18 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media print {
-  .report-header-banner, .report-filter-bar, .report-actions {
+  .report-header-banner,
+  .report-filter-bar,
+  .report-actions {
     display: none !important;
   }
   .staff-attendance-report-page {

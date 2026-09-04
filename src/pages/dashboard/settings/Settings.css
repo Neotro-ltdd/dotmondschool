@@ -69,7 +69,9 @@
   border: 1px solid rgba(0, 0, 128, 0.2);
   background: rgba(255, 255, 255, 0.5);
   font-size: 1rem;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   color: var(--text-primary);
 }
 
@@ -152,39 +154,104 @@
 
 /* Mini Mockups (Scaled down) */
 .mini-mock-id {
-  width: 60px; height: 90px; background: white; border: 1px solid #cbd5e1; border-radius: 4px;
-  display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 60px;
+  height: 90px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.mini-mock-id-h { height: 10px; background: #0a2540; }
-.mini-mock-id-p { width: 24px; height: 28px; background: #e2e8f0; margin: 6px auto; }
-.mini-mock-id-f { margin-top: auto; height: 8px; background: #0a2540; }
+.mini-mock-id-h {
+  height: 10px;
+  background: #0a2540;
+}
+.mini-mock-id-p {
+  width: 24px;
+  height: 28px;
+  background: #e2e8f0;
+  margin: 6px auto;
+}
+.mini-mock-id-f {
+  margin-top: auto;
+  height: 8px;
+  background: #0a2540;
+}
 
 .mini-mock-id-land {
-  width: 90px; height: 60px; background: white; border: 1px solid #cbd5e1; border-radius: 4px;
-  display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 90px;
+  height: 60px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.mini-mock-id-land-l { width: 30px; background: #0a2540; display: flex; align-items: center; justify-content: center; }
-.mini-mock-id-land-p { width: 20px; height: 24px; background: white; }
+.mini-mock-id-land-l {
+  width: 30px;
+  background: #0a2540;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mini-mock-id-land-p {
+  width: 20px;
+  height: 24px;
+  background: white;
+}
 
 .mini-mock-id-sq {
-  width: 70px; height: 70px; background: white; border: 1px solid #cbd5e1; border-radius: 4px;
-  display: flex; flex-direction: column; align-items: center; padding-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 70px;
+  height: 70px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.mini-mock-id-sq-p { width: 30px; height: 30px; border-radius: 50%; background: #e2e8f0; }
+.mini-mock-id-sq-p {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e2e8f0;
+}
 
 .mini-mock-receipt-th {
-  width: 60px; height: 90px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 5px;
+  width: 60px;
+  height: 90px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 5px;
 }
 .mini-mock-receipt-a4 {
-  width: 80px; height: 100px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 8px;
+  width: 80px;
+  height: 100px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
 }
 
 .mini-mock-result-grid {
-  width: 100px; height: 80px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 5px;
-  display: flex; flex-direction: column; gap: 4px;
+  width: 100px;
+  height: 80px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .mini-mock-result-mod {
-  width: 100px; height: 80px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 5px; border-radius: 4px;
+  width: 100px;
+  height: 80px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  border-radius: 4px;
 }
 
 .alert-success {

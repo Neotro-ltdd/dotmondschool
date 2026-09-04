@@ -14,7 +14,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
   onPreviewChange,
   onCroppedFileReady,
   uploading,
-  onCancel
+  onCancel,
 }) => {
   const [imageObj, setImageObj] = useState<HTMLImageElement | null>(null);
   const [zoom, setZoom] = useState<number>(1);
@@ -85,7 +85,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
     // Apply pan offset adjusted for canvas scaling
     ctx.translate(
       (pan.x * scaleFactor) / (minScale * zoom),
-      (pan.y * scaleFactor) / (minScale * zoom)
+      (pan.y * scaleFactor) / (minScale * zoom),
     );
 
     // Draw centered image
@@ -94,18 +94,22 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
     ctx.restore();
 
     // Create live preview URL
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const previewUrl = URL.createObjectURL(blob);
-        onPreviewChange(previewUrl);
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          const previewUrl = URL.createObjectURL(blob);
+          onPreviewChange(previewUrl);
 
-        const croppedFile = new File([blob], imageFile.name || 'avatar.png', {
-          type: 'image/png',
-          lastModified: Date.now()
-        });
-        onCroppedFileReady(croppedFile);
-      }
-    }, 'image/png', 0.95);
+          const croppedFile = new File([blob], imageFile.name || 'avatar.png', {
+            type: 'image/png',
+            lastModified: Date.now(),
+          });
+          onCroppedFileReady(croppedFile);
+        }
+      },
+      'image/png',
+      0.95,
+    );
   }, [imageObj, zoom, rotation, pan, imageFile, onPreviewChange, onCroppedFileReady]);
 
   useEffect(() => {
@@ -126,7 +130,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
     const dy = e.clientY - dragStartRef.current.y;
     setPan({
       x: panStartRef.current.x + dx,
-      y: panStartRef.current.y + dy
+      y: panStartRef.current.y + dy,
     });
   };
 
@@ -148,7 +152,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
     const dy = e.touches[0].clientY - dragStartRef.current.y;
     setPan({
       x: panStartRef.current.x + dx,
-      y: panStartRef.current.y + dy
+      y: panStartRef.current.y + dy,
     });
   };
 
@@ -167,7 +171,15 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', gap: '1.25rem' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '100%',
+        gap: '1.25rem',
+      }}
+    >
       {/* Hidden Canvas for High-Res Output */}
       <canvas ref={exportCanvasRef} style={{ display: 'none' }} />
 
@@ -194,7 +206,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
       >
         {/* Render Base Image */}
@@ -207,7 +219,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
             }}
           >
             <img
@@ -217,7 +229,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
                 maxHeight: `${viewportHeight}px`,
                 maxWidth: `${viewportWidth}px`,
                 objectFit: 'contain',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
               }}
             />
           </div>
@@ -232,11 +244,22 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
             pointerEvents: 'none',
             borderRadius: '10px',
             boxShadow: '0 0 0 9999px rgba(15, 23, 42, 0.65)',
-            border: '2px dashed rgba(255, 255, 255, 0.9)'
+            border: '2px dashed rgba(255, 255, 255, 0.9)',
           }}
         >
           {/* Label inside viewport overlay */}
-          <div style={{ position: 'absolute', bottom: '6px', right: '8px', fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '6px',
+              right: '8px',
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              color: 'rgba(255,255,255,0.75)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
             ID Card Frame
           </div>
         </div>
@@ -259,7 +282,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
             gap: '5px',
             backdropFilter: 'blur(4px)',
             pointerEvents: 'none',
-            zIndex: 2
+            zIndex: 2,
           }}
         >
           <Move size={12} /> Drag photo down to create top space
@@ -267,13 +290,37 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
       </div>
 
       {/* Interactive Controls Bar */}
-      <div style={{ width: '100%', maxWidth: '320px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '320px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem',
+        }}
+      >
         {/* Zoom Slider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#F1F5F9', padding: '0.5rem 0.85rem', borderRadius: '10px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            background: '#F1F5F9',
+            padding: '0.5rem 0.85rem',
+            borderRadius: '10px',
+          }}
+        >
           <button
             type="button"
             onClick={() => setZoom((z) => Math.max(0.6, +(z - 0.1).toFixed(2)))}
-            style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#475569', display: 'flex', padding: 2 }}
+            style={{
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              color: '#475569',
+              display: 'flex',
+              padding: 2,
+            }}
             title="Zoom Out"
           >
             <ZoomOut size={18} />
@@ -290,12 +337,27 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
           <button
             type="button"
             onClick={() => setZoom((z) => Math.min(3, +(z + 0.1).toFixed(2)))}
-            style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#475569', display: 'flex', padding: 2 }}
+            style={{
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              color: '#475569',
+              display: 'flex',
+              padding: 2,
+            }}
             title="Zoom In"
           >
             <ZoomIn size={18} />
           </button>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#334155', minWidth: '38px', textAlign: 'right' }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              color: '#334155',
+              minWidth: '38px',
+              textAlign: 'right',
+            }}
+          >
             {Math.round(zoom * 100)}%
           </span>
         </div>
@@ -316,7 +378,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
               background: '#FFFFFF',
               border: '1px solid #CBD5E1',
               borderRadius: '8px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             <RotateCw size={14} /> Rotate
@@ -336,7 +398,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
               background: '#FFFFFF',
               border: '1px solid #CBD5E1',
               borderRadius: '8px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             <RefreshCw size={14} /> Reset Frame
@@ -356,7 +418,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
               fontSize: '0.82rem',
               fontWeight: 700,
               cursor: 'pointer',
-              textDecoration: 'underline'
+              textDecoration: 'underline',
             }}
           >
             Choose a different photo
@@ -368,4 +430,3 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
 };
 
 export default AvatarCropper;
-

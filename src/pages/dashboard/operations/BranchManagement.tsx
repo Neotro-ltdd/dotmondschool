@@ -2,21 +2,21 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../services/api';
 import './BranchManagement.css';
-import { 
-  Building2, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Plus, 
-  Edit3, 
-  CheckCircle2, 
-  Star, 
-  ShieldCheck, 
-  Search, 
-  X, 
+import {
+  Building2,
+  MapPin,
+  Phone,
+  Mail,
+  Plus,
+  Edit3,
+  CheckCircle2,
+  Star,
+  ShieldCheck,
+  Search,
+  X,
   Loader2,
   Building,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 export interface Branch {
@@ -38,7 +38,10 @@ export const BranchManagement: React.FC = () => {
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
 
   // Notification State
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
@@ -79,7 +82,10 @@ export const BranchManagement: React.FC = () => {
       resetForm();
     },
     onError: (err: any) => {
-      showNotification(err.message || err.response?.data?.message || 'Failed to create campus branch.', 'error');
+      showNotification(
+        err.message || err.response?.data?.message || 'Failed to create campus branch.',
+        'error',
+      );
     },
   });
 
@@ -95,7 +101,10 @@ export const BranchManagement: React.FC = () => {
       setEditingBranch(null);
     },
     onError: (err: any) => {
-      showNotification(err.message || err.response?.data?.message || 'Failed to update campus branch.', 'error');
+      showNotification(
+        err.message || err.response?.data?.message || 'Failed to update campus branch.',
+        'error',
+      );
     },
   });
 
@@ -128,37 +137,50 @@ export const BranchManagement: React.FC = () => {
     updateMutation.mutate(editingBranch);
   };
 
-  const filteredBranches = branches.filter(b => 
-    b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (b.address && b.address.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (b.code && b.code.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredBranches = branches.filter(
+    (b) =>
+      b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (b.address && b.address.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (b.code && b.code.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
-  const mainBranch = branches.find(b => b.isMainBranch);
+  const mainBranch = branches.find((b) => b.isMainBranch);
 
   return (
     <div className="branch-page-container">
       {/* Toast Notification */}
       {notification && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 9999,
-          background: notification.type === 'success' ? '#10B981' : '#EF4444',
-          color: '#FFFFFF',
-          padding: '0.85rem 1.25rem',
-          borderRadius: '12px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          fontSize: '0.88rem',
-          fontWeight: 700
-        }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 9999,
+            background: notification.type === 'success' ? '#10B981' : '#EF4444',
+            color: '#FFFFFF',
+            padding: '0.85rem 1.25rem',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+          }}
+        >
           {notification.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
           <span>{notification.message}</span>
-          <button type="button" onClick={() => setNotification(null)} style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer', marginLeft: '0.5rem' }}>
+          <button
+            type="button"
+            onClick={() => setNotification(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#FFF',
+              cursor: 'pointer',
+              marginLeft: '0.5rem',
+            }}
+          >
             <X size={16} />
           </button>
         </div>
@@ -168,7 +190,10 @@ export const BranchManagement: React.FC = () => {
       <div className="branch-page-header">
         <div>
           <h1 className="branch-page-title">Campus & Branch Management</h1>
-          <p className="branch-page-subtitle">Manage multiple school campuses, locations, addresses, and branch setups under one unified system.</p>
+          <p className="branch-page-subtitle">
+            Manage multiple school campuses, locations, addresses, and branch setups under one
+            unified system.
+          </p>
         </div>
 
         <button
@@ -212,7 +237,7 @@ export const BranchManagement: React.FC = () => {
           <div className="metric-info-box">
             <span className="metric-label">Active Status</span>
             <span className="metric-number" style={{ color: '#047857' }}>
-              {branches.filter(b => b.isActive).length} Active
+              {branches.filter((b) => b.isActive).length} Active
             </span>
           </div>
           <div className="metric-icon-badge active">
@@ -226,7 +251,9 @@ export const BranchManagement: React.FC = () => {
         <div className="card-header-bar">
           <div className="card-title-box">
             <h2 className="card-title">Registered School Campuses</h2>
-            <p className="card-subtitle">Overview of all active and inactive branch locations for this school institution.</p>
+            <p className="card-subtitle">
+              Overview of all active and inactive branch locations for this school institution.
+            </p>
           </div>
 
           <div className="branch-search-input">
@@ -241,18 +268,37 @@ export const BranchManagement: React.FC = () => {
         </div>
 
         {isLoading ? (
-          <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          <div
+            style={{
+              padding: '3rem',
+              textAlign: 'center',
+              color: '#64748B',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
+          >
             <Loader2 size={20} className="animate-spin" />
             <span>Loading registered school campuses...</span>
           </div>
         ) : filteredBranches.length === 0 ? (
-          <div style={{ padding: '3.5rem 2rem', textAlign: 'center', color: '#64748B', background: '#F8FAFC', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+          <div
+            style={{
+              padding: '3.5rem 2rem',
+              textAlign: 'center',
+              color: '#64748B',
+              background: '#F8FAFC',
+              borderRadius: '16px',
+              border: '1px solid #E2E8F0',
+            }}
+          >
             <Building2 size={42} color="#94A3B8" style={{ margin: '0 auto 0.75rem auto' }} />
             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
               {searchTerm ? 'No Campuses Match Your Search' : 'No School Campuses Added Yet'}
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#64748B', marginTop: '0.35rem' }}>
-              {searchTerm 
+              {searchTerm
                 ? `No branch records were found matching "${searchTerm}".`
                 : 'Click "+ Add New Campus" above to configure your primary campus and satellite locations.'}
             </p>
@@ -302,15 +348,25 @@ export const BranchManagement: React.FC = () => {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #E2E8F0' }}>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: '12px',
-                    background: branch.isActive ? '#ECFDF5' : '#F1F5F9',
-                    color: branch.isActive ? '#047857' : '#64748B'
-                  }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '0.75rem',
+                    borderTop: '1px solid #E2E8F0',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '12px',
+                      background: branch.isActive ? '#ECFDF5' : '#F1F5F9',
+                      color: branch.isActive ? '#047857' : '#64748B',
+                    }}
+                  >
                     {branch.isActive ? 'Active Campus' : 'Inactive'}
                   </span>
 
@@ -335,7 +391,7 @@ export const BranchManagement: React.FC = () => {
           <div className="modal-content-box">
             <div className="modal-header">
               <h3>Add New School Campus</h3>
-              <button 
+              <button
                 type="button"
                 onClick={() => setIsAddModalOpen(false)}
                 style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer' }}
@@ -364,7 +420,9 @@ export const BranchManagement: React.FC = () => {
                     type="text"
                     placeholder="e.g. MAIN, IKJ"
                     value={formData.code}
-                    onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, code: e.target.value.toUpperCase() })
+                    }
                     className="form-control-input"
                   />
                 </div>
@@ -404,19 +462,45 @@ export const BranchManagement: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', padding: '0.75rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  background: '#F8FAFC',
+                  padding: '0.75rem',
+                  borderRadius: '10px',
+                  border: '1px solid #E2E8F0',
+                }}
+              >
                 <input
                   type="checkbox"
                   id="isMainBranch"
                   checked={formData.isMainBranch}
                   onChange={(e) => setFormData({ ...formData, isMainBranch: e.target.checked })}
                 />
-                <label htmlFor="isMainBranch" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', cursor: 'pointer', textTransform: 'none' }}>
+                <label
+                  htmlFor="isMainBranch"
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: '#334155',
+                    cursor: 'pointer',
+                    textTransform: 'none',
+                  }}
+                >
                   Set as Primary School Campus
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '0.75rem',
+                  marginTop: '1rem',
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
@@ -424,11 +508,7 @@ export const BranchManagement: React.FC = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={createMutation.isPending}
-                  className="btn-submit"
-                >
+                <button type="submit" disabled={createMutation.isPending} className="btn-submit">
                   {createMutation.isPending && <Loader2 size={16} className="animate-spin" />}
                   Save Campus
                 </button>
@@ -444,7 +524,7 @@ export const BranchManagement: React.FC = () => {
           <div className="modal-content-box">
             <div className="modal-header">
               <h3>Edit Campus Details</h3>
-              <button 
+              <button
                 type="button"
                 onClick={() => setEditingBranch(null)}
                 style={{ background: 'none', border: 'none', color: '#FFF', cursor: 'pointer' }}
@@ -471,7 +551,9 @@ export const BranchManagement: React.FC = () => {
                   <input
                     type="text"
                     value={editingBranch.code}
-                    onChange={(e) => setEditingBranch({ ...editingBranch, code: e.target.value.toUpperCase() })}
+                    onChange={(e) =>
+                      setEditingBranch({ ...editingBranch, code: e.target.value.toUpperCase() })
+                    }
                     className="form-control-input"
                   />
                 </div>
@@ -481,7 +563,9 @@ export const BranchManagement: React.FC = () => {
                   <input
                     type="text"
                     value={editingBranch.phoneNumber}
-                    onChange={(e) => setEditingBranch({ ...editingBranch, phoneNumber: e.target.value })}
+                    onChange={(e) =>
+                      setEditingBranch({ ...editingBranch, phoneNumber: e.target.value })
+                    }
                     className="form-control-input"
                   />
                 </div>
@@ -508,31 +592,51 @@ export const BranchManagement: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', padding: '0.75rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  background: '#F8FAFC',
+                  padding: '0.75rem',
+                  borderRadius: '10px',
+                  border: '1px solid #E2E8F0',
+                }}
+              >
                 <input
                   type="checkbox"
                   id="editIsMainBranch"
                   checked={editingBranch.isMainBranch}
-                  onChange={(e) => setEditingBranch({ ...editingBranch, isMainBranch: e.target.checked })}
+                  onChange={(e) =>
+                    setEditingBranch({ ...editingBranch, isMainBranch: e.target.checked })
+                  }
                 />
-                <label htmlFor="editIsMainBranch" style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', cursor: 'pointer', textTransform: 'none' }}>
+                <label
+                  htmlFor="editIsMainBranch"
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: '#334155',
+                    cursor: 'pointer',
+                    textTransform: 'none',
+                  }}
+                >
                   Set as Primary School Campus
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setEditingBranch(null)}
-                  className="btn-cancel"
-                >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '0.75rem',
+                  marginTop: '1rem',
+                }}
+              >
+                <button type="button" onClick={() => setEditingBranch(null)} className="btn-cancel">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={updateMutation.isPending}
-                  className="btn-submit"
-                >
+                <button type="submit" disabled={updateMutation.isPending} className="btn-submit">
                   {updateMutation.isPending && <Loader2 size={16} className="animate-spin" />}
                   Update Changes
                 </button>

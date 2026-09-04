@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import { api } from '../../../services/api';
 import './SystemOverview.css';
 
@@ -24,7 +36,7 @@ export default function SystemOverview() {
       const data = await api.get('/system/schools');
       setSchools(data);
     } catch (err) {
-      console.error("Failed to load schools for overview", err);
+      console.error('Failed to load schools for overview', err);
     } finally {
       setLoading(false);
     }
@@ -35,20 +47,22 @@ export default function SystemOverview() {
   }
 
   const totalSchools = schools.length;
-  const activeSchools = schools.filter(s => !s.isSuspended).length;
-  const suspendedSchools = schools.filter(s => s.isSuspended).length;
+  const activeSchools = schools.filter((s) => !s.isSuspended).length;
+  const suspendedSchools = schools.filter((s) => s.isSuspended).length;
   const totalStudents = schools.reduce((acc, curr) => acc + (curr.studentCount || 0), 0);
 
   const statusData = [
     { name: 'Active', value: activeSchools },
-    { name: 'Suspended', value: suspendedSchools }
+    { name: 'Suspended', value: suspendedSchools },
   ];
   const COLORS = ['#22c55e', '#ef4444'];
 
-  const studentData = schools.map(s => ({
-    name: s.tenantId,
-    students: s.studentCount || 0
-  })).sort((a, b) => b.students - a.students);
+  const studentData = schools
+    .map((s) => ({
+      name: s.tenantId,
+      students: s.studentCount || 0,
+    }))
+    .sort((a, b) => b.students - a.students);
 
   return (
     <div className="system-overview">

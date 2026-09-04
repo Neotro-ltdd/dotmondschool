@@ -3,7 +3,11 @@
   padding: 2rem;
   background-color: #f5f9fc;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: #0f172a;
 }
 
@@ -144,10 +148,22 @@
   font-size: 1.25rem;
 }
 
-.icon-blue { background: #eff6ff; color: #2563eb; }
-.icon-amber { background: #fffbeb; color: #f59e0b; }
-.icon-purple { background: #faf5ff; color: #9333ea; }
-.icon-green { background: #ecfdf5; color: #10b981; }
+.icon-blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.icon-amber {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+.icon-purple {
+  background: #faf5ff;
+  color: #9333ea;
+}
+.icon-green {
+  background: #ecfdf5;
+  color: #10b981;
+}
 
 /* Filter Panel */
 .admissions-filter-panel {
@@ -329,11 +345,31 @@
   font-weight: 700;
 }
 
-.badge-submitted { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-.badge-assessment { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-.badge-ready { background: #faf5ff; color: #9333ea; border: 1px solid #e9d5ff; }
-.badge-admitted { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-.badge-rejected { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; }
+.badge-submitted {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+.badge-assessment {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+.badge-ready {
+  background: #faf5ff;
+  color: #9333ea;
+  border: 1px solid #e9d5ff;
+}
+.badge-admitted {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+.badge-rejected {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+}
 
 /* Modals */
 .modal-overlay {
@@ -426,8 +462,16 @@
   margin-bottom: 0.5rem;
 }
 
-.paper-header h3 { font-size: 1.1rem; color: #000080; margin: 0 0 4px 0; }
-.paper-header h4 { font-size: 0.95rem; color: #64748b; margin: 0 0 6px 0; }
+.paper-header h3 {
+  font-size: 1.1rem;
+  color: #000080;
+  margin: 0 0 4px 0;
+}
+.paper-header h4 {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 6px 0;
+}
 
 .paper-section {
   margin-bottom: 1.5rem;
@@ -510,13 +554,19 @@
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modal-header-revamped {
   padding: 1.25rem 1.75rem;
-  background: linear-gradient(135deg, #0B2C4A, #12395F);
+  background: linear-gradient(135deg, #0b2c4a, #12395f);
   display: flex;
   justify-content: space-between;
   align-items: center;

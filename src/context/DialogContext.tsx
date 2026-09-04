@@ -48,7 +48,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         isPrompt: false,
         message,
         options: options || {},
-        resolve: () => resolve()
+        resolve: () => resolve(),
       });
     });
   };
@@ -61,7 +61,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         isPrompt: false,
         message,
         options: options || {},
-        resolve
+        resolve,
       });
     });
   };
@@ -75,7 +75,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         isPrompt: true,
         message,
         options: options || {},
-        resolve
+        resolve,
       });
     });
   };
@@ -152,37 +152,66 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   return (
     <DialogContext.Provider value={{ showAlert, showConfirm, showPrompt }}>
       {children}
-      
+
       {dialog?.isOpen && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-          backgroundColor: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 99999, backdropFilter: 'blur(8px)', padding: '1.25rem', boxSizing: 'border-box'
-        }}>
-          <div style={{
-            background: '#ffffff', borderRadius: '18px',
-            maxWidth: '480px', width: '100%', 
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 128, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8)',
-            overflow: 'hidden', position: 'relative', animation: 'slideUp 0.2s ease-out'
-          }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            backdropFilter: 'blur(8px)',
+            padding: '1.25rem',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '18px',
+              maxWidth: '480px',
+              width: '100%',
+              boxShadow:
+                '0 25px 50px -12px rgba(0, 0, 128, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8)',
+              overflow: 'hidden',
+              position: 'relative',
+              animation: 'slideUp 0.2s ease-out',
+            }}
+          >
             {/* Top Color Accent Line */}
             <div style={{ height: '5px', background: getAccentGradient(), width: '100%' }} />
 
             <div style={{ padding: '1.75rem 1.75rem 1.5rem 1.75rem', position: 'relative' }}>
               {/* Close Button */}
-              <button 
+              <button
                 onClick={() => handleClose(false)}
                 style={{
-                  position: 'absolute', top: '1.25rem', right: '1.25rem',
-                  border: 'none', background: '#F8FAFC', borderRadius: '50%',
-                  width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#64748B', cursor: 'pointer', transition: 'all 0.2s'
+                  position: 'absolute',
+                  top: '1.25rem',
+                  right: '1.25rem',
+                  border: 'none',
+                  background: '#F8FAFC',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#64748B',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
                 }}
-                onMouseOver={e => {
+                onMouseOver={(e) => {
                   e.currentTarget.style.background = '#F1F5F9';
                   e.currentTarget.style.color = '#0F172A';
                 }}
-                onMouseOut={e => {
+                onMouseOut={(e) => {
                   e.currentTarget.style.background = '#F8FAFC';
                   e.currentTarget.style.color = '#64748B';
                 }}
@@ -191,18 +220,43 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 <X size={16} />
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.25rem', marginBottom: '1.25rem' }}>
-                <div style={{ 
-                  background: getIconBadgeBg(), 
-                  padding: '12px', borderRadius: '14px', flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '1.25rem',
+                  marginBottom: '1.25rem',
+                }}
+              >
+                <div
+                  style={{
+                    background: getIconBadgeBg(),
+                    padding: '12px',
+                    borderRadius: '14px',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   {renderIcon()}
                 </div>
 
                 <div style={{ flex: 1, paddingRight: '1.5rem' }}>
-                  <h3 style={{ margin: '0 0 0.4rem 0', color: '#0F172A', fontSize: '1.2rem', fontWeight: 800 }}>
-                    {dialog.options.title || (dialog.isConfirm ? 'Confirm Action' : dialog.isPrompt ? 'Input Required' : 'Notice')}
+                  <h3
+                    style={{
+                      margin: '0 0 0.4rem 0',
+                      color: '#0F172A',
+                      fontSize: '1.2rem',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {dialog.options.title ||
+                      (dialog.isConfirm
+                        ? 'Confirm Action'
+                        : dialog.isPrompt
+                          ? 'Input Required'
+                          : 'Notice')}
                   </h3>
                   <div style={{ color: '#475569', lineHeight: '1.6', fontSize: '0.94rem' }}>
                     {dialog.message}
@@ -216,7 +270,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                     type="text"
                     value={promptValue}
                     onChange={(e) => setPromptValue(e.target.value)}
-                    placeholder={dialog.options.placeholder || "Enter value..."}
+                    placeholder={dialog.options.placeholder || 'Enter value...'}
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -227,17 +281,17 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                       boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box',
-                      color: '#0F172A'
+                      color: '#0F172A',
                     }}
-                    onFocus={e => {
+                    onFocus={(e) => {
                       e.currentTarget.style.borderColor = '#000080';
                       e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 0, 128, 0.12)';
                     }}
-                    onBlur={e => {
+                    onBlur={(e) => {
                       e.currentTarget.style.borderColor = '#CBD5E1';
                       e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
                     }}
-                    onKeyDown={e => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') handleClose(true);
                       if (e.key === 'Escape') handleClose(false);
                     }}
@@ -246,20 +300,33 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '0.75rem',
+                  marginTop: '1.5rem',
+                }}
+              >
                 {(dialog.isConfirm || dialog.isPrompt) && (
-                  <button 
+                  <button
                     onClick={() => handleClose(false)}
                     style={{
-                      padding: '0.65rem 1.4rem', borderRadius: '10px', border: '1px solid #CBD5E1',
-                      background: '#ffffff', color: '#475569', fontWeight: '600', fontSize: '0.9rem',
-                      cursor: 'pointer', transition: 'all 0.2s'
+                      padding: '0.65rem 1.4rem',
+                      borderRadius: '10px',
+                      border: '1px solid #CBD5E1',
+                      background: '#ffffff',
+                      color: '#475569',
+                      fontWeight: '600',
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
                     }}
-                    onMouseOver={e => {
+                    onMouseOver={(e) => {
                       e.currentTarget.style.background = '#F8FAFC';
                       e.currentTarget.style.borderColor = '#94A3B8';
                     }}
-                    onMouseOut={e => {
+                    onMouseOut={(e) => {
                       e.currentTarget.style.background = '#ffffff';
                       e.currentTarget.style.borderColor = '#CBD5E1';
                     }}
@@ -267,17 +334,22 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                     {dialog.options.cancelText || 'Cancel'}
                   </button>
                 )}
-                <button 
+                <button
                   onClick={() => handleClose(true)}
                   style={{
-                    padding: '0.65rem 1.6rem', borderRadius: '10px', border: 'none',
+                    padding: '0.65rem 1.6rem',
+                    borderRadius: '10px',
+                    border: 'none',
                     background: getPrimaryButtonBg(),
-                    color: '#ffffff', fontWeight: '700', fontSize: '0.9rem',
-                    cursor: 'pointer', transition: 'all 0.2s',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    color: '#ffffff',
+                    fontWeight: '700',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   }}
-                  onMouseOver={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseOut={e => e.currentTarget.style.opacity = '1'}
+                  onMouseOver={(e) => (e.currentTarget.style.opacity = '0.9')}
+                  onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
                 >
                   {dialog.options.confirmText || 'OK'}
                 </button>

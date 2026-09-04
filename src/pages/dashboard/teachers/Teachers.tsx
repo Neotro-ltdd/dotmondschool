@@ -6,8 +6,29 @@ import { useDialog } from '../../../context/DialogContext';
 import SlideOver from '../../../components/ui/SlideOver';
 import StaffIdCardPrintModal from './StaffIdCardPrintModal';
 import AvatarCropper from '../../../components/dashboard/settings/AvatarCropper';
-import { User, Briefcase, FileCheck, Check, ChevronRight, ArrowLeft, Search, Mail, Phone, Key, Edit2, Power, Trash2, Filter, Users, UserPlus, List, LayoutGrid, MoreVertical, CreditCard, Camera } from 'lucide-react';
-
+import {
+  User,
+  Briefcase,
+  FileCheck,
+  Check,
+  ChevronRight,
+  ArrowLeft,
+  Search,
+  Mail,
+  Phone,
+  Key,
+  Edit2,
+  Power,
+  Trash2,
+  Filter,
+  Users,
+  UserPlus,
+  List,
+  LayoutGrid,
+  MoreVertical,
+  CreditCard,
+  Camera,
+} from 'lucide-react';
 
 import { useAuth } from '../../../context/AuthContext';
 import { useBranchContext } from '../../../context/BranchContext';
@@ -46,6 +67,7 @@ export default function Teachers() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // SAFETY: document mousedown targets are always DOM Nodes (Element/Text), so the EventTarget narrows to Node here.
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpenDropdownId(null);
       }
@@ -55,15 +77,19 @@ export default function Teachers() {
   }, []);
 
   // TanStack Query for Server State (Vatebra Enterprise Standard 5.4)
-  const { data: teachers = [], isLoading: loading, error: queryError } = useQuery<TeacherItem[]>({
+  const {
+    data: teachers = [],
+    isLoading: loading,
+    error: queryError,
+  } = useQuery<TeacherItem[]>({
     queryKey: ['staffList', activeBranchId],
     queryFn: async () => {
       const res = await api.get('/setup/staff');
       return res;
-    }
+    },
   });
 
-  const error = queryError ? ((queryError as any).message || 'Failed to load staff.') : null;
+  const error = queryError ? queryError.message || 'Failed to load staff.' : null;
 
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,14 +97,22 @@ export default function Teachers() {
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
-  const filteredTeachers = teachers.filter(teacher => {
-    const fullName = `${teacher.title || ''} ${teacher.surname || ''} ${teacher.firstName || ''} ${teacher.otherNames || ''}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || 
-                          (teacher.email && teacher.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                          (teacher.phoneNumber && teacher.phoneNumber.includes(searchTerm));
-    const matchesRole = roleFilter === 'ALL' || (teacher.role && teacher.role.toLowerCase().includes(roleFilter.toLowerCase()));
-    const matchesCategory = categoryFilter === 'ALL' || (teacher.staffCategory && teacher.staffCategory.toLowerCase() === categoryFilter.toLowerCase());
-    const matchesStatus = statusFilter === 'ALL' || (statusFilter === 'ACTIVE' ? teacher.isActive : !teacher.isActive);
+  const filteredTeachers = teachers.filter((teacher) => {
+    const fullName =
+      `${teacher.title || ''} ${teacher.surname || ''} ${teacher.firstName || ''} ${teacher.otherNames || ''}`.toLowerCase();
+    const matchesSearch =
+      fullName.includes(searchTerm.toLowerCase()) ||
+      (teacher.email && teacher.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (teacher.phoneNumber && teacher.phoneNumber.includes(searchTerm));
+    const matchesRole =
+      roleFilter === 'ALL' ||
+      (teacher.role && teacher.role.toLowerCase().includes(roleFilter.toLowerCase()));
+    const matchesCategory =
+      categoryFilter === 'ALL' ||
+      (teacher.staffCategory &&
+        teacher.staffCategory.toLowerCase() === categoryFilter.toLowerCase());
+    const matchesStatus =
+      statusFilter === 'ALL' || (statusFilter === 'ACTIVE' ? teacher.isActive : !teacher.isActive);
     return matchesSearch && matchesRole && matchesCategory && matchesStatus;
   });
 
@@ -104,12 +138,16 @@ export default function Teachers() {
     designation: '',
     role: 'Teacher',
     staffCategory: 'Teaching',
-    employmentType: 'FullTime'
+    employmentType: 'FullTime',
   });
 
   // Credentials Modal State
   const [showCredsModal, setShowCredsModal] = useState(false);
-  const [credsData, setCredsData] = useState<{username: string, password: string, emailQueued: boolean} | null>(null);
+  const [credsData, setCredsData] = useState<{
+    username: string;
+    password: string;
+    emailQueued: boolean;
+  } | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -123,13 +161,16 @@ export default function Teachers() {
         const formDataPayload = new FormData();
         formDataPayload.append('surname', variables.data.surname);
         formDataPayload.append('firstName', variables.data.firstName);
-        if (variables.data.otherNames) formDataPayload.append('otherNames', variables.data.otherNames);
+        if (variables.data.otherNames)
+          formDataPayload.append('otherNames', variables.data.otherNames);
         formDataPayload.append('phoneNumber', variables.data.phoneNumber);
         formDataPayload.append('email', variables.data.email);
         formDataPayload.append('role', variables.data.role);
         formDataPayload.append('designation', variables.data.designation);
-        if (variables.data.staffCategory) formDataPayload.append('staffCategory', variables.data.staffCategory);
-        if (variables.data.employmentType) formDataPayload.append('employmentType', variables.data.employmentType);
+        if (variables.data.staffCategory)
+          formDataPayload.append('staffCategory', variables.data.staffCategory);
+        if (variables.data.employmentType)
+          formDataPayload.append('employmentType', variables.data.employmentType);
         if (signatureFile) formDataPayload.append('signature', signatureFile);
         if (passportFile) formDataPayload.append('passport', passportFile);
 
@@ -141,21 +182,25 @@ export default function Teachers() {
     onSuccess: (res, variables) => {
       queryClient.invalidateQueries({ queryKey: ['staffList'] });
       setShowModal(false);
-      
+
       if (!variables.isEdit && res?.username) {
         setCredsData({
           username: res.username,
           password: res.tempPassword || 'AutoGenerated',
-          emailQueued: true
+          emailQueued: true,
         });
         setShowCredsModal(true);
       } else {
-        showAlert(variables.isEdit ? 'Staff member updated successfully.' : 'Staff member onboarded successfully.');
+        showAlert(
+          variables.isEdit
+            ? 'Staff member updated successfully.'
+            : 'Staff member onboarded successfully.',
+        );
       }
     },
     onError: (err: any) => {
       showAlert(err.message || 'Failed to save staff member.');
-    }
+    },
   });
 
   const submitting = saveStaffMutation.isPending;
@@ -181,7 +226,7 @@ export default function Teachers() {
       designation: teacher.designation || '',
       role: teacher.role || 'Teacher',
       staffCategory: teacher.staffCategory || 'Teaching',
-      employmentType: teacher.employmentType || 'FullTime'
+      employmentType: teacher.employmentType || 'FullTime',
     });
     setSignatureFile(null);
     setPassportFile(null);
@@ -206,7 +251,7 @@ export default function Teachers() {
       designation: '',
       role: 'Teacher',
       staffCategory: 'Teaching',
-      employmentType: 'FullTime'
+      employmentType: 'FullTime',
     });
     setSignatureFile(null);
     setPassportFile(null);
@@ -221,8 +266,16 @@ export default function Teachers() {
 
   const handleNextStep = () => {
     if (formStep === 1) {
-      if (!formData.surname || !formData.firstName || !formData.gender || !formData.phoneNumber || !formData.email) {
-        showAlert('Please complete all required personal details (Surname, First Name, Gender, Phone, and Email) before continuing.');
+      if (
+        !formData.surname ||
+        !formData.firstName ||
+        !formData.gender ||
+        !formData.phoneNumber ||
+        !formData.email
+      ) {
+        showAlert(
+          'Please complete all required personal details (Surname, First Name, Gender, Phone, and Email) before continuing.',
+        );
         return;
       }
       setFormStep(2);
@@ -243,11 +296,16 @@ export default function Teachers() {
       queryClient.invalidateQueries({ queryKey: ['staffList'] });
       showAlert('Staff member deactivated successfully.');
     },
-    onError: (err: any) => showAlert(err.message || 'Failed to deactivate staff member.')
+    onError: (err: any) => showAlert(err.message || 'Failed to deactivate staff member.'),
   });
 
   const handleRemove = async (id: string, name: string) => {
-    if (!await showConfirm(`Are you sure you want to remove ${name} from the system? They will lose all access.`)) return;
+    if (
+      !(await showConfirm(
+        `Are you sure you want to remove ${name} from the system? They will lose all access.`,
+      ))
+    )
+      return;
     deactivateMutation.mutate(id);
   };
 
@@ -257,11 +315,11 @@ export default function Teachers() {
       queryClient.invalidateQueries({ queryKey: ['staffList'] });
       showAlert('Staff member activated successfully.');
     },
-    onError: (err: any) => showAlert(err.message || 'Failed to activate staff member.')
+    onError: (err: any) => showAlert(err.message || 'Failed to activate staff member.'),
   });
 
   const handleActivate = async (id: string, name: string) => {
-    if (!await showConfirm(`Are you sure you want to restore access for ${name}?`)) return;
+    if (!(await showConfirm(`Are you sure you want to restore access for ${name}?`))) return;
     activateMutation.mutate(id);
   };
 
@@ -271,35 +329,46 @@ export default function Teachers() {
       queryClient.invalidateQueries({ queryKey: ['staffList'] });
       showAlert('Staff member permanently deleted.');
     },
-    onError: (err: any) => showAlert(err.message || 'Failed to delete staff member.')
+    onError: (err: any) => showAlert(err.message || 'Failed to delete staff member.'),
   });
 
   const handleDelete = async (id: string, name: string) => {
-    if (!await showConfirm(`Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`)) return;
+    if (
+      !(await showConfirm(
+        `Are you sure you want to PERMANENTLY delete ${name}? This action cannot be undone.`,
+      ))
+    )
+      return;
     deleteMutation.mutate(id);
   };
 
   const regenerateCredsMutation = useMutation({
-    mutationFn: async (identityUserId: string) => await api.post('/user-management/regenerate-credentials', { userId: identityUserId }),
+    mutationFn: async (identityUserId: string) =>
+      await api.post('/user-management/regenerate-credentials', { userId: identityUserId }),
     onMutate: (identityUserId) => setGeneratingId(identityUserId),
     onSuccess: (response) => {
       setCredsData({
         username: response.username,
         password: response.password,
-        emailQueued: response.emailQueued
+        emailQueued: response.emailQueued,
       });
       setShowCredsModal(true);
     },
     onError: (err: any) => showAlert(err.message || 'Failed to regenerate credentials.'),
-    onSettled: () => setGeneratingId(null)
+    onSettled: () => setGeneratingId(null),
   });
 
   const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
     if (!identityUserId) {
-        showAlert('This user does not have an active login account.');
-        return;
+      showAlert('This user does not have an active login account.');
+      return;
     }
-    if (!await showConfirm(`Are you sure you want to regenerate credentials for ${name}? Their old password will be invalidated immediately.`)) return;
+    if (
+      !(await showConfirm(
+        `Are you sure you want to regenerate credentials for ${name}? Their old password will be invalidated immediately.`,
+      ))
+    )
+      return;
     regenerateCredsMutation.mutate(identityUserId);
   };
 
@@ -308,10 +377,16 @@ export default function Teachers() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Staff Management</h1>
-          <p className="page-subtitle">Onboard and manage staff members across academic departments</p>
+          <p className="page-subtitle">
+            Onboard and manage staff members across academic departments
+          </p>
         </div>
         {!isReadOnly && (
-          <button className="btn-executive-onboard" onClick={handleAddNewClick} title="Open interactive clearance & role onboarding panel">
+          <button
+            className="btn-executive-onboard"
+            onClick={handleAddNewClick}
+            title="Open interactive clearance & role onboarding panel"
+          >
             <span className="onboard-icon-wrapper">
               <UserPlus size={16} />
             </span>
@@ -326,17 +401,17 @@ export default function Teachers() {
         <div className="desk-toolbar">
           <div className="search-box">
             <Search size={16} />
-            <input 
-              type="text" 
-              placeholder="Search staff by name, email or phone..." 
+            <input
+              type="text"
+              placeholder="Search staff by name, email or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
           </div>
           <div className="filter-controls">
-            <select 
-              value={roleFilter} 
+            <select
+              value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
               className="filter-select"
             >
@@ -349,8 +424,8 @@ export default function Teachers() {
               <option value="Staff">Staff</option>
             </select>
 
-            <select 
-              value={statusFilter} 
+            <select
+              value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="filter-select"
             >
@@ -361,14 +436,14 @@ export default function Teachers() {
 
             {/* View Mode Switcher Toggle */}
             <div className="view-mode-toggle">
-              <button 
+              <button
                 className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
                 onClick={() => setViewMode('table')}
                 title="Table View"
               >
                 <List size={16} /> Table View
               </button>
-              <button 
+              <button
                 className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
                 onClick={() => setViewMode('grid')}
                 title="Grid View"
@@ -380,10 +455,16 @@ export default function Teachers() {
         </div>
 
         {loading ? (
-          <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B', fontWeight: 500 }}>Loading staff roster...</div>
+          <div
+            style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B', fontWeight: 500 }}
+          >
+            Loading staff roster...
+          </div>
         ) : filteredTeachers.length === 0 ? (
           <div style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
-            {teachers.length === 0 ? 'No staff members onboarded yet.' : 'No staff members match your active search and filters.'}
+            {teachers.length === 0
+              ? 'No staff members onboarded yet.'
+              : 'No staff members match your active search and filters.'}
           </div>
         ) : viewMode === 'table' ? (
           /* TABLE VIEW */
@@ -402,33 +483,40 @@ export default function Teachers() {
                 {filteredTeachers.map((teacher, index) => {
                   const fullName = `${teacher.title ? teacher.title + ' ' : ''}${teacher.firstName} ${teacher.surname}`;
                   const isDropdownOpen = openDropdownId === teacher.id;
-                  const isDropUp = filteredTeachers.length <= 3 || index >= filteredTeachers.length - 2;
+                  const isDropUp =
+                    filteredTeachers.length <= 3 || index >= filteredTeachers.length - 2;
 
                   return (
                     <tr key={teacher.id}>
                       <td>
                         <div className="staff-profile-cell">
-                          {teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' ? (
-                            <img 
-                              src={teacher.avatarUrl} 
-                              alt="Avatar" 
-                              className="staff-avatar" 
+                          {teacher.avatarUrl &&
+                          teacher.avatarUrl !== 'default.jpg' &&
+                          teacher.avatarUrl !== 'null' &&
+                          teacher.avatarUrl.trim() !== '' ? (
+                            <img
+                              src={teacher.avatarUrl}
+                              alt="Avatar"
+                              className="staff-avatar"
                               onError={(e) => {
                                 e.currentTarget.onerror = null;
                                 e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`;
                               }}
                             />
                           ) : (
-                            <img 
+                            <img
                               src={`https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`}
-                              alt="Avatar" 
-                              className="staff-avatar" 
+                              alt="Avatar"
+                              className="staff-avatar"
                             />
                           )}
                           <div className="staff-names">
                             <span className="staff-primary-name">{fullName}</span>
                             <span className="staff-secondary-name">
-                              <strong style={{ color: '#000080', marginRight: '6px' }}>{teacher.staffCode || `DOT-STF-${teacher.id.replace(/-/g, '').substring(0, 5).toUpperCase()}`}</strong>
+                              <strong style={{ color: '#000080', marginRight: '6px' }}>
+                                {teacher.staffCode ||
+                                  `DOT-STF-${teacher.id.replace(/-/g, '').substring(0, 5).toUpperCase()}`}
+                              </strong>
                               {teacher.otherNames ? `• ${teacher.otherNames}` : ''}
                             </span>
                           </div>
@@ -447,7 +535,9 @@ export default function Teachers() {
                         </div>
                       </td>
                       <td>
-                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}>
+                        <span
+                          className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}
+                        >
                           {teacher.role || 'Staff'}
                         </span>
                       </td>
@@ -466,7 +556,7 @@ export default function Teachers() {
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         <div className="action-dropdown-container">
-                          <button 
+                          <button
                             className="btn-action-dots"
                             onClick={() => setOpenDropdownId(isDropdownOpen ? null : teacher.id)}
                           >
@@ -476,19 +566,22 @@ export default function Teachers() {
                           {isDropdownOpen && (
                             <div className={`action-dropdown-menu ${isDropUp ? 'dropup' : ''}`}>
                               {!isReadOnly && (
-                                <button 
-                                  className="dropdown-action-item" 
+                                <button
+                                  className="dropdown-action-item"
                                   onClick={() => {
                                     setOpenDropdownId(null);
                                     handleRegenerateCredentials(teacher.identityUserId!, fullName);
                                   }}
-                                  disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                                  disabled={
+                                    generatingId === teacher.identityUserId ||
+                                    !teacher.identityUserId
+                                  }
                                 >
                                   <Key size={15} color="#2563EB" /> Credentials
                                 </button>
                               )}
-                              <button 
-                                className="dropdown-action-item" 
+                              <button
+                                className="dropdown-action-item"
                                 onClick={() => {
                                   setOpenDropdownId(null);
                                   setSelectedStaffIdForCard(teacher.id);
@@ -498,8 +591,8 @@ export default function Teachers() {
                               </button>
                               {!isReadOnly && (
                                 <>
-                                  <button 
-                                    className="dropdown-action-item" 
+                                  <button
+                                    className="dropdown-action-item"
                                     onClick={() => {
                                       setOpenDropdownId(null);
                                       handleEditClick(teacher);
@@ -507,8 +600,8 @@ export default function Teachers() {
                                   >
                                     <Edit2 size={15} color="#000080" /> Edit Details
                                   </button>
-                                  <button 
-                                    className="dropdown-action-item" 
+                                  <button
+                                    className="dropdown-action-item"
                                     onClick={() => {
                                       setOpenDropdownId(null);
                                       if (teacher.isActive) {
@@ -518,12 +611,15 @@ export default function Teachers() {
                                       }
                                     }}
                                   >
-                                    <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} /> 
+                                    <Power
+                                      size={15}
+                                      color={teacher.isActive ? '#D97706' : '#059669'}
+                                    />
                                     {teacher.isActive ? 'Suspend Access' : 'Activate Access'}
                                   </button>
                                   <div className="dropdown-divider" />
-                                  <button 
-                                    className="dropdown-action-item danger" 
+                                  <button
+                                    className="dropdown-action-item danger"
                                     onClick={() => {
                                       setOpenDropdownId(null);
                                       handleDelete(teacher.id, fullName);
@@ -553,26 +649,44 @@ export default function Teachers() {
 
               return (
                 <div key={teacher.id} className="staff-card-item">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                      <img 
-                        src={teacher.avatarUrl && teacher.avatarUrl !== 'default.jpg' && teacher.avatarUrl !== 'null' && teacher.avatarUrl.trim() !== '' 
-                          ? teacher.avatarUrl 
-                          : `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`} 
-                        alt="Avatar" 
-                        className="staff-avatar" 
+                      <img
+                        src={
+                          teacher.avatarUrl &&
+                          teacher.avatarUrl !== 'default.jpg' &&
+                          teacher.avatarUrl !== 'null' &&
+                          teacher.avatarUrl.trim() !== ''
+                            ? teacher.avatarUrl
+                            : `https://ui-avatars.com/api/?name=${encodeURIComponent((teacher.firstName || '') + ' ' + (teacher.surname || ''))}&background=0F172A&color=fff&rounded=true&bold=true`
+                        }
+                        alt="Avatar"
+                        className="staff-avatar"
                         style={{ width: '46px', height: '46px' }}
                       />
                       <div>
-                        <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>{fullName}</h3>
-                        <span className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`} style={{ marginTop: '0.25rem', display: 'inline-block' }}>
+                        <h3
+                          style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}
+                        >
+                          {fullName}
+                        </h3>
+                        <span
+                          className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}
+                          style={{ marginTop: '0.25rem', display: 'inline-block' }}
+                        >
                           {teacher.role || 'Staff'}
                         </span>
                       </div>
                     </div>
 
                     <div className="action-dropdown-container">
-                      <button 
+                      <button
                         className="btn-action-dots"
                         onClick={() => setOpenDropdownId(isDropdownOpen ? null : teacher.id)}
                       >
@@ -581,18 +695,20 @@ export default function Teachers() {
 
                       {isDropdownOpen && (
                         <div className={`action-dropdown-menu ${isDropUp ? 'dropup' : ''}`}>
-                          <button 
-                            className="dropdown-action-item" 
+                          <button
+                            className="dropdown-action-item"
                             onClick={() => {
                               setOpenDropdownId(null);
                               handleRegenerateCredentials(teacher.identityUserId!, fullName);
                             }}
-                            disabled={generatingId === teacher.identityUserId || !teacher.identityUserId}
+                            disabled={
+                              generatingId === teacher.identityUserId || !teacher.identityUserId
+                            }
                           >
                             <Key size={15} color="#2563EB" /> Credentials
                           </button>
-                          <button 
-                            className="dropdown-action-item" 
+                          <button
+                            className="dropdown-action-item"
                             onClick={() => {
                               setOpenDropdownId(null);
                               setSelectedStaffIdForCard(teacher.id);
@@ -600,8 +716,8 @@ export default function Teachers() {
                           >
                             <CreditCard size={15} color="#000080" /> Print Staff ID Card
                           </button>
-                          <button 
-                            className="dropdown-action-item" 
+                          <button
+                            className="dropdown-action-item"
                             onClick={() => {
                               setOpenDropdownId(null);
                               handleEditClick(teacher);
@@ -609,8 +725,8 @@ export default function Teachers() {
                           >
                             <Edit2 size={15} color="#000080" /> Edit Details
                           </button>
-                          <button 
-                            className="dropdown-action-item" 
+                          <button
+                            className="dropdown-action-item"
                             onClick={() => {
                               setOpenDropdownId(null);
                               if (teacher.isActive) {
@@ -620,12 +736,12 @@ export default function Teachers() {
                               }
                             }}
                           >
-                            <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} /> 
+                            <Power size={15} color={teacher.isActive ? '#D97706' : '#059669'} />
                             {teacher.isActive ? 'Suspend Access' : 'Activate Access'}
                           </button>
                           <div className="dropdown-divider" />
-                          <button 
-                            className="dropdown-action-item danger" 
+                          <button
+                            className="dropdown-action-item danger"
                             onClick={() => {
                               setOpenDropdownId(null);
                               handleDelete(teacher.id, fullName);
@@ -638,10 +754,28 @@ export default function Teachers() {
                     </div>
                   </div>
 
-                  <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem', color: '#475569' }}>
+                  <div
+                    style={{
+                      paddingTop: '0.85rem',
+                      borderTop: '1px solid #F1F5F9',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.4rem',
+                      fontSize: '0.85rem',
+                      color: '#475569',
+                    }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <Mail size={14} color="#64748B" />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{teacher.email || 'No email recorded'}</span>
+                      <span
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {teacher.email || 'No email recorded'}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <Phone size={14} color="#64748B" />
@@ -649,7 +783,15 @@ export default function Teachers() {
                     </div>
                   </div>
 
-                  <div style={{ paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      paddingTop: '0.75rem',
+                      borderTop: '1px solid #F1F5F9',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     {teacher.isActive ? (
                       <span className="status-pill status-active">
                         <span className="status-dot"></span>
@@ -669,7 +811,10 @@ export default function Teachers() {
         )}
 
         <div className="desk-footer">
-          <span>Showing <strong>{filteredTeachers.length}</strong> of <strong>{teachers.length}</strong> registered staff members</span>
+          <span>
+            Showing <strong>{filteredTeachers.length}</strong> of <strong>{teachers.length}</strong>{' '}
+            registered staff members
+          </span>
           <span>Dotmond School System</span>
         </div>
       </div>
@@ -682,22 +827,29 @@ export default function Teachers() {
         subtitle="Complete the step-by-step clearance and role allocation process."
         width="lg"
         footer={
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              alignItems: 'center',
+            }}
+          >
             {formStep > 1 ? (
-              <button 
-                type="button" 
-                className="btn btn-secondary" 
-                onClick={() => setFormStep(prev => prev - 1)}
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setFormStep((prev) => prev - 1)}
                 disabled={submitting}
                 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <ArrowLeft size={16} /> Back
               </button>
             ) : (
-              <button 
-                type="button" 
-                className="btn btn-secondary" 
-                onClick={() => setShowModal(false)} 
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowModal(false)}
                 disabled={submitting}
               >
                 Cancel
@@ -705,23 +857,28 @@ export default function Teachers() {
             )}
 
             {formStep < 4 ? (
-              <button 
-                type="button" 
-                className="btn btn-primary" 
+              <button
+                type="button"
+                className="btn btn-primary"
                 onClick={handleNextStep}
                 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 Continue <ChevronRight size={16} />
               </button>
             ) : (
-              <button 
-                type="button" 
-                className="btn btn-primary" 
-                onClick={handleCreate as any} 
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleCreate}
                 disabled={submitting}
                 style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#10B981' }}
               >
-                <Check size={18} /> {submitting ? 'Processing...' : isEditing ? 'Save Changes' : 'Confirm & Onboard Staff'}
+                <Check size={18} />{' '}
+                {submitting
+                  ? 'Processing...'
+                  : isEditing
+                    ? 'Save Changes'
+                    : 'Confirm & Onboard Staff'}
               </button>
             )}
           </div>
@@ -729,35 +886,57 @@ export default function Teachers() {
       >
         {/* Horizontal Progress Stepper */}
         <div className="slideover-stepper" style={{ margin: '-24px -24px 24px -24px' }}>
-          <div className={`stepper-step ${formStep === 1 ? 'active' : formStep > 1 ? 'completed' : ''}`}>
+          <div
+            className={`stepper-step ${formStep === 1 ? 'active' : formStep > 1 ? 'completed' : ''}`}
+          >
             <span className="stepper-circle">{formStep > 1 ? '✓' : '1'}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><User size={14} /> Biodata</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <User size={14} /> Biodata
+            </span>
           </div>
           <div className="stepper-divider"></div>
-          <div className={`stepper-step ${formStep === 2 ? 'active' : formStep > 2 ? 'completed' : ''}`}>
+          <div
+            className={`stepper-step ${formStep === 2 ? 'active' : formStep > 2 ? 'completed' : ''}`}
+          >
             <span className="stepper-circle">{formStep > 2 ? '✓' : '2'}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Briefcase size={14} /> Roles</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Briefcase size={14} /> Roles
+            </span>
           </div>
           <div className="stepper-divider"></div>
-          <div className={`stepper-step ${formStep === 3 ? 'active' : formStep > 3 ? 'completed' : ''}`}>
+          <div
+            className={`stepper-step ${formStep === 3 ? 'active' : formStep > 3 ? 'completed' : ''}`}
+          >
             <span className="stepper-circle">{formStep > 3 ? '✓' : '3'}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Camera size={14} /> ID Passport</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Camera size={14} /> ID Passport
+            </span>
           </div>
           <div className="stepper-divider"></div>
           <div className={`stepper-step ${formStep === 4 ? 'active' : ''}`}>
             <span className="stepper-circle">4</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><FileCheck size={14} /> Review</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <FileCheck size={14} /> Review
+            </span>
           </div>
         </div>
 
         {/* Slide 1: Biodata & Contact */}
         {formStep === 1 && (
           <div className="slide-stage-content">
-            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
+            <h3
+              style={{
+                margin: 0,
+                color: '#10203F',
+                borderBottom: '1px solid #E3E7EF',
+                paddingBottom: '8px',
+              }}
+            >
               Candidate Biodata & Contact Information
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 8px 0' }}>
-              Please enter the official legal names and active communication channels for the staff member.
+              Please enter the official legal names and active communication channels for the staff
+              member.
             </p>
 
             <div className="form-grid">
@@ -778,16 +957,42 @@ export default function Teachers() {
                 </select>
               </div>
               <div className="form-group">
-                <label>Surname <span style={{ color: '#ef4444' }}>*</span></label>
-                <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required placeholder="e.g. Bakare" />
+                <label>
+                  Surname <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="surname"
+                  value={formData.surname}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="e.g. Bakare"
+                />
               </div>
               <div className="form-group">
-                <label>First Name <span style={{ color: '#ef4444' }}>*</span></label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required placeholder="e.g. Adefolarin" />
+                <label>
+                  First Name <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="e.g. Adefolarin"
+                />
               </div>
               <div className="form-group">
-                <label>Gender <span style={{ color: '#ef4444' }}>*</span></label>
-                <select name="gender" value={formData.gender} onChange={handleInputChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                <label>
+                  Gender <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  required
+                  style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}
+                >
                   <option value="">-- Select Gender --</option>
                   <option value="Female">Female</option>
                   <option value="Male">Male</option>
@@ -795,15 +1000,39 @@ export default function Teachers() {
               </div>
               <div className="form-group">
                 <label>Other Names</label>
-                <input type="text" name="otherNames" value={formData.otherNames} onChange={handleInputChange} placeholder="Optional middle names" />
+                <input
+                  type="text"
+                  name="otherNames"
+                  value={formData.otherNames}
+                  onChange={handleInputChange}
+                  placeholder="Optional middle names"
+                />
               </div>
               <div className="form-group">
-                <label>Phone Number <span style={{ color: '#ef4444' }}>*</span></label>
-                <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} required placeholder="e.g. 08030000000" />
+                <label>
+                  Phone Number <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="e.g. 08030000000"
+                />
               </div>
               <div className="form-group">
-                <label>Email Address <span style={{ color: '#ef4444' }}>*</span></label>
-                <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="staff@dotmond.edu.ng" />
+                <label>
+                  Email Address <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="staff@dotmond.edu.ng"
+                />
               </div>
             </div>
           </div>
@@ -812,7 +1041,14 @@ export default function Teachers() {
         {/* Slide 2: Role Details & Signature */}
         {formStep === 2 && (
           <div className="slide-stage-content">
-            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
+            <h3
+              style={{
+                margin: 0,
+                color: '#10203F',
+                borderBottom: '1px solid #E3E7EF',
+                paddingBottom: '8px',
+              }}
+            >
               System Role & Job Designation
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 8px 0' }}>
@@ -821,22 +1057,48 @@ export default function Teachers() {
 
             <div className="form-grid">
               <div className="form-group full-width">
-                <label>Designation / Job Title <span style={{ color: '#ef4444' }}>*</span></label>
-                <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Senior Mathematics Teacher, Accountant, Driver" required />
+                <label>
+                  Designation / Job Title <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="designation"
+                  value={formData.designation}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Senior Mathematics Teacher, Accountant, Driver"
+                  required
+                />
               </div>
 
               <div className="form-group">
-                <label>Staff Classification Category <span style={{ color: '#ef4444' }}>*</span></label>
-                <select name="staffCategory" value={formData.staffCategory} onChange={handleInputChange} required style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                <label>
+                  Staff Classification Category <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  name="staffCategory"
+                  value={formData.staffCategory}
+                  onChange={handleInputChange}
+                  required
+                  style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}
+                >
                   <option value="Teaching">Teaching Staff (Full-Time Teacher)</option>
-                  <option value="NonTeaching">Non-Teaching Staff (Accountant, Admin, Driver, Security, etc.)</option>
-                  <option value="Contract">Contract Staff (Special Subject / Part-Time Teacher)</option>
+                  <option value="NonTeaching">
+                    Non-Teaching Staff (Accountant, Admin, Driver, Security, etc.)
+                  </option>
+                  <option value="Contract">
+                    Contract Staff (Special Subject / Part-Time Teacher)
+                  </option>
                 </select>
               </div>
 
               <div className="form-group">
                 <label>Employment Nature</label>
-                <select name="employmentType" value={formData.employmentType} onChange={handleInputChange} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}>
+                <select
+                  name="employmentType"
+                  value={formData.employmentType}
+                  onChange={handleInputChange}
+                  style={{ padding: '12px', borderRadius: '8px', border: '1px solid #E3E7EF' }}
+                >
                   <option value="FullTime">Full-Time Employee</option>
                   <option value="PartTime">Part-Time Employee</option>
                   <option value="Contract">Contract Worker</option>
@@ -844,8 +1106,22 @@ export default function Teachers() {
               </div>
 
               <div className="form-group full-width">
-                <label>Portal Access Roles (Select all that apply for dual-role staff) <span style={{ color: '#ef4444' }}>*</span></label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', padding: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginTop: '4px' }}>
+                <label>
+                  Portal Access Roles (Select all that apply for dual-role staff){' '}
+                  <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '8px',
+                    padding: '12px',
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '8px',
+                    marginTop: '4px',
+                  }}
+                >
                   {[
                     { id: 'Teacher', label: 'Teacher (Class & Attendance)' },
                     { id: 'Admin', label: 'Admin (System Configuration)' },
@@ -853,20 +1129,33 @@ export default function Teachers() {
                     { id: 'Accountant', label: 'Accountant (Fees & POS)' },
                     { id: 'Director', label: 'Director (Superadmin Overseer)' },
                     { id: 'Principal', label: 'Principal (Executive Overseer)' },
-                    { id: 'Staff', label: 'General Non-Teaching Staff' }
-                  ].map(roleItem => (
-                    <label key={roleItem.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer', color: '#1E293B', fontWeight: 600 }}>
-                      <input 
-                        type="checkbox" 
+                    { id: 'Staff', label: 'General Non-Teaching Staff' },
+                  ].map((roleItem) => (
+                    <label
+                      key={roleItem.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        color: '#1E293B',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <input
+                        type="checkbox"
                         value={roleItem.id}
                         checked={formData.role.includes(roleItem.id)}
                         onChange={(e) => {
-                          const currentRoles = formData.role ? formData.role.split(',').map(r => r.trim()) : [];
+                          const currentRoles = formData.role
+                            ? formData.role.split(',').map((r) => r.trim())
+                            : [];
                           let updated: string[];
                           if (e.target.checked) {
                             updated = Array.from(new Set([...currentRoles, roleItem.id]));
                           } else {
-                            updated = currentRoles.filter(r => r !== roleItem.id);
+                            updated = currentRoles.filter((r) => r !== roleItem.id);
                           }
                           setFormData({ ...formData, role: updated.join(',') });
                         }}
@@ -878,19 +1167,47 @@ export default function Teachers() {
               </div>
 
               {isEditing && (
-                <div className="form-group full-width" style={{ marginTop: '1rem', padding: '16px', background: '#FAFCFE', border: '1px dashed #CBD5E1', borderRadius: '12px' }}>
-                  <label style={{ color: '#10203F', fontWeight: 600 }}>Update Official Signature (Optional)</label>
+                <div
+                  className="form-group full-width"
+                  style={{
+                    marginTop: '1rem',
+                    padding: '16px',
+                    background: '#FAFCFE',
+                    border: '1px dashed #CBD5E1',
+                    borderRadius: '12px',
+                  }}
+                >
+                  <label style={{ color: '#10203F', fontWeight: 600 }}>
+                    Update Official Signature (Optional)
+                  </label>
                   <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 12px 0' }}>
-                    Uploading a signature file will automatically override their current receipt/report signature watermark.
+                    Uploading a signature file will automatically override their current
+                    receipt/report signature watermark.
                   </p>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
+                  <input
+                    type="file"
+                    accept="image/*"
                     onChange={(e) => setSignatureFile(e.target.files ? e.target.files[0] : null)}
                     className="form-control"
-                    style={{ padding: '8px', width: '100%', background: '#ffffff', borderRadius: '6px' }}
+                    style={{
+                      padding: '8px',
+                      width: '100%',
+                      background: '#ffffff',
+                      borderRadius: '6px',
+                    }}
                   />
-                  {signatureFile && <span style={{ fontSize: '0.8rem', color: '#10B981', display: 'block', marginTop: '6px' }}>Selected: {signatureFile.name}</span>}
+                  {signatureFile && (
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        color: '#10B981',
+                        display: 'block',
+                        marginTop: '6px',
+                      }}
+                    >
+                      Selected: {signatureFile.name}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -900,17 +1217,35 @@ export default function Teachers() {
         {/* Slide 3: Official ID Passport Photograph (Dedicated Cropper Step) */}
         {formStep === 3 && (
           <div className="slide-stage-content">
-            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3
+              style={{
+                margin: 0,
+                color: '#10203F',
+                borderBottom: '1px solid #E3E7EF',
+                paddingBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
               <Camera size={18} color="#000080" /> Official Staff ID Passport Photograph
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 12px 0' }}>
-              Upload, align, and position the official headshot for printing on the staff member's ID card badge.
+              Upload, align, and position the official headshot for printing on the staff member's
+              ID card badge.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: rawPassportFile ? '1.1fr 0.9fr' : '1fr', gap: '1.5rem', alignItems: 'start' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: rawPassportFile ? '1.1fr 0.9fr' : '1fr',
+                gap: '1.5rem',
+                alignItems: 'start',
+              }}
+            >
               {/* Photo Selector / Interactive Cropper */}
               {!rawPassportFile ? (
-                <div 
+                <div
                   style={{
                     border: '2px dashed #CBD5E1',
                     borderRadius: '14px',
@@ -922,14 +1257,32 @@ export default function Teachers() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '1rem',
-                    minHeight: '280px'
+                    minHeight: '280px',
                   }}
                 >
-                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EFF6FF', color: '#000080', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '50%',
+                      background: '#EFF6FF',
+                      color: '#000080',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     <Camera size={26} />
                   </div>
                   <div>
-                    <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                    <h4
+                      style={{
+                        margin: '0 0 0.25rem 0',
+                        fontSize: '1.05rem',
+                        fontWeight: 800,
+                        color: '#0F172A',
+                      }}
+                    >
                       Select Official Passport Photograph
                     </h4>
                     <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
@@ -937,11 +1290,21 @@ export default function Teachers() {
                     </p>
                   </div>
 
-                  <label className="btn btn-outline" style={{ padding: '0.55rem 1.25rem', fontSize: '0.85rem', fontWeight: 700, borderColor: '#000080', color: '#000080', cursor: 'pointer' }}>
+                  <label
+                    className="btn btn-outline"
+                    style={{
+                      padding: '0.55rem 1.25rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      borderColor: '#000080',
+                      color: '#000080',
+                      cursor: 'pointer',
+                    }}
+                  >
                     Browse Photo...
-                    <input 
-                      type="file" 
-                      accept="image/*" 
+                    <input
+                      type="file"
+                      accept="image/*"
                       style={{ display: 'none' }}
                       onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
@@ -952,8 +1315,28 @@ export default function Teachers() {
                   </label>
                 </div>
               ) : (
-                <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    borderRadius: '14px',
+                    border: '1px solid #E2E8F0',
+                    padding: '1.25rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      color: '#475569',
+                      display: 'block',
+                      marginBottom: '0.75rem',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
                     Adjust ID Card Position & Zoom
                   </span>
 
@@ -972,18 +1355,73 @@ export default function Teachers() {
               )}
 
               {/* ID Badge Live Preview Box */}
-              <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', minHeight: '280px', justifyContent: 'center' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '1rem', letterSpacing: '0.05em' }}>
+              <div
+                style={{
+                  background: '#F8FAFC',
+                  borderRadius: '14px',
+                  border: '1px solid #E2E8F0',
+                  padding: '1.25rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  minHeight: '280px',
+                  justifyContent: 'center',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#64748B',
+                    display: 'block',
+                    marginBottom: '1rem',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Staff ID Badge Frame Preview
                 </span>
 
-                <div style={{ width: '130px', height: '124px', borderRadius: '8px', border: '2px solid #000080', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden', margin: '0 auto 1rem auto', backgroundColor: '#0F172A' }}>
+                <div
+                  style={{
+                    width: '130px',
+                    height: '124px',
+                    borderRadius: '8px',
+                    border: '2px solid #000080',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                    overflow: 'hidden',
+                    margin: '0 auto 1rem auto',
+                    backgroundColor: '#0F172A',
+                  }}
+                >
                   {passportPreviewUrl ? (
-                    <img src={passportPreviewUrl} alt="Staff ID Card Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : existingPassportUrl && existingPassportUrl !== 'default.jpg' && existingPassportUrl !== 'null' ? (
-                    <img src={existingPassportUrl} alt="Staff ID Card Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img
+                      src={passportPreviewUrl}
+                      alt="Staff ID Card Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : existingPassportUrl &&
+                    existingPassportUrl !== 'default.jpg' &&
+                    existingPassportUrl !== 'null' ? (
+                    <img
+                      src={existingPassportUrl}
+                      alt="Staff ID Card Preview"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EA580C', fontSize: '2.2rem', fontWeight: 800 }}>
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#EA580C',
+                        fontSize: '2.2rem',
+                        fontWeight: 800,
+                      }}
+                    >
                       {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : 'S'}
                     </div>
                   )}
@@ -995,7 +1433,9 @@ export default function Teachers() {
                   </span>
                 ) : (
                   <span style={{ fontSize: '0.8rem', color: '#64748B', fontStyle: 'italic' }}>
-                    {existingPassportUrl ? 'Using current passport photo. Upload a new photo to adjust.' : 'No photo uploaded yet.'}
+                    {existingPassportUrl
+                      ? 'Using current passport photo. Upload a new photo to adjust.'
+                      : 'No photo uploaded yet.'}
                   </span>
                 )}
               </div>
@@ -1006,7 +1446,14 @@ export default function Teachers() {
         {/* Slide 4: Verification & Summary */}
         {formStep === 4 && (
           <div className="slide-stage-content">
-            <h3 style={{ margin: 0, color: '#10203F', borderBottom: '1px solid #E3E7EF', paddingBottom: '8px' }}>
+            <h3
+              style={{
+                margin: 0,
+                color: '#10203F',
+                borderBottom: '1px solid #E3E7EF',
+                paddingBottom: '8px',
+              }}
+            >
               Final Verification & Review
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#5B6B85', margin: '-8px 0 8px 0' }}>
@@ -1016,7 +1463,10 @@ export default function Teachers() {
             <div className="review-summary-card">
               <div className="review-row">
                 <span className="review-label">Full Name:</span>
-                <span className="review-value">{formData.title ? `${formData.title} ` : ''}{formData.surname} {formData.firstName} {formData.otherNames}</span>
+                <span className="review-value">
+                  {formData.title ? `${formData.title} ` : ''}
+                  {formData.surname} {formData.firstName} {formData.otherNames}
+                </span>
               </div>
               <div className="review-row">
                 <span className="review-label">Phone Contact:</span>
@@ -1032,12 +1482,21 @@ export default function Teachers() {
               </div>
               <div className="review-row">
                 <span className="review-label">Assigned Role:</span>
-                <span className="review-value" style={{ color: '#3b82f6', fontWeight: 700 }}>{formData.role}</span>
+                <span className="review-value" style={{ color: '#3b82f6', fontWeight: 700 }}>
+                  {formData.role}
+                </span>
               </div>
               <div className="review-row">
                 <span className="review-label">Official Passport Photo:</span>
-                <span className="review-value" style={{ color: passportFile ? '#16A34A' : '#64748B', fontWeight: 700 }}>
-                  {passportFile ? `New Positioned Passport (${passportFile.name})` : (existingPassportUrl ? 'Current Photo Preserved' : 'Not Provided')}
+                <span
+                  className="review-value"
+                  style={{ color: passportFile ? '#16A34A' : '#64748B', fontWeight: 700 }}
+                >
+                  {passportFile
+                    ? `New Positioned Passport (${passportFile.name})`
+                    : existingPassportUrl
+                      ? 'Current Photo Preserved'
+                      : 'Not Provided'}
                 </span>
               </div>
               {isEditing && signatureFile && (
@@ -1048,8 +1507,19 @@ export default function Teachers() {
               )}
             </div>
 
-            <div style={{ padding: '12px 16px', borderRadius: '8px', backgroundColor: '#EFF6FF', borderLeft: '4px solid #3B82F6', color: '#1E3A8A', fontSize: '0.85rem', lineHeight: 1.5 }}>
-              <strong>ℹ️ Note:</strong> Upon completion, access credentials and onboarding instructions can be dispatched or generated directly from the master staff table.
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: '8px',
+                backgroundColor: '#EFF6FF',
+                borderLeft: '4px solid #3B82F6',
+                color: '#1E3A8A',
+                fontSize: '0.85rem',
+                lineHeight: 1.5,
+              }}
+            >
+              <strong>ℹ️ Note:</strong> Upon completion, access credentials and onboarding
+              instructions can be dispatched or generated directly from the master staff table.
             </div>
           </div>
         )}
@@ -1058,45 +1528,94 @@ export default function Teachers() {
       {showCredsModal && credsData && (
         <div className="modal-overlay">
           <div className="modal-content glass-panel">
-            <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '1rem', marginBottom: '1rem' }}>
-                <h2 style={{ margin: 0, color: '#10b981' }}>Credentials Regenerated!</h2>
-                <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
+            <div
+              style={{ borderLeft: '4px solid #10b981', paddingLeft: '1rem', marginBottom: '1rem' }}
+            >
+              <h2 style={{ margin: 0, color: '#10b981' }}>Credentials Regenerated!</h2>
+              <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
             </div>
-            
-            <div style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>Username / Email</label>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
+
+            <div
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                padding: '1.5rem',
+                borderRadius: '8px',
+                marginBottom: '1.5rem',
+              }}
+            >
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  className="text-muted text-sm"
+                  style={{ display: 'block', marginBottom: '0.2rem' }}
+                >
+                  Username / Email
+                </label>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
+              </div>
+              <div>
+                <label
+                  className="text-muted text-sm"
+                  style={{ display: 'block', marginBottom: '0.2rem' }}
+                >
+                  New Password
+                </label>
+                <div
+                  style={{
+                    fontSize: '1.4rem',
+                    fontWeight: 'bold',
+                    letterSpacing: '2px',
+                    color: '#60a5fa',
+                  }}
+                >
+                  {credsData.password}
                 </div>
-                <div>
-                    <label className="text-muted text-sm" style={{ display: 'block', marginBottom: '0.2rem' }}>New Password</label>
-                    <div style={{ fontSize: '1.4rem', fontWeight: 'bold', letterSpacing: '2px', color: '#60a5fa' }}>{credsData.password}</div>
-                </div>
+              </div>
             </div>
 
             {credsData.emailQueued ? (
-                <div className="alert-success" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
-                    ✅ A welcome email containing these credentials has also been queued for delivery.
-                </div>
+              <div
+                className="alert-success"
+                style={{
+                  marginBottom: '1.5rem',
+                  padding: '0.75rem',
+                  borderRadius: '4px',
+                  fontSize: '0.9rem',
+                }}
+              >
+                ✅ A welcome email containing these credentials has also been queued for delivery.
+              </div>
             ) : (
-                <div className="alert-warning" style={{ marginBottom: '1.5rem', padding: '0.75rem', borderRadius: '4px', fontSize: '0.9rem' }}>
-                    ⚠️ No email was sent because this user does not have a real email address on file. You MUST copy this password and send it to them manually.
-                </div>
+              <div
+                className="alert-warning"
+                style={{
+                  marginBottom: '1.5rem',
+                  padding: '0.75rem',
+                  borderRadius: '4px',
+                  fontSize: '0.9rem',
+                }}
+              >
+                ⚠️ No email was sent because this user does not have a real email address on file.
+                You MUST copy this password and send it to them manually.
+              </div>
             )}
 
             <div className="modal-actions" style={{ justifyContent: 'flex-end' }}>
-                <button type="button" className="btn btn-primary" onClick={() => setShowCredsModal(false)}>
-                    I have copied the password
-                </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setShowCredsModal(false)}
+              >
+                I have copied the password
+              </button>
             </div>
           </div>
         </div>
       )}
 
       {selectedStaffIdForCard && (
-        <StaffIdCardPrintModal 
-          staffId={selectedStaffIdForCard} 
-          onClose={() => setSelectedStaffIdForCard(null)} 
+        <StaffIdCardPrintModal
+          staffId={selectedStaffIdForCard}
+          onClose={() => setSelectedStaffIdForCard(null)}
         />
       )}
     </div>

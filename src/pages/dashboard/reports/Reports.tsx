@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import { api } from '../../../services/api';
-import { 
-  Award, 
-  BookOpen, 
-  Users, 
-  Filter, 
-  CheckCircle2, 
-  Printer, 
-  FileText, 
-  ShieldCheck, 
+import {
+  Award,
+  BookOpen,
+  Users,
+  Filter,
+  CheckCircle2,
+  Printer,
+  FileText,
+  ShieldCheck,
   ArrowUpRight,
   ChevronRight,
   Eye,
   BarChart2,
   Sparkles,
-  Layers
+  Layers,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './Reports.css';
@@ -27,18 +27,20 @@ interface ClassOption {
 }
 
 export default function Reports() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'class_broadsheet' | 'subject_mastery' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'class_broadsheet' | 'subject_mastery' | 'audit'
+  >('overview');
   const { session, term, setSession, setTerm } = useActiveTerm();
 
   // Filter States
   const [classesList, setClassesList] = useState<ClassOption[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>('all');
-  
+
   // Data States
   const [overviewData, setOverviewData] = useState<any>(null);
   const [classReportData, setClassReportData] = useState<any>(null);
   const [auditData, setAuditData] = useState<any>(null);
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +52,7 @@ export default function Reports() {
         const list = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
         setClassesList(list);
       } catch (err) {
-        console.error("Failed to load classes list", err);
+        console.error('Failed to load classes list', err);
       }
     };
     fetchClasses();
@@ -58,13 +60,15 @@ export default function Reports() {
 
   const fetchOverview = async () => {
     try {
-      const res = await api.get(`/reports/school/performance?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`);
+      const res = await api.get(
+        `/reports/school/performance?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`,
+      );
       const payload = res?.data || res;
       setOverviewData(payload);
       setError(null);
     } catch (err: any) {
       setOverviewData(null);
-      setError(err.message || "Failed to load executive overview report.");
+      setError(err.message || 'Failed to load executive overview report.');
     }
   };
 
@@ -74,33 +78,52 @@ export default function Reports() {
       return;
     }
     try {
-      const res = await api.get(`/reports/classes/${selectedClassId}/performance?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`);
+      const res = await api.get(
+        `/reports/classes/${selectedClassId}/performance?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`,
+      );
       const payload = res?.data || res;
       setClassReportData(payload);
       setError(null);
     } catch (err: any) {
       // Fallback: try fetching class broadsheet batch via admin API
       try {
-        const broadsheetRes = await api.get(`/academics/admin/class-results?classId=${selectedClassId}&session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`);
+        const broadsheetRes = await api.get(
+          `/academics/admin/class-results?classId=${selectedClassId}&session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`,
+        );
         const payload = broadsheetRes?.data || broadsheetRes;
         setClassReportData({
-          class: payload.className || "Selected Class",
+          class: payload.className || 'Selected Class',
           session: payload.session || session,
           term: payload.term || term,
           summary: {
             totalStudents: payload.studentResults?.length || 0,
-            classAverage: payload.studentResults?.length ? Math.round(payload.studentResults.reduce((acc: number, r: any) => acc + (r.averageScore || 0), 0) / payload.studentResults.length) : 0,
-            highestAverage: payload.studentResults?.length ? Math.max(...payload.studentResults.map((r: any) => r.averageScore || 0)) : 0,
-            lowestAverage: payload.studentResults?.length ? Math.min(...payload.studentResults.map((r: any) => r.averageScore || 0)) : 0,
-            passCount: payload.studentResults?.filter((r: any) => (r.averageScore || 0) >= 50).length || 0,
-            failCount: payload.studentResults?.filter((r: any) => (r.averageScore || 0) < 50).length || 0
+            classAverage: payload.studentResults?.length
+              ? Math.round(
+                  payload.studentResults.reduce(
+                    (acc: number, r: any) => acc + (r.averageScore || 0),
+                    0,
+                  ) / payload.studentResults.length,
+                )
+              : 0,
+            highestAverage: payload.studentResults?.length
+              ? Math.max(...payload.studentResults.map((r: any) => r.averageScore || 0))
+              : 0,
+            lowestAverage: payload.studentResults?.length
+              ? Math.min(...payload.studentResults.map((r: any) => r.averageScore || 0))
+              : 0,
+            passCount:
+              payload.studentResults?.filter((r: any) => (r.averageScore || 0) >= 50).length || 0,
+            failCount:
+              payload.studentResults?.filter((r: any) => (r.averageScore || 0) < 50).length || 0,
           },
-          students: payload.studentResults || []
+          students: payload.studentResults || [],
         });
         setError(null);
       } catch (innerErr) {
         setClassReportData(null);
-        setError("No compiled results or broadsheet records available for this class in the selected session/term.");
+        setError(
+          'No compiled results or broadsheet records available for this class in the selected session/term.',
+        );
       }
     }
   };
@@ -112,7 +135,7 @@ export default function Reports() {
       setError(null);
     } catch (err: any) {
       setAuditData(null);
-      setError(err.message || "Failed to load institutional audit logs.");
+      setError(err.message || 'Failed to load institutional audit logs.');
     }
   };
 
@@ -147,11 +170,15 @@ export default function Reports() {
             <BarChart2 size={28} /> Academic Reports & Governance Intelligence
           </h1>
           <p>
-            Institutional performance benchmarks, class broadsheet distributions, subject mastery trends, and audit trails.
+            Institutional performance benchmarks, class broadsheet distributions, subject mastery
+            trends, and audit trails.
           </p>
         </div>
         <div className="no-print">
-          <button className="btn btn-secondary flex items-center gap-2 text-xs font-bold" onClick={() => window.print()}>
+          <button
+            className="btn btn-secondary flex items-center gap-2 text-xs font-bold"
+            onClick={() => window.print()}
+          >
             <Printer size={16} /> Print Official Report
           </button>
         </div>
@@ -159,26 +186,29 @@ export default function Reports() {
 
       {/* ════════ REBRANDED TAB NAVIGATION ════════ */}
       <div className="reports-tab-nav">
-        <button 
-          className={`reports-tab-item ${activeTab === 'overview' ? 'active' : ''}`} 
-          onClick={() => { setSelectedClassId('all'); setActiveTab('overview'); }}
+        <button
+          className={`reports-tab-item ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => {
+            setSelectedClassId('all');
+            setActiveTab('overview');
+          }}
         >
           <Award size={16} /> Executive Performance Summary
         </button>
-        <button 
-          className={`reports-tab-item ${activeTab === 'class_broadsheet' ? 'active' : ''}`} 
+        <button
+          className={`reports-tab-item ${activeTab === 'class_broadsheet' ? 'active' : ''}`}
           onClick={() => setActiveTab('class_broadsheet')}
         >
           <FileText size={16} /> Class Broadsheet Analytics
         </button>
-        <button 
-          className={`reports-tab-item ${activeTab === 'subject_mastery' ? 'active' : ''}`} 
+        <button
+          className={`reports-tab-item ${activeTab === 'subject_mastery' ? 'active' : ''}`}
           onClick={() => setActiveTab('subject_mastery')}
         >
           <Sparkles size={16} /> Subject Mastery & Breakdown
         </button>
-        <button 
-          className={`reports-tab-item ${activeTab === 'audit' ? 'active' : ''}`} 
+        <button
+          className={`reports-tab-item ${activeTab === 'audit' ? 'active' : ''}`}
           onClick={() => setActiveTab('audit')}
         >
           <ShieldCheck size={16} /> Institutional Audit Logs
@@ -188,23 +218,23 @@ export default function Reports() {
       {/* ════════ FILTER CONTROL BAR ════════ */}
       <div className="reports-filter-bar">
         <div className="filter-group">
-          <label><Filter size={12} /> Academic Session</label>
-          <select 
-            value={session} 
-            onChange={(e) => setSession(e.target.value)}
-          >
-            {getSessionOptions(session).map(s => (
-              <option key={s} value={s}>{s}</option>
+          <label>
+            <Filter size={12} /> Academic Session
+          </label>
+          <select value={session} onChange={(e) => setSession(e.target.value)}>
+            {getSessionOptions(session).map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
 
         <div className="filter-group">
-          <label><BookOpen size={12} /> Academic Term</label>
-          <select 
-            value={term} 
-            onChange={(e) => setTerm(e.target.value)}
-          >
+          <label>
+            <BookOpen size={12} /> Academic Term
+          </label>
+          <select value={term} onChange={(e) => setTerm(e.target.value)}>
             <option value="First Term">First Term</option>
             <option value="Second Term">Second Term</option>
             <option value="Third Term">Third Term</option>
@@ -212,9 +242,11 @@ export default function Reports() {
         </div>
 
         <div className="filter-group">
-          <label><Users size={12} /> Target Class Scope</label>
-          <select 
-            value={selectedClassId} 
+          <label>
+            <Users size={12} /> Target Class Scope
+          </label>
+          <select
+            value={selectedClassId}
             onChange={(e) => {
               const val = e.target.value;
               setSelectedClassId(val);
@@ -225,17 +257,15 @@ export default function Reports() {
           >
             <option value="all">-- All Institution Classes (Executive Overview) --</option>
             {classesList.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
             ))}
           </select>
         </div>
 
-        <button 
-          className="btn-apply-filters" 
-          onClick={loadCurrentTab} 
-          disabled={loading}
-        >
-          {loading ? "Refreshing..." : "Apply Filters"}
+        <button className="btn-apply-filters" onClick={loadCurrentTab} disabled={loading}>
+          {loading ? 'Refreshing...' : 'Apply Filters'}
         </button>
       </div>
 
@@ -244,7 +274,9 @@ export default function Reports() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-navy-900 mb-3"></div>
-            <p className="font-semibold text-sm">Compiling institutional performance intelligence...</p>
+            <p className="font-semibold text-sm">
+              Compiling institutional performance intelligence...
+            </p>
           </div>
         ) : error ? (
           <div className="empty-state text-center py-16">
@@ -254,7 +286,10 @@ export default function Reports() {
             <h3 className="text-lg font-bold text-gray-800">No Compiled Data Available</h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto mt-1 mb-4">{error}</p>
             <div className="flex justify-center gap-3">
-              <Link to="/dashboard/approvals" className="btn btn-secondary text-xs font-semibold flex items-center gap-1">
+              <Link
+                to="/dashboard/approvals"
+                className="btn btn-secondary text-xs font-semibold flex items-center gap-1"
+              >
                 View Result Approvals <ChevronRight size={14} />
               </Link>
             </div>
@@ -267,25 +302,35 @@ export default function Reports() {
                 <div className="executive-stat-grid">
                   <div className="exec-stat-card border-blue-100 bg-blue-50/30">
                     <div className="exec-stat-title">Institution Mean Score</div>
-                    <div className="exec-stat-value text-navy-900">{overviewData.summary?.schoolAverageScore || 0}%</div>
-                    <span className="exec-stat-sub text-emerald-600">● Overall Academic Standard</span>
+                    <div className="exec-stat-value text-navy-900">
+                      {overviewData.summary?.schoolAverageScore || 0}%
+                    </div>
+                    <span className="exec-stat-sub text-emerald-600">
+                      ● Overall Academic Standard
+                    </span>
                   </div>
 
                   <div className="exec-stat-card border-indigo-100 bg-indigo-50/30">
                     <div className="exec-stat-title">Classes Evaluated</div>
-                    <div className="exec-stat-value text-indigo-950">{overviewData.summary?.totalClassesRecorded || 0}</div>
+                    <div className="exec-stat-value text-indigo-950">
+                      {overviewData.summary?.totalClassesRecorded || 0}
+                    </div>
                     <span className="exec-stat-sub text-gray-500">Active Broadsheet Batches</span>
                   </div>
 
                   <div className="exec-stat-card border-emerald-100 bg-emerald-50/30">
                     <div className="exec-stat-title">Highest Performing Class</div>
-                    <div className="exec-stat-value text-emerald-900 text-xl truncate">{overviewData.summary?.highestPerformingClass || 'N/A'}</div>
+                    <div className="exec-stat-value text-emerald-900 text-xl truncate">
+                      {overviewData.summary?.highestPerformingClass || 'N/A'}
+                    </div>
                     <span className="exec-stat-sub text-emerald-700">Top Academic Leader</span>
                   </div>
 
                   <div className="exec-stat-card border-rose-100 bg-rose-50/30">
                     <div className="exec-stat-title">Lowest Performing Class</div>
-                    <div className="exec-stat-value text-rose-900 text-xl truncate">{overviewData.summary?.lowestPerformingClass || 'N/A'}</div>
+                    <div className="exec-stat-value text-rose-900 text-xl truncate">
+                      {overviewData.summary?.lowestPerformingClass || 'N/A'}
+                    </div>
                     <span className="exec-stat-sub text-rose-700">Requires Intervention</span>
                   </div>
                 </div>
@@ -294,7 +339,9 @@ export default function Reports() {
                   <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
                     <Award size={18} className="text-navy-900" /> Class Academic Ranking Broadsheet
                   </h3>
-                  <span className="text-xs font-semibold text-gray-500">Session: {session} • {term}</span>
+                  <span className="text-xs font-semibold text-gray-500">
+                    Session: {session} • {term}
+                  </span>
                 </div>
 
                 {overviewData.classPerformances && overviewData.classPerformances.length > 0 ? (
@@ -320,14 +367,22 @@ export default function Reports() {
                             <td style={{ minWidth: '220px' }}>
                               <div className="flex items-center gap-3">
                                 <div className="flex-1 bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                                  <div 
+                                  <div
                                     className={`h-full rounded-full transition-all duration-500 ${
-                                      c.averageScore >= 70 ? 'bg-emerald-500' : c.averageScore >= 50 ? 'bg-blue-600' : 'bg-rose-500'
-                                    }`} 
-                                    style={{ width: `${Math.min(Math.max(c.averageScore, 0), 100)}%` }}
+                                      c.averageScore >= 70
+                                        ? 'bg-emerald-500'
+                                        : c.averageScore >= 50
+                                          ? 'bg-blue-600'
+                                          : 'bg-rose-500'
+                                    }`}
+                                    style={{
+                                      width: `${Math.min(Math.max(c.averageScore, 0), 100)}%`,
+                                    }}
                                   ></div>
                                 </div>
-                                <span className="font-extrabold text-xs text-gray-800">{c.averageScore}%</span>
+                                <span className="font-extrabold text-xs text-gray-800">
+                                  {c.averageScore}%
+                                </span>
                               </div>
                             </td>
                             <td>
@@ -336,11 +391,11 @@ export default function Reports() {
                               </span>
                             </td>
                             <td style={{ textAlign: 'right' }}>
-                              <button 
+                              <button
                                 onClick={() => {
                                   setSelectedClassId(c.classId);
                                   setActiveTab('class_broadsheet');
-                                }} 
+                                }}
                                 className="text-xs font-bold text-navy-900 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer"
                               >
                                 View Class Broadsheet <ArrowUpRight size={14} />
@@ -367,18 +422,26 @@ export default function Reports() {
                     <Users size={40} className="mx-auto text-navy-900/40 mb-3" />
                     <h3 className="text-base font-bold text-gray-800">Select a Class Roster</h3>
                     <p className="text-xs text-gray-500 max-w-sm mx-auto mt-1 mb-4">
-                      Choose a target class from the filter dropdown above to view broadsheet positions, score aggregates, and student report launcher.
+                      Choose a target class from the filter dropdown above to view broadsheet
+                      positions, score aggregates, and student report launcher.
                     </p>
                   </div>
                 ) : classReportData ? (
                   <div>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-gray-100">
                       <div>
-                        <h2 className="text-xl font-extrabold text-navy-900">{classReportData.class} Performance Broadsheet</h2>
-                        <p className="text-xs text-gray-500 mt-0.5 font-medium">Session: {classReportData.session} • {classReportData.term}</p>
+                        <h2 className="text-xl font-extrabold text-navy-900">
+                          {classReportData.class} Performance Broadsheet
+                        </h2>
+                        <p className="text-xs text-gray-500 mt-0.5 font-medium">
+                          Session: {classReportData.session} • {classReportData.term}
+                        </p>
                       </div>
                       <div className="mt-3 md:mt-0 flex gap-2">
-                        <button className="btn btn-secondary text-xs font-bold flex items-center gap-1" onClick={() => window.print()}>
+                        <button
+                          className="btn btn-secondary text-xs font-bold flex items-center gap-1"
+                          onClick={() => window.print()}
+                        >
                           <Printer size={14} /> Print Class Broadsheet
                         </button>
                       </div>
@@ -387,19 +450,28 @@ export default function Reports() {
                     <div className="executive-stat-grid">
                       <div className="exec-stat-card">
                         <div className="exec-stat-title">Enrolled Students</div>
-                        <div className="exec-stat-value">{classReportData.summary?.totalStudents || 0}</div>
+                        <div className="exec-stat-value">
+                          {classReportData.summary?.totalStudents || 0}
+                        </div>
                       </div>
                       <div className="exec-stat-card border-blue-100 bg-blue-50/20">
                         <div className="exec-stat-title">Class Mean Score</div>
-                        <div className="exec-stat-value text-navy-900">{classReportData.summary?.classAverage || 0}%</div>
+                        <div className="exec-stat-value text-navy-900">
+                          {classReportData.summary?.classAverage || 0}%
+                        </div>
                       </div>
                       <div className="exec-stat-card border-emerald-100 bg-emerald-50/20">
                         <div className="exec-stat-title">Overall Pass Rate</div>
-                        <div className="exec-stat-value text-emerald-800">{classReportData.summary?.passRatePercentage || 100}%</div>
+                        <div className="exec-stat-value text-emerald-800">
+                          {classReportData.summary?.passRatePercentage || 100}%
+                        </div>
                       </div>
                       <div className="exec-stat-card border-amber-100 bg-amber-50/20">
                         <div className="exec-stat-title">Highest / Lowest</div>
-                        <div className="exec-stat-value text-lg font-bold">{classReportData.summary?.highestAverage || 0}% / {classReportData.summary?.lowestAverage || 0}%</div>
+                        <div className="exec-stat-value text-lg font-bold">
+                          {classReportData.summary?.highestAverage || 0}% /{' '}
+                          {classReportData.summary?.lowestAverage || 0}%
+                        </div>
                       </div>
                     </div>
 
@@ -421,32 +493,44 @@ export default function Reports() {
                             classReportData.students.map((st: any, idx: number) => (
                               <tr key={st.id || idx}>
                                 <td className="font-extrabold text-navy-900">
-                                  <span className={`rank-badge ${st.positionInClass === 1 ? 'top-rank' : ''}`}>
-                                    {st.positionInClass ? `${st.positionInClass}${st.positionInClass === 1 ? 'st' : st.positionInClass === 2 ? 'nd' : st.positionInClass === 3 ? 'rd' : 'th'}` : `#${idx + 1}`}
+                                  <span
+                                    className={`rank-badge ${st.positionInClass === 1 ? 'top-rank' : ''}`}
+                                  >
+                                    {st.positionInClass
+                                      ? `${st.positionInClass}${st.positionInClass === 1 ? 'st' : st.positionInClass === 2 ? 'nd' : st.positionInClass === 3 ? 'rd' : 'th'}`
+                                      : `#${idx + 1}`}
                                   </span>
                                 </td>
                                 <td className="font-bold text-gray-900">
-                                  {st.surname 
-                                    ? `${st.surname}, ${[st.firstName, st.otherNames || st.otherName].filter(Boolean).join(' ')}` 
+                                  {st.surname
+                                    ? `${st.surname}, ${[st.firstName, st.otherNames || st.otherName].filter(Boolean).join(' ')}`
                                     : st.name || st.studentName || 'Student'}
                                 </td>
                                 <td className="text-xs font-mono text-gray-500">
                                   {st.registrationNumber || 'REG-STD'}
                                 </td>
-                                <td style={{ textAlign: 'right' }} className="font-bold text-gray-800">
+                                <td
+                                  style={{ textAlign: 'right' }}
+                                  className="font-bold text-gray-800"
+                                >
                                   {st.totalScore || 0}
                                 </td>
-                                <td style={{ textAlign: 'right' }} className="font-extrabold text-blue-900">
+                                <td
+                                  style={{ textAlign: 'right' }}
+                                  className="font-extrabold text-blue-900"
+                                >
                                   {st.averageScore || 0}%
                                 </td>
                                 <td style={{ textAlign: 'center' }}>
-                                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${(st.averageScore || 0) >= 50 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                                  <span
+                                    className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${(st.averageScore || 0) >= 50 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}
+                                  >
                                     {(st.averageScore || 0) >= 50 ? 'PASSED' : 'FAILED'}
                                   </span>
                                 </td>
                                 <td style={{ textAlign: 'center' }}>
-                                  <Link 
-                                    to={`/dashboard/reports/result/${st.id || st.studentId}/latest`} 
+                                  <Link
+                                    to={`/dashboard/reports/result/${st.id || st.studentId}/latest`}
                                     className="btn btn-secondary text-xs font-bold inline-flex items-center gap-1 text-navy-900 hover:bg-navy-50"
                                   >
                                     <Eye size={12} /> View Report Sheet
@@ -456,7 +540,11 @@ export default function Reports() {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }} className="text-gray-500 font-medium">
+                              <td
+                                colSpan={7}
+                                style={{ textAlign: 'center', padding: '2rem' }}
+                                className="text-gray-500 font-medium"
+                              >
                                 No compiled student records found for this class.
                               </td>
                             </tr>
@@ -478,26 +566,39 @@ export default function Reports() {
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                    <Sparkles size={18} className="text-indigo-600" /> Subject Performance Distribution
+                    <Sparkles size={18} className="text-indigo-600" /> Subject Performance
+                    Distribution
                   </h3>
-                  <span className="text-xs font-semibold text-gray-500">Session: {session} • {term}</span>
+                  <span className="text-xs font-semibold text-gray-500">
+                    Session: {session} • {term}
+                  </span>
                 </div>
 
                 <div className="executive-stat-grid">
                   <div className="exec-stat-card border-indigo-100 bg-indigo-50/20">
                     <div className="exec-stat-title">Total Active Subjects</div>
                     <div className="exec-stat-value text-indigo-950">118</div>
-                    <span className="exec-stat-sub text-gray-500">Across All Class Arm Allocations</span>
+                    <span className="exec-stat-sub text-gray-500">
+                      Across All Class Arm Allocations
+                    </span>
                   </div>
                   <div className="exec-stat-card border-emerald-100 bg-emerald-50/20">
                     <div className="exec-stat-title">Top Mastery Subject</div>
-                    <div className="exec-stat-value text-emerald-900 text-xl font-bold">Mathematics</div>
-                    <span className="exec-stat-sub text-emerald-700">84.2% Institution Pass Average</span>
+                    <div className="exec-stat-value text-emerald-900 text-xl font-bold">
+                      Mathematics
+                    </div>
+                    <span className="exec-stat-sub text-emerald-700">
+                      84.2% Institution Pass Average
+                    </span>
                   </div>
                   <div className="exec-stat-card border-amber-100 bg-amber-50/20">
                     <div className="exec-stat-title">Focus Subject</div>
-                    <div className="exec-stat-value text-amber-900 text-xl font-bold">Basic Technology</div>
-                    <span className="exec-stat-sub text-amber-700">Requires Curriculum Enhancement</span>
+                    <div className="exec-stat-value text-amber-900 text-xl font-bold">
+                      Basic Technology
+                    </div>
+                    <span className="exec-stat-sub text-amber-700">
+                      Requires Curriculum Enhancement
+                    </span>
                   </div>
                 </div>
 
@@ -519,25 +620,41 @@ export default function Reports() {
                           <td>
                             <div className="flex items-center gap-3">
                               <div className="flex-1 bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: '84.2%' }}></div>
+                                <div
+                                  className="h-full bg-emerald-500 rounded-full"
+                                  style={{ width: '84.2%' }}
+                                ></div>
                               </div>
                               <span className="font-extrabold text-xs text-gray-800">84.2%</span>
                             </div>
                           </td>
-                          <td><span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800">EXCELLENT</span></td>
+                          <td>
+                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800">
+                              EXCELLENT
+                            </span>
+                          </td>
                         </tr>
                         <tr key="eng">
                           <td className="font-bold text-gray-900">English Language</td>
-                          <td className="text-xs font-semibold text-gray-600">Humanities & Languages</td>
+                          <td className="text-xs font-semibold text-gray-600">
+                            Humanities & Languages
+                          </td>
                           <td>
                             <div className="flex items-center gap-3">
                               <div className="flex-1 bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-600 rounded-full" style={{ width: '78.5%' }}></div>
+                                <div
+                                  className="h-full bg-blue-600 rounded-full"
+                                  style={{ width: '78.5%' }}
+                                ></div>
                               </div>
                               <span className="font-extrabold text-xs text-gray-800">78.5%</span>
                             </div>
                           </td>
-                          <td><span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">GOOD</span></td>
+                          <td>
+                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">
+                              GOOD
+                            </span>
+                          </td>
                         </tr>
                         <tr key="phy">
                           <td className="font-bold text-gray-900">Physics</td>
@@ -545,12 +662,19 @@ export default function Reports() {
                           <td>
                             <div className="flex items-center gap-3">
                               <div className="flex-1 bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-600 rounded-full" style={{ width: '72.1%' }}></div>
+                                <div
+                                  className="h-full bg-blue-600 rounded-full"
+                                  style={{ width: '72.1%' }}
+                                ></div>
                               </div>
                               <span className="font-extrabold text-xs text-gray-800">72.1%</span>
                             </div>
                           </td>
-                          <td><span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">GOOD</span></td>
+                          <td>
+                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800">
+                              GOOD
+                            </span>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -567,7 +691,8 @@ export default function Reports() {
             {activeTab === 'audit' && auditData && (
               <div>
                 <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <ShieldCheck size={18} className="text-navy-900" /> Recent Governance Audit Logs ({auditData.summary?.returnedRecords || auditData.records?.length || 0} Entries)
+                  <ShieldCheck size={18} className="text-navy-900" /> Recent Governance Audit Logs (
+                  {auditData.summary?.returnedRecords || auditData.records?.length || 0} Entries)
                 </h3>
 
                 {auditData.records && auditData.records.length > 0 ? (

@@ -1,54 +1,54 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTenant } from "../context/TenantContext";
-import "./LandingPage.css";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTenant } from '../context/TenantContext';
+import './LandingPage.css';
 
 const TESTIMONIALS = [
   {
     text: "Dotmond School has been a blessing to our family. My children have grown in confidence, character, and academic excellence. The teachers genuinely care about every student's progress.",
-    name: "Mrs. Funke Adeyemi",
-    role: "Parent, Ikeja, Lagos",
-    img: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80"
+    name: 'Mrs. Funke Adeyemi',
+    role: 'Parent, Ikeja, Lagos',
+    img: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80',
   },
   {
-    text: "The nurturing environment at Dotmond School is unmatched. The teachers lay strong foundations for our children and it reflects in their outstanding performances.",
-    name: "Mr. Chinedu Okafor",
-    role: "Parent, Ajah, Lagos",
-    img: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&q=80"
+    text: 'The nurturing environment at Dotmond School is unmatched. The teachers lay strong foundations for our children and it reflects in their outstanding performances.',
+    name: 'Mr. Chinedu Okafor',
+    role: 'Parent, Ajah, Lagos',
+    img: 'https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&q=80',
   },
   {
     text: "I am amazed at the level of care and academic rigor Dotmond School provides. My son's performance has improved tremendously since joining the school.",
-    name: "Mrs. Amina Yusuf",
-    role: "Parent, Lekki, Lagos",
-    img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80"
+    name: 'Mrs. Amina Yusuf',
+    role: 'Parent, Lekki, Lagos',
+    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
   },
   {
-    text: "Dotmond School offers more than just education; they offer holistic development. The extra-curricular activities and sports are fantastic.",
-    name: "Mr. David Olatunde",
-    role: "Parent, VGC, Lagos",
-    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80"
+    text: 'Dotmond School offers more than just education; they offer holistic development. The extra-curricular activities and sports are fantastic.',
+    name: 'Mr. David Olatunde',
+    role: 'Parent, VGC, Lagos',
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
   },
   {
-    text: "We love the safety and security at Dotmond. As parents, having peace of mind while our children are learning is our top priority, and Dotmond delivers.",
-    name: "Mrs. Grace Edet",
-    role: "Parent, Sangotedo, Lagos",
-    img: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=200&q=80"
-  }
+    text: 'We love the safety and security at Dotmond. As parents, having peace of mind while our children are learning is our top priority, and Dotmond delivers.',
+    name: 'Mrs. Grace Edet',
+    role: 'Parent, Sangotedo, Lagos',
+    img: 'https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=200&q=80',
+  },
 ];
 
 const HERO_IMAGES = [
-  "/images/hero-slide-1.jpg",
-  "/images/hero-slide-2.jpg",
-  "/images/hero-slide-3.png",
-  "/images/hero-slide-4.png",
-  "/images/hero-slide-5.png",
-  "https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-111-900-x-800-px.png"
+  '/images/hero-slide-1.jpg',
+  '/images/hero-slide-2.jpg',
+  '/images/hero-slide-3.png',
+  '/images/hero-slide-4.png',
+  '/images/hero-slide-5.png',
+  'https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-111-900-x-800-px.png',
 ];
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const { logoUrl, schoolName } = useTenant();
-  
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
 
@@ -101,19 +101,18 @@ export default function LandingPage() {
       <section className="lp-hero" id="about">
         <div className="lp-inner lp-hero-content">
           <div className="lp-hero-text">
-            <div className="lp-badge">
-              ★ Admissions Open for 2026/2027 Session
-            </div>
-            <h1 className="lp-title">
-              Steady Progress and Brightness Future
-            </h1>
+            <div className="lp-badge">★ Admissions Open for 2026/2027 Session</div>
+            <h1 className="lp-title">Steady Progress and Brightness Future</h1>
             <p className="lp-subtitle">
-              Nurturing young minds from ages 3 to 18. Our caring teachers provide the
-              best start in nursery, lay strong foundations in primary, and empower
-              success in secondary. Join us for a journey of growth and achievement.
+              Nurturing young minds from ages 3 to 18. Our caring teachers provide the best start in
+              nursery, lay strong foundations in primary, and empower success in secondary. Join us
+              for a journey of growth and achievement.
             </p>
             <div className="lp-btn-group">
-              <button onClick={() => navigate('/apply-admission')} className="lp-btn lp-btn-primary">
+              <button
+                onClick={() => navigate('/apply-admission')}
+                className="lp-btn lp-btn-primary"
+              >
                 Apply for Admission
               </button>
               <button onClick={() => navigate('/schedule-visit')} className="lp-btn lp-btn-outline">
@@ -121,19 +120,29 @@ export default function LandingPage() {
               </button>
             </div>
           </div>
-          <div className="lp-hero-image-wrapper" style={{ position: 'relative', width: '100%', height: '440px', overflow: 'hidden', borderRadius: '1rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)' }}>
+          <div
+            className="lp-hero-image-wrapper"
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '440px',
+              overflow: 'hidden',
+              borderRadius: '1rem',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+            }}
+          >
             {HERO_IMAGES.map((img, index) => (
               <img
                 key={index}
                 className="lp-hero-img"
-                style={{ 
-                  position: 'absolute', 
-                  top: 0, 
-                  left: 0, 
-                  opacity: index === currentHeroSlide ? 1 : 0, 
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  opacity: index === currentHeroSlide ? 1 : 0,
                   transition: 'opacity 1s ease-in-out',
                   boxShadow: 'none',
-                  borderRadius: '0'
+                  borderRadius: '0',
                 }}
                 src={img}
                 alt="Dotmond School"
@@ -170,7 +179,8 @@ export default function LandingPage() {
             <span className="lp-section-subtitle">ABOUT US</span>
             <h2 className="lp-section-title">Discover Dotmond School</h2>
             <p className="lp-subtitle" style={{ marginBottom: 0 }}>
-              Learn more about our philosophy, history, achievements, and commitment to your child's safety.
+              Learn more about our philosophy, history, achievements, and commitment to your child's
+              safety.
             </p>
           </div>
           <div className="lp-features-grid">
@@ -181,7 +191,10 @@ export default function LandingPage() {
                 </svg>
               </div>
               <span className="lp-feature-title">Our Philosophy</span>
-              <span className="lp-feature-desc">Dotmond School believes in providing a nurturing and stimulating environment that fosters the holistic development of each child.</span>
+              <span className="lp-feature-desc">
+                Dotmond School believes in providing a nurturing and stimulating environment that
+                fosters the holistic development of each child.
+              </span>
             </div>
             <div className="lp-feature-card secondary">
               <div className="lp-feature-icon">
@@ -190,7 +203,10 @@ export default function LandingPage() {
                 </svg>
               </div>
               <span className="lp-feature-title">Our History</span>
-              <span className="lp-feature-desc">Founded on September 2, 2010. Despite humble beginnings, with support from our parents and the grace of God, we have steadily improved our facilities over time.</span>
+              <span className="lp-feature-desc">
+                Founded on September 2, 2010. Despite humble beginnings, with support from our
+                parents and the grace of God, we have steadily improved our facilities over time.
+              </span>
             </div>
             <div className="lp-feature-card primary">
               <div className="lp-feature-icon">
@@ -199,7 +215,10 @@ export default function LandingPage() {
                 </svg>
               </div>
               <span className="lp-feature-title">Our Achievements</span>
-              <span className="lp-feature-desc">We have consistently excelled, winning first place in numerous competitions. Our SS3 students have achieved remarkable success with an approximately 80% pass rate.</span>
+              <span className="lp-feature-desc">
+                We have consistently excelled, winning first place in numerous competitions. Our SS3
+                students have achieved remarkable success with an approximately 80% pass rate.
+              </span>
             </div>
             <div className="lp-feature-card secondary">
               <div className="lp-feature-icon">
@@ -208,7 +227,10 @@ export default function LandingPage() {
                 </svg>
               </div>
               <span className="lp-feature-title">Health &amp; Safety</span>
-              <span className="lp-feature-desc">The safety and well-being of our students are our top priorities. Parents are encouraged to actively engage with our safety policies.</span>
+              <span className="lp-feature-desc">
+                The safety and well-being of our students are our top priorities. Parents are
+                encouraged to actively engage with our safety policies.
+              </span>
             </div>
           </div>
         </div>
@@ -222,27 +244,48 @@ export default function LandingPage() {
           </div>
           <div className="lp-programs-grid">
             <div className="lp-program-card">
-              <img className="lp-program-img" src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=600&q=80" alt="Early Years" />
+              <img
+                className="lp-program-img"
+                src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=600&q=80"
+                alt="Early Years"
+              />
               <div className="lp-program-content">
                 <span className="lp-badge">Ages 2 - 5</span>
                 <span className="lp-program-title">Nursery &amp; Early Years</span>
-                <span className="lp-program-desc">A fun and nurturing environment where young learners explore, play, and build the foundation for lifelong curiosity.</span>
+                <span className="lp-program-desc">
+                  A fun and nurturing environment where young learners explore, play, and build the
+                  foundation for lifelong curiosity.
+                </span>
               </div>
             </div>
             <div className="lp-program-card">
-              <img className="lp-program-img" src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-Award-1280-x-853-px-1.png" alt="Primary School" />
+              <img
+                className="lp-program-img"
+                src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-Award-1280-x-853-px-1.png"
+                alt="Primary School"
+              />
               <div className="lp-program-content">
                 <span className="lp-badge lp-badge-dark">Ages 6 - 11</span>
                 <span className="lp-program-title">Primary School</span>
-                <span className="lp-program-desc">Developing strong foundations in literacy, numeracy, science, and critical thinking for confident young minds.</span>
+                <span className="lp-program-desc">
+                  Developing strong foundations in literacy, numeracy, science, and critical
+                  thinking for confident young minds.
+                </span>
               </div>
             </div>
             <div className="lp-program-card">
-              <img className="lp-program-img" src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-Award-1280-x-853-px.png" alt="Secondary School" />
+              <img
+                className="lp-program-img"
+                src="https://dotmondschool.com/wp-content/uploads/2024/02/Dotmond-School-Award-1280-x-853-px.png"
+                alt="Secondary School"
+              />
               <div className="lp-program-content">
                 <span className="lp-badge">Ages 12 - 17</span>
                 <span className="lp-program-title">Secondary School</span>
-                <span className="lp-program-desc">Preparing students for WAEC, NECO, and university entrance with academic excellence, discipline, and integrity.</span>
+                <span className="lp-program-desc">
+                  Preparing students for WAEC, NECO, and university entrance with academic
+                  excellence, discipline, and integrity.
+                </span>
               </div>
             </div>
           </div>
@@ -253,7 +296,10 @@ export default function LandingPage() {
         <div className="lp-inner">
           <div className="lp-testimonial-container" style={{ minHeight: '320px' }}>
             {TESTIMONIALS.map((t, index) => (
-              <div key={index} className={`lp-testimonial-card ${index === currentSlide ? 'active' : ''}`}>
+              <div
+                key={index}
+                className={`lp-testimonial-card ${index === currentSlide ? 'active' : ''}`}
+              >
                 <span className="lp-quote-mark">&quot;</span>
                 <p className="lp-quote-text">{t.text}</p>
                 <div className="lp-quote-author">
@@ -268,8 +314,8 @@ export default function LandingPage() {
           </div>
           <div className="lp-slideshow-dots">
             {TESTIMONIALS.map((_, index) => (
-              <button 
-                key={index} 
+              <button
+                key={index}
                 className={`lp-dot ${index === currentSlide ? 'active' : ''}`}
                 onClick={() => setCurrentSlide(index)}
                 aria-label={`Go to slide ${index + 1}`}
@@ -284,8 +330,8 @@ export default function LandingPage() {
           <div className="lp-cta-text">
             <h2 className="lp-cta-title">Admissions for 2026/2027 in Progress!</h2>
             <p className="lp-cta-desc">
-              Embark on an exciting educational journey with Dotmond
-              School as we open the doors to admissions for the 2026/2027 academic session!
+              Embark on an exciting educational journey with Dotmond School as we open the doors to
+              admissions for the 2026/2027 academic session!
             </p>
           </div>
           <div className="lp-btn-group">
@@ -313,24 +359,39 @@ export default function LandingPage() {
                 )}
               </div>
               <p className="lp-footer-desc">
-                At Dotmond Secondary School, we inspire students to dream big and explore the joy of learning. Our nurturing environment fosters curiosity and cultivates well-rounded individuals ready to thrive in the world. Join us and discover the endless possibilities.
+                At Dotmond Secondary School, we inspire students to dream big and explore the joy of
+                learning. Our nurturing environment fosters curiosity and cultivates well-rounded
+                individuals ready to thrive in the world. Join us and discover the endless
+                possibilities.
               </p>
             </div>
-            
+
             <div className="lp-footer-col">
               <span className="lp-footer-heading">School</span>
-              <a href="#about" className="lp-footer-link">About Us</a>
-              <a href="#gallery" className="lp-footer-link">Gallery</a>
-              <a href="#event" className="lp-footer-link">Event</a>
+              <a href="#about" className="lp-footer-link">
+                About Us
+              </a>
+              <a href="#gallery" className="lp-footer-link">
+                Gallery
+              </a>
+              <a href="#event" className="lp-footer-link">
+                Event
+              </a>
             </div>
 
             <div className="lp-footer-col">
               <span className="lp-footer-heading">Get Help</span>
-              <a href="/apply-admission" className="lp-footer-link">Register</a>
-              <a href="/apply-admission" className="lp-footer-link">Admission</a>
-              <a href="#contact" className="lp-footer-link">Contact us</a>
+              <a href="/apply-admission" className="lp-footer-link">
+                Register
+              </a>
+              <a href="/apply-admission" className="lp-footer-link">
+                Admission
+              </a>
+              <a href="#contact" className="lp-footer-link">
+                Contact us
+              </a>
             </div>
-            
+
             <div className="lp-footer-col" style={{ maxWidth: '280px' }}>
               <span className="lp-footer-heading">Contact Us</span>
               <div className="lp-footer-contact">
@@ -347,7 +408,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="lp-footer-bottom">
             <span>© 2025 Dotmond Primary &amp; Secondary School. All rights reserved.</span>
             <span>Privacy Policy · Terms of Service</span>

@@ -58,12 +58,12 @@
 
 .system-sidebar .nav-link:hover {
   background-color: #1e293b;
-  color: var(--secondary-color, #FACC15);
-  border-left: 3.5px solid var(--secondary-color, #FACC15);
+  color: var(--secondary-color, #facc15);
+  border-left: 3.5px solid var(--secondary-color, #facc15);
 }
 
 .system-sidebar .nav-link:hover .icon {
-  color: var(--secondary-color, #FACC15);
+  color: var(--secondary-color, #facc15);
 }
 
 .system-sidebar .nav-link.active {

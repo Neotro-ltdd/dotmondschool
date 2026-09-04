@@ -1,0 +1,6 @@
+dist
+dist-ssr
+coverage
+scratch
+package-lock.json
+tools/oxlint/anti-slop

@@ -22,9 +22,9 @@ const MasterLogin: React.FC = () => {
     try {
       // Force tenant context to 'system'
       localStorage.setItem('srms_tenantId', 'system');
-      
+
       const res = await api.post('/auth/login', { email, password });
-      
+
       login(res.token);
       if (res.requiresPasswordChange) {
         navigate('/change-password');
@@ -43,11 +43,16 @@ const MasterLogin: React.FC = () => {
     <div className="login-container">
       <div className="login-panel glass-panel" style={{ maxWidth: '400px' }}>
         <div className="login-header">
-          <div className="school-logo-placeholder" style={{ background: '#1e293b', color: '#38bdf8' }}>NA</div>
+          <div
+            className="school-logo-placeholder"
+            style={{ background: '#1e293b', color: '#38bdf8' }}
+          >
+            NA
+          </div>
           <h1>Platform Admin</h1>
           <p>Secure System Management</p>
         </div>
-        
+
         {error && <div className="alert-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -69,7 +74,7 @@ const MasterLogin: React.FC = () => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 required
                 placeholder="••••••••"
                 value={password}
@@ -79,8 +84,8 @@ const MasterLogin: React.FC = () => {
                 type="button"
                 className="password-toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                title={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -88,11 +93,7 @@ const MasterLogin: React.FC = () => {
           </div>
 
           <div className="form-actions" style={{ marginTop: '2rem' }}>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-primary btn-full"
-            >
+            <button type="submit" disabled={loading} className="btn btn-primary btn-full">
               {loading ? 'Authenticating...' : 'Sign in securely'}
             </button>
           </div>

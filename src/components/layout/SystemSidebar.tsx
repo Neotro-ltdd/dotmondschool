@@ -18,27 +18,27 @@ export default function SystemSidebar() {
         <h2>Neotro</h2>
         <p>System Admin</p>
       </div>
-      
+
       <nav className="sidebar-nav">
-        <NavLink 
-          to="/system-admin" 
+        <NavLink
+          to="/system-admin"
           end
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
         >
           <span className="icon">📊</span>
           Overview
         </NavLink>
-        
-        <NavLink 
-          to="/system-admin/schools" 
+
+        <NavLink
+          to="/system-admin/schools"
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
         >
           <span className="icon">🏫</span>
           Provisioned Schools
         </NavLink>
 
-        <NavLink 
-          to="/system-admin/settings" 
+        <NavLink
+          to="/system-admin/settings"
           className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
         >
           <span className="icon">⚙️</span>

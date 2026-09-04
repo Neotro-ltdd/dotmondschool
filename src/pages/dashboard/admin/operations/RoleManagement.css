@@ -18,14 +18,14 @@
 .role-page-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--text-primary, #0F172A);
+  color: var(--text-primary, #0f172a);
   letter-spacing: -0.02em;
   margin: 0;
 }
 
 .role-page-subtitle {
   font-size: 0.9rem;
-  color: var(--text-secondary, #64748B);
+  color: var(--text-secondary, #64748b);
   margin-top: 0.25rem;
 }
 
@@ -37,15 +37,17 @@
 }
 
 .role-metric-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .role-metric-card:hover {
@@ -63,13 +65,13 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748B;
+  color: #64748b;
 }
 
 .role-metric-card .metric-number {
   font-size: 1.85rem;
   font-weight: 900;
-  color: #0F172A;
+  color: #0f172a;
   margin-top: 0.25rem;
   line-height: 1;
 }
@@ -85,23 +87,23 @@
 }
 
 .role-metric-card .metric-icon-badge.staff {
-  background: #EFF6FF;
-  color: #1E40AF;
+  background: #eff6ff;
+  color: #1e40af;
 }
 
 .role-metric-card .metric-icon-badge.admin {
-  background: #F3E8FF;
-  color: #6B21A8;
+  background: #f3e8ff;
+  color: #6b21a8;
 }
 
 .role-metric-card .metric-icon-badge.finance {
-  background: #ECFDF5;
+  background: #ecfdf5;
   color: #047857;
 }
 
 .role-metric-card .metric-icon-badge.academic {
-  background: #FEF3C7;
-  color: #B45309;
+  background: #fef3c7;
+  color: #b45309;
 }
 
 /* Two-Column Grid */
@@ -119,8 +121,8 @@
 }
 
 .role-card-wrapper {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
@@ -140,27 +142,27 @@
 }
 
 .role-badge-pill.admin {
-  background: #F3E8FF;
-  color: #6B21A8;
-  border: 1px solid #E9D5FF;
+  background: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
 }
 
 .role-badge-pill.accountant {
-  background: #ECFDF5;
+  background: #ecfdf5;
   color: #047857;
-  border: 1px solid #A7F3D0;
+  border: 1px solid #a7f3d0;
 }
 
 .role-badge-pill.teacher {
-  background: #EFF6FF;
-  color: #1E40AF;
-  border: 1px solid #BFDBFE;
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }
 
 .role-badge-pill.vendor {
-  background: #FFF7ED;
-  color: #C2410C;
-  border: 1px solid #FFEDD5;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #ffedd5;
 }
 
 .executive-role-table {
@@ -170,26 +172,26 @@
 }
 
 .executive-role-table th {
-  background: #F8FAFC;
+  background: #f8fafc;
   padding: 0.9rem 1.25rem;
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #475569;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .executive-role-table td {
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
   font-size: 0.9rem;
-  color: #1E293B;
+  color: #1e293b;
 }
 
 .executive-role-table tr:hover td {
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 /* ════════ PERMISSION CONTROL MATRIX STYLES ════════ */
@@ -200,8 +202,8 @@
 }
 
 .permission-roles-toolbar {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -220,8 +222,8 @@
 .permission-role-chip {
   padding: 0.5rem 1rem;
   border-radius: 10px;
-  border: 1px solid #E2E8F0;
-  background: #F8FAFC;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
   color: #475569;
   font-size: 0.85rem;
   font-weight: 700;
@@ -233,21 +235,21 @@
 }
 
 .permission-role-chip:hover {
-  background: #EDF2F7;
-  border-color: #CBD5E1;
-  color: #0F172A;
+  background: #edf2f7;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
 .permission-role-chip.active {
   background: #000080;
-  color: #FFFFFF;
+  color: #ffffff;
   border-color: #000080;
   box-shadow: 0 4px 12px rgba(0, 0, 128, 0.2);
 }
 
 .permission-card-header {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
@@ -262,11 +264,11 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  background: #FFFBEB;
-  border: 1px solid #FCD34D;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
   border-radius: 12px;
   padding: 1rem 1.25rem;
-  color: #92400E;
+  color: #92400e;
   font-size: 0.88rem;
   line-height: 1.5;
 }
@@ -278,8 +280,8 @@
 }
 
 .permission-module-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
@@ -288,9 +290,9 @@
 }
 
 .permission-module-header {
-  background: #F8FAFC;
+  background: #f8fafc;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -299,7 +301,7 @@
 .permission-module-title {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -308,7 +310,7 @@
 .permission-items-list {
   display: flex;
   flex-direction: column;
-  divide-y: 1px solid #F1F5F9;
+  divide-y: 1px solid #f1f5f9;
 }
 
 .permission-item-row {
@@ -318,7 +320,7 @@
   justify-content: space-between;
   gap: 1rem;
   transition: background 0.15s ease;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .permission-item-row:last-child {
@@ -326,7 +328,7 @@
 }
 
 .permission-item-row:hover {
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 .permission-item-info {
@@ -338,7 +340,7 @@
 .permission-item-name {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #1E293B;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -348,15 +350,15 @@
   font-size: 0.7rem;
   font-weight: 700;
   font-family: monospace;
-  background: #F1F5F9;
-  color: #64748B;
+  background: #f1f5f9;
+  color: #64748b;
   padding: 1px 6px;
   border-radius: 4px;
 }
 
 .permission-item-desc {
   font-size: 0.78rem;
-  color: #64748B;
+  color: #64748b;
   line-height: 1.4;
 }
 
@@ -365,7 +367,7 @@
   width: 44px;
   height: 24px;
   appearance: none;
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 12px;
   position: relative;
   outline: none;
@@ -374,7 +376,7 @@
 }
 
 .toggle-switch-input:checked {
-  background: #10B981;
+  background: #10b981;
 }
 
 .toggle-switch-input::before {
@@ -385,7 +387,7 @@
   border-radius: 50%;
   top: 3px;
   left: 3px;
-  background: #FFFFFF;
+  background: #ffffff;
   transition: transform 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -397,7 +399,7 @@
 .role-count-badge {
   font-size: 0.72rem;
   font-weight: 800;
-  background: #E2E8F0;
+  background: #e2e8f0;
   color: #334155;
   padding: 1px 8px;
   border-radius: 999px;
@@ -406,7 +408,7 @@
 
 .permission-role-chip.active .role-count-badge {
   background: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .module-icon-wrapper {
@@ -419,17 +421,50 @@
   flex-shrink: 0;
 }
 
-.module-icon-wrapper.users { background: #EFF6FF; color: #1D4ED8; }
-.module-icon-wrapper.admissions { background: #F0FDF4; color: #15803D; }
-.module-icon-wrapper.academics { background: #FFFBEB; color: #B45309; }
-.module-icon-wrapper.subjects { background: #FAF5FF; color: #7E22CE; }
-.module-icon-wrapper.results { background: #FEF2F2; color: #B91C1C; }
-.module-icon-wrapper.promotions { background: #ECFDF5; color: #047857; }
-.module-icon-wrapper.attendance { background: #EEF2FF; color: #4338CA; }
-.module-icon-wrapper.setups { background: #FFF7ED; color: #C2410C; }
-.module-icon-wrapper.finance { background: #F0FDF4; color: #166534; }
-.module-icon-wrapper.reports { background: #F3E8FF; color: #6B21A8; }
-.module-icon-wrapper.settings { background: #F1F5F9; color: #334155; }
+.module-icon-wrapper.users {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.module-icon-wrapper.admissions {
+  background: #f0fdf4;
+  color: #15803d;
+}
+.module-icon-wrapper.academics {
+  background: #fffbeb;
+  color: #b45309;
+}
+.module-icon-wrapper.subjects {
+  background: #faf5ff;
+  color: #7e22ce;
+}
+.module-icon-wrapper.results {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.module-icon-wrapper.promotions {
+  background: #ecfdf5;
+  color: #047857;
+}
+.module-icon-wrapper.attendance {
+  background: #eef2ff;
+  color: #4338ca;
+}
+.module-icon-wrapper.setups {
+  background: #fff7ed;
+  color: #c2410c;
+}
+.module-icon-wrapper.finance {
+  background: #f0fdf4;
+  color: #166534;
+}
+.module-icon-wrapper.reports {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+.module-icon-wrapper.settings {
+  background: #f1f5f9;
+  color: #334155;
+}
 
 .btn-module-bulk-toggle {
   background: none;
@@ -444,23 +479,22 @@
 
 .btn-module-bulk-toggle.select {
   color: #000080;
-  background: #EEF2FF;
+  background: #eef2ff;
 }
 
 .btn-module-bulk-toggle.select:hover {
-  background: #E0E7FF;
+  background: #e0e7ff;
 }
 
 .btn-module-bulk-toggle.deselect {
-  color: #DC2626;
-  background: #FEF2F2;
+  color: #dc2626;
+  background: #fef2f2;
 }
 
 .btn-module-bulk-toggle.deselect:hover {
-  background: #FEE2E2;
+  background: #fee2e2;
 }
 
 .permission-item-row.active {
-  background: #F8FAFC;
+  background: #f8fafc;
 }
-

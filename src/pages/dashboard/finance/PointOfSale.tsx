@@ -3,20 +3,20 @@ import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import './PointOfSale.css';
 import { useDialog } from '../../../context/DialogContext';
-import { 
-  CreditCard, 
-  Search, 
-  UserCheck, 
-  DollarSign, 
-  AlertCircle, 
-  CheckCircle2, 
-  X, 
-  Printer, 
+import {
+  CreditCard,
+  Search,
+  UserCheck,
+  DollarSign,
+  AlertCircle,
+  CheckCircle2,
+  X,
+  Printer,
   Receipt,
   ArrowRight,
   ShieldCheck,
   History,
-  FileText
+  FileText,
 } from 'lucide-react';
 
 interface PosReceipt {
@@ -47,9 +47,14 @@ export default function PointOfSale() {
   const [searchResults, setSearchResults] = useState<PosStudent[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<PosStudent | null>(null);
   const [showDrawer, setShowDrawer] = useState(false);
-  
+
   const [targetInvoiceId, setTargetInvoiceId] = useState<string | 'new'>('new');
-  const { session: posSession, term: posTerm, setSession: setPosSession, setTerm: setPosTerm } = useActiveTerm();
+  const {
+    session: posSession,
+    term: posTerm,
+    setSession: setPosSession,
+    setTerm: setPosTerm,
+  } = useActiveTerm();
   const [posAmountDue, setPosAmountDue] = useState<number>(0);
   const [posAmountPaid, setPosAmountPaid] = useState<number>(0);
   const [directMethod, setDirectMethod] = useState('Cash');
@@ -60,9 +65,12 @@ export default function PointOfSale() {
 
   // Helper to sort invoices oldest to newest
   const getSortedPendingInvoices = (student: PosStudent) => {
-    const termsOrder: Record<string, number> = { 'First Term': 1, 'Second Term': 2, 'Third Term': 3 };
+    interface TermOrderMap {
+      [term: string]: number;
+    }
+    const termsOrder: TermOrderMap = { 'First Term': 1, 'Second Term': 2, 'Third Term': 3 };
     return (student.invoices || [])
-      .filter(i => i.paymentStatus !== 'Completed')
+      .filter((i) => i.paymentStatus !== 'Completed')
       .sort((a, b) => {
         if (a.session !== b.session) return a.session.localeCompare(b.session);
         return (termsOrder[a.term] || 99) - (termsOrder[b.term] || 99);
@@ -73,7 +81,7 @@ export default function PointOfSale() {
     setSelectedStudent(student);
     setReceiptData(null);
     setShowDrawer(true);
-    
+
     const pending = getSortedPendingInvoices(student);
     if (pending.length > 0) {
       const oldest = pending[0];
@@ -98,7 +106,7 @@ export default function PointOfSale() {
       const data = await api.get(`/finance/student-ledger?q=${searchTerm}`);
       setSearchResults(data || []);
     } catch (err) {
-      console.error("Search failed:", err);
+      console.error('Search failed:', err);
     } finally {
       setSearching(false);
     }
@@ -118,17 +126,17 @@ export default function PointOfSale() {
         amountDue: posAmountDue,
         amountPaid: posAmountPaid,
         method: directMethod,
-        remarks: directRemarks
+        remarks: directRemarks,
       });
-      
+
       let msg = data.message;
       if (data.invoiceStatus === 'Completed') {
-        msg += "\n\nPayment fully cleared! Official Receipt is now available.";
+        msg += '\n\nPayment fully cleared! Official Receipt is now available.';
       } else {
         msg += `\n\nPart-Payment logged successfully.`;
       }
       showAlert(msg);
-      
+
       // Setup receipt data for slide-over drawer completion state
       setReceiptData({
         studentName: selectedStudent.name,
@@ -140,12 +148,12 @@ export default function PointOfSale() {
         method: directMethod,
         date: new Date().toLocaleDateString(),
         receiptNo: data.receiptNumber || 'N/A',
-        invoiceId: data.invoiceId
+        invoiceId: data.invoiceId,
       });
 
       handleSearch(); // Refresh search pool
     } catch (err: any) {
-      showAlert("Payment failed: " + (err.response?.data?.message || err.message));
+      showAlert('Payment failed: ' + (err.response?.data?.message || err.message));
     } finally {
       setProcessing(false);
     }
@@ -172,7 +180,9 @@ export default function PointOfSale() {
             <CreditCard size={28} color="#000080" />
             Point of Sale (Direct Entry)
           </h1>
-          <p className="pos-page-subtitle">Search student records to record direct fee payments via Cash, POS, or Transfer</p>
+          <p className="pos-page-subtitle">
+            Search student records to record direct fee payments via Cash, POS, or Transfer
+          </p>
         </div>
       </div>
 
@@ -191,7 +201,9 @@ export default function PointOfSale() {
         <div className="pos-metric-card">
           <div className="metric-info-box">
             <span className="metric-label">SUPPORTED METHODS</span>
-            <span className="metric-number" style={{ fontSize: '1.1rem' }}>Cash • POS • Transfer</span>
+            <span className="metric-number" style={{ fontSize: '1.1rem' }}>
+              Cash • POS • Transfer
+            </span>
           </div>
           <div className="metric-icon-badge cash">
             <DollarSign size={24} />
@@ -215,18 +227,19 @@ export default function PointOfSale() {
           🔍 Student Lookup
         </h2>
         <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
-          Type student name or registration number below (e.g. <strong>Mary Agboke</strong> or <strong>DOTJSS2-002</strong>) and click Search or press Enter.
+          Type student name or registration number below (e.g. <strong>Mary Agboke</strong> or{' '}
+          <strong>DOTJSS2-002</strong>) and click Search or press Enter.
         </p>
 
         <div className="pos-search-bar-row">
           <div className="pos-search-input-box">
             <Search className="search-icon" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by Student Name or Reg No..." 
+            <input
+              type="text"
+              placeholder="Search by Student Name or Reg No..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
           <button className="btn-pos-search" onClick={handleSearch} disabled={searching}>
@@ -237,33 +250,47 @@ export default function PointOfSale() {
 
         {/* Results Container */}
         {searchResults.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem 1rem', background: '#F8FAFC', borderRadius: '12px', border: '1px border-dashed #CBD5E1', color: '#64748B' }}>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '3rem 1rem',
+              background: '#F8FAFC',
+              borderRadius: '12px',
+              border: '1px border-dashed #CBD5E1',
+              color: '#64748B',
+            }}
+          >
             <p style={{ margin: 0, fontWeight: 700 }}>No student selected yet.</p>
-            <span style={{ fontSize: '0.82rem' }}>Enter student details above to display matching student profiles.</span>
+            <span style={{ fontSize: '0.82rem' }}>
+              Enter student details above to display matching student profiles.
+            </span>
           </div>
         ) : (
           <div className="pos-students-grid">
-            {searchResults.map(student => {
+            {searchResults.map((student) => {
               const pendingInvoices = getSortedPendingInvoices(student);
               const totalDebt = pendingInvoices.reduce((acc, inv) => acc + (inv.balance || 0), 0);
-              const totalPaid = (student.invoices || []).reduce((acc, inv) => acc + (inv.amountPaid || 0), 0);
+              const totalPaid = (student.invoices || []).reduce(
+                (acc, inv) => acc + (inv.amountPaid || 0),
+                0,
+              );
               const receipts = student.receipts || [];
               const latestReceipt = receipts.length > 0 ? receipts[0] : null;
 
               return (
-                <div 
-                  key={student.id} 
+                <div
+                  key={student.id}
                   className="pos-student-card"
                   onClick={() => handleSelectStudent(student)}
                 >
                   <div className="pos-student-header">
-                    <div className="pos-student-avatar">
-                      {getStudentInitials(student.name)}
-                    </div>
+                    <div className="pos-student-avatar">{getStudentInitials(student.name)}</div>
                     <div className="pos-student-info">
                       <span className="pos-student-name">{student.name}</span>
                       <div className="pos-student-meta">
-                        <span>Reg No: <strong>{student.registrationNumber}</strong></span>
+                        <span>
+                          Reg No: <strong>{student.registrationNumber}</strong>
+                        </span>
                         <span className="pos-class-badge">{student.className || 'N/A'}</span>
                       </div>
                     </div>
@@ -271,7 +298,9 @@ export default function PointOfSale() {
 
                   {/* Debt Summary */}
                   <div className="pos-debt-summary">
-                    <span>Pending Invoices: <strong>{pendingInvoices.length}</strong></span>
+                    <span>
+                      Pending Invoices: <strong>{pendingInvoices.length}</strong>
+                    </span>
                     {totalDebt > 0 ? (
                       <span className="pos-debt-amount">Owes ₦{totalDebt.toLocaleString()}</span>
                     ) : (
@@ -281,26 +310,26 @@ export default function PointOfSale() {
 
                   {/* Prior Payment & Receipt Badge if student paid part-payment previously */}
                   {(totalPaid > 0 || receipts.length > 0) && (
-                    <div className="pos-previous-receipts-box" onClick={e => e.stopPropagation()}>
+                    <div className="pos-previous-receipts-box" onClick={(e) => e.stopPropagation()}>
                       <div className="pos-previous-receipt-head">
                         <span>💳 Prior Payments Recorded</span>
                         <span style={{ fontWeight: 900 }}>₦{totalPaid.toLocaleString()}</span>
                       </div>
 
                       {latestReceipt ? (
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn-view-previous-receipt"
                           onClick={() => openReceipt(latestReceipt.invoiceId)}
                         >
                           <Printer size={13} /> View Receipt #{latestReceipt.receiptNumber}
                         </button>
-                      ) : (student.invoices || []).some(i => i.amountPaid > 0) ? (
-                        <button 
-                          type="button" 
+                      ) : (student.invoices || []).some((i) => i.amountPaid > 0) ? (
+                        <button
+                          type="button"
                           className="btn-view-previous-receipt"
                           onClick={() => {
-                            const paidInv = (student.invoices || []).find(i => i.amountPaid > 0);
+                            const paidInv = (student.invoices || []).find((i) => i.amountPaid > 0);
                             if (paidInv) openReceipt(paidInv.id);
                           }}
                         >
@@ -331,15 +360,24 @@ export default function PointOfSale() {
             {/* Drawer Header */}
             <div className="pos-slideover-header">
               <div className="pos-slideover-title-group">
-                <div className="pos-student-avatar">
-                  {getStudentInitials(selectedStudent.name)}
-                </div>
+                <div className="pos-student-avatar">{getStudentInitials(selectedStudent.name)}</div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
                     {selectedStudent.name}
                   </h3>
-                  <div style={{ fontSize: '0.82rem', color: '#64748B', display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.15rem' }}>
-                    <span>Reg No: <strong>{selectedStudent.registrationNumber}</strong></span>
+                  <div
+                    style={{
+                      fontSize: '0.82rem',
+                      color: '#64748B',
+                      display: 'flex',
+                      gap: '0.5rem',
+                      alignItems: 'center',
+                      marginTop: '0.15rem',
+                    }}
+                  >
+                    <span>
+                      Reg No: <strong>{selectedStudent.registrationNumber}</strong>
+                    </span>
                     <span className="pos-class-badge">{selectedStudent.className || 'N/A'}</span>
                   </div>
                 </div>
@@ -354,31 +392,74 @@ export default function PointOfSale() {
             <div className="pos-slideover-body">
               {receiptData ? (
                 /* Success Receipt Display */
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', background: '#ECFDF5', borderRadius: '16px', border: '1px solid #A7F3D0' }}>
+                <div
+                  style={{
+                    textAlign: 'center',
+                    padding: '2rem 1rem',
+                    background: '#ECFDF5',
+                    borderRadius: '16px',
+                    border: '1px solid #A7F3D0',
+                  }}
+                >
                   <CheckCircle2 size={48} color="#047857" style={{ marginBottom: '0.75rem' }} />
-                  <h3 style={{ margin: 0, color: '#047857', fontWeight: 800 }}>Payment Recorded Successfully!</h3>
+                  <h3 style={{ margin: 0, color: '#047857', fontWeight: 800 }}>
+                    Payment Recorded Successfully!
+                  </h3>
                   <p style={{ fontSize: '0.88rem', color: '#065F46', marginTop: '0.4rem' }}>
-                    Official Receipt <strong>#{receiptData.receiptNo}</strong> has been issued for {receiptData.studentName}.
+                    Official Receipt <strong>#{receiptData.receiptNo}</strong> has been issued for{' '}
+                    {receiptData.studentName}.
                   </p>
-                  
-                  <div style={{ background: '#FFFFFF', padding: '1rem', borderRadius: '12px', border: '1px solid #CBD5E1', margin: '1.25rem 0', textAlign: 'left', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                    <div>Amount Paid: <strong>₦{receiptData.amountPaid.toLocaleString()}</strong></div>
-                    <div>Payment Method: <strong>{receiptData.method}</strong></div>
-                    <div>Academic Term: <strong>{receiptData.session} - {receiptData.term}</strong></div>
-                    <div>Issued Date: <strong>{receiptData.date}</strong></div>
+
+                  <div
+                    style={{
+                      background: '#FFFFFF',
+                      padding: '1rem',
+                      borderRadius: '12px',
+                      border: '1px solid #CBD5E1',
+                      margin: '1.25rem 0',
+                      textAlign: 'left',
+                      fontSize: '0.85rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.4rem',
+                    }}
+                  >
+                    <div>
+                      Amount Paid: <strong>₦{receiptData.amountPaid.toLocaleString()}</strong>
+                    </div>
+                    <div>
+                      Payment Method: <strong>{receiptData.method}</strong>
+                    </div>
+                    <div>
+                      Academic Term:{' '}
+                      <strong>
+                        {receiptData.session} - {receiptData.term}
+                      </strong>
+                    </div>
+                    <div>
+                      Issued Date: <strong>{receiptData.date}</strong>
+                    </div>
                   </div>
 
-                  <button 
-                    className="btn-pos-search" 
+                  <button
+                    className="btn-pos-search"
                     style={{ width: '100%', justifyContent: 'center' }}
                     onClick={() => openReceipt(receiptData.invoiceId)}
                   >
                     <Printer size={18} /> View / Print Official Receipt
                   </button>
 
-                  <button 
+                  <button
                     type="button"
-                    style={{ background: 'transparent', border: 'none', color: '#047857', fontWeight: 700, marginTop: '1rem', cursor: 'pointer', fontSize: '0.85rem' }}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#047857',
+                      fontWeight: 700,
+                      marginTop: '1rem',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                    }}
                     onClick={() => {
                       setReceiptData(null);
                       handleSelectStudent(selectedStudent);
@@ -389,66 +470,128 @@ export default function PointOfSale() {
                 </div>
               ) : (
                 /* Record Payment Form */
-                <form id="posPaymentForm" onSubmit={handleDirectPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  
+                <form
+                  id="posPaymentForm"
+                  onSubmit={handleDirectPayment}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+                >
                   {/* Previous Receipts & Payments History Section if Student Paid Before */}
-                  {((selectedStudent.receipts && selectedStudent.receipts.length > 0) || (selectedStudent.invoices || []).some(i => i.amountPaid > 0)) && (
+                  {((selectedStudent.receipts && selectedStudent.receipts.length > 0) ||
+                    (selectedStudent.invoices || []).some((i) => i.amountPaid > 0)) && (
                     <div className="pos-history-section">
                       <div className="pos-history-title">
-                        <span><History size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} /> Prior Payment Records</span>
-                        <span style={{ fontSize: '0.78rem', color: '#047857', background: '#ECFDF5', padding: '0.15rem 0.5rem', borderRadius: '6px' }}>Part-Payments Logged</span>
+                        <span>
+                          <History
+                            size={16}
+                            style={{ verticalAlign: 'middle', marginRight: '6px' }}
+                          />{' '}
+                          Prior Payment Records
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.78rem',
+                            color: '#047857',
+                            background: '#ECFDF5',
+                            padding: '0.15rem 0.5rem',
+                            borderRadius: '6px',
+                          }}
+                        >
+                          Part-Payments Logged
+                        </span>
                       </div>
 
-                      {(selectedStudent.receipts && selectedStudent.receipts.length > 0) ? (
-                        selectedStudent.receipts.map(rec => (
-                          <div key={rec.id} className="pos-history-item">
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                              <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>Receipt #{rec.receiptNumber}</strong>
-                              <span style={{ fontSize: '0.78rem', color: '#64748B' }}>{rec.session} ({rec.term}) • {rec.date}</span>
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.9rem' }}>₦{rec.amountPaid.toLocaleString()}</span>
-                              <button 
-                                type="button" 
-                                className="btn-view-previous-receipt"
-                                onClick={() => openReceipt(rec.invoiceId)}
-                                title="Print Official Receipt"
+                      {selectedStudent.receipts && selectedStudent.receipts.length > 0
+                        ? selectedStudent.receipts.map((rec) => (
+                            <div key={rec.id} className="pos-history-item">
+                              <div
+                                style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}
                               >
-                                <Printer size={13} /> Print
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        (selectedStudent.invoices || []).filter(i => i.amountPaid > 0).map(inv => (
-                          <div key={inv.id} className="pos-history-item">
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                              <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>{inv.session} - {inv.term}</strong>
-                              <span style={{ fontSize: '0.78rem', color: '#64748B' }}>Status: {inv.paymentStatus}</span>
-                            </div>
+                                <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>
+                                  Receipt #{rec.receiptNumber}
+                                </strong>
+                                <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                                  {rec.session} ({rec.term}) • {rec.date}
+                                </span>
+                              </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <span style={{ fontWeight: 800, color: '#047857', fontSize: '0.9rem' }}>Paid ₦{inv.amountPaid.toLocaleString()}</span>
-                              <button 
-                                type="button" 
-                                className="btn-view-previous-receipt"
-                                onClick={() => openReceipt(inv.id)}
-                                title="Print Official Receipt"
-                              >
-                                <Printer size={13} /> Receipt
-                              </button>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span
+                                  style={{ fontWeight: 800, color: '#047857', fontSize: '0.9rem' }}
+                                >
+                                  ₦{rec.amountPaid.toLocaleString()}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="btn-view-previous-receipt"
+                                  onClick={() => openReceipt(rec.invoiceId)}
+                                  title="Print Official Receipt"
+                                >
+                                  <Printer size={13} /> Print
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ))
-                      )}
+                          ))
+                        : (selectedStudent.invoices || [])
+                            .filter((i) => i.amountPaid > 0)
+                            .map((inv) => (
+                              <div key={inv.id} className="pos-history-item">
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '0.15rem',
+                                  }}
+                                >
+                                  <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>
+                                    {inv.session} - {inv.term}
+                                  </strong>
+                                  <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                                    Status: {inv.paymentStatus}
+                                  </span>
+                                </div>
+
+                                <div
+                                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                  <span
+                                    style={{
+                                      fontWeight: 800,
+                                      color: '#047857',
+                                      fontSize: '0.9rem',
+                                    }}
+                                  >
+                                    Paid ₦{inv.amountPaid.toLocaleString()}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="btn-view-previous-receipt"
+                                    onClick={() => openReceipt(inv.id)}
+                                    title="Print Official Receipt"
+                                  >
+                                    <Printer size={13} /> Receipt
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
                     </div>
                   )}
 
-                  <div style={{ background: '#EFF6FF', padding: '1rem', borderRadius: '12px', border: '1px solid #BFDBFE', fontSize: '0.85rem', color: '#1E40AF', display: 'flex', gap: '0.6rem' }}>
+                  <div
+                    style={{
+                      background: '#EFF6FF',
+                      padding: '1rem',
+                      borderRadius: '12px',
+                      border: '1px solid #BFDBFE',
+                      fontSize: '0.85rem',
+                      color: '#1E40AF',
+                      display: 'flex',
+                      gap: '0.6rem',
+                    }}
+                  >
                     <ShieldCheck size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
                     <div>
-                      Recording payment for <strong>{selectedStudent.name}</strong>. Target invoice automatically selects the oldest pending balance.
+                      Recording payment for <strong>{selectedStudent.name}</strong>. Target invoice
+                      automatically selects the oldest pending balance.
                     </div>
                   </div>
 
@@ -456,14 +599,14 @@ export default function PointOfSale() {
                   {getSortedPendingInvoices(selectedStudent).length > 0 && (
                     <div className="pos-form-group">
                       <label>Target Invoice (Auto-selects oldest debt)</label>
-                      <select 
-                        className="select-filter-input" 
-                        value={targetInvoiceId} 
-                        onChange={e => {
+                      <select
+                        className="select-filter-input"
+                        value={targetInvoiceId}
+                        onChange={(e) => {
                           const val = e.target.value;
                           setTargetInvoiceId(val);
                           if (val !== 'new') {
-                            const inv = selectedStudent.invoices.find(i => i.id === val);
+                            const inv = selectedStudent.invoices.find((i) => i.id === val);
                             if (inv) {
                               setPosTerm(inv.term);
                               setPosSession(inv.session);
@@ -476,7 +619,7 @@ export default function PointOfSale() {
                           }
                         }}
                       >
-                        {getSortedPendingInvoices(selectedStudent).map(inv => (
+                        {getSortedPendingInvoices(selectedStudent).map((inv) => (
                           <option key={inv.id} value={inv.id}>
                             {inv.session} - {inv.term} (Owes ₦{inv.balance.toLocaleString()})
                           </option>
@@ -490,22 +633,22 @@ export default function PointOfSale() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="pos-form-group">
                       <label>Session</label>
-                      <input 
-                        type="text" 
-                        className="select-filter-input" 
-                        value={posSession} 
-                        onChange={e => setPosSession(e.target.value)} 
-                        required 
-                        disabled={targetInvoiceId !== 'new'} 
+                      <input
+                        type="text"
+                        className="select-filter-input"
+                        value={posSession}
+                        onChange={(e) => setPosSession(e.target.value)}
+                        required
+                        disabled={targetInvoiceId !== 'new'}
                       />
                     </div>
                     <div className="pos-form-group">
                       <label>Term</label>
-                      <select 
-                        className="select-filter-input" 
-                        value={posTerm} 
-                        onChange={e => setPosTerm(e.target.value)} 
-                        required 
+                      <select
+                        className="select-filter-input"
+                        value={posTerm}
+                        onChange={(e) => setPosTerm(e.target.value)}
+                        required
                         disabled={targetInvoiceId !== 'new'}
                       >
                         <option value="First Term">First Term</option>
@@ -519,27 +662,27 @@ export default function PointOfSale() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="pos-form-group">
                       <label>Total Fee Due (₦)</label>
-                      <input 
-                        type="number" 
-                        className="select-filter-input" 
-                        min="1" 
-                        value={posAmountDue} 
-                        onChange={e => setPosAmountDue(Number(e.target.value))} 
-                        required 
-                        disabled={targetInvoiceId !== 'new'} 
+                      <input
+                        type="number"
+                        className="select-filter-input"
+                        min="1"
+                        value={posAmountDue}
+                        onChange={(e) => setPosAmountDue(Number(e.target.value))}
+                        required
+                        disabled={targetInvoiceId !== 'new'}
                       />
                     </div>
 
                     <div className="pos-form-group">
                       <label>Amount Received (₦) *</label>
-                      <input 
-                        type="number" 
-                        min="1" 
-                        max={targetInvoiceId !== 'new' ? posAmountDue : undefined} 
-                        value={posAmountPaid} 
-                        onChange={e => setPosAmountPaid(Number(e.target.value))}
-                        className="select-filter-input" 
-                        required 
+                      <input
+                        type="number"
+                        min="1"
+                        max={targetInvoiceId !== 'new' ? posAmountDue : undefined}
+                        value={posAmountPaid}
+                        onChange={(e) => setPosAmountPaid(Number(e.target.value))}
+                        className="select-filter-input"
+                        required
                       />
                     </div>
                   </div>
@@ -547,7 +690,11 @@ export default function PointOfSale() {
                   {/* Payment Method */}
                   <div className="pos-form-group">
                     <label>Payment Method *</label>
-                    <select value={directMethod} onChange={e => setDirectMethod(e.target.value)} className="select-filter-input">
+                    <select
+                      value={directMethod}
+                      onChange={(e) => setDirectMethod(e.target.value)}
+                      className="select-filter-input"
+                    >
                       <option value="Cash">Cash</option>
                       <option value="POS">POS Terminal</option>
                       <option value="Transfer">Bank Transfer</option>
@@ -557,11 +704,11 @@ export default function PointOfSale() {
                   {/* Remarks */}
                   <div className="pos-form-group">
                     <label>Remarks / Collector Notes</label>
-                    <input 
-                      type="text" 
-                      value={directRemarks} 
-                      onChange={e => setDirectRemarks(e.target.value)}
-                      className="select-filter-input" 
+                    <input
+                      type="text"
+                      value={directRemarks}
+                      onChange={(e) => setDirectRemarks(e.target.value)}
+                      className="select-filter-input"
                       placeholder="E.g., Received by Mrs. Olufunke Ikang"
                     />
                   </div>
@@ -572,12 +719,24 @@ export default function PointOfSale() {
             {/* Drawer Footer */}
             {!receiptData && (
               <div className="pos-slideover-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowDrawer(false)} disabled={processing}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowDrawer(false)}
+                  disabled={processing}
+                >
                   Cancel
                 </button>
-                <button form="posPaymentForm" type="submit" className="btn-pos-search" disabled={processing}>
+                <button
+                  form="posPaymentForm"
+                  type="submit"
+                  className="btn-pos-search"
+                  disabled={processing}
+                >
                   <Receipt size={18} />
-                  {processing ? "Processing..." : `Record ₦${posAmountPaid.toLocaleString()} Payment`}
+                  {processing
+                    ? 'Processing...'
+                    : `Record ₦${posAmountPaid.toLocaleString()} Payment`}
                 </button>
               </div>
             )}

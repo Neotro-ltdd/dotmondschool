@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../../services/api';
 import { useDialog } from '../../../../context/DialogContext';
-import { 
-  School, 
-  UserCheck, 
-  UserX, 
-  Users, 
-  Search, 
-  LayoutList, 
-  LayoutGrid, 
-  Edit3, 
-  CheckCircle2, 
-  AlertCircle, 
+import {
+  School,
+  UserCheck,
+  UserX,
+  Users,
+  Search,
+  LayoutList,
+  LayoutGrid,
+  Edit3,
+  CheckCircle2,
+  AlertCircle,
   X,
-  UserPlus
+  UserPlus,
 } from 'lucide-react';
 import './ClassAllocations.css';
 
@@ -44,7 +44,7 @@ export default function ClassAllocations() {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [teachers, setTeachers] = useState<TeacherItem[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Selection & Search Filters
   const [levelFilter, setLevelFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -62,12 +62,12 @@ export default function ClassAllocations() {
       setLoading(true);
       const [classData, teacherData] = await Promise.all([
         api.get('/setup/classes'),
-        api.get('/setup/staff')
+        api.get('/setup/staff'),
       ]);
       setClasses(classData);
       setTeachers(teacherData);
     } catch (err: any) {
-      console.error("Failed to load class allocations:", err);
+      console.error('Failed to load class allocations:', err);
     } finally {
       setLoading(false);
     }
@@ -77,70 +77,89 @@ export default function ClassAllocations() {
     fetchData();
   }, []);
 
-  const levelOrder: Record<string, number> = {
+  interface LevelRankMap {
+    [level: string]: number;
+  }
+
+  const levelOrder: LevelRankMap = {
     'Senior Secondary': 1,
     'Junior Secondary': 2,
     'Upper Primary': 3,
     'Lower Primary': 4,
     'Middle Primary': 5,
-    'Primary': 5,
+    Primary: 5,
     'Nursery 2': 6,
     'Nursery 1': 7,
-    'Nursery': 8,
-    'Kindergarten': 9
+    Nursery: 8,
+    Kindergarten: 9,
   };
 
   const sortedClasses = [...classes].sort((a, b) => {
     const levelA = levelOrder[a.level] || 99;
     const levelB = levelOrder[b.level] || 99;
-    
+
     if (levelA !== levelB) {
       return levelA - levelB;
     }
-    
+
     const numA = parseInt(a.name.replace(/\D/g, '')) || 0;
     const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
-    
+
     if (numA !== numB) {
-      if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Middle Primary', 'Lower Primary', 'Primary', 'Nursery 2', 'Nursery 1', 'Nursery'].includes(a.level)) {
+      if (
+        [
+          'Senior Secondary',
+          'Junior Secondary',
+          'Upper Primary',
+          'Middle Primary',
+          'Lower Primary',
+          'Primary',
+          'Nursery 2',
+          'Nursery 1',
+          'Nursery',
+        ].includes(a.level)
+      ) {
         return numB - numA;
       }
       return numA - numB;
     }
-    
+
     return (a.section || '').localeCompare(b.section || '');
   });
 
   // Filter Computation
   let filteredClasses = sortedClasses;
   if (levelFilter) {
-    filteredClasses = filteredClasses.filter(c => c.level === levelFilter);
+    filteredClasses = filteredClasses.filter((c) => c.level === levelFilter);
   }
   if (statusFilter) {
     if (statusFilter === 'assigned') {
-      filteredClasses = filteredClasses.filter(c => !!c.classTeacherName);
+      filteredClasses = filteredClasses.filter((c) => !!c.classTeacherName);
     } else if (statusFilter === 'unassigned') {
-      filteredClasses = filteredClasses.filter(c => !c.classTeacherName);
+      filteredClasses = filteredClasses.filter((c) => !c.classTeacherName);
     }
   }
   if (searchQuery) {
     const query = searchQuery.toLowerCase();
-    filteredClasses = filteredClasses.filter(c => 
-      c.name.toLowerCase().includes(query) ||
-      c.level.toLowerCase().includes(query) ||
-      (c.classTeacherName && c.classTeacherName.toLowerCase().includes(query))
+    filteredClasses = filteredClasses.filter(
+      (c) =>
+        c.name.toLowerCase().includes(query) ||
+        c.level.toLowerCase().includes(query) ||
+        (c.classTeacherName && c.classTeacherName.toLowerCase().includes(query)),
     );
   }
 
   // Metrics
   const totalClasses = classes.length;
-  const assignedCount = classes.filter(c => !!c.classTeacherName).length;
+  const assignedCount = classes.filter((c) => !!c.classTeacherName).length;
   const unassignedCount = totalClasses - assignedCount;
   const teacherPoolCount = teachers.length;
 
   const openAssignModal = (cls: ClassItem) => {
     setSelectedClass(cls);
-    const teacherMatch = teachers.find(t => `${t.firstName} ${t.surname}` === cls.classTeacherName);
+    const teacherMatch = teachers.find(
+      (t) => `${t.firstName} ${t.surname}` === cls.classTeacherName,
+    );
     setSelectedTeacherId(teacherMatch ? teacherMatch.id : '');
     setShowModal(true);
   };
@@ -153,7 +172,7 @@ export default function ClassAllocations() {
       setSubmitting(true);
       await api.post(`/setup/classes/${selectedClass.id}/assign-teacher`, {
         classId: selectedClass.id,
-        teacherId: selectedTeacherId || null
+        teacherId: selectedTeacherId || null,
       });
       setShowModal(false);
       fetchData();
@@ -194,7 +213,9 @@ export default function ClassAllocations() {
       <div className="allocations-page-header">
         <div>
           <h1 className="allocations-page-title">Class Allocations</h1>
-          <p className="allocations-page-subtitle">Assign and manage Form Teachers assigned to each class</p>
+          <p className="allocations-page-subtitle">
+            Assign and manage Form Teachers assigned to each class
+          </p>
         </div>
       </div>
 
@@ -246,17 +267,17 @@ export default function ClassAllocations() {
         <div className="allocations-search-group">
           <div className="allocations-search-box">
             <Search size={16} className="allocations-search-icon" />
-            <input 
-              type="text" 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search class or form teacher name..."
             />
           </div>
 
-          <select 
-            value={levelFilter} 
-            onChange={(e) => setLevelFilter(e.target.value)} 
+          <select
+            value={levelFilter}
+            onChange={(e) => setLevelFilter(e.target.value)}
             className="select-filter-input"
           >
             <option value="">All Levels</option>
@@ -270,9 +291,9 @@ export default function ClassAllocations() {
             <option value="Kindergarten">Kindergarten</option>
           </select>
 
-          <select 
-            value={statusFilter} 
-            onChange={(e) => setStatusFilter(e.target.value)} 
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
             className="select-filter-input"
           >
             <option value="">All Statuses</option>
@@ -283,13 +304,13 @@ export default function ClassAllocations() {
 
         {/* View Switcher */}
         <div className="view-mode-toggle">
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
           >
             <LayoutList size={16} /> Table View
           </button>
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
           >
@@ -300,11 +321,29 @@ export default function ClassAllocations() {
 
       {/* Main Content */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', background: '#FFF', borderRadius: '16px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '3rem',
+            background: '#FFF',
+            borderRadius: '16px',
+            border: '1px solid #E2E8F0',
+            color: '#64748B',
+          }}
+        >
           Loading class allocations...
         </div>
       ) : filteredClasses.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', background: '#FFF', borderRadius: '16px', border: '1px solid #E2E8F0', color: '#64748B' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '3rem',
+            background: '#FFF',
+            borderRadius: '16px',
+            border: '1px solid #E2E8F0',
+            color: '#64748B',
+          }}
+        >
           No classes match the selected filter criteria.
         </div>
       ) : viewMode === 'table' ? (
@@ -321,7 +360,7 @@ export default function ClassAllocations() {
               </tr>
             </thead>
             <tbody>
-              {filteredClasses.map(cls => (
+              {filteredClasses.map((cls) => (
                 <tr key={cls.id}>
                   <td>
                     <div className="class-badge-box">
@@ -330,7 +369,16 @@ export default function ClassAllocations() {
                     </div>
                   </td>
                   <td>
-                    <span style={{ fontWeight: 700, background: '#F1F5F9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: '8px', fontSize: '0.82rem' }}>
+                    <span
+                      style={{
+                        fontWeight: 700,
+                        background: '#F1F5F9',
+                        color: '#334155',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '8px',
+                        fontSize: '0.82rem',
+                      }}
+                    >
                       {cls.level}
                     </span>
                   </td>
@@ -340,7 +388,9 @@ export default function ClassAllocations() {
                         <div className="teacher-avatar">
                           {getTeacherInitials(cls.classTeacherName)}
                         </div>
-                        <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
+                        <span className="teacher-name-title">
+                          {formatTeacherName(cls.classTeacherName)}
+                        </span>
                       </div>
                     ) : (
                       <span className="unassigned-warning-pill">
@@ -349,18 +399,22 @@ export default function ClassAllocations() {
                     )}
                   </td>
                   <td>
-                    <span className={`status-pill ${formatTeacherName(cls.classTeacherName) ? 'active' : 'inactive'}`}>
+                    <span
+                      className={`status-pill ${formatTeacherName(cls.classTeacherName) ? 'active' : 'inactive'}`}
+                    >
                       {formatTeacherName(cls.classTeacherName) ? 'Assigned' : 'Needs Teacher'}
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     {!isReadOnly && (
-                      <button 
+                      <button
                         className={`btn-assign-action ${formatTeacherName(cls.classTeacherName) ? 'change' : 'new'}`}
                         onClick={() => openAssignModal(cls)}
                       >
                         <UserPlus size={15} />
-                        {formatTeacherName(cls.classTeacherName) ? 'Change Teacher' : 'Assign Teacher'}
+                        {formatTeacherName(cls.classTeacherName)
+                          ? 'Change Teacher'
+                          : 'Assign Teacher'}
                       </button>
                     )}
                   </td>
@@ -372,28 +426,47 @@ export default function ClassAllocations() {
       ) : (
         /* GRID CARDS VIEW */
         <div className="allocations-grid-wrapper">
-          {filteredClasses.map(cls => (
+          {filteredClasses.map((cls) => (
             <div key={cls.id} className="allocation-grid-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>{cls.name}</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+                    {cls.name}
+                  </h3>
                   <span style={{ fontSize: '0.8rem', color: '#64748B' }}>{cls.level}</span>
                 </div>
-                <span className={`status-pill ${formatTeacherName(cls.classTeacherName) ? 'active' : 'inactive'}`}>
+                <span
+                  className={`status-pill ${formatTeacherName(cls.classTeacherName) ? 'active' : 'inactive'}`}
+                >
                   {formatTeacherName(cls.classTeacherName) ? 'Assigned' : 'Needs Teacher'}
                 </span>
               </div>
 
               <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '0.5rem' }}>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#64748B',
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                  }}
+                >
                   Form Teacher
                 </span>
                 {formatTeacherName(cls.classTeacherName) ? (
                   <div className="teacher-profile-cell">
-                    <div className="teacher-avatar">
-                      {getTeacherInitials(cls.classTeacherName)}
-                    </div>
-                    <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
+                    <div className="teacher-avatar">{getTeacherInitials(cls.classTeacherName)}</div>
+                    <span className="teacher-name-title">
+                      {formatTeacherName(cls.classTeacherName)}
+                    </span>
                   </div>
                 ) : (
                   <span className="unassigned-warning-pill">
@@ -402,7 +475,7 @@ export default function ClassAllocations() {
                 )}
               </div>
 
-              <button 
+              <button
                 className={`btn-assign-action ${cls.classTeacherName ? 'change' : 'new'}`}
                 onClick={() => openAssignModal(cls)}
                 style={{ width: '100%', justifyContent: 'center', marginTop: 'auto' }}
@@ -422,26 +495,48 @@ export default function ClassAllocations() {
             <div className="slideover-header">
               <div>
                 <h2 className="slideover-title">Form Teacher Allocation</h2>
-                <p className="slideover-subtitle">Assign or update form teacher for <strong>{selectedClass.name}</strong></p>
+                <p className="slideover-subtitle">
+                  Assign or update form teacher for <strong>{selectedClass.name}</strong>
+                </p>
               </div>
               <button className="btn-close-slideover" onClick={() => setShowModal(false)}>
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleAssign} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <form
+              onSubmit={handleAssign}
+              style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+            >
               <div className="slideover-body">
                 {/* Class Summary Card */}
                 <div className="class-summary-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>{selectedClass.name}</span>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 700, background: '#EFF6FF', color: '#1E40AF', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
+                      {selectedClass.name}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        background: '#EFF6FF',
+                        color: '#1E40AF',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '6px',
+                      }}
+                    >
                       {selectedClass.level}
                     </span>
                   </div>
 
                   <div style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#64748B' }}>
-                    Currently Assigned: {' '}
+                    Currently Assigned:{' '}
                     {selectedClass.classTeacherName ? (
                       <strong style={{ color: '#0F172A' }}>{selectedClass.classTeacherName}</strong>
                     ) : (
@@ -452,30 +547,66 @@ export default function ClassAllocations() {
 
                 {/* Teacher Select Input */}
                 <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.5rem' }}>
+                  <label
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#334155',
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Select Staff Member
                   </label>
-                  <select 
+                  <select
                     className="select-filter-input"
-                    style={{ width: '100%', padding: '0.75rem', fontSize: '0.9rem', borderRadius: '10px' }}
-                    value={selectedTeacherId} 
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                    }}
+                    value={selectedTeacherId}
                     onChange={(e) => setSelectedTeacherId(e.target.value)}
                   >
                     <option value="">-- Unassigned (Remove Teacher) --</option>
-                    {teachers.map(t => (
+                    {teachers.map((t) => (
                       <option key={t.id} value={t.id}>{`${t.firstName} ${t.surname}`}</option>
                     ))}
                   </select>
                 </div>
 
-                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '0.82rem', color: '#64748B', display: 'flex', gap: '0.5rem' }}>
-                  <AlertCircle size={16} color="#3B82F6" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <span>Assigning a staff member will immediately update class record access and grant them Form Teacher privileges for <strong>{selectedClass.name}</strong>.</span>
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    fontSize: '0.82rem',
+                    color: '#64748B',
+                    display: 'flex',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <AlertCircle
+                    size={16}
+                    color="#3B82F6"
+                    style={{ flexShrink: 0, marginTop: '2px' }}
+                  />
+                  <span>
+                    Assigning a staff member will immediately update class record access and grant
+                    them Form Teacher privileges for <strong>{selectedClass.name}</strong>.
+                  </span>
                 </div>
               </div>
 
               <div className="slideover-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                  disabled={submitting}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>

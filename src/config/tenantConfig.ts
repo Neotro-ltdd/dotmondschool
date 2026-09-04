@@ -21,7 +21,11 @@ export interface TenantConfig {
   };
 }
 
-export const tenants: Record<string, TenantConfig> = {
+export interface TenantMap {
+  [tenantId: string]: TenantConfig;
+}
+
+export const tenants: TenantMap = {
   dotmond: {
     id: 'dotmond',
     name: 'Dotmond School',
@@ -42,7 +46,7 @@ export const tenants: Record<string, TenantConfig> = {
       paperLine: '#D6DCE1',
       ink: '#222B33',
       inkSoft: '#5C6B7A',
-    }
+    },
   },
   atwool: {
     id: 'atwool',
@@ -53,15 +57,15 @@ export const tenants: Record<string, TenantConfig> = {
     studentClass: 'SS1 · ATW/24/005',
     colors: {
       indigo: '#00205B', // Navy Blue
-      indigoDark: '#00133A', 
+      indigoDark: '#00133A',
       gold: '#C8102E', // Red for accents
       goldDark: '#9E0B22',
       sage: '#87CEEB', // Sky Blue
       sageBg: '#E0F4FC',
       terracotta: '#C8102E', // Red
       terracottaBg: '#FAE7EA',
-    }
-  }
+    },
+  },
 };
 
 export const defaultTenantId = 'dotmond';
