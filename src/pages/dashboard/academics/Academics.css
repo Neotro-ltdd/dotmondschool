@@ -97,7 +97,8 @@
   font-style: italic;
 }
 
-.loading-text, .empty-text {
+.loading-text,
+.empty-text {
   text-align: center;
   padding: 3rem;
   color: var(--text-muted);

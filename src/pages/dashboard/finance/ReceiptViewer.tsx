@@ -7,18 +7,52 @@ import './ReceiptViewer.css';
 // Helper to convert numbers to words (basic implementation for Naira)
 function numberToWords(num: number): string {
   if (num === 0) return 'Zero Naira Only';
-  const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const a = [
+    '',
+    'One',
+    'Two',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'Seven',
+    'Eight',
+    'Nine',
+    'Ten',
+    'Eleven',
+    'Twelve',
+    'Thirteen',
+    'Fourteen',
+    'Fifteen',
+    'Sixteen',
+    'Seventeen',
+    'Eighteen',
+    'Nineteen',
+  ];
   const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-  
+
   function convert(n: number): string {
     if (n < 20) return a[n];
     if (n < 100) return b[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + a[n % 10] : '');
-    if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convert(n % 100) : '');
-    if (n < 1000000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 !== 0 ? ' ' + convert(n % 1000) : '');
-    if (n < 1000000000) return convert(Math.floor(n / 1000000)) + ' Million' + (n % 1000000 !== 0 ? ' ' + convert(n % 1000000) : '');
+    if (n < 1000)
+      return (
+        a[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convert(n % 100) : '')
+      );
+    if (n < 1000000)
+      return (
+        convert(Math.floor(n / 1000)) +
+        ' Thousand' +
+        (n % 1000 !== 0 ? ' ' + convert(n % 1000) : '')
+      );
+    if (n < 1000000000)
+      return (
+        convert(Math.floor(n / 1000000)) +
+        ' Million' +
+        (n % 1000000 !== 0 ? ' ' + convert(n % 1000000) : '')
+      );
     return n.toString();
   }
-  
+
   return convert(num) + ' Naira Only';
 }
 
@@ -58,41 +92,47 @@ const ReceiptViewer: React.FC = () => {
     return `${API_ROOT}${url}`;
   };
 
-  if (loading) return <div style={{padding: 20}}>Loading receipt...</div>;
-  if (error) return <div style={{padding: 20, color: 'red'}}>Error: {error}</div>;
-  if (!receiptData) return <div style={{padding: 20}}>No receipt found.</div>;
+  if (loading) return <div style={{ padding: 20 }}>Loading receipt...</div>;
+  if (error) return <div style={{ padding: 20, color: 'red' }}>Error: {error}</div>;
+  if (!receiptData) return <div style={{ padding: 20 }}>No receipt found.</div>;
 
   // Robust data extraction supporting both camelCase and PascalCase
   const rawLogo = receiptData.schoolLogoUrl || receiptData.SchoolLogoUrl;
   const rawSignature = receiptData.accountantSignatureUrl || receiptData.AccountantSignatureUrl;
-  
-  const schoolLogoUrl = getFullUrl(rawLogo) || "https://placehold.co/150x150/2993cf/ffffff?text=LOGO";
-  const accountantSignatureUrl = getFullUrl(rawSignature) || "https://placehold.co/200x60/ffffff/000000?text=Accountant+Signature";
-  
+
+  const schoolLogoUrl =
+    getFullUrl(rawLogo) || 'https://placehold.co/150x150/2993cf/ffffff?text=LOGO';
+  const accountantSignatureUrl =
+    getFullUrl(rawSignature) ||
+    'https://placehold.co/200x60/ffffff/000000?text=Accountant+Signature';
+
   const amount = receiptData.amount ?? receiptData.Amount ?? 0;
   const amountStr = amount.toLocaleString();
   const sumOfWords = numberToWords(amount);
 
   const viewData = {
-    receiptNo: receiptData.receiptNo ?? receiptData.ReceiptNo ?? "N/A",
-    receivedFrom: receiptData.receivedFrom ?? receiptData.ReceivedFrom ?? "N/A",
-    onBehalfOf: receiptData.onBehalfOf ?? receiptData.OnBehalfOf ?? "N/A",
-    paymentFor: receiptData.paymentFor ?? receiptData.PaymentFor ?? "N/A",
-    term: receiptData.term ?? receiptData.Term ?? "N/A",
-    balance: receiptData.balance ?? receiptData.Balance ?? "N/A",
-    date: receiptData.date ?? receiptData.Date ?? "N/A"
+    receiptNo: receiptData.receiptNo ?? receiptData.ReceiptNo ?? 'N/A',
+    receivedFrom: receiptData.receivedFrom ?? receiptData.ReceivedFrom ?? 'N/A',
+    onBehalfOf: receiptData.onBehalfOf ?? receiptData.OnBehalfOf ?? 'N/A',
+    paymentFor: receiptData.paymentFor ?? receiptData.PaymentFor ?? 'N/A',
+    term: receiptData.term ?? receiptData.Term ?? 'N/A',
+    balance: receiptData.balance ?? receiptData.Balance ?? 'N/A',
+    date: receiptData.date ?? receiptData.Date ?? 'N/A',
   };
 
   return (
     <div className="receipt-viewer-container">
       <div className="no-print receipt-actions">
-        <button className="btn btn-secondary" onClick={() => navigate(-1)}>Back</button>
-        <button className="btn btn-primary" onClick={() => window.print()}>Print Receipt</button>
+        <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+          Back
+        </button>
+        <button className="btn btn-primary" onClick={() => window.print()}>
+          Print Receipt
+        </button>
       </div>
 
       <div className="receipt-paper-wrapper">
         <div className="receipt-template">
-          
           {/* Watermark */}
           {schoolLogoUrl && (
             <div className="rt-watermark-container">
@@ -107,10 +147,18 @@ const ReceiptViewer: React.FC = () => {
                 <span>CASH RECEIPT</span>
               </div>
             </div>
-            
+
             <div className="rt-school-info">
               <div className="rt-logo">
-                {schoolLogoUrl ? <img src={schoolLogoUrl} alt="Logo" style={{maxWidth:'100%', maxHeight:'100%', objectFit: 'contain'}} /> : "LOGO"}
+                {schoolLogoUrl ? (
+                  <img
+                    src={schoolLogoUrl}
+                    alt="Logo"
+                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                  />
+                ) : (
+                  'LOGO'
+                )}
               </div>
               <div className="rt-school-text">
                 <h1>{schoolName.toUpperCase()}</h1>
@@ -119,7 +167,7 @@ const ReceiptViewer: React.FC = () => {
                 <p>Olokonla, Lagos State. | Tel: 08051409106, 08168917447.</p>
               </div>
             </div>
-            
+
             <div className="rt-receipt-no-box">
               <div className="rt-receipt-no-label">Receipt No</div>
               <div className="rt-receipt-no-value">{viewData.receiptNo}</div>
@@ -128,18 +176,13 @@ const ReceiptViewer: React.FC = () => {
 
           {/* Body Section */}
           <div className="rt-body">
-            
             {/* Left Sidebar */}
             <div className="rt-sidebar">
-              <div className="rt-sidebar-text">
-                MOTTO: Steady Progress Glorious Future
-              </div>
+              <div className="rt-sidebar-text">MOTTO: Steady Progress Glorious Future</div>
             </div>
 
             {/* Main Form Content */}
             <div className="rt-content">
-
-
               <div className="rt-row">
                 <span className="rt-label">Received from:</span>
                 <div className="rt-line">
@@ -199,14 +242,14 @@ const ReceiptViewer: React.FC = () => {
                 <div className="rt-signature">
                   <span className="rt-label">Signature:</span>
                   <div className="rt-line">
-                    {accountantSignatureUrl && <img src={accountantSignatureUrl} alt="Accountant Signature" />}
+                    {accountantSignatureUrl && (
+                      <img src={accountantSignatureUrl} alt="Accountant Signature" />
+                    )}
                   </div>
                 </div>
               </div>
-              
             </div>
           </div>
-
         </div>
       </div>
     </div>

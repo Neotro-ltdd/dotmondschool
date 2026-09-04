@@ -16,7 +16,8 @@ export function cleanDuplicateTitles(name: string | null | undefined): string {
   }
 
   // Handle case where title with dot and title without dot repeat (e.g., "Mrs. Mrs ")
-  const multiTitleRegex = /^(Mrs|Mr|Dr|Prof|Miss|Ms|Engr|Rev)\.?\s+(Mrs|Mr|Dr|Prof|Miss|Ms|Engr|Rev)\.?\s+/i;
+  const multiTitleRegex =
+    /^(Mrs|Mr|Dr|Prof|Miss|Ms|Engr|Rev)\.?\s+(Mrs|Mr|Dr|Prof|Miss|Ms|Engr|Rev)\.?\s+/i;
   const match = cleaned.match(multiTitleRegex);
   if (match && match[1].toLowerCase() === match[2].toLowerCase()) {
     cleaned = cleaned.replace(multiTitleRegex, `${match[1]}. `);
@@ -28,10 +29,13 @@ export function cleanDuplicateTitles(name: string | null | undefined): string {
 /**
  * Formats a display name combining title and name cleanly without duplicating titles.
  */
-export function formatDisplayName(title: string | null | undefined, name: string | null | undefined): string {
+export function formatDisplayName(
+  title: string | null | undefined,
+  name: string | null | undefined,
+): string {
   if (!name) return 'User';
   const cleanName = cleanDuplicateTitles(name);
-  
+
   if (!title || !title.trim()) {
     return cleanName;
   }

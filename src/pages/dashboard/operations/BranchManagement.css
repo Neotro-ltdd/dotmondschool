@@ -18,14 +18,14 @@
 .branch-page-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--text-primary, #0F172A);
+  color: var(--text-primary, #0f172a);
   letter-spacing: -0.02em;
   margin: 0;
 }
 
 .branch-page-subtitle {
   font-size: 0.9rem;
-  color: var(--text-secondary, #64748B);
+  color: var(--text-secondary, #64748b);
   margin-top: 0.25rem;
 }
 
@@ -37,15 +37,17 @@
 }
 
 .branch-metric-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .branch-metric-card:hover {
@@ -63,13 +65,13 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748B;
+  color: #64748b;
 }
 
 .branch-metric-card .metric-number {
   font-size: 1.85rem;
   font-weight: 900;
-  color: #0F172A;
+  color: #0f172a;
   margin-top: 0.25rem;
   line-height: 1;
 }
@@ -85,24 +87,24 @@
 }
 
 .branch-metric-card .metric-icon-badge.total {
-  background: #EFF6FF;
-  color: #1E40AF;
+  background: #eff6ff;
+  color: #1e40af;
 }
 
 .branch-metric-card .metric-icon-badge.primary {
-  background: #FEF3C7;
-  color: #B45309;
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .branch-metric-card .metric-icon-badge.active {
-  background: #ECFDF5;
+  background: #ecfdf5;
   color: #047857;
 }
 
 /* Main Section Card */
 .branch-main-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 20px;
   padding: 1.75rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
@@ -117,20 +119,20 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
   padding-bottom: 1rem;
 }
 
 .card-title-box .card-title {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
 }
 
 .card-title-box .card-subtitle {
   font-size: 0.85rem;
-  color: #64748B;
+  color: #64748b;
   margin-top: 0.2rem;
 }
 
@@ -139,8 +141,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #2563EB !important;
-  color: #FFFFFF !important;
+  background: #2563eb !important;
+  color: #ffffff !important;
   border: none !important;
   padding: 0.65rem 1.35rem;
   border-radius: 12px;
@@ -152,8 +154,8 @@
 }
 
 .btn-primary-action:hover {
-  background: #1D4ED8 !important;
-  color: #FFFFFF !important;
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
   box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4) !important;
   transform: translateY(-1px);
 }
@@ -162,8 +164,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #2563EB;
-  color: #FFFFFF;
+  background: #2563eb;
+  color: #ffffff;
   border: none;
   padding: 0.65rem 1.5rem;
   border-radius: 12px;
@@ -174,15 +176,15 @@
 }
 
 .btn-submit:hover {
-  background: #1D4ED8;
+  background: #1d4ed8;
 }
 
 .btn-cancel {
   display: inline-flex;
   align-items: center;
-  background: #F1F5F9;
+  background: #f1f5f9;
   color: #475569;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   padding: 0.65rem 1.25rem;
   border-radius: 12px;
   font-size: 0.88rem;
@@ -191,7 +193,7 @@
 }
 
 .btn-cancel:hover {
-  background: #E2E8F0;
+  background: #e2e8f0;
 }
 
 /* Search Bar Input */
@@ -199,8 +201,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 0.5rem 0.85rem;
   width: 280px;
@@ -212,7 +214,7 @@
   outline: none;
   font-size: 0.85rem;
   width: 100%;
-  color: #0F172A;
+  color: #0f172a;
 }
 
 /* Branch Cards Grid */
@@ -223,8 +225,8 @@
 }
 
 .campus-item-card {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.25rem;
   display: flex;
@@ -232,21 +234,23 @@
   justify-content: space-between;
   gap: 1rem;
   position: relative;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .campus-item-card.is-main {
-  border-color: #F59E0B;
-  background: #FFFBEB;
+  border-color: #f59e0b;
+  background: #fffbeb;
 }
 
 .campus-badge-main {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: #FEF3C7;
-  color: #B45309;
-  border: 1px solid #FCD34D;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
   padding: 0.25rem 0.6rem;
   border-radius: 20px;
   font-size: 0.72rem;
@@ -266,8 +270,8 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #0f172a;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -279,13 +283,13 @@
 .campus-title-area .campus-name {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
 }
 
 .campus-title-area .campus-code-sub {
   font-size: 0.78rem;
-  color: #64748B;
+  color: #64748b;
   margin-top: 0.1rem;
 }
 
@@ -295,10 +299,10 @@
   gap: 0.4rem;
   font-size: 0.82rem;
   color: #334155;
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 0.85rem;
   border-radius: 12px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
 }
 
 .campus-detail-row {
@@ -321,19 +325,19 @@
 }
 
 .modal-content-box {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 20px;
   width: 100%;
   max-width: 520px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
 }
 
 .modal-header {
   padding: 1.25rem 1.5rem;
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #0f172a;
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -368,15 +372,15 @@
 .form-control-input {
   width: 100%;
   padding: 0.65rem 0.85rem;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   font-size: 0.88rem;
-  color: #0F172A;
+  color: #0f172a;
   outline: none;
 }
 
 .form-control-input:focus {
-  border-color: #2563EB;
-  background: #FFFFFF;
+  border-color: #2563eb;
+  background: #ffffff;
 }

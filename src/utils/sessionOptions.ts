@@ -8,7 +8,7 @@ export const POPULATED_SESSIONS = [
   '2032/2033',
   '2033/2034',
   '2025/2026',
-  '2024/2025'
+  '2024/2025',
 ];
 
 export function getSessionOptions(currentSession?: string): string[] {

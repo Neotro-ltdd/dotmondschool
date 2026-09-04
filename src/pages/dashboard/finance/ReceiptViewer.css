@@ -20,7 +20,7 @@
   width: 100%;
   max-width: 850px;
   padding: 40px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -313,10 +313,11 @@
 
 /* Print Styles */
 @media print {
-  .receipt-template, .receipt-template * {
+  .receipt-template,
+  .receipt-template * {
     visibility: visible !important;
   }
-  
+
   .receipt-template {
     position: absolute !important;
     left: 0 !important;
@@ -326,11 +327,12 @@
     transform-origin: top left;
   }
 
-  .no-print, .receipt-actions {
+  .no-print,
+  .receipt-actions {
     display: none !important;
     visibility: hidden !important;
   }
-  
+
   .receipt-paper-wrapper {
     box-shadow: none !important;
     padding: 0 !important;
@@ -338,7 +340,11 @@
   }
 
   /* Force background colors */
-  .receipt-template, .rt-badge, .rt-sidebar, .n-col, .k-col {
+  .receipt-template,
+  .rt-badge,
+  .rt-sidebar,
+  .n-col,
+  .k-col {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

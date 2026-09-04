@@ -20,7 +20,9 @@
   background: var(--color-surface, #ffffff);
   border: 1px solid var(--color-border, #e5e7eb);
   border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(12px);
   animation: slideInFromRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transition: all 0.25s ease-in-out;
@@ -68,10 +70,18 @@
   flex-shrink: 0;
   margin-top: 2px;
 }
-.slide-notification-icon.success { color: #10b981; }
-.slide-notification-icon.warning { color: #f59e0b; }
-.slide-notification-icon.error { color: #ef4444; }
-.slide-notification-icon.info { color: #3b82f6; }
+.slide-notification-icon.success {
+  color: #10b981;
+}
+.slide-notification-icon.warning {
+  color: #f59e0b;
+}
+.slide-notification-icon.error {
+  color: #ef4444;
+}
+.slide-notification-icon.info {
+  color: #3b82f6;
+}
 
 .slide-notification-content {
   flex-grow: 1;

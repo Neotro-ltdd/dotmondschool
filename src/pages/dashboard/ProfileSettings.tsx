@@ -12,11 +12,13 @@ import RequestEmailChangeDrawer from '../../components/dashboard/settings/Reques
 export default function ProfileSettings() {
   const { userRole, availableRoles, setActiveRole, updateUserInfo } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'biodata' | 'roles' | 'avatar' | 'signature'>('biodata');
+  const [activeTab, setActiveTab] = useState<'biodata' | 'roles' | 'avatar' | 'signature'>(
+    'biodata',
+  );
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [emailDrawerOpen, setEmailDrawerOpen] = useState(false);
-  
+
   // Edit states for Bio-Data
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState('');
@@ -24,13 +26,13 @@ export default function ProfileSettings() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
-  
+
   // File selections & preview
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
-  
+
   // Loading states
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [signatureUploading, setSignatureUploading] = useState(false);
@@ -80,13 +82,13 @@ export default function ProfileSettings() {
       setMiddleName(data.middleName || '');
       setAvatarLoadError(false);
       setSignatureLoadError(false);
-      
+
       if (updateUserInfo) {
         updateUserInfo({
           avatarUrl: data.avatarUrl,
           firstName: data.firstName,
           lastName: data.lastName,
-          title: data.title
+          title: data.title,
         });
       }
     } catch (error) {
@@ -106,7 +108,7 @@ export default function ProfileSettings() {
         lastName,
         middleName,
         avatarUrl: profile.avatarUrl,
-        signatureUrl: profile.signatureUrl
+        signatureUrl: profile.signatureUrl,
       });
       alert('Bio-Data updated successfully.');
       setIsEditing(false);
@@ -170,38 +172,53 @@ export default function ProfileSettings() {
     return `${API_ROOT}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
-  if (loading) return (
-    <div className="page-container fade-in" style={{ padding: '4rem', textAlign: 'center', color: '#64748B' }}>
-      <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-      <p>Loading profile settings...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div
+        className="page-container fade-in"
+        style={{ padding: '4rem', textAlign: 'center', color: '#64748B' }}
+      >
+        <div className="spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+        <p>Loading profile settings...</p>
+      </div>
+    );
 
-  if (!profile) return (
-    <div className="page-container fade-in" style={{ padding: '3rem', textAlign: 'center', color: '#EF4444' }}>
-      <h3>⚠️ Failed to load profile data.</h3>
-      <button className="btn btn-primary" onClick={fetchProfile} style={{ marginTop: '1rem' }}>Retry Loading</button>
-    </div>
-  );
+  if (!profile)
+    return (
+      <div
+        className="page-container fade-in"
+        style={{ padding: '3rem', textAlign: 'center', color: '#EF4444' }}
+      >
+        <h3>⚠️ Failed to load profile data.</h3>
+        <button className="btn btn-primary" onClick={fetchProfile} style={{ marginTop: '1rem' }}>
+          Retry Loading
+        </button>
+      </div>
+    );
 
   const currentAvatarUrl = avatarPreview || resolveImageUrl(profile.avatarUrl);
   const currentSignatureUrl = signaturePreview || resolveImageUrl(profile.signatureUrl);
-  const fullName = `${title ? title + ' ' : ''}${firstName} ${lastName}`.trim() || profile.email || 'User Profile';
-  const rolesList: string[] = Array.from(new Set([
-    ...(availableRoles || []),
-    ...(profile?.roles || []),
-    ...(profile?.assignedRoles || []),
-    ...(userRole ? [userRole] : [])
-  ])).filter((r): r is string => Boolean(r));
+  const fullName =
+    `${title ? title + ' ' : ''}${firstName} ${lastName}`.trim() || profile.email || 'User Profile';
+  const rolesList: string[] = Array.from(
+    new Set([
+      ...(availableRoles || []),
+      ...(profile?.roles || []),
+      ...(profile?.assignedRoles || []),
+      ...(userRole ? [userRole] : []),
+    ]),
+  ).filter((r): r is string => Boolean(r));
 
   return (
-    <div className="page-container fade-in" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
-      
+    <div
+      className="page-container fade-in"
+      style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}
+    >
       {/* Hidden File Inputs */}
-      <input 
-        type="file" 
-        ref={avatarInputRef} 
-        style={{ display: 'none' }} 
+      <input
+        type="file"
+        ref={avatarInputRef}
+        style={{ display: 'none' }}
         accept="image/*"
         onChange={(e) => {
           if (e.target.files && e.target.files[0]) {
@@ -209,11 +226,11 @@ export default function ProfileSettings() {
           }
         }}
       />
-      
-      <input 
-        type="file" 
-        ref={signatureInputRef} 
-        style={{ display: 'none' }} 
+
+      <input
+        type="file"
+        ref={signatureInputRef}
+        style={{ display: 'none' }}
         accept="image/*"
         onChange={(e) => {
           if (e.target.files && e.target.files[0]) {
@@ -223,7 +240,7 @@ export default function ProfileSettings() {
       />
 
       {/* ════════ TOP HERO BANNER & AVATAR ════════ */}
-      <ProfileHeroHeader 
+      <ProfileHeroHeader
         fullName={fullName}
         currentAvatarUrl={currentAvatarUrl}
         avatarLoadError={avatarLoadError}
@@ -243,14 +260,14 @@ export default function ProfileSettings() {
       {/* ════════ TAB CONTENT 1: BIO-DATA ════════ */}
       {activeTab === 'biodata' && (
         <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '1.5rem' }}>
-          <PersonalOverviewSidebar 
+          <PersonalOverviewSidebar
             email={profile.email}
             phoneNumber={phoneNumber || profile.phoneNumber}
             title={title}
             rolesList={rolesList}
           />
 
-          <BiodataForm 
+          <BiodataForm
             isEditing={isEditing}
             setIsEditing={setIsEditing}
             title={title}
@@ -274,7 +291,7 @@ export default function ProfileSettings() {
 
       {/* ════════ TAB CONTENT 2: ROLES & ACCESS ════════ */}
       {activeTab === 'roles' && (
-        <RolesTab 
+        <RolesTab
           rolesList={rolesList}
           userRole={userRole}
           onSwitchRole={(roleName: string) => setActiveRole && setActiveRole(roleName)}
@@ -283,7 +300,7 @@ export default function ProfileSettings() {
 
       {/* ════════ TAB CONTENT 3: PROFILE IMAGE ════════ */}
       {activeTab === 'avatar' && (
-        <AvatarTab 
+        <AvatarTab
           avatarFile={avatarFile}
           setAvatarFile={setAvatarFile}
           currentAvatarUrl={currentAvatarUrl}
@@ -297,7 +314,7 @@ export default function ProfileSettings() {
 
       {/* ════════ TAB CONTENT 4: SIGNATURE ════════ */}
       {activeTab === 'signature' && (
-        <SignatureTab 
+        <SignatureTab
           signatureFile={signatureFile}
           setSignatureFile={setSignatureFile}
           currentSignatureUrl={currentSignatureUrl}

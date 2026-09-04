@@ -3,17 +3,17 @@ import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { useDialog } from '../../../context/DialogContext';
 import { api } from '../../../services/api';
 import './ManualClearance.css';
-import { 
-  CreditCard, 
-  Users, 
-  CheckCircle, 
-  AlertCircle, 
-  Search, 
-  ShieldAlert, 
-  List, 
-  LayoutGrid, 
-  UserCheck, 
-  UserX 
+import {
+  CreditCard,
+  Users,
+  CheckCircle,
+  AlertCircle,
+  Search,
+  ShieldAlert,
+  List,
+  LayoutGrid,
+  UserCheck,
+  UserX,
 } from 'lucide-react';
 
 interface StudentItem {
@@ -48,14 +48,21 @@ export default function ManualClearance() {
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>('');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
-  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
+  const {
+    session: filterSession,
+    term: filterTerm,
+    setSession: setFilterSession,
+    setTerm: setFilterTerm,
+  } = useActiveTerm();
 
   const [toggling, setToggling] = useState<string | null>(null);
 
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const data = await api.get(`/setup/students?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
+      const data = await api.get(
+        `/setup/students?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`,
+      );
       setStudents(data);
       setError(null);
     } catch (err: any) {
@@ -70,7 +77,7 @@ export default function ManualClearance() {
       const classData = await api.get('/setup/classes');
       setClasses(classData);
     } catch (err) {
-      console.error("Failed to load classes");
+      console.error('Failed to load classes');
     }
   };
 
@@ -89,7 +96,7 @@ export default function ManualClearance() {
         studentId: studentId,
         session: filterSession,
         term: filterTerm,
-        isCleared: !currentStatus
+        isCleared: !currentStatus,
       });
       fetchStudents();
     } catch (err: any) {
@@ -108,25 +115,26 @@ export default function ManualClearance() {
   let filteredStudents = students;
   if (filterSearch) {
     const searchLower = filterSearch.toLowerCase();
-    filteredStudents = filteredStudents.filter(s => 
-      s.surname.toLowerCase().includes(searchLower) ||
-      s.firstName.toLowerCase().includes(searchLower) ||
-      (s.otherNames && s.otherNames.toLowerCase().includes(searchLower)) ||
-      (s.registrationNumber && s.registrationNumber.toLowerCase().includes(searchLower))
+    filteredStudents = filteredStudents.filter(
+      (s) =>
+        s.surname.toLowerCase().includes(searchLower) ||
+        s.firstName.toLowerCase().includes(searchLower) ||
+        (s.otherNames && s.otherNames.toLowerCase().includes(searchLower)) ||
+        (s.registrationNumber && s.registrationNumber.toLowerCase().includes(searchLower)),
     );
   }
   if (filterLevel) {
-    filteredStudents = filteredStudents.filter(s => s.level === filterLevel);
+    filteredStudents = filteredStudents.filter((s) => s.level === filterLevel);
   }
   if (filterClassId) {
-    filteredStudents = filteredStudents.filter(s => s.classId === filterClassId);
+    filteredStudents = filteredStudents.filter((s) => s.classId === filterClassId);
   }
 
-  const classOptions = filterLevel ? classes.filter(c => c.level === filterLevel) : classes;
+  const classOptions = filterLevel ? classes.filter((c) => c.level === filterLevel) : classes;
 
   // Metrics
   const totalStudents = students.length;
-  const clearedStudents = students.filter(s => s.isCleared).length;
+  const clearedStudents = students.filter((s) => s.isCleared).length;
   const pendingStudents = totalStudents - clearedStudents;
 
   return (
@@ -135,7 +143,10 @@ export default function ManualClearance() {
       <div className="clearance-page-header">
         <div>
           <h1 className="clearance-page-title">Manual Fee Clearance (Override)</h1>
-          <p className="clearance-page-subtitle">Administrative override hub to clear student fee status for report card generation and portal access</p>
+          <p className="clearance-page-subtitle">
+            Administrative override hub to clear student fee status for report card generation and
+            portal access
+          </p>
         </div>
       </div>
 
@@ -143,8 +154,14 @@ export default function ManualClearance() {
       <div className="clearance-override-banner">
         <ShieldAlert size={20} style={{ flexShrink: 0 }} />
         <div>
-          <strong style={{ display: 'block', fontWeight: 800 }}>Administrative Fee Override Utility</strong>
-          <span>Use this control to clear debt status for students who paid offline or prior to system deployment. Manual clearance unlocks result report cards for the active session and term.</span>
+          <strong style={{ display: 'block', fontWeight: 800 }}>
+            Administrative Fee Override Utility
+          </strong>
+          <span>
+            Use this control to clear debt status for students who paid offline or prior to system
+            deployment. Manual clearance unlocks result report cards for the active session and
+            term.
+          </span>
         </div>
       </div>
 
@@ -173,7 +190,9 @@ export default function ManualClearance() {
         <div className="clearance-metric-card">
           <div className="metric-info-box">
             <span className="metric-label">Outstanding / Not Cleared</span>
-            <span className="metric-number" style={{ color: '#BE123C' }}>{pendingStudents}</span>
+            <span className="metric-number" style={{ color: '#BE123C' }}>
+              {pendingStudents}
+            </span>
           </div>
           <div className="metric-icon-badge pending">
             <AlertCircle size={24} />
@@ -198,8 +217,8 @@ export default function ManualClearance() {
         <div className="clearance-search-group">
           <div className="clearance-search-box">
             <Search className="clearance-search-icon" size={16} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search by student name or reg. number..."
               value={filterSearch}
               onChange={(e) => setFilterSearch(e.target.value)}
@@ -207,10 +226,13 @@ export default function ManualClearance() {
           </div>
 
           {/* Level Filter */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterLevel} 
-            onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }}
+            value={filterLevel}
+            onChange={(e) => {
+              setFilterLevel(e.target.value);
+              setFilterClassId('');
+            }}
           >
             <option value="">All Academic Levels</option>
             <option value="Senior Secondary">Senior Secondary</option>
@@ -226,32 +248,41 @@ export default function ManualClearance() {
           </select>
 
           {/* Class Filter */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterClassId} 
+            value={filterClassId}
             onChange={(e) => setFilterClassId(e.target.value)}
           >
             <option value="">All Classes</option>
-            {classOptions.map(cls => (
-              <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section || ''}`}</option>
+            {classOptions.map((cls) => (
+              <option
+                key={cls.id}
+                value={cls.id}
+              >{`${cls.level} ${cls.name} ${cls.section || ''}`}</option>
             ))}
           </select>
 
           {/* Session Selector */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterSession} 
+            value={filterSession}
             onChange={(e) => setFilterSession(e.target.value)}
           >
-            <option value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}>{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
-            <option value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}>{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
-            <option value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}>{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
+            <option
+              value={`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}
+            >{`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`}</option>
+            <option
+              value={`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}
+            >{`${new Date().getFullYear() - 1}/${new Date().getFullYear()}`}</option>
+            <option
+              value={`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}
+            >{`${new Date().getFullYear() - 2}/${new Date().getFullYear() - 1}`}</option>
           </select>
 
           {/* Term Selector */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterTerm} 
+            value={filterTerm}
             onChange={(e) => setFilterTerm(e.target.value)}
           >
             <option value="First Term">First Term</option>
@@ -262,14 +293,14 @@ export default function ManualClearance() {
 
         {/* View Switcher Toggle */}
         <div className="view-mode-toggle">
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
             title="Table View"
           >
             <List size={16} /> Table View
           </button>
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
             title="Grid View"
@@ -283,11 +314,17 @@ export default function ManualClearance() {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="clearance-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="clearance-table-wrapper"
+          style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}
+        >
           Loading student fee clearance roster...
         </div>
       ) : filteredStudents.length === 0 ? (
-        <div className="clearance-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="clearance-table-wrapper"
+          style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}
+        >
           No students match your active filters.
         </div>
       ) : viewMode === 'table' ? (
@@ -304,7 +341,7 @@ export default function ManualClearance() {
               </tr>
             </thead>
             <tbody>
-              {filteredStudents.map(student => (
+              {filteredStudents.map((student) => (
                 <tr key={student.id}>
                   <td>
                     <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.85rem' }}>
@@ -319,35 +356,52 @@ export default function ManualClearance() {
                       <div>
                         <span className="teacher-name-title">{`${student.firstName} ${student.surname}`}</span>
                         {student.otherNames && (
-                          <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block' }}>{student.otherNames}</span>
+                          <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block' }}>
+                            {student.otherNames}
+                          </span>
                         )}
                       </div>
                     </div>
                   </td>
                   <td>
-                    <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700 }}>
+                    <span
+                      style={{
+                        background: '#EFF6FF',
+                        color: '#1E40AF',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '6px',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                      }}
+                    >
                       {student.className || 'Unassigned'}
                     </span>
                   </td>
                   <td>
                     <span className={`status-pill ${student.isCleared ? 'active' : 'inactive'}`}>
-                      <span className={student.isCleared ? 'status-dot' : 'status-dot-inactive'}></span>
+                      <span
+                        className={student.isCleared ? 'status-dot' : 'status-dot-inactive'}
+                      ></span>
                       {student.isCleared ? 'Cleared' : 'Not Cleared'}
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     {student.isCleared ? (
-                      <button 
+                      <button
                         className="btn-assign-action change"
                         onClick={() => handleToggleClearance(student.id, student.isCleared)}
                         disabled={toggling === student.id}
-                        style={{ border: '1px solid #FECDD3', color: '#E11D48', background: '#FFF1F2' }}
+                        style={{
+                          border: '1px solid #FECDD3',
+                          color: '#E11D48',
+                          background: '#FFF1F2',
+                        }}
                       >
                         <UserX size={15} />
                         {toggling === student.id ? 'Updating...' : 'Revoke Clearance'}
                       </button>
                     ) : (
-                      <button 
+                      <button
                         className="btn-assign-action new"
                         onClick={() => handleToggleClearance(student.id, student.isCleared)}
                         disabled={toggling === student.id}
@@ -365,16 +419,32 @@ export default function ManualClearance() {
       ) : (
         /* GRID CARDS VIEW */
         <div className="clearance-grid-wrapper">
-          {filteredStudents.map(student => (
+          {filteredStudents.map((student) => (
             <div key={student.id} className="clearance-grid-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
                 <div className="teacher-profile-cell">
                   <div className="teacher-avatar">
                     {getStudentInitials(student.firstName, student.surname)}
                   </div>
                   <div>
-                    <span className="teacher-name-title" style={{ fontSize: '1.05rem' }}>{`${student.firstName} ${student.surname}`}</span>
-                    <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginTop: '0.1rem' }}>
+                    <span
+                      className="teacher-name-title"
+                      style={{ fontSize: '1.05rem' }}
+                    >{`${student.firstName} ${student.surname}`}</span>
+                    <span
+                      style={{
+                        fontSize: '0.78rem',
+                        color: '#64748B',
+                        display: 'block',
+                        marginTop: '0.1rem',
+                      }}
+                    >
                       {student.registrationNumber || 'Pending Reg.'}
                     </span>
                   </div>
@@ -385,8 +455,25 @@ export default function ManualClearance() {
                 </span>
               </div>
 
-              <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, background: '#EFF6FF', color: '#1E40AF', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+              <div
+                style={{
+                  paddingTop: '0.85rem',
+                  borderTop: '1px solid #F1F5F9',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    background: '#EFF6FF',
+                    color: '#1E40AF',
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '6px',
+                  }}
+                >
                   {student.className || 'Unassigned'}
                 </span>
 
@@ -396,17 +483,24 @@ export default function ManualClearance() {
               </div>
 
               {student.isCleared ? (
-                <button 
+                <button
                   className="btn-assign-action change"
                   onClick={() => handleToggleClearance(student.id, student.isCleared)}
                   disabled={toggling === student.id}
-                  style={{ width: '100%', justifyContent: 'center', marginTop: 'auto', border: '1px solid #FECDD3', color: '#E11D48', background: '#FFF1F2' }}
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    marginTop: 'auto',
+                    border: '1px solid #FECDD3',
+                    color: '#E11D48',
+                    background: '#FFF1F2',
+                  }}
                 >
                   <UserX size={15} />
                   {toggling === student.id ? 'Updating...' : 'Revoke Clearance'}
                 </button>
               ) : (
-                <button 
+                <button
                   className="btn-assign-action new"
                   onClick={() => handleToggleClearance(student.id, student.isCleared)}
                   disabled={toggling === student.id}

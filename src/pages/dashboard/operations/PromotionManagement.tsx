@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { api } from '../../../services/api';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  GraduationCap, 
-  Users, 
-  ArrowRightCircle, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  GraduationCap,
+  Users,
+  ArrowRightCircle,
+  CheckCircle,
+  AlertTriangle,
   FileText,
   X,
   Search,
@@ -28,7 +28,7 @@ import {
   UserCheck,
   UserX,
   Award,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
@@ -82,7 +82,7 @@ export default function PromotionManagement() {
   const queryClient = useQueryClient();
   const { showConfirm } = useDialog();
   const year = new Date().getFullYear();
-  
+
   // Tab & View States
   const [activeTab, setActiveTab] = useState<'promotion' | 'report' | 'history'>('promotion');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
@@ -97,10 +97,15 @@ export default function PromotionManagement() {
   }>({
     isOpen: false,
     message: '',
-    type: 'info'
+    type: 'info',
   });
 
-  const showNotification = (message: string, type: 'success' | 'warning' | 'error' | 'info' = 'info', title?: string, action?: { label: string; onClick: () => void }) => {
+  const showNotification = (
+    message: string,
+    type: 'success' | 'warning' | 'error' | 'info' = 'info',
+    title?: string,
+    action?: { label: string; onClick: () => void },
+  ) => {
     setNotification({ isOpen: true, message, type, title, action });
   };
 
@@ -128,7 +133,7 @@ export default function PromotionManagement() {
     queryFn: async () => {
       const res = await api.get('/setup/classes');
       return res;
-    }
+    },
   });
 
   // 2. Fetch Report (By Batch ID for Class Promotion Tab)
@@ -156,7 +161,7 @@ export default function PromotionManagement() {
       }
     },
     enabled: !!reportClassId && activeTab === 'report',
-    retry: false
+    retry: false,
   });
 
   // 4. Fetch All Promotion Batches for Approved & Historical Lists Tab
@@ -176,25 +181,27 @@ export default function PromotionManagement() {
     onSuccess: (data) => {
       if (data.batchId) {
         setBatchId(data.batchId);
-        showNotification('Promotion evaluation generated successfully! Review student decisions below.', 'success', 'List Generated');
+        showNotification(
+          'Promotion evaluation generated successfully! Review student decisions below.',
+          'success',
+          'List Generated',
+        );
       }
     },
     onError: (err: any) => {
       const errMsg = err.message || 'Failed to generate promotion list.';
-      if (errMsg.toLowerCase().includes('already approved') || errMsg.toLowerCase().includes('already exists')) {
-        showNotification(
-          errMsg,
-          'warning',
-          'Promotion Already Executed',
-          {
-            label: 'View Approved Batches',
-            onClick: () => setActiveTab('history')
-          }
-        );
+      if (
+        errMsg.toLowerCase().includes('already approved') ||
+        errMsg.toLowerCase().includes('already exists')
+      ) {
+        showNotification(errMsg, 'warning', 'Promotion Already Executed', {
+          label: 'View Approved Batches',
+          onClick: () => setActiveTab('history'),
+        });
       } else {
         showNotification(errMsg, 'error', 'Generation Error');
       }
-    }
+    },
   });
 
   const approveBatchMutation = useMutation({
@@ -202,14 +209,18 @@ export default function PromotionManagement() {
       return await api.post('/academics/promotion/approve', { batchId });
     },
     onSuccess: () => {
-      showNotification('Promotions executed successfully! Students have been transitioned to their target classes.', 'success', 'Execution Complete');
+      showNotification(
+        'Promotions executed successfully! Students have been transitioned to their target classes.',
+        'success',
+        'Execution Complete',
+      );
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
       showNotification(err.message || 'Failed to approve promotions.', 'error', 'Approval Error');
-    }
+    },
   });
 
   const revertBatchMutation = useMutation({
@@ -219,14 +230,18 @@ export default function PromotionManagement() {
       return await api.post('/academics/promotion/revert', { batchId: idToUse });
     },
     onSuccess: () => {
-      showNotification('Promotion batch successfully revoked & unlocked! You can now edit student decisions or regenerate.', 'success', 'Batch Unlocked');
+      showNotification(
+        'Promotion batch successfully revoked & unlocked! You can now edit student decisions or regenerate.',
+        'success',
+        'Batch Unlocked',
+      );
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
       showNotification(err.message || 'Failed to unlock promotion batch.', 'error', 'Revert Error');
-    }
+    },
   });
 
   const overrideMutation = useMutation({
@@ -235,14 +250,22 @@ export default function PromotionManagement() {
     },
     onSuccess: () => {
       setShowOverrideModal(false);
-      showNotification('Student promotion decision updated successfully.', 'success', 'Status Overridden');
+      showNotification(
+        'Student promotion decision updated successfully.',
+        'success',
+        'Status Overridden',
+      );
       queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
       queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
       queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
     },
     onError: (err: any) => {
-      showNotification(err.message || 'Failed to override student decision.', 'error', 'Update Error');
-    }
+      showNotification(
+        err.message || 'Failed to override student decision.',
+        'error',
+        'Update Error',
+      );
+    },
   });
 
   const deleteBatchMutation = useMutation({
@@ -257,7 +280,7 @@ export default function PromotionManagement() {
     },
     onError: (err: any) => {
       showNotification(err.message || 'Failed to delete promotion batch.', 'error', 'Delete Error');
-    }
+    },
   });
 
   const handleCurrentClassChange = (newClassId: string) => {
@@ -266,7 +289,7 @@ export default function PromotionManagement() {
       setTargetClassId('');
       return;
     }
-    const currentClass = classes.find(c => c.id === newClassId);
+    const currentClass = classes.find((c) => c.id === newClassId);
     if (currentClass) {
       if (targetClassId === newClassId) {
         setTargetClassId('');
@@ -277,7 +300,7 @@ export default function PromotionManagement() {
         const currentNum = parseInt(match[0], 10);
         const nextNum = currentNum + 1;
         const predictedName = name.replace(String(currentNum), String(nextNum)).toLowerCase();
-        const nextClass = classes.find(c => c.name.trim().toLowerCase() === predictedName);
+        const nextClass = classes.find((c) => c.name.trim().toLowerCase() === predictedName);
         if (nextClass && nextClass.id !== newClassId) {
           setTargetClassId(nextClass.id);
           return;
@@ -292,18 +315,26 @@ export default function PromotionManagement() {
   const handleGenerateList = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedClassId || !nextSession) {
-      showNotification('Please select a current class and specify the target academic session.', 'warning', 'Missing Selection');
+      showNotification(
+        'Please select a current class and specify the target academic session.',
+        'warning',
+        'Missing Selection',
+      );
       return;
     }
     if (targetClassId && selectedClassId === targetClassId) {
-      showNotification('Target class cannot be identical to current class! Promoting a student to their current class is logically invalid.', 'error', 'Invalid Target Class');
+      showNotification(
+        'Target class cannot be identical to current class! Promoting a student to their current class is logically invalid.',
+        'error',
+        'Invalid Target Class',
+      );
       return;
     }
     generateBatchMutation.mutate({
       classId: selectedClassId,
       nextClassId: targetClassId || null,
       session: nextSession,
-      minimumPromotionScore: minScore
+      minimumPromotionScore: minScore,
     });
   };
 
@@ -315,8 +346,8 @@ export default function PromotionManagement() {
         title: 'Confirm Promotion Execution',
         type: 'warning',
         confirmText: 'Execute Promotions',
-        cancelText: 'Cancel'
-      }
+        cancelText: 'Cancel',
+      },
     );
     if (confirmed) {
       approveBatchMutation.mutate();
@@ -325,7 +356,8 @@ export default function PromotionManagement() {
 
   const openOverrideModal = (recId: string, currentDecision: string) => {
     setOverrideRecId(recId);
-    const defaultTargetDecision = (currentDecision === 'Held Back' || currentDecision === 'Repeat') ? 'Promotable' : 'Held Back';
+    const defaultTargetDecision =
+      currentDecision === 'Held Back' || currentDecision === 'Repeat' ? 'Promotable' : 'Held Back';
     setOverrideDecision(defaultTargetDecision);
     setOverrideReason('');
     setShowOverrideModal(true);
@@ -334,28 +366,41 @@ export default function PromotionManagement() {
   const handleOverrideSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!overrideReason.trim()) {
-      showNotification('Please provide an explicit reason note for overriding this decision for audit logs.', 'warning', 'Reason Required');
+      showNotification(
+        'Please provide an explicit reason note for overriding this decision for audit logs.',
+        'warning',
+        'Reason Required',
+      );
       return;
     }
     overrideMutation.mutate({
       recommendationId: overrideRecId,
       newDecision: overrideDecision,
-      reasonNote: overrideReason
+      reasonNote: overrideReason,
     });
   };
 
   const exportToCSV = (records: StudentRecord[], className: string) => {
     if (!records || records.length === 0) return;
-    const headers = ['S/N', 'Student Name', 'Registration Number', 'Annual Average (%)', 'System Recommendation', 'Final Decision'];
+    const headers = [
+      'S/N',
+      'Student Name',
+      'Registration Number',
+      'Annual Average (%)',
+      'System Recommendation',
+      'Final Decision',
+    ];
     const rows = records.map((r, i) => [
       i + 1,
       `"${r.studentName}"`,
       `"${r.registrationNumber}"`,
       `${r.annualAverage.toFixed(2)}%`,
       `"${r.systemRecommendation}"`,
-      `"${r.finalDecision}"`
+      `"${r.finalDecision}"`,
     ]);
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -373,27 +418,30 @@ export default function PromotionManagement() {
   };
 
   // Filtering for Class Promotion Tab
-  const promoFilteredRecords = batchReport?.records.filter(r => 
-    r.studentName.toLowerCase().includes(promoSearchQuery.toLowerCase()) || 
-    r.registrationNumber.toLowerCase().includes(promoSearchQuery.toLowerCase())
+  const promoFilteredRecords = batchReport?.records.filter(
+    (r) =>
+      r.studentName.toLowerCase().includes(promoSearchQuery.toLowerCase()) ||
+      r.registrationNumber.toLowerCase().includes(promoSearchQuery.toLowerCase()),
   );
 
   // Filtering for Promotion Report Tab
-  const reportFilteredRecords = classReport?.records.filter(r => {
-    const matchesSearch = r.studentName.toLowerCase().includes(reportSearchQuery.toLowerCase()) || r.registrationNumber.toLowerCase().includes(reportSearchQuery.toLowerCase());
+  const reportFilteredRecords = classReport?.records.filter((r) => {
+    const matchesSearch =
+      r.studentName.toLowerCase().includes(reportSearchQuery.toLowerCase()) ||
+      r.registrationNumber.toLowerCase().includes(reportSearchQuery.toLowerCase());
     const matchesStatus = reportStatusFilter === 'All' || r.finalDecision === reportStatusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
     <div className="promo-page-container">
-      <SlideNotification 
+      <SlideNotification
         isOpen={notification.isOpen}
         title={notification.title}
         message={notification.message}
         type={notification.type}
         action={notification.action}
-        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setNotification((prev) => ({ ...prev, isOpen: false }))}
       />
 
       {/* Page Header */}
@@ -403,18 +451,28 @@ export default function PromotionManagement() {
             <GraduationCap size={28} color="var(--primary-color, #000080)" />
             Student Promotion Management
           </h1>
-          <p className="promo-page-subtitle">Configure grade thresholds, generate class transition rosters, review overrides, and execute annual promotions</p>
+          <p className="promo-page-subtitle">
+            Configure grade thresholds, generate class transition rosters, review overrides, and
+            execute annual promotions
+          </p>
         </div>
 
         {activeTab === 'promotion' && batchReport && (
-          <button className="btn-execute-promo-header" onClick={handleApprove} disabled={approveBatchMutation.isPending}>
+          <button
+            className="btn-execute-promo-header"
+            onClick={handleApprove}
+            disabled={approveBatchMutation.isPending}
+          >
             <CheckCircle size={18} />
             {approveBatchMutation.isPending ? 'Executing...' : 'Execute & Approve Batch'}
           </button>
         )}
 
         {activeTab === 'report' && classReport && (
-          <button className="btn-execute-promo-header" onClick={() => exportToCSV(reportFilteredRecords || [], classReport.class)}>
+          <button
+            className="btn-execute-promo-header"
+            onClick={() => exportToCSV(reportFilteredRecords || [], classReport.class)}
+          >
             <Download size={18} />
             Export CSV Report
           </button>
@@ -474,19 +532,19 @@ export default function PromotionManagement() {
 
       {/* Top Executive Navigation Tabs */}
       <div className="promo-tabs-container">
-        <button 
+        <button
           className={`promo-tab-btn ${activeTab === 'promotion' ? 'active' : ''}`}
           onClick={() => setActiveTab('promotion')}
         >
           <PlayCircle size={17} /> Class Promotion (Execute)
         </button>
-        <button 
+        <button
           className={`promo-tab-btn ${activeTab === 'report' ? 'active' : ''}`}
           onClick={() => setActiveTab('report')}
         >
           <FileText size={17} /> Promotion Report (View & Export)
         </button>
-        <button 
+        <button
           className={`promo-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
         >
@@ -514,9 +572,19 @@ export default function PromotionManagement() {
                 <label>Current Class *</label>
                 <div className="promo-input-wrapper">
                   <BookOpen className="field-icon" size={16} />
-                  <select className="promo-select-input" value={selectedClassId} onChange={e => handleCurrentClassChange(e.target.value)} required>
+                  <select
+                    className="promo-select-input"
+                    value={selectedClassId}
+                    onChange={(e) => handleCurrentClassChange(e.target.value)}
+                    required
+                  >
                     <option value="">Select Current Class...</option>
-                    {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {!classesLoading &&
+                      classes.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -525,9 +593,16 @@ export default function PromotionManagement() {
                 <label>Target Academic Session *</label>
                 <div className="promo-input-wrapper">
                   <Calendar className="field-icon" size={16} />
-                  <select className="promo-select-input" value={nextSession} onChange={e => setNextSession(e.target.value)} required>
-                    {getSessionOptions(nextSession).map(s => (
-                      <option key={s} value={s}>{s}</option>
+                  <select
+                    className="promo-select-input"
+                    value={nextSession}
+                    onChange={(e) => setNextSession(e.target.value)}
+                    required
+                  >
+                    {getSessionOptions(nextSession).map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -537,9 +612,18 @@ export default function PromotionManagement() {
                 <label>Target Class (Destination)</label>
                 <div className="promo-input-wrapper">
                   <GraduationCap className="field-icon" size={16} />
-                  <select className="promo-select-input" value={targetClassId} onChange={e => setTargetClassId(e.target.value)}>
+                  <select
+                    className="promo-select-input"
+                    value={targetClassId}
+                    onChange={(e) => setTargetClassId(e.target.value)}
+                  >
                     <option value="">-- Graduating Class (Leave Empty if Graduating) --</option>
-                    {!classesLoading && classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {!classesLoading &&
+                      classes.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -548,11 +632,11 @@ export default function PromotionManagement() {
                 <label>Pass Score (%) *</label>
                 <div className="promo-input-wrapper">
                   <Percent className="field-icon" size={16} />
-                  <input 
-                    type="number" 
-                    className="promo-select-input" 
-                    value={minScore} 
-                    onChange={e => setMinScore(Number(e.target.value))}
+                  <input
+                    type="number"
+                    className="promo-select-input"
+                    value={minScore}
+                    onChange={(e) => setMinScore(Number(e.target.value))}
                     min={0}
                     max={100}
                     required
@@ -560,9 +644,15 @@ export default function PromotionManagement() {
                 </div>
               </div>
 
-              <button className="btn-generate-promo" type="submit" disabled={generateBatchMutation.isPending}>
+              <button
+                className="btn-generate-promo"
+                type="submit"
+                disabled={generateBatchMutation.isPending}
+              >
                 <ArrowRightCircle size={18} />
-                {generateBatchMutation.isPending ? 'Generating Roster...' : 'Generate Promotion List'}
+                {generateBatchMutation.isPending
+                  ? 'Generating Roster...'
+                  : 'Generate Promotion List'}
               </button>
             </form>
           </div>
@@ -578,34 +668,37 @@ export default function PromotionManagement() {
               <div className="promo-table-toolbar">
                 <div>
                   <h3 className="promo-table-title">
-                    Promotion Candidate List — {batchReport.class} <ChevronRight size={16} inline-block /> {batchReport.nextClass || 'Graduating Class'}
+                    Promotion Candidate List — {batchReport.class}{' '}
+                    <ChevronRight size={16} inline-block />{' '}
+                    {batchReport.nextClass || 'Graduating Class'}
                   </h3>
                   <span className="promo-table-subtitle">
-                    Generated on {new Date(batchReport.dateCreated).toLocaleDateString()} • Session {batchReport.session}
+                    Generated on {new Date(batchReport.dateCreated).toLocaleDateString()} • Session{' '}
+                    {batchReport.session}
                   </span>
                 </div>
 
                 <div className="promo-toolbar-actions">
                   <div className="promo-search-box">
                     <Search className="promo-search-icon" size={15} />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder="Search student name or reg..."
                       value={promoSearchQuery}
-                      onChange={e => setPromoSearchQuery(e.target.value)}
+                      onChange={(e) => setPromoSearchQuery(e.target.value)}
                     />
                   </div>
 
                   {/* View Toggle matching reference design */}
                   <div className="promo-view-toggle">
-                    <button 
+                    <button
                       className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
                       onClick={() => setViewMode('table')}
                       title="Table View"
                     >
                       <List size={15} /> Table View
                     </button>
-                    <button 
+                    <button
                       className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
                       onClick={() => setViewMode('grid')}
                       title="Grid Cards"
@@ -615,9 +708,15 @@ export default function PromotionManagement() {
                   </div>
 
                   {!isReadOnly && (
-                    <button className="btn-save-grading" onClick={handleApprove} disabled={approveBatchMutation.isPending}>
+                    <button
+                      className="btn-save-grading"
+                      onClick={handleApprove}
+                      disabled={approveBatchMutation.isPending}
+                    >
                       <CheckCircle size={18} />
-                      {approveBatchMutation.isPending ? 'Executing...' : 'Execute & Approve Promotions'}
+                      {approveBatchMutation.isPending
+                        ? 'Executing...'
+                        : 'Execute & Approve Promotions'}
                     </button>
                   )}
                 </div>
@@ -637,7 +736,7 @@ export default function PromotionManagement() {
                   </thead>
                   <tbody>
                     {promoFilteredRecords && promoFilteredRecords.length > 0 ? (
-                      promoFilteredRecords.map(rec => (
+                      promoFilteredRecords.map((rec) => (
                         <tr key={rec.recommendationId}>
                           <td>
                             <div className="teacher-profile-cell">
@@ -646,32 +745,47 @@ export default function PromotionManagement() {
                               </div>
                               <div className="student-info-col">
                                 <span className="teacher-name-title">{rec.studentName}</span>
-                                {rec.hasOverride && <span className="override-badge-sub">Overridden</span>}
+                                {rec.hasOverride && (
+                                  <span className="override-badge-sub">Overridden</span>
+                                )}
                               </div>
                             </div>
                           </td>
-                          <td><span className="reg-badge">{rec.registrationNumber}</span></td>
+                          <td>
+                            <span className="reg-badge">{rec.registrationNumber}</span>
+                          </td>
                           <td>
                             <div className="score-pill-box">
-                              <span className={`score-badge ${rec.annualAverage >= minScore ? 'pass' : 'fail'}`}>
+                              <span
+                                className={`score-badge ${rec.annualAverage >= minScore ? 'pass' : 'fail'}`}
+                              >
                                 {rec.annualAverage.toFixed(2)}%
                               </span>
                             </div>
                           </td>
                           <td>
-                            <span className={`status-pill ${rec.systemRecommendation === 'Promotable' ? 'active' : rec.systemRecommendation === 'Graduating' ? 'info' : 'inactive'}`}>
+                            <span
+                              className={`status-pill ${rec.systemRecommendation === 'Promotable' ? 'active' : rec.systemRecommendation === 'Graduating' ? 'info' : 'inactive'}`}
+                            >
                               {rec.systemRecommendation}
                             </span>
                           </td>
                           <td>
-                            <span className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : 'inactive'}`}>
+                            <span
+                              className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : 'inactive'}`}
+                            >
                               {rec.finalDecision}
                             </span>
                           </td>
                           <td style={{ textAlign: 'center' }}>
-                            <button 
+                            <button
                               className="btn-action-override"
-                              onClick={() => openOverrideModal(rec.recommendationId || rec.studentId, rec.finalDecision)}
+                              onClick={() =>
+                                openOverrideModal(
+                                  rec.recommendationId || rec.studentId,
+                                  rec.finalDecision,
+                                )
+                              }
                             >
                               <Edit3 size={14} />
                               Override
@@ -691,7 +805,7 @@ export default function PromotionManagement() {
               ) : (
                 <div className="promo-grid-wrapper">
                   {promoFilteredRecords && promoFilteredRecords.length > 0 ? (
-                    promoFilteredRecords.map(rec => (
+                    promoFilteredRecords.map((rec) => (
                       <div className="promo-grid-card" key={rec.recommendationId}>
                         <div className="card-top-header">
                           <div className="teacher-avatar">
@@ -706,14 +820,18 @@ export default function PromotionManagement() {
                         <div className="card-metrics-row">
                           <div className="card-metric-col">
                             <span className="card-metric-lbl">Annual Avg</span>
-                            <span className={`score-badge ${rec.annualAverage >= minScore ? 'pass' : 'fail'}`}>
+                            <span
+                              className={`score-badge ${rec.annualAverage >= minScore ? 'pass' : 'fail'}`}
+                            >
                               {rec.annualAverage.toFixed(2)}%
                             </span>
                           </div>
 
                           <div className="card-metric-col">
                             <span className="card-metric-lbl">Final Decision</span>
-                            <span className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : 'inactive'}`}>
+                            <span
+                              className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : 'inactive'}`}
+                            >
                               {rec.finalDecision}
                             </span>
                           </div>
@@ -721,9 +839,14 @@ export default function PromotionManagement() {
 
                         <div className="card-footer-actions">
                           <span className="system-rec-lbl">System: {rec.systemRecommendation}</span>
-                          <button 
+                          <button
                             className="btn-action-override"
-                            onClick={() => openOverrideModal(rec.recommendationId || rec.studentId, rec.finalDecision)}
+                            onClick={() =>
+                              openOverrideModal(
+                                rec.recommendationId || rec.studentId,
+                                rec.finalDecision,
+                              )
+                            }
                           >
                             <Edit3 size={14} /> Override
                           </button>
@@ -742,7 +865,10 @@ export default function PromotionManagement() {
                 <GraduationCap size={36} color="var(--primary-color, #000080)" />
               </div>
               <h3>No Promotion Batch Selected</h3>
-              <p>Select a current class above and click <strong>Generate Promotion List</strong> to initiate student transition evaluations.</p>
+              <p>
+                Select a current class above and click <strong>Generate Promotion List</strong> to
+                initiate student transition evaluations.
+              </p>
             </div>
           )}
         </div>
@@ -766,9 +892,17 @@ export default function PromotionManagement() {
                 <label>Select Class *</label>
                 <div className="promo-input-wrapper">
                   <BookOpen className="field-icon" size={16} />
-                  <select className="promo-select-input" value={reportClassId} onChange={e => setReportClassId(e.target.value)}>
+                  <select
+                    className="promo-select-input"
+                    value={reportClassId}
+                    onChange={(e) => setReportClassId(e.target.value)}
+                  >
                     <option value="">-- Choose Class to Audit --</option>
-                    {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {classes.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -777,7 +911,11 @@ export default function PromotionManagement() {
                 <label>Status Filter</label>
                 <div className="promo-input-wrapper">
                   <Filter className="field-icon" size={16} />
-                  <select className="promo-select-input" value={reportStatusFilter} onChange={e => setReportStatusFilter(e.target.value)}>
+                  <select
+                    className="promo-select-input"
+                    value={reportStatusFilter}
+                    onChange={(e) => setReportStatusFilter(e.target.value)}
+                  >
                     <option value="All">All Decisions</option>
                     <option value="Promotable">Promotable</option>
                     <option value="Repeat">Repeat / Hold Back</option>
@@ -787,17 +925,17 @@ export default function PromotionManagement() {
 
               <div className="promo-search-box" style={{ flex: 1.2, minWidth: '240px' }}>
                 <Search className="promo-search-icon" size={15} />
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Search student name or reg..."
                   value={reportSearchQuery}
-                  onChange={e => setReportSearchQuery(e.target.value)}
+                  onChange={(e) => setReportSearchQuery(e.target.value)}
                 />
               </div>
 
               {classReport && (
-                <button 
-                  className="btn-add-rule" 
+                <button
+                  className="btn-add-rule"
                   onClick={() => exportToCSV(reportFilteredRecords || [], classReport.class)}
                   style={{ height: '42px', marginTop: 'auto' }}
                 >
@@ -820,18 +958,19 @@ export default function PromotionManagement() {
                     Latest Approved Promotion Report — {classReport.class}
                   </h3>
                   <span className="promo-table-subtitle">
-                    Session {classReport.session} • Total Students: {classReport.summary.totalStudents}
+                    Session {classReport.session} • Total Students:{' '}
+                    {classReport.summary.totalStudents}
                   </span>
                 </div>
 
                 <div className="promo-view-toggle">
-                  <button 
+                  <button
                     className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
                     onClick={() => setViewMode('table')}
                   >
                     <List size={15} /> Table View
                   </button>
-                  <button 
+                  <button
                     className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
                     onClick={() => setViewMode('grid')}
                   >
@@ -853,7 +992,7 @@ export default function PromotionManagement() {
                   </thead>
                   <tbody>
                     {reportFilteredRecords && reportFilteredRecords.length > 0 ? (
-                      reportFilteredRecords.map(rec => (
+                      reportFilteredRecords.map((rec) => (
                         <tr key={rec.recommendationId}>
                           <td>
                             <div className="teacher-profile-cell">
@@ -863,15 +1002,25 @@ export default function PromotionManagement() {
                               <span className="teacher-name-title">{rec.studentName}</span>
                             </div>
                           </td>
-                          <td><span className="reg-badge">{rec.registrationNumber}</span></td>
-                          <td><strong>{rec.annualAverage.toFixed(2)}%</strong></td>
-                          <td><span className="status-pill active">{rec.systemRecommendation}</span></td>
-                          <td><span className="status-pill active">{rec.finalDecision}</span></td>
+                          <td>
+                            <span className="reg-badge">{rec.registrationNumber}</span>
+                          </td>
+                          <td>
+                            <strong>{rec.annualAverage.toFixed(2)}%</strong>
+                          </td>
+                          <td>
+                            <span className="status-pill active">{rec.systemRecommendation}</span>
+                          </td>
+                          <td>
+                            <span className="status-pill active">{rec.finalDecision}</span>
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="empty-table-cell">No matching promotion records found.</td>
+                        <td colSpan={5} className="empty-table-cell">
+                          No matching promotion records found.
+                        </td>
                       </tr>
                     )}
                   </tbody>
@@ -879,7 +1028,7 @@ export default function PromotionManagement() {
               ) : (
                 <div className="promo-grid-wrapper">
                   {reportFilteredRecords && reportFilteredRecords.length > 0 ? (
-                    reportFilteredRecords.map(rec => (
+                    reportFilteredRecords.map((rec) => (
                       <div className="promo-grid-card" key={rec.recommendationId}>
                         <div className="card-top-header">
                           <div className="teacher-avatar">
@@ -893,7 +1042,9 @@ export default function PromotionManagement() {
                         <div className="card-metrics-row">
                           <div className="card-metric-col">
                             <span className="card-metric-lbl">Annual Avg</span>
-                            <span className="score-badge pass">{rec.annualAverage.toFixed(2)}%</span>
+                            <span className="score-badge pass">
+                              {rec.annualAverage.toFixed(2)}%
+                            </span>
                           </div>
                           <div className="card-metric-col">
                             <span className="card-metric-lbl">Final Decision</span>
@@ -914,7 +1065,10 @@ export default function PromotionManagement() {
                 <FileText size={36} color="var(--primary-color, #000080)" />
               </div>
               <h3>No Class Selected</h3>
-              <p>Select a class from the dropdown above to inspect historical promotion reports and export CSV summaries.</p>
+              <p>
+                Select a class from the dropdown above to inspect historical promotion reports and
+                export CSV summaries.
+              </p>
             </div>
           )}
         </div>
@@ -928,11 +1082,10 @@ export default function PromotionManagement() {
           <div className="promo-table-wrapper">
             <div className="promo-table-toolbar">
               <div>
-                <h3 className="promo-table-title">
-                  Executed & Approved Promotion Batches
-                </h3>
+                <h3 className="promo-table-title">Executed & Approved Promotion Batches</h3>
                 <span className="promo-table-subtitle">
-                  Audit log of historical promotion executions with options to revoke and revert class transitions
+                  Audit log of historical promotion executions with options to revoke and revert
+                  class transitions
                 </span>
               </div>
             </div>
@@ -964,9 +1117,10 @@ export default function PromotionManagement() {
                 <tbody>
                   {promotionBatches.map((batch: any) => {
                     const rawDate = batch.createdAt || batch.dateCreated || batch.approvedAt;
-                    const formattedDate = rawDate && !isNaN(new Date(rawDate).getTime()) 
-                      ? new Date(rawDate).toLocaleDateString() 
-                      : 'N/A';
+                    const formattedDate =
+                      rawDate && !isNaN(new Date(rawDate).getTime())
+                        ? new Date(rawDate).toLocaleDateString()
+                        : 'N/A';
                     const isApproved = batch.isApproved || batch.status === 'Approved';
 
                     return (
@@ -975,10 +1129,16 @@ export default function PromotionManagement() {
                           <div className="batch-transition-cell">
                             <span className="batch-class-name">{batch.className}</span>
                             <ChevronRight size={16} className="transition-arrow" />
-                            <span className="batch-target-name">{batch.targetClassName || batch.nextClassName || 'Graduating Senior Class'}</span>
+                            <span className="batch-target-name">
+                              {batch.targetClassName ||
+                                batch.nextClassName ||
+                                'Graduating Senior Class'}
+                            </span>
                           </div>
                         </td>
-                        <td><span className="reg-badge">{batch.session}</span></td>
+                        <td>
+                          <span className="reg-badge">{batch.session}</span>
+                        </td>
                         <td>{formattedDate}</td>
                         <td>
                           <span className={`status-pill ${isApproved ? 'active' : 'inactive'}`}>
@@ -986,14 +1146,21 @@ export default function PromotionManagement() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              justifyContent: 'center',
+                            }}
+                          >
                             {isApproved && (
-                              <button 
+                              <button
                                 className="btn-revoke-batch"
                                 onClick={async () => {
                                   const confirmRevert = await showConfirm(
                                     `Are you sure you want to revoke and unlock promotions for ${batch.className}? Students will be returned to their previous class placement.`,
-                                    { title: 'Confirm Promotion Reversal', type: 'warning' }
+                                    { title: 'Confirm Promotion Reversal', type: 'warning' },
                                   );
                                   if (confirmRevert) revertBatchMutation.mutate(batch.id);
                                 }}
@@ -1003,12 +1170,17 @@ export default function PromotionManagement() {
                               </button>
                             )}
 
-                            <button 
+                            <button
                               className="btn-delete-batch"
                               onClick={async () => {
                                 const confirmDelete = await showConfirm(
                                   `Are you sure you want to permanently delete the promotion batch for ${batch.className}? This action cannot be undone.`,
-                                  { title: 'Confirm Batch Deletion', type: 'warning', confirmText: 'Delete Batch', cancelText: 'Cancel' }
+                                  {
+                                    title: 'Confirm Batch Deletion',
+                                    type: 'warning',
+                                    confirmText: 'Delete Batch',
+                                    cancelText: 'Cancel',
+                                  },
                                 );
                                 if (confirmDelete) deleteBatchMutation.mutate(batch.id);
                               }}
@@ -1044,7 +1216,11 @@ export default function PromotionManagement() {
                 <label>Override Decision *</label>
                 <div className="promo-input-wrapper">
                   <UserCheck className="field-icon" size={16} />
-                  <select className="promo-select-input" value={overrideDecision} onChange={e => setOverrideDecision(e.target.value)}>
+                  <select
+                    className="promo-select-input"
+                    value={overrideDecision}
+                    onChange={(e) => setOverrideDecision(e.target.value)}
+                  >
                     <option value="Promotable">Promotable (Promote to Next Class)</option>
                     <option value="Held Back">Held Back (Repeat Current Class)</option>
                     <option value="Graduating">Graduating</option>
@@ -1055,19 +1231,29 @@ export default function PromotionManagement() {
 
               <div className="promo-form-group">
                 <label>Audit Reason Note *</label>
-                <textarea 
-                  className="promo-textarea-input" 
-                  rows={4} 
+                <textarea
+                  className="promo-textarea-input"
+                  rows={4}
                   placeholder="Provide an explicit reason for overriding this recommendation for audit logging..."
                   value={overrideReason}
-                  onChange={e => setOverrideReason(e.target.value)}
+                  onChange={(e) => setOverrideReason(e.target.value)}
                   required
                 />
               </div>
 
               <div className="promo-modal-footer">
-                <button type="button" className="btn-modal-cancel" onClick={() => setShowOverrideModal(false)}>Cancel</button>
-                <button type="submit" className="btn-save-grading" disabled={overrideMutation.isPending}>
+                <button
+                  type="button"
+                  className="btn-modal-cancel"
+                  onClick={() => setShowOverrideModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-save-grading"
+                  disabled={overrideMutation.isPending}
+                >
                   {overrideMutation.isPending ? 'Saving...' : 'Save Override'}
                 </button>
               </div>

@@ -60,16 +60,16 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           setSchoolProfile(profile);
         } catch {
           setSchoolProfile({
-            schoolName: "DOTMOND SCHOOL",
-            address: "Happyland Estate, Ajah, Lagos State, Nigeria",
-            logoUrl: "",
-            primaryColor: "#000080",
-            secondaryColor: "#C4293A",
-            currentSession: "2026/2027"
+            schoolName: 'DOTMOND SCHOOL',
+            address: 'Happyland Estate, Ajah, Lagos State, Nigeria',
+            logoUrl: '',
+            primaryColor: '#000080',
+            secondaryColor: '#C4293A',
+            currentSession: '2026/2027',
           });
         }
       } catch (err: any) {
-        setError(err.message || "Failed to load staff ID card data.");
+        setError(err.message || 'Failed to load staff ID card data.');
       } finally {
         setLoading(false);
       }
@@ -93,7 +93,9 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
         <div className="id-card-modal-content">
           <h2>Error</h2>
           <p>{error}</p>
-          <button className="btn btn-secondary" onClick={onClose}>Close</button>
+          <button className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
         </div>
       </div>
     );
@@ -105,9 +107,12 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return fullUrl.includes('?') ? `${fullUrl}&t=${Date.now()}` : `${fullUrl}?t=${Date.now()}`;
   };
 
-  const rawSchoolName = schoolProfile?.schoolName || "DOTMOND SCHOOL";
+  const rawSchoolName = schoolProfile?.schoolName || 'DOTMOND SCHOOL';
   const fullSchoolTitle = rawSchoolName.toUpperCase();
-  const schoolAddress = idCardData?.branchAddress || schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const schoolAddress =
+    idCardData?.branchAddress ||
+    schoolProfile?.address ||
+    'Happyland Estate, Ajah, Lagos State, Nigeria';
 
   // Avatar Fallback URL generator
   const getAvatarFallback = (name: string) => {
@@ -148,7 +153,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     let firstAndMiddle = '';
 
     if (trimmed.includes(',')) {
-      const commaParts = trimmed.split(',').map(s => s.trim());
+      const commaParts = trimmed.split(',').map((s) => s.trim());
       surname = commaParts[0].toUpperCase();
       firstAndMiddle = commaParts.slice(1).join(' ').trim();
     } else {
@@ -166,10 +171,13 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
       return `${surname}, ${firstName}`;
     }
 
-    const abbreviatedOthers = restParts.slice(1).map(p => {
-      if (p.length <= 2 && p.endsWith('.')) return p.toUpperCase();
-      return `${p[0].toUpperCase()}.`;
-    }).join(' ');
+    const abbreviatedOthers = restParts
+      .slice(1)
+      .map((p) => {
+        if (p.length <= 2 && p.endsWith('.')) return p.toUpperCase();
+        return `${p[0].toUpperCase()}.`;
+      })
+      .join(' ');
 
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
@@ -177,16 +185,31 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
-        
         {/* Modal Controls Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }} className="no-print">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.25rem',
+          }}
+          className="no-print"
+        >
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#000080' }}>Print Staff ID Card</h2>
+            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#000080' }}>
+              Print Staff ID Card
+            </h2>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={() => handlePrint()} style={{ fontWeight: 700, background: '#000080', border: 'none' }}>
+            <button className="btn btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => handlePrint()}
+              style={{ fontWeight: 700, background: '#000080', border: 'none' }}
+            >
               🖨️ Print Card
             </button>
           </div>
@@ -200,9 +223,22 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 {schoolProfile?.logoUrl ? (
                   <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
                 ) : (
-                  <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px' }}>
-                    <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10"/>
-                    <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                  <svg
+                    viewBox="0 0 500 660"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{ width: '32px' }}
+                  >
+                    <path
+                      d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                      fill="#FFFFFF"
+                      stroke="#0B2545"
+                      strokeWidth="10"
+                    />
+                    <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545">
+                      <text x="250" y="182" textAnchor="middle">
+                        RMS
+                      </text>
+                    </g>
                   </svg>
                 )}
                 <div>
@@ -215,9 +251,9 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
               <div className="large-photo-box">
                 {idCardData.passportUrl ? (
-                  <img 
-                    src={getFullUrl(idCardData.passportUrl)} 
-                    alt={idCardData.fullName} 
+                  <img
+                    src={getFullUrl(idCardData.passportUrl)}
+                    alt={idCardData.fullName}
                     className="student-photo-img"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
@@ -225,9 +261,9 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                     }}
                   />
                 ) : (
-                  <img 
-                    src={getAvatarFallback(idCardData.fullName)} 
-                    alt={idCardData.fullName} 
+                  <img
+                    src={getAvatarFallback(idCardData.fullName)}
+                    alt={idCardData.fullName}
                     className="student-photo-img"
                   />
                 )}
@@ -236,8 +272,14 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="name-block">
                 <div className="name">{formatDisplayName(idCardData.fullName)}</div>
                 <div className="name-underline"></div>
-                <div className="meta-row"><span className="lbl">ROLE:</span>{(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}</div>
-                <div className="meta-row"><span className="lbl">STAFF ID:</span>{idCardData.formattedStaffCode}</div>
+                <div className="meta-row">
+                  <span className="lbl">ROLE:</span>
+                  {(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}
+                </div>
+                <div className="meta-row">
+                  <span className="lbl">STAFF ID:</span>
+                  {idCardData.formattedStaffCode}
+                </div>
                 <div className="bottom-accent-rule"></div>
                 <div className="bottom-school-watermark">{fullSchoolTitle}</div>
               </div>
@@ -251,9 +293,22 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 {schoolProfile?.logoUrl ? (
                   <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
                 ) : (
-                  <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px' }}>
-                    <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10"/>
-                    <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                  <svg
+                    viewBox="0 0 500 660"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{ width: '32px' }}
+                  >
+                    <path
+                      d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                      fill="#FFFFFF"
+                      stroke="#0B2545"
+                      strokeWidth="10"
+                    />
+                    <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545">
+                      <text x="250" y="182" textAnchor="middle">
+                        RMS
+                      </text>
+                    </g>
                   </svg>
                 )}
                 <div>
@@ -265,7 +320,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="accent-rule"></div>
 
               <div className="back-body">
-                <p className="owner-text">This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.</p>
+                <p className="owner-text">
+                  This card is the property of {fullSchoolTitle}. If found, please return to the
+                  school office. Unauthorised use of this card is strictly prohibited.
+                </p>
               </div>
 
               <div className="scan-label">SCAN TO CLOCK IN</div>
@@ -279,11 +337,17 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                   )}
                 </div>
               </div>
-              <div className="encoded-id">ID: <b>{idCardData.formattedStaffCode}</b></div>
+              <div className="encoded-id">
+                ID: <b>{idCardData.formattedStaffCode}</b>
+              </div>
 
               <div className="sig-block">
                 {principalSig && (
-                  <img src={getFullUrl(principalSig)} alt="Principal Signature" className="sig-img" />
+                  <img
+                    src={getFullUrl(principalSig)}
+                    alt="Principal Signature"
+                    className="sig-img"
+                  />
                 )}
                 <div className="sig-line-text">Authorised Signature</div>
               </div>
@@ -291,9 +355,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               <div className="back-footer">POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
   );

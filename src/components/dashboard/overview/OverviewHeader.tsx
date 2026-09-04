@@ -24,37 +24,49 @@ export const OverviewHeader: React.FC<OverviewHeaderProps> = ({
   isHolidayMode,
   resumptionDate,
   userRole,
-  onToggleActivityLog
+  onToggleActivityLog,
 }) => {
   return (
     <div className="overview-header-executive" style={{ marginBottom: '24px' }}>
       <HolidayBanner isHolidayMode={isHolidayMode} resumptionDate={resumptionDate} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span style={{ 
-              background: 'rgba(0, 0, 128, 0.1)', 
-              color: 'var(--primary-color, #000080)', 
-              padding: '4px 10px', 
-              borderRadius: '20px', 
-              fontSize: '0.75rem', 
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
+            <span
+              style={{
+                background: 'rgba(0, 0, 128, 0.1)',
+                color: 'var(--primary-color, #000080)',
+                padding: '4px 10px',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
               <Sparkles size={12} /> {schoolName || 'Institution Platform'}
             </span>
             {userRole && (
-              <span style={{ 
-                background: '#F3F4F6', 
-                color: '#4B5563', 
-                padding: '4px 10px', 
-                borderRadius: '20px', 
-                fontSize: '0.75rem', 
-                fontWeight: 600 
-              }}>
+              <span
+                style={{
+                  background: '#F3F4F6',
+                  color: '#4B5563',
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                }}
+              >
                 Role: {userRole}
               </span>
             )}
@@ -69,18 +81,29 @@ export const OverviewHeader: React.FC<OverviewHeaderProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ 
-            background: isHolidayMode ? '#FEF3C7' : '#EFF6FF', 
-            border: `1px solid ${isHolidayMode ? '#F59E0B' : '#BFDBFE'}`, 
-            padding: '8px 14px', 
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
+          <div
+            style={{
+              background: isHolidayMode ? '#FEF3C7' : '#EFF6FF',
+              border: `1px solid ${isHolidayMode ? '#F59E0B' : '#BFDBFE'}`,
+              padding: '8px 14px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
             <Calendar size={18} color={isHolidayMode ? '#B45309' : '#1D4ED8'} />
             <div>
-              <div style={{ fontSize: '0.7rem', color: '#6B7280', fontWeight: 600, textTransform: 'uppercase' }}>Academic Session</div>
+              <div
+                style={{
+                  fontSize: '0.7rem',
+                  color: '#6B7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                }}
+              >
+                Academic Session
+              </div>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111827' }}>
                 {session || 'Current Session'} ({displayTerm || 'Term'})
               </div>
@@ -88,7 +111,7 @@ export const OverviewHeader: React.FC<OverviewHeaderProps> = ({
           </div>
 
           {onToggleActivityLog && (
-            <button 
+            <button
               onClick={onToggleActivityLog}
               className="btn-executive-secondary"
               style={{
@@ -101,7 +124,7 @@ export const OverviewHeader: React.FC<OverviewHeaderProps> = ({
                 background: '#FFFFFF',
                 fontWeight: 600,
                 fontSize: '0.85rem',
-                cursor: 'pointer'
+                cursor: 'pointer',
               }}
             >
               <Activity size={16} /> Audit Log
@@ -114,4 +137,3 @@ export const OverviewHeader: React.FC<OverviewHeaderProps> = ({
 };
 
 export default OverviewHeader;
-

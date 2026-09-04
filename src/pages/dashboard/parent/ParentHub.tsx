@@ -4,21 +4,21 @@ import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import { useDialog } from '../../../context/DialogContext';
 import ReportCard from '../../../components/ReportCard';
-import { 
-  Users, 
-  GraduationCap, 
-  Award, 
-  CreditCard, 
-  Calendar, 
-  CheckCircle2, 
-  AlertCircle, 
-  FileText, 
-  ArrowLeft, 
-  Download, 
-  Upload, 
-  Clock, 
-  Search, 
-  BookOpen, 
+import {
+  Users,
+  GraduationCap,
+  Award,
+  CreditCard,
+  Calendar,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  ArrowLeft,
+  Download,
+  Upload,
+  Clock,
+  Search,
+  BookOpen,
   TrendingUp,
   ShieldCheck,
   FileCheck,
@@ -28,7 +28,7 @@ import {
   UploadCloud,
   Copy,
   Check,
-  Building
+  Building,
 } from 'lucide-react';
 import './ParentHub.css';
 
@@ -117,8 +117,11 @@ export default function ParentHub() {
   const [receipts, setReceipts] = useState<ReceiptItem[]>([]);
   const [attendanceData, setAttendanceData] = useState<AttendanceReportData | null>(null);
   const [transcripts, setTranscripts] = useState<TranscriptTerm[]>([]);
-  const [selectedReportCard, setSelectedReportCard] = useState<{ session: string; term: string } | null>(null);
-  
+  const [selectedReportCard, setSelectedReportCard] = useState<{
+    session: string;
+    term: string;
+  } | null>(null);
+
   const [loadingTab, setLoadingTab] = useState(false);
 
   // Proof Upload Form
@@ -199,7 +202,9 @@ export default function ParentHub() {
   const fetchAttendance = async (studentId: string, sess: string, trm: string) => {
     try {
       setLoadingTab(true);
-      const data = await api.get(`/parents/my-kids/${studentId}/attendance?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`);
+      const data = await api.get(
+        `/parents/my-kids/${studentId}/attendance?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`,
+      );
       setAttendanceData(data || null);
     } catch (error) {
       console.error('Failed to fetch attendance', error);
@@ -225,7 +230,9 @@ export default function ParentHub() {
       if (uploadingInvoiceId) formData.append('invoiceId', uploadingInvoiceId);
 
       await api.post('/finance/upload-proof', formData);
-      showAlert('Proof of payment uploaded successfully. School accountant will verify your submission.');
+      showAlert(
+        'Proof of payment uploaded successfully. School accountant will verify your submission.',
+      );
       setProofFile(null);
       setBankRef('');
       setDepositorName('');
@@ -245,9 +252,16 @@ export default function ParentHub() {
     return `${API_ROOT}${url}`;
   };
 
-  const currentInvoice = invoices.find(inv => inv.session === filterSession && inv.term === filterTerm) || invoices[0];
-  const selectedTermInvoice = invoices.find(inv => inv.session === filterSession && inv.term === filterTerm);
-  const hasOutstandingFees = selectedTermInvoice ? (selectedTermInvoice.status !== 'Completed' && selectedTermInvoice.status !== 'Verified' && selectedTermInvoice.status !== 'Paid') : false;
+  const currentInvoice =
+    invoices.find((inv) => inv.session === filterSession && inv.term === filterTerm) || invoices[0];
+  const selectedTermInvoice = invoices.find(
+    (inv) => inv.session === filterSession && inv.term === filterTerm,
+  );
+  const hasOutstandingFees = selectedTermInvoice
+    ? selectedTermInvoice.status !== 'Completed' &&
+      selectedTermInvoice.status !== 'Verified' &&
+      selectedTermInvoice.status !== 'Paid'
+    : false;
 
   return (
     <div className="parent-hub-page">
@@ -259,32 +273,49 @@ export default function ParentHub() {
               <div>
                 <h1 className="parent-hero-title">Parent Academic & Financial Portal</h1>
                 <p className="parent-hero-subtitle">
-                  Review your children's academic performance, monitor daily gate attendance logs, inspect itemized tuition billing, and download official payment receipts.
+                  Review your children's academic performance, monitor daily gate attendance logs,
+                  inspect itemized tuition billing, and download official payment receipts.
                 </p>
               </div>
 
               <div className="parent-hero-badge">
                 <ShieldCheck size={16} />
-                <span>{currentSession} Session • {currentTerm}</span>
+                <span>
+                  {currentSession} Session • {currentTerm}
+                </span>
               </div>
             </div>
           </div>
 
           {loadingKids ? (
-            <div className="glass-panel" style={{ textAlign: 'center', padding: '3rem', borderRadius: '16px' }}>
+            <div
+              className="glass-panel"
+              style={{ textAlign: 'center', padding: '3rem', borderRadius: '16px' }}
+            >
               <p style={{ color: '#64748b' }}>Loading children records...</p>
             </div>
           ) : kids.length === 0 ? (
-            <div className="glass-panel" style={{ textAlign: 'center', padding: '3.5rem 2rem', color: '#64748b', borderRadius: '16px' }}>
+            <div
+              className="glass-panel"
+              style={{
+                textAlign: 'center',
+                padding: '3.5rem 2rem',
+                color: '#64748b',
+                borderRadius: '16px',
+              }}
+            >
               <Users size={48} style={{ margin: '0 auto 1rem', color: '#94a3b8' }} />
-              <h3 style={{ fontSize: '1.2rem', color: '#1e293b', marginBottom: '0.5rem' }}>No Children Linked</h3>
+              <h3 style={{ fontSize: '1.2rem', color: '#1e293b', marginBottom: '0.5rem' }}>
+                No Children Linked
+              </h3>
               <p style={{ maxWidth: '480px', margin: '0 auto' }}>
-                There are no student records linked to your parent account. If you believe this is an error, please contact the school administration.
+                There are no student records linked to your parent account. If you believe this is
+                an error, please contact the school administration.
               </p>
             </div>
           ) : (
             <div className="parent-kids-grid">
-              {kids.map(kid => {
+              {kids.map((kid) => {
                 const photoUrl = getFullUrl(kid.passportUrl);
                 return (
                   <div key={kid.id} className="child-card">
@@ -295,34 +326,73 @@ export default function ParentHub() {
                             <img src={photoUrl} alt={kid.firstName} className="child-avatar-img" />
                           ) : (
                             <div className="child-avatar-initials">
-                              {kid.firstName.charAt(0)}{kid.surname.charAt(0)}
+                              {kid.firstName.charAt(0)}
+                              {kid.surname.charAt(0)}
                             </div>
                           )}
                         </div>
                         <div className="child-info">
-                          <h3>{kid.surname} {kid.firstName}</h3>
+                          <h3>
+                            {kid.surname} {kid.firstName}
+                          </h3>
                           <p className="child-meta">{kid.className || 'Student'}</p>
                           <span className="child-reg-badge">{kid.registrationNumber}</span>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '0.5rem',
+                          flexWrap: 'wrap',
+                          marginBottom: '1rem',
+                        }}
+                      >
                         {kid.departmentTrack && kid.departmentTrack !== 'General' && (
-                          <span className="badge" style={{ background: '#f3e8ff', color: '#6b21a8', padding: '0.3rem 0.6rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 600 }}>
+                          <span
+                            className="badge"
+                            style={{
+                              background: '#f3e8ff',
+                              color: '#6b21a8',
+                              padding: '0.3rem 0.6rem',
+                              borderRadius: '6px',
+                              fontSize: '0.78rem',
+                              fontWeight: 600,
+                            }}
+                          >
                             {kid.departmentTrack}
                           </span>
                         )}
-                        <span className="badge" style={{ background: kid.isCleared ? '#dcfce7' : '#fee2e2', color: kid.isCleared ? '#15803d' : '#b91c1c', padding: '0.3rem 0.6rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 600 }}>
+                        <span
+                          className="badge"
+                          style={{
+                            background: kid.isCleared ? '#dcfce7' : '#fee2e2',
+                            color: kid.isCleared ? '#15803d' : '#b91c1c',
+                            padding: '0.3rem 0.6rem',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                          }}
+                        >
                           {kid.isCleared ? 'Fee Cleared' : 'Pending Clearance'}
                         </span>
                       </div>
                     </div>
 
                     <div className="child-card-footer">
-                      <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 500 }}>Active Student</span>
-                      <button 
-                        className="btn btn-primary btn-sm" 
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', borderRadius: '8px', padding: '0.5rem 1rem', fontWeight: 600 }}
+                      <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 500 }}>
+                        Active Student
+                      </span>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          borderRadius: '8px',
+                          padding: '0.5rem 1rem',
+                          fontWeight: 600,
+                        }}
                         onClick={() => setSelectedKid(kid)}
                       >
                         <BookOpen size={15} />
@@ -341,24 +411,57 @@ export default function ParentHub() {
           {/* Top Bar with Back Button & Child Summary */}
           <div className="child-workspace-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <button 
+              <button
                 type="button"
                 onClick={() => setSelectedKid(null)}
-                style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0.5rem 0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}
+                style={{
+                  background: '#f1f5f9',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                  padding: '0.5rem 0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontWeight: 600,
+                  color: '#334155',
+                  fontSize: '0.85rem',
+                }}
               >
                 <ArrowLeft size={16} /> Back to My Kids
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#e0e7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid #4f46e5' }}>
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    background: '#e0e7ff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    border: '2px solid #4f46e5',
+                  }}
+                >
                   {selectedKid.passportUrl ? (
-                    <img src={getFullUrl(selectedKid.passportUrl)!} alt={selectedKid.firstName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img
+                      src={getFullUrl(selectedKid.passportUrl)!}
+                      alt={selectedKid.firstName}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   ) : (
-                    <span style={{ fontWeight: 700, color: '#4338ca' }}>{selectedKid.firstName.charAt(0)}{selectedKid.surname.charAt(0)}</span>
+                    <span style={{ fontWeight: 700, color: '#4338ca' }}>
+                      {selectedKid.firstName.charAt(0)}
+                      {selectedKid.surname.charAt(0)}
+                    </span>
                   )}
                 </div>
                 <div>
-                  <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>{selectedKid.surname} {selectedKid.firstName}</h2>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>
+                    {selectedKid.surname} {selectedKid.firstName}
+                  </h2>
                   <span style={{ fontSize: '0.82rem', color: '#64748b', fontFamily: 'monospace' }}>
                     {selectedKid.registrationNumber} • {selectedKid.className}
                   </span>
@@ -368,12 +471,24 @@ export default function ParentHub() {
 
             {/* Session & Term Global Filters */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <select value={filterSession} onChange={e => setFilterSession(e.target.value)} className="filter-select" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-                {getSessionOptions(filterSession).map(s => (
-                  <option key={s} value={s}>{s}</option>
+              <select
+                value={filterSession}
+                onChange={(e) => setFilterSession(e.target.value)}
+                className="filter-select"
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+              >
+                {getSessionOptions(filterSession).map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
                 ))}
               </select>
-              <select value={filterTerm} onChange={e => setFilterTerm(e.target.value)} className="filter-select" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+              <select
+                value={filterTerm}
+                onChange={(e) => setFilterTerm(e.target.value)}
+                className="filter-select"
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+              >
                 <option value="First Term">First Term</option>
                 <option value="Second Term">Second Term</option>
                 <option value="Third Term">Third Term</option>
@@ -383,13 +498,22 @@ export default function ParentHub() {
 
           {/* Main Navigation Tabs */}
           <div className="parent-nav-tabs">
-            <button className={`parent-nav-tab ${activeTab === 'results' ? 'active' : ''}`} onClick={() => setActiveTab('results')}>
+            <button
+              className={`parent-nav-tab ${activeTab === 'results' ? 'active' : ''}`}
+              onClick={() => setActiveTab('results')}
+            >
               <Award size={18} /> Results & Report Cards
             </button>
-            <button className={`parent-nav-tab ${activeTab === 'fees' ? 'active' : ''}`} onClick={() => setActiveTab('fees')}>
+            <button
+              className={`parent-nav-tab ${activeTab === 'fees' ? 'active' : ''}`}
+              onClick={() => setActiveTab('fees')}
+            >
               <CreditCard size={18} /> Tuition Fees & Receipts
             </button>
-            <button className={`parent-nav-tab ${activeTab === 'report' ? 'active' : ''}`} onClick={() => setActiveTab('report')}>
+            <button
+              className={`parent-nav-tab ${activeTab === 'report' ? 'active' : ''}`}
+              onClick={() => setActiveTab('report')}
+            >
               <Calendar size={18} /> Attendance & Academic Reports
             </button>
           </div>
@@ -397,7 +521,14 @@ export default function ParentHub() {
           {/* TAB 1: RESULTS */}
           {activeTab === 'results' && (
             <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '1.25rem',
+                }}
+              >
                 <div>
                   <h3 style={{ margin: 0, color: '#0f172a' }}>Academic Result Sheet</h3>
                   <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b' }}>
@@ -407,21 +538,40 @@ export default function ParentHub() {
               </div>
 
               {hasOutstandingFees ? (
-                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div
+                  style={{
+                    background: '#fffbeb',
+                    border: '1px solid #fde68a',
+                    borderRadius: '12px',
+                    padding: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    marginBottom: '1.5rem',
+                  }}
+                >
                   <AlertCircle size={28} style={{ color: '#d97706', flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <strong style={{ display: 'block', color: '#92400e', fontSize: '1rem' }}>Pending Tuition Clearance Required</strong>
+                    <strong style={{ display: 'block', color: '#92400e', fontSize: '1rem' }}>
+                      Pending Tuition Clearance Required
+                    </strong>
                     <span style={{ fontSize: '0.88rem', color: '#b45309' }}>
-                      Terminal result viewing for {selectedKid.firstName} for {filterSession} ({filterTerm}) requires cleared tuition fees. Please resolve pending invoices to access the complete report sheet.
+                      Terminal result viewing for {selectedKid.firstName} for {filterSession} (
+                      {filterTerm}) requires cleared tuition fees. Please resolve pending invoices
+                      to access the complete report sheet.
                     </span>
                   </div>
-                  <button className="btn btn-primary btn-sm" style={{ background: '#d97706', borderColor: '#d97706' }} onClick={() => setActiveTab('fees')}>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    style={{ background: '#d97706', borderColor: '#d97706' }}
+                    onClick={() => setActiveTab('fees')}
+                  >
                     Clear Fees Now
                   </button>
                 </div>
               ) : (
                 /* Interactive Report Card Component */
-                <ReportCard 
+                <ReportCard
                   studentId={selectedKid.id}
                   session={filterSession}
                   term={filterTerm}
@@ -436,13 +586,22 @@ export default function ParentHub() {
             <div>
               {/* Fee Sub-Tabs */}
               <div className="parent-sub-tabs">
-                <button className={`parent-sub-tab ${feeSubTab === 'breakdown' ? 'active' : ''}`} onClick={() => setFeeSubTab('breakdown')}>
+                <button
+                  className={`parent-sub-tab ${feeSubTab === 'breakdown' ? 'active' : ''}`}
+                  onClick={() => setFeeSubTab('breakdown')}
+                >
                   Tuition Billing & Breakdown
                 </button>
-                <button className={`parent-sub-tab ${feeSubTab === 'history' ? 'active' : ''}`} onClick={() => setFeeSubTab('history')}>
+                <button
+                  className={`parent-sub-tab ${feeSubTab === 'history' ? 'active' : ''}`}
+                  onClick={() => setFeeSubTab('history')}
+                >
                   Payment History & Receipts ({receipts.length})
                 </button>
-                <button className={`parent-sub-tab ${feeSubTab === 'upload' ? 'active' : ''}`} onClick={() => setFeeSubTab('upload')}>
+                <button
+                  className={`parent-sub-tab ${feeSubTab === 'upload' ? 'active' : ''}`}
+                  onClick={() => setFeeSubTab('upload')}
+                >
                   Upload Bank Invoice / Proof
                 </button>
               </div>
@@ -450,36 +609,63 @@ export default function ParentHub() {
               {/* Sub-Tab 1: Breakdown */}
               {feeSubTab === 'breakdown' && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>Termly Fee Summary ({filterSession} - {filterTerm})</h3>
-                  
+                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
+                    Termly Fee Summary ({filterSession} - {filterTerm})
+                  </h3>
+
                   {loadingTab ? (
                     <p style={{ color: '#64748b' }}>Loading fee details...</p>
                   ) : !currentInvoice ? (
                     <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                      <CheckCircle2 size={36} style={{ margin: '0 auto 0.5rem', color: '#16a34a' }} />
+                      <CheckCircle2
+                        size={36}
+                        style={{ margin: '0 auto 0.5rem', color: '#16a34a' }}
+                      />
                       <p>No active unpaid invoices found for this term.</p>
                     </div>
                   ) : (
                     <div>
-                      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                      <div
+                        className="stats-grid"
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                          gap: '1rem',
+                          marginBottom: '1.5rem',
+                        }}
+                      >
                         <div className="stat-card">
                           <p className="stat-label">Total Billed</p>
-                          <h3 className="stat-value">₦{currentInvoice.totalAmount?.toLocaleString() || 0}</h3>
+                          <h3 className="stat-value">
+                            ₦{currentInvoice.totalAmount?.toLocaleString() || 0}
+                          </h3>
                         </div>
                         <div className="stat-card">
                           <p className="stat-label">Amount Paid</p>
-                          <h3 className="stat-value" style={{ color: '#16a34a' }}>₦{currentInvoice.amountPaid?.toLocaleString() || 0}</h3>
+                          <h3 className="stat-value" style={{ color: '#16a34a' }}>
+                            ₦{currentInvoice.amountPaid?.toLocaleString() || 0}
+                          </h3>
                         </div>
                         <div className="stat-card">
                           <p className="stat-label">Outstanding Balance</p>
                           <h3 className="stat-value" style={{ color: '#dc2626' }}>
-                            ₦{Math.max(0, (currentInvoice.totalAmount || 0) - (currentInvoice.amountPaid || 0)).toLocaleString()}
+                            ₦
+                            {Math.max(
+                              0,
+                              (currentInvoice.totalAmount || 0) - (currentInvoice.amountPaid || 0),
+                            ).toLocaleString()}
                           </h3>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                        <button className="btn btn-primary" onClick={() => { setUploadingInvoiceId(currentInvoice.id); setFeeSubTab('upload'); }}>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            setUploadingInvoiceId(currentInvoice.id);
+                            setFeeSubTab('upload');
+                          }}
+                        >
                           <Upload size={16} /> Upload Bank Proof
                         </button>
                       </div>
@@ -491,34 +677,76 @@ export default function ParentHub() {
               {/* Sub-Tab 2: History & Receipts */}
               {feeSubTab === 'history' && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>Payment Receipts Directory</h3>
+                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
+                    Payment Receipts Directory
+                  </h3>
                   {receipts.length === 0 ? (
-                    <p style={{ color: '#64748b', padding: '1.5rem 0' }}>No confirmed payment receipts found.</p>
+                    <p style={{ color: '#64748b', padding: '1.5rem 0' }}>
+                      No confirmed payment receipts found.
+                    </p>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                      {receipts.map(rec => (
-                        <div key={rec.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                      {receipts.map((rec) => (
+                        <div
+                          key={rec.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '1rem',
+                            background: '#f8fafc',
+                            borderRadius: '10px',
+                            border: '1px solid #e2e8f0',
+                          }}
+                        >
                           <div>
-                            <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>Receipt #{rec.receiptNumber || 'Pending'}</strong>
-                            <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>
-                              Payment Method: {rec.paymentMethod || 'Bank Transfer'} • Date: {new Date(rec.uploadedAt).toLocaleDateString()}
+                            <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>
+                              Receipt #{rec.receiptNumber || 'Pending'}
+                            </strong>
+                            <div
+                              style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}
+                            >
+                              Payment Method: {rec.paymentMethod || 'Bank Transfer'} • Date:{' '}
+                              {new Date(rec.uploadedAt).toLocaleDateString()}
                             </div>
                           </div>
-                          <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div
+                            style={{
+                              textAlign: 'right',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '1rem',
+                            }}
+                          >
                             <div>
-                              <div style={{ fontWeight: 700, color: '#16a34a', fontSize: '1.05rem' }}>
+                              <div
+                                style={{ fontWeight: 700, color: '#16a34a', fontSize: '1.05rem' }}
+                              >
                                 ₦{(rec.verifiedAmount || rec.amount || 0).toLocaleString()}
                               </div>
-                              <span style={{ fontSize: '0.78rem', background: '#dcfce7', color: '#15803d', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 600 }}>
+                              <span
+                                style={{
+                                  fontSize: '0.78rem',
+                                  background: '#dcfce7',
+                                  color: '#15803d',
+                                  padding: '0.2rem 0.5rem',
+                                  borderRadius: '4px',
+                                  fontWeight: 600,
+                                }}
+                              >
                                 {rec.status}
                               </span>
                             </div>
-                            <a 
-                              href={`/dashboard/finance/receipt/${rec.invoiceId}`} 
-                              target="_blank" 
-                              rel="noreferrer" 
+                            <a
+                              href={`/dashboard/finance/receipt/${rec.invoiceId}`}
+                              target="_blank"
+                              rel="noreferrer"
                               className="btn btn-secondary btn-sm"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                              }}
                             >
                               <Download size={14} /> Download Receipt
                             </a>
@@ -537,14 +765,36 @@ export default function ParentHub() {
                     {/* Left Column: Bank Account Details Card */}
                     <div className="bank-info-card">
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.6rem',
+                            marginBottom: '1.25rem',
+                          }}
+                        >
                           <Building size={24} style={{ color: '#818cf8' }} />
-                          <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.2rem', fontWeight: 700 }}>
+                          <h3
+                            style={{
+                              margin: 0,
+                              color: '#ffffff',
+                              fontSize: '1.2rem',
+                              fontWeight: 700,
+                            }}
+                          >
                             Official Bank Account Details
                           </h3>
                         </div>
-                        <p style={{ fontSize: '0.88rem', color: '#c7d2fe', margin: '0 0 1.5rem 0', lineHeight: 1.5 }}>
-                          Make your tuition payment directly via mobile app or bank deposit using the details below.
+                        <p
+                          style={{
+                            fontSize: '0.88rem',
+                            color: '#c7d2fe',
+                            margin: '0 0 1.5rem 0',
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          Make your tuition payment directly via mobile app or bank deposit using
+                          the details below.
                         </p>
 
                         <div className="bank-info-row">
@@ -558,30 +808,55 @@ export default function ParentHub() {
                         <div className="bank-info-row">
                           <span className="bank-label">Account Number</span>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <span className="bank-value" style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}>1012983745</span>
-                            <button 
-                              type="button" 
-                              className="copy-btn" 
+                            <span
+                              className="bank-value"
+                              style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
+                            >
+                              1012983745
+                            </span>
+                            <button
+                              type="button"
+                              className="copy-btn"
                               onClick={() => handleCopyAccount('1012983745')}
                             >
-                              {copiedAccount ? <Check size={14} style={{ color: '#4ade80' }} /> : <Copy size={14} />}
+                              {copiedAccount ? (
+                                <Check size={14} style={{ color: '#4ade80' }} />
+                              ) : (
+                                <Copy size={14} />
+                              )}
                               {copiedAccount ? 'Copied!' : 'Copy'}
                             </button>
                           </div>
                         </div>
                         <div className="bank-info-row">
                           <span className="bank-label">Student Reg Ref</span>
-                          <span className="bank-value" style={{ color: '#38bdf8', fontFamily: 'monospace' }}>
+                          <span
+                            className="bank-value"
+                            style={{ color: '#38bdf8', fontFamily: 'monospace' }}
+                          >
                             {selectedKid.registrationNumber}
                           </span>
                         </div>
                       </div>
 
-                      <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1rem', marginTop: '1.5rem', border: '1px dashed rgba(255,255,255,0.2)' }}>
+                      <div
+                        style={{
+                          background: 'rgba(255,255,255,0.08)',
+                          borderRadius: '12px',
+                          padding: '1rem',
+                          marginTop: '1.5rem',
+                          border: '1px dashed rgba(255,255,255,0.2)',
+                        }}
+                      >
                         <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
-                          <AlertCircle size={18} style={{ color: '#facc15', flexShrink: 0, marginTop: '2px' }} />
+                          <AlertCircle
+                            size={18}
+                            style={{ color: '#facc15', flexShrink: 0, marginTop: '2px' }}
+                          />
                           <span style={{ fontSize: '0.82rem', color: '#e0e7ff', lineHeight: 1.45 }}>
-                            <strong>Important Note:</strong> Always include <code>{selectedKid.registrationNumber}</code> in your transaction narration for fast automated audit clearance.
+                            <strong>Important Note:</strong> Always include{' '}
+                            <code>{selectedKid.registrationNumber}</code> in your transaction
+                            narration for fast automated audit clearance.
                           </span>
                         </div>
                       </div>
@@ -590,11 +865,19 @@ export default function ParentHub() {
                     {/* Right Column: Payment Proof Submission Form */}
                     <div>
                       <div style={{ marginBottom: '1.5rem' }}>
-                        <h3 style={{ margin: '0 0 0.35rem 0', color: '#0f172a', fontSize: '1.25rem', fontWeight: 800 }}>
+                        <h3
+                          style={{
+                            margin: '0 0 0.35rem 0',
+                            color: '#0f172a',
+                            fontSize: '1.25rem',
+                            fontWeight: 800,
+                          }}
+                        >
                           Submit Payment Proof
                         </h3>
                         <p style={{ margin: 0, color: '#64748b', fontSize: '0.88rem' }}>
-                          Upload your bank transfer receipt or paper teller image for bursar verification.
+                          Upload your bank transfer receipt or paper teller image for bursar
+                          verification.
                         </p>
                       </div>
 
@@ -603,29 +886,31 @@ export default function ParentHub() {
                           <label className="parent-form-label">Depositor Full Name</label>
                           <div className="input-icon-wrapper">
                             <User size={18} />
-                            <input 
-                              type="text" 
-                              className="parent-form-input" 
-                              value={depositorName} 
-                              onChange={e => setDepositorName(e.target.value)} 
-                              placeholder="Full name as printed on bank transfer receipt" 
-                              required 
+                            <input
+                              type="text"
+                              className="parent-form-input"
+                              value={depositorName}
+                              onChange={(e) => setDepositorName(e.target.value)}
+                              placeholder="Full name as printed on bank transfer receipt"
+                              required
                             />
                           </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div
+                          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}
+                        >
                           <div className="parent-form-group">
                             <label className="parent-form-label">Bank Reference / Teller No.</label>
                             <div className="input-icon-wrapper">
                               <Hash size={18} />
-                              <input 
-                                type="text" 
-                                className="parent-form-input" 
-                                value={bankRef} 
-                                onChange={e => setBankRef(e.target.value)} 
-                                placeholder="e.g. TRF/2026/84920" 
-                                required 
+                              <input
+                                type="text"
+                                className="parent-form-input"
+                                value={bankRef}
+                                onChange={(e) => setBankRef(e.target.value)}
+                                placeholder="e.g. TRF/2026/84920"
+                                required
                               />
                             </div>
                           </div>
@@ -634,46 +919,68 @@ export default function ParentHub() {
                             <label className="parent-form-label">Amount Paid (₦)</label>
                             <div className="input-icon-wrapper">
                               <DollarSign size={18} />
-                              <input 
-                                type="number" 
-                                className="parent-form-input" 
-                                value={proofAmount} 
-                                onChange={e => setProofAmount(e.target.value)} 
-                                placeholder="e.g. 150000" 
-                                required 
+                              <input
+                                type="number"
+                                className="parent-form-input"
+                                value={proofAmount}
+                                onChange={(e) => setProofAmount(e.target.value)}
+                                placeholder="e.g. 150000"
+                                required
                               />
                             </div>
                           </div>
                         </div>
 
                         <div className="parent-form-group">
-                          <label className="parent-form-label">Upload Transfer Receipt Image / PDF</label>
-                          <div 
+                          <label className="parent-form-label">
+                            Upload Transfer Receipt Image / PDF
+                          </label>
+                          <div
                             className={`file-dropzone-box ${proofFile ? 'file-dropzone-active' : ''}`}
                             onClick={() => document.getElementById('proof-file-input')?.click()}
                           >
-                            <input 
-                              id="proof-file-input" 
-                              type="file" 
-                              accept="image/*,.pdf" 
-                              style={{ display: 'none' }} 
-                              onChange={e => setProofFile(e.target.files?.[0] || null)} 
-                              required 
+                            <input
+                              id="proof-file-input"
+                              type="file"
+                              accept="image/*,.pdf"
+                              style={{ display: 'none' }}
+                              onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+                              required
                             />
                             {proofFile ? (
                               <div>
-                                <CheckCircle2 size={36} style={{ color: '#16a34a', margin: '0 auto 0.5rem' }} />
-                                <strong style={{ display: 'block', color: '#15803d', fontSize: '0.95rem' }}>
+                                <CheckCircle2
+                                  size={36}
+                                  style={{ color: '#16a34a', margin: '0 auto 0.5rem' }}
+                                />
+                                <strong
+                                  style={{
+                                    display: 'block',
+                                    color: '#15803d',
+                                    fontSize: '0.95rem',
+                                  }}
+                                >
                                   {proofFile.name}
                                 </strong>
                                 <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
-                                  {(proofFile.size / (1024 * 1024)).toFixed(2)} MB • Click to change file
+                                  {(proofFile.size / (1024 * 1024)).toFixed(2)} MB • Click to change
+                                  file
                                 </span>
                               </div>
                             ) : (
                               <div>
-                                <UploadCloud size={38} style={{ color: '#818cf8', margin: '0 auto 0.5rem' }} />
-                                <strong style={{ display: 'block', color: '#1e293b', fontSize: '0.95rem', marginBottom: '0.2rem' }}>
+                                <UploadCloud
+                                  size={38}
+                                  style={{ color: '#818cf8', margin: '0 auto 0.5rem' }}
+                                />
+                                <strong
+                                  style={{
+                                    display: 'block',
+                                    color: '#1e293b',
+                                    fontSize: '0.95rem',
+                                    marginBottom: '0.2rem',
+                                  }}
+                                >
                                   Click or drag transfer receipt here
                                 </strong>
                                 <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
@@ -684,9 +991,15 @@ export default function ParentHub() {
                           </div>
                         </div>
 
-                        <button type="submit" className="parent-submit-btn" disabled={submittingProof}>
+                        <button
+                          type="submit"
+                          className="parent-submit-btn"
+                          disabled={submittingProof}
+                        >
                           <Upload size={18} />
-                          {submittingProof ? 'Uploading & Verifying Proof...' : 'Submit Payment Proof for Verification'}
+                          {submittingProof
+                            ? 'Uploading & Verifying Proof...'
+                            : 'Submit Payment Proof for Verification'}
                         </button>
                       </form>
                     </div>
@@ -701,10 +1014,16 @@ export default function ParentHub() {
             <div>
               {/* Report Sub-Tabs */}
               <div className="parent-sub-tabs">
-                <button className={`parent-sub-tab ${reportSubTab === 'attendance' ? 'active' : ''}`} onClick={() => setReportSubTab('attendance')}>
+                <button
+                  className={`parent-sub-tab ${reportSubTab === 'attendance' ? 'active' : ''}`}
+                  onClick={() => setReportSubTab('attendance')}
+                >
                   Gate & Class Attendance Log
                 </button>
-                <button className={`parent-sub-tab ${reportSubTab === 'academic_trend' ? 'active' : ''}`} onClick={() => setReportSubTab('academic_trend')}>
+                <button
+                  className={`parent-sub-tab ${reportSubTab === 'academic_trend' ? 'active' : ''}`}
+                  onClick={() => setReportSubTab('academic_trend')}
+                >
                   Academic History & Performance Compare
                 </button>
               </div>
@@ -712,25 +1031,41 @@ export default function ParentHub() {
               {/* Sub-Tab 1: Attendance Log */}
               {reportSubTab === 'attendance' && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>Gate Attendance & Time In / Time Out Log</h3>
+                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
+                    Gate Attendance & Time In / Time Out Log
+                  </h3>
 
                   {attendanceData && (
-                    <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <div
+                      className="stats-grid"
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1rem',
+                        marginBottom: '1.5rem',
+                      }}
+                    >
                       <div className="stat-card">
                         <p className="stat-label">Total School Days</p>
                         <h3 className="stat-value">{attendanceData.totalSchoolDays}</h3>
                       </div>
                       <div className="stat-card">
                         <p className="stat-label">Days Present</p>
-                        <h3 className="stat-value" style={{ color: '#16a34a' }}>{attendanceData.daysPresent}</h3>
+                        <h3 className="stat-value" style={{ color: '#16a34a' }}>
+                          {attendanceData.daysPresent}
+                        </h3>
                       </div>
                       <div className="stat-card">
                         <p className="stat-label">Days Absent</p>
-                        <h3 className="stat-value" style={{ color: '#dc2626' }}>{attendanceData.daysAbsent}</h3>
+                        <h3 className="stat-value" style={{ color: '#dc2626' }}>
+                          {attendanceData.daysAbsent}
+                        </h3>
                       </div>
                       <div className="stat-card">
                         <p className="stat-label">Punctuality Rate</p>
-                        <h3 className="stat-value" style={{ color: '#4f46e5' }}>{attendanceData.attendanceRatePercentage}%</h3>
+                        <h3 className="stat-value" style={{ color: '#4f46e5' }}>
+                          {attendanceData.attendanceRatePercentage}%
+                        </h3>
                       </div>
                     </div>
                   )}
@@ -743,7 +1078,13 @@ export default function ParentHub() {
                       <p>No daily gate attendance logs recorded for this term selection.</p>
                     </div>
                   ) : (
-                    <div style={{ overflow: 'hidden', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                      }}
+                    >
                       <table className="attendance-table">
                         <thead>
                           <tr>
@@ -758,23 +1099,39 @@ export default function ParentHub() {
                         <tbody>
                           {attendanceData.logs.map((log, idx) => (
                             <tr key={idx}>
-                              <td style={{ fontWeight: 600, color: '#0f172a' }}>{log.formattedDate}</td>
+                              <td style={{ fontWeight: 600, color: '#0f172a' }}>
+                                {log.formattedDate}
+                              </td>
                               <td>{log.dayName}</td>
                               <td style={{ fontWeight: 600, color: '#16a34a' }}>{log.timeIn}</td>
                               <td style={{ fontWeight: 600, color: '#4338ca' }}>{log.timeOut}</td>
                               <td>
-                                <span style={{
-                                  padding: '0.25rem 0.6rem',
-                                  borderRadius: '12px',
-                                  fontSize: '0.78rem',
-                                  fontWeight: 600,
-                                  background: log.status === 'Present' ? '#dcfce7' : log.status === 'Late' ? '#fef9c3' : '#fee2e2',
-                                  color: log.status === 'Present' ? '#15803d' : log.status === 'Late' ? '#854d0e' : '#b91c1c'
-                                }}>
+                                <span
+                                  style={{
+                                    padding: '0.25rem 0.6rem',
+                                    borderRadius: '12px',
+                                    fontSize: '0.78rem',
+                                    fontWeight: 600,
+                                    background:
+                                      log.status === 'Present'
+                                        ? '#dcfce7'
+                                        : log.status === 'Late'
+                                          ? '#fef9c3'
+                                          : '#fee2e2',
+                                    color:
+                                      log.status === 'Present'
+                                        ? '#15803d'
+                                        : log.status === 'Late'
+                                          ? '#854d0e'
+                                          : '#b91c1c',
+                                  }}
+                                >
                                   {log.status}
                                 </span>
                               </td>
-                              <td style={{ color: '#64748b', fontSize: '0.84rem' }}>{log.remarks}</td>
+                              <td style={{ color: '#64748b', fontSize: '0.84rem' }}>
+                                {log.remarks}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -787,15 +1144,25 @@ export default function ParentHub() {
               {/* Sub-Tab 2: Academic Performance Comparison */}
               {reportSubTab === 'academic_trend' && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-                  <h3 style={{ margin: '0 0 0.5rem', color: '#0f172a' }}>Academic Progress & Performance Comparison</h3>
+                  <h3 style={{ margin: '0 0 0.5rem', color: '#0f172a' }}>
+                    Academic Progress & Performance Comparison
+                  </h3>
                   <p style={{ margin: '0 0 1.25rem', fontSize: '0.85rem', color: '#64748b' }}>
                     Compare past terminal scores and GPA progression across sessions.
                   </p>
 
                   {transcripts.length === 0 ? (
-                    <p style={{ color: '#64748b' }}>No past academic transcript records available.</p>
+                    <p style={{ color: '#64748b' }}>
+                      No past academic transcript records available.
+                    </p>
                   ) : (
-                    <div style={{ overflow: 'hidden', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                      }}
+                    >
                       <table className="attendance-table">
                         <thead>
                           <tr>
@@ -811,14 +1178,25 @@ export default function ParentHub() {
                               <td style={{ fontWeight: 600, color: '#0f172a' }}>{t.session}</td>
                               <td>{t.term}</td>
                               <td>
-                                <span className="badge" style={{ background: '#e0f2fe', color: '#0369a1', padding: '0.3rem 0.6rem', borderRadius: '6px', fontWeight: 600 }}>
+                                <span
+                                  className="badge"
+                                  style={{
+                                    background: '#e0f2fe',
+                                    color: '#0369a1',
+                                    padding: '0.3rem 0.6rem',
+                                    borderRadius: '6px',
+                                    fontWeight: 600,
+                                  }}
+                                >
                                   {t.class}
                                 </span>
                               </td>
                               <td>
-                                <button 
+                                <button
                                   className="btn btn-secondary btn-sm"
-                                  onClick={() => setSelectedReportCard({ session: t.session, term: t.term })}
+                                  onClick={() =>
+                                    setSelectedReportCard({ session: t.session, term: t.term })
+                                  }
                                 >
                                   View Past Report
                                 </button>
@@ -838,11 +1216,11 @@ export default function ParentHub() {
 
       {/* Modal for Report Card Preview */}
       {selectedReportCard && selectedKid && (
-        <ReportCard 
-          studentId={selectedKid.id} 
-          session={selectedReportCard.session} 
-          term={selectedReportCard.term} 
-          onClose={() => setSelectedReportCard(null)} 
+        <ReportCard
+          studentId={selectedKid.id}
+          session={selectedReportCard.session}
+          term={selectedReportCard.term}
+          onClose={() => setSelectedReportCard(null)}
         />
       )}
     </div>

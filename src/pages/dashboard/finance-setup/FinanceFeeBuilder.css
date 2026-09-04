@@ -18,7 +18,7 @@
 .builder-page-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--text-primary, #0F172A);
+  color: var(--text-primary, #0f172a);
   letter-spacing: -0.02em;
   margin: 0;
   display: flex;
@@ -28,7 +28,7 @@
 
 .builder-page-subtitle {
   font-size: 0.9rem;
-  color: var(--text-secondary, #64748B);
+  color: var(--text-secondary, #64748b);
   margin-top: 0.25rem;
 }
 
@@ -36,7 +36,7 @@
 .builder-tabs-bar {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid #E2E8F0;
+  border-bottom: 2px solid #e2e8f0;
   padding-bottom: 0px;
 }
 
@@ -45,7 +45,7 @@
   border: none;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #64748B;
+  color: #64748b;
   padding: 0.75rem 1.35rem;
   border-bottom: 3px solid transparent;
   cursor: pointer;
@@ -73,8 +73,8 @@
 }
 
 .builder-metric-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -93,13 +93,13 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748B;
+  color: #64748b;
 }
 
 .builder-metric-card .metric-number {
   font-size: 1.4rem;
   font-weight: 900;
-  color: #0F172A;
+  color: #0f172a;
   margin-top: 0.25rem;
   line-height: 1.2;
 }
@@ -115,24 +115,24 @@
 }
 
 .builder-metric-card .metric-icon-badge.classes {
-  background: #EFF6FF;
-  color: #1E40AF;
+  background: #eff6ff;
+  color: #1e40af;
 }
 
 .builder-metric-card .metric-icon-badge.average {
-  background: #ECFDF5;
+  background: #ecfdf5;
   color: #047857;
 }
 
 .builder-metric-card .metric-icon-badge.highest {
-  background: #FEF3C7;
-  color: #B45309;
+  background: #fef3c7;
+  color: #b45309;
 }
 
 /* Main Card Wrappers */
 .builder-card-wrapper {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.75rem;
   display: flex;
@@ -156,8 +156,8 @@
 }
 
 .fee-breakdown-container {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 1.25rem;
   display: flex;
@@ -183,8 +183,8 @@
   height: 42px;
   min-width: 42px;
   border-radius: 10px;
-  background: #FEE2E2;
-  color: #DC2626;
+  background: #fee2e2;
+  color: #dc2626;
   border: none;
   display: flex;
   align-items: center;
@@ -194,16 +194,16 @@
 }
 
 .btn-remove-fee-row:hover {
-  background: #DC2626;
-  color: #FFFFFF;
+  background: #dc2626;
+  color: #ffffff;
 }
 
 /* Right Sticky Executive Summary Sidebar */
 .fee-summary-sidebar-card {
   position: sticky;
   top: 1.5rem;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
@@ -216,14 +216,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
   padding-bottom: 0.85rem;
 }
 
 .fee-sidebar-title {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   display: flex;
   align-items: center;
@@ -232,7 +232,7 @@
 
 .fee-sidebar-subtitle {
   font-size: 0.8rem;
-  color: #64748B;
+  color: #64748b;
 }
 
 /* Segment Breakdown Cards Stack */
@@ -243,9 +243,9 @@
 }
 
 .fee-segment-card {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-left: 4px solid #3B82F6;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #3b82f6;
   border-radius: 12px;
   padding: 0.95rem 1.1rem;
   display: flex;
@@ -259,23 +259,23 @@
 }
 
 .fee-segment-card.continuing {
-  border-left-color: #2563EB;
-  background: #EFF6FF;
+  border-left-color: #2563eb;
+  background: #eff6ff;
 }
 
 .fee-segment-card.sectional {
   border-left-color: #059669;
-  background: #ECFDF5;
+  background: #ecfdf5;
 }
 
 .fee-segment-card.direct {
-  border-left-color: #D97706;
-  background: #FFFBEB;
+  border-left-color: #d97706;
+  background: #fffbeb;
 }
 
 .fee-segment-card.optional {
-  border-left-color: #4F46E5;
-  background: #EEF2FF;
+  border-left-color: #4f46e5;
+  background: #eef2ff;
 }
 
 .fee-segment-card-header {
@@ -287,7 +287,7 @@
 .fee-segment-name {
   font-size: 0.82rem;
   font-weight: 800;
-  color: #1E293B;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -296,18 +296,18 @@
 .fee-segment-amount {
   font-size: 1.15rem;
   font-weight: 900;
-  color: #0F172A;
+  color: #0f172a;
 }
 
 .fee-segment-desc {
   font-size: 0.74rem;
-  color: #64748B;
+  color: #64748b;
   line-height: 1.3;
 }
 
 .fee-range-banner {
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #0f172a;
+  color: #ffffff;
   border-radius: 12px;
   padding: 1rem;
   display: flex;
@@ -322,13 +322,13 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94A3B8;
+  color: #94a3b8;
 }
 
 .fee-range-val {
   font-size: 1.4rem;
   font-weight: 900;
-  color: #F8FAFC;
+  color: #f8fafc;
 }
 
 /* Report Table */
@@ -339,30 +339,30 @@
 }
 
 .executive-fee-report-table th {
-  background: #F8FAFC;
+  background: #f8fafc;
   color: #475569;
   font-weight: 800;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
   text-align: left;
 }
 
 .executive-fee-report-table td {
   padding: 0.95rem 1rem;
-  border-bottom: 1px solid #F1F5F9;
-  color: #0F172A;
+  border-bottom: 1px solid #f1f5f9;
+  color: #0f172a;
 }
 
 .executive-fee-report-table tr:hover td {
-  background: #F8FAFC;
+  background: #f8fafc;
 }
 
 .btn-view-breakdown-navy {
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #0f172a;
+  color: #ffffff;
   border: none;
   padding: 0.45rem 1rem;
   border-radius: 6px;
@@ -373,7 +373,7 @@
 }
 
 .btn-view-breakdown-navy:hover {
-  background: #1E293B;
+  background: #1e293b;
 }
 
 /* Modal Dialog Overlay & Executive Content */
@@ -393,7 +393,7 @@
 }
 
 .fee-modal-container {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 20px;
   width: 100%;
   max-width: 620px;
@@ -405,7 +405,7 @@
   gap: 1.25rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
 }
 
 @keyframes modalPop {
@@ -434,7 +434,7 @@
 .fee-modal-title {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
   margin: 0;
   letter-spacing: -0.01em;
 }
@@ -443,19 +443,19 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #EFF6FF;
-  color: #1E40AF;
+  background: #eff6ff;
+  color: #1e40af;
   font-size: 0.78rem;
   font-weight: 700;
   padding: 0.25rem 0.65rem;
   border-radius: 20px;
-  border: 1px solid #BFDBFE;
+  border: 1px solid #bfdbfe;
   width: fit-content;
 }
 
 .btn-modal-close-icon {
-  background: #F1F5F9;
-  color: #64748B;
+  background: #f1f5f9;
+  color: #64748b;
   border: none;
   width: 34px;
   height: 34px;
@@ -468,14 +468,14 @@
 }
 
 .btn-modal-close-icon:hover {
-  background: #E2E8F0;
-  color: #0F172A;
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* Executive Breakdown Box & Table */
 .fee-modal-breakdown-card {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 1.25rem;
   display: flex;
@@ -497,7 +497,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .fee-modal-table th:last-child {
@@ -507,7 +507,7 @@
 .fee-modal-table td {
   padding: 0.7rem 0;
   color: #334155;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .fee-modal-table tr:last-child td {
@@ -517,12 +517,12 @@
 .fee-modal-table td:last-child {
   text-align: right;
   font-weight: 800;
-  color: #0F172A;
+  color: #0f172a;
 }
 
 .fee-modal-total-banner {
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #0f172a;
+  color: #ffffff;
   border-radius: 12px;
   padding: 1.1rem 1.35rem;
   display: flex;
@@ -533,13 +533,13 @@
 .fee-modal-total-label {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #F8FAFC;
+  color: #f8fafc;
 }
 
 .fee-modal-total-amount {
   font-size: 1.4rem;
   font-weight: 900;
-  color: #60A5FA;
+  color: #60a5fa;
 }
 
 .fee-modal-footer-actions {
@@ -550,8 +550,8 @@
 }
 
 .btn-modal-close-blue {
-  background: #2563EB;
-  color: #FFFFFF;
+  background: #2563eb;
+  color: #ffffff;
   border: none;
   padding: 0.65rem 1.5rem;
   border-radius: 10px;
@@ -562,13 +562,13 @@
 }
 
 .btn-modal-close-blue:hover {
-  background: #1D4ED8;
+  background: #1d4ed8;
 }
 
 /* Batch Copy Box */
 .batch-copy-card {
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 12px;
   padding: 1rem 1.25rem;
   display: flex;
@@ -581,9 +581,9 @@ body[data-theme='dark'] .builder-metric-card,
 body[data-theme='dark'] .builder-card-wrapper,
 body[data-theme='dark'] .fee-summary-sidebar-card,
 body[data-theme='dark'] .fee-modal-container {
-  background-color: #1E293B !important;
+  background-color: #1e293b !important;
   border-color: #334155 !important;
-  color: #F1F5F9 !important;
+  color: #f1f5f9 !important;
 }
 
 body[data-theme='dark'] .fee-breakdown-container,
@@ -591,13 +591,13 @@ body[data-theme='dark'] .executive-fee-report-table th,
 body[data-theme='dark'] .batch-copy-card,
 body[data-theme='dark'] .fee-segment-card,
 body[data-theme='dark'] .fee-modal-breakdown-card {
-  background-color: #0F172A !important;
+  background-color: #0f172a !important;
   border-color: #334155 !important;
-  color: #F8FAFC !important;
+  color: #f8fafc !important;
 }
 
 body[data-theme='dark'] .executive-fee-report-table td,
 body[data-theme='dark'] .fee-modal-table td {
-  color: #F8FAFC !important;
+  color: #f8fafc !important;
   border-bottom-color: #334155 !important;
 }

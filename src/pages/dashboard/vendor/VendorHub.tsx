@@ -79,10 +79,12 @@ const formatStudentDisplayName = (surname?: string, firstName?: string, otherNam
   }
 
   const otherParts = otherNames.trim().split(/\s+/).filter(Boolean);
-  const abbreviatedOthers = otherParts.map(p => {
-    if (p.length <= 2 && p.endsWith('.')) return p.toUpperCase();
-    return `${p[0].toUpperCase()}.`;
-  }).join(' ');
+  const abbreviatedOthers = otherParts
+    .map((p) => {
+      if (p.length <= 2 && p.endsWith('.')) return p.toUpperCase();
+      return `${p[0].toUpperCase()}.`;
+    })
+    .join(' ');
 
   return `${s}, ${f} ${abbreviatedOthers}`.trim();
 };
@@ -157,13 +159,13 @@ export default function VendorHub() {
       }
     } catch {
       setSchoolProfile({
-        schoolName: schoolName || "DOTMOND SCHOOL",
-        address: "Happyland Estate, Ajah, Lagos State, Nigeria",
-        logoUrl: logoUrl || "",
-        primaryColor: "#12386E",
-        secondaryColor: "#C4293A",
-        currentSession: "2025/2026",
-        currentTerm: "Third Term"
+        schoolName: schoolName || 'DOTMOND SCHOOL',
+        address: 'Happyland Estate, Ajah, Lagos State, Nigeria',
+        logoUrl: logoUrl || '',
+        primaryColor: '#12386E',
+        secondaryColor: '#C4293A',
+        currentSession: '2025/2026',
+        currentTerm: 'Third Term',
       });
     }
   };
@@ -211,15 +213,18 @@ export default function VendorHub() {
   };
 
   // Unique levels from classes
-  const availableLevels = Array.from(new Set(classes.map(c => c.level))).filter(Boolean);
+  const availableLevels = Array.from(new Set(classes.map((c) => c.level))).filter(Boolean);
 
   // Filter classes based on selected level
   const filteredClasses = selectedLevel
-    ? classes.filter(c => c.level === selectedLevel || c.level.toLowerCase().includes(selectedLevel.toLowerCase()))
+    ? classes.filter(
+        (c) =>
+          c.level === selectedLevel || c.level.toLowerCase().includes(selectedLevel.toLowerCase()),
+      )
     : classes;
 
   // Filtered Students List
-  const filteredStudents = students.filter(s => {
+  const filteredStudents = students.filter((s) => {
     if (studentSearchQuery.trim()) {
       const q = studentSearchQuery.toLowerCase();
       const fullName = `${s.surname} ${s.firstName} ${s.otherNames}`.toLowerCase();
@@ -230,7 +235,7 @@ export default function VendorHub() {
   });
 
   // Filtered Staff List
-  const filteredStaff = staffList.filter(s => {
+  const filteredStaff = staffList.filter((s) => {
     if (selectedStaffCategory && s.staffCategory !== selectedStaffCategory) {
       return false;
     }
@@ -251,7 +256,7 @@ export default function VendorHub() {
     onAfterPrint: async () => {
       if (activeTab === 'students' && selectedStudentsToPrint.length > 0) {
         try {
-          const studentIds = selectedStudentsToPrint.map(s => s.id);
+          const studentIds = selectedStudentsToPrint.map((s) => s.id);
           await api.post('/setup/students/vendor/mark-printed', { studentIds });
           fetchStats();
           fetchStudents();
@@ -265,7 +270,7 @@ export default function VendorHub() {
       setIsPrinting(false);
       setCheckedStudentIds(new Set());
       setCheckedStaffIds(new Set());
-    }
+    },
   });
 
   useEffect(() => {
@@ -292,9 +297,9 @@ export default function VendorHub() {
 
   // Checked Actions
   const handlePrintCheckedStudents = () => {
-    const toPrint = filteredStudents.filter(s => checkedStudentIds.has(s.id));
+    const toPrint = filteredStudents.filter((s) => checkedStudentIds.has(s.id));
     if (toPrint.length === 0) {
-      showAlert("Please check at least one student to print.");
+      showAlert('Please check at least one student to print.');
       return;
     }
     setSelectedStudentsToPrint(toPrint);
@@ -304,7 +309,7 @@ export default function VendorHub() {
 
   const handlePrintAllStudents = () => {
     if (filteredStudents.length === 0) {
-      showAlert("No students match the current filters.");
+      showAlert('No students match the current filters.');
       return;
     }
     setSelectedStudentsToPrint(filteredStudents);
@@ -313,9 +318,9 @@ export default function VendorHub() {
   };
 
   const handlePrintCheckedStaff = () => {
-    const toPrint = filteredStaff.filter(s => checkedStaffIds.has(s.id));
+    const toPrint = filteredStaff.filter((s) => checkedStaffIds.has(s.id));
     if (toPrint.length === 0) {
-      showAlert("Please check at least one staff member to print.");
+      showAlert('Please check at least one staff member to print.');
       return;
     }
     setSelectedStaffToPrint(toPrint);
@@ -325,7 +330,7 @@ export default function VendorHub() {
 
   const handlePrintAllStaff = () => {
     if (filteredStaff.length === 0) {
-      showAlert("No staff members match the current filters.");
+      showAlert('No staff members match the current filters.');
       return;
     }
     setSelectedStaffToPrint(filteredStaff);
@@ -345,7 +350,7 @@ export default function VendorHub() {
     if (checkedStudentIds.size === filteredStudents.length && filteredStudents.length > 0) {
       setCheckedStudentIds(new Set());
     } else {
-      setCheckedStudentIds(new Set(filteredStudents.map(s => s.id)));
+      setCheckedStudentIds(new Set(filteredStudents.map((s) => s.id)));
     }
   };
 
@@ -360,7 +365,7 @@ export default function VendorHub() {
     if (checkedStaffIds.size === filteredStaff.length && filteredStaff.length > 0) {
       setCheckedStaffIds(new Set());
     } else {
-      setCheckedStaffIds(new Set(filteredStaff.map(s => s.id)));
+      setCheckedStaffIds(new Set(filteredStaff.map((s) => s.id)));
     }
   };
 
@@ -372,8 +377,12 @@ export default function VendorHub() {
   };
 
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
-  const fullSchoolTitle = (schoolProfile?.schoolName || schoolName || "DOTMOND SCHOOL").toUpperCase();
-  const schoolAddress = schoolProfile?.address || "Happyland Estate, Ajah, Lagos State, Nigeria";
+  const fullSchoolTitle = (
+    schoolProfile?.schoolName ||
+    schoolName ||
+    'DOTMOND SCHOOL'
+  ).toUpperCase();
+  const schoolAddress = schoolProfile?.address || 'Happyland Estate, Ajah, Lagos State, Nigeria';
   const renderSchoolAddress = (addr: string) => {
     if (!addr) return null;
     if (addr.includes('Happyland Estate, Ajah')) {
@@ -398,7 +407,7 @@ export default function VendorHub() {
     }
     return <div>{addr}</div>;
   };
-  const activeSession = selectedSession || schoolProfile?.currentSession || "2025/2026";
+  const activeSession = selectedSession || schoolProfile?.currentSession || '2025/2026';
 
   return (
     <div className="vendor-hub-page">
@@ -407,18 +416,21 @@ export default function VendorHub() {
         <div className="vendor-page-header">
           <div>
             <h1 className="vendor-page-title">Vendor Printing Hub</h1>
-            <p className="vendor-page-subtitle">Batch print official student and staff ID cards with multi-level filtering and status tracking.</p>
+            <p className="vendor-page-subtitle">
+              Batch print official student and staff ID cards with multi-level filtering and status
+              tracking.
+            </p>
           </div>
 
           {/* Primary Category Tabs */}
           <div className="category-tabs-container">
-            <button 
+            <button
               className={`category-tab-btn ${activeTab === 'students' ? 'active' : ''}`}
               onClick={() => setActiveTab('students')}
             >
               🎓 Student ID Cards ({stats?.totalStudents || 0})
             </button>
-            <button 
+            <button
               className={`category-tab-btn ${activeTab === 'staff' ? 'active' : ''}`}
               onClick={() => setActiveTab('staff')}
             >
@@ -440,14 +452,14 @@ export default function VendorHub() {
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Fee Cleared</span>
-                <span className="stat-value">{students.filter(s => s.isCleared).length}</span>
+                <span className="stat-value">{students.filter((s) => s.isCleared).length}</span>
               </div>
               <div className="stat-icon-box icon-green">🛡️</div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Owing Fees</span>
-                <span className="stat-value">{students.filter(s => !s.isCleared).length}</span>
+                <span className="stat-value">{students.filter((s) => !s.isCleared).length}</span>
               </div>
               <div className="stat-icon-box icon-amber">⚠️</div>
             </div>
@@ -478,14 +490,18 @@ export default function VendorHub() {
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Teaching Staff</span>
-                <span className="stat-value">{staffList.filter(s => s.staffCategory === 'Teaching').length}</span>
+                <span className="stat-value">
+                  {staffList.filter((s) => s.staffCategory === 'Teaching').length}
+                </span>
               </div>
               <div className="stat-icon-box icon-green">📚</div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Non-Teaching Staff</span>
-                <span className="stat-value">{staffList.filter(s => s.staffCategory !== 'Teaching').length}</span>
+                <span className="stat-value">
+                  {staffList.filter((s) => s.staffCategory !== 'Teaching').length}
+                </span>
               </div>
               <div className="stat-icon-box icon-amber">💼</div>
             </div>
@@ -495,13 +511,20 @@ export default function VendorHub() {
         {/* Filter Toolbar */}
         <div className="filter-toolbar-panel">
           {activeTab === 'students' ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.85rem', marginBottom: '1rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(6, 1fr)',
+                gap: '0.85rem',
+                marginBottom: '1rem',
+              }}
+            >
               {/* Session Filter */}
               <div className="form-group">
                 <label>Academic Session</label>
-                <select 
-                  className="form-control" 
-                  value={selectedSession} 
+                <select
+                  className="form-control"
+                  value={selectedSession}
                   onChange={(e) => setSelectedSession(e.target.value)}
                 >
                   <option value="2025/2026">Session 2025/2026</option>
@@ -514,9 +537,9 @@ export default function VendorHub() {
               {/* Term Filter */}
               <div className="form-group">
                 <label>Academic Term</label>
-                <select 
-                  className="form-control" 
-                  value={selectedTerm} 
+                <select
+                  className="form-control"
+                  value={selectedTerm}
                   onChange={(e) => setSelectedTerm(e.target.value)}
                 >
                   <option value="Third Term">Third Term</option>
@@ -529,9 +552,9 @@ export default function VendorHub() {
               {/* Level Filter */}
               <div className="form-group">
                 <label>Filter by Level</label>
-                <select 
-                  className="form-control" 
-                  value={selectedLevel} 
+                <select
+                  className="form-control"
+                  value={selectedLevel}
                   onChange={(e) => {
                     setSelectedLevel(e.target.value);
                     setSelectedClassId('');
@@ -548,13 +571,13 @@ export default function VendorHub() {
               {/* Class Filter */}
               <div className="form-group">
                 <label>Filter by Class</label>
-                <select 
-                  className="form-control" 
-                  value={selectedClassId} 
+                <select
+                  className="form-control"
+                  value={selectedClassId}
                   onChange={(e) => setSelectedClassId(e.target.value)}
                 >
                   <option value="">All Classes</option>
-                  {filteredClasses.map(c => (
+                  {filteredClasses.map((c) => (
                     <option key={c.id} value={c.id}>{`${c.level} ${c.name} ${c.section}`}</option>
                   ))}
                 </select>
@@ -563,9 +586,9 @@ export default function VendorHub() {
               {/* Fee Clearance Filter */}
               <div className="form-group">
                 <label>Fee Clearance Status</label>
-                <select 
-                  className="form-control" 
-                  value={selectedClearanceStatus} 
+                <select
+                  className="form-control"
+                  value={selectedClearanceStatus}
                   onChange={(e) => setSelectedClearanceStatus(e.target.value)}
                 >
                   <option value="">All Clearance Statuses</option>
@@ -577,9 +600,9 @@ export default function VendorHub() {
               {/* ID Card Print Status Filter */}
               <div className="form-group">
                 <label>ID Card Print Status</label>
-                <select 
-                  className="form-control" 
-                  value={selectedPrintStatus} 
+                <select
+                  className="form-control"
+                  value={selectedPrintStatus}
                   onChange={(e) => setSelectedPrintStatus(e.target.value)}
                 >
                   <option value="">All Card Statuses</option>
@@ -592,9 +615,9 @@ export default function VendorHub() {
             <div className="filter-grid-2">
               <div className="form-group">
                 <label>Filter by Category</label>
-                <select 
-                  className="form-control" 
-                  value={selectedStaffCategory} 
+                <select
+                  className="form-control"
+                  value={selectedStaffCategory}
                   onChange={(e) => setSelectedStaffCategory(e.target.value)}
                 >
                   <option value="">All Staff Categories</option>
@@ -606,9 +629,9 @@ export default function VendorHub() {
 
               <div className="form-group">
                 <label>Search Staff</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
+                <input
+                  type="text"
+                  className="form-control"
                   placeholder="Search by name, code or email..."
                   value={staffSearchQuery}
                   onChange={(e) => setStaffSearchQuery(e.target.value)}
@@ -621,18 +644,22 @@ export default function VendorHub() {
           <div className="filter-action-row">
             {activeTab === 'students' && (
               <div className="search-input-wrapper">
-                <input 
-                  type="text" 
-                  className="form-control" 
+                <input
+                  type="text"
+                  className="form-control"
                   placeholder="Search student name or registration number..."
                   value={studentSearchQuery}
                   onChange={(e) => setStudentSearchQuery(e.target.value)}
                 />
               </div>
             )}
-            
+
             {activeTab === 'students' && (
-              <button className="btn btn-primary" onClick={fetchStudents} disabled={loadingStudents}>
+              <button
+                className="btn btn-primary"
+                onClick={fetchStudents}
+                disabled={loadingStudents}
+              >
                 {loadingStudents ? 'Querying...' : '🔍 Apply Filters'}
               </button>
             )}
@@ -645,20 +672,24 @@ export default function VendorHub() {
         <div className="main-table-panel">
           <div className="table-header-bar">
             <div>
-              <h2 className="table-title">Student Directory ({selectedSession} - {selectedTerm || 'All Terms'})</h2>
-              <span className="table-subtitle">Showing {filteredStudents.length} student records</span>
+              <h2 className="table-title">
+                Student Directory ({selectedSession} - {selectedTerm || 'All Terms'})
+              </h2>
+              <span className="table-subtitle">
+                Showing {filteredStudents.length} student records
+              </span>
             </div>
             <div className="batch-action-buttons">
-              <button 
-                className="btn btn-secondary action-btn-selected" 
-                onClick={handlePrintCheckedStudents} 
+              <button
+                className="btn btn-secondary action-btn-selected"
+                onClick={handlePrintCheckedStudents}
                 disabled={checkedStudentIds.size === 0 || isPrinting}
               >
                 🖨️ Print Selected ({checkedStudentIds.size})
               </button>
-              <button 
-                className="btn btn-success action-btn-all" 
-                onClick={handlePrintAllStudents} 
+              <button
+                className="btn btn-success action-btn-all"
+                onClick={handlePrintAllStudents}
                 disabled={filteredStudents.length === 0 || isPrinting}
               >
                 🖨️ Print All Filtered ({filteredStudents.length})
@@ -671,9 +702,12 @@ export default function VendorHub() {
               <thead>
                 <tr>
                   <th style={{ width: '40px', textAlign: 'center' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={checkedStudentIds.size === filteredStudents.length && filteredStudents.length > 0}
+                    <input
+                      type="checkbox"
+                      checked={
+                        checkedStudentIds.size === filteredStudents.length &&
+                        filteredStudents.length > 0
+                      }
                       onChange={toggleStudentCheckAll}
                     />
                   </th>
@@ -689,31 +723,47 @@ export default function VendorHub() {
               <tbody>
                 {loadingStudents ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-4">Loading student records...</td>
+                    <td colSpan={8} className="text-center py-4">
+                      Loading student records...
+                    </td>
                   </tr>
                 ) : filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-4">No student records found matching the selected filters.</td>
+                    <td colSpan={8} className="text-center py-4">
+                      No student records found matching the selected filters.
+                    </td>
                   </tr>
                 ) : (
-                  filteredStudents.map(student => (
+                  filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td style={{ textAlign: 'center' }}>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={checkedStudentIds.has(student.id)}
                           onChange={() => toggleStudentCheck(student.id)}
                         />
                       </td>
                       <td>
                         {student.passportUrl ? (
-                          <img src={getFullUrl(student.passportUrl)} alt="passport" className="avatar-img" />
+                          <img
+                            src={getFullUrl(student.passportUrl)}
+                            alt="passport"
+                            className="avatar-img"
+                          />
                         ) : (
                           <div className="avatar-placeholder">N/A</div>
                         )}
                       </td>
-                      <td><span className="code-pill">{student.registrationNumber}</span></td>
-                      <td className="font-bold">{formatStudentDisplayName(student.surname, student.firstName, student.otherNames)}</td>
+                      <td>
+                        <span className="code-pill">{student.registrationNumber}</span>
+                      </td>
+                      <td className="font-bold">
+                        {formatStudentDisplayName(
+                          student.surname,
+                          student.firstName,
+                          student.otherNames,
+                        )}
+                      </td>
                       <td>{student.className || '-'}</td>
                       <td>
                         {student.isCleared ? (
@@ -730,8 +780,8 @@ export default function VendorHub() {
                         )}
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        <button 
-                          className="btn btn-sm btn-secondary" 
+                        <button
+                          className="btn btn-sm btn-secondary"
                           onClick={() => handlePrintSingleStudent(student)}
                           disabled={isPrinting}
                         >
@@ -753,16 +803,16 @@ export default function VendorHub() {
               <span className="table-subtitle">Showing {filteredStaff.length} staff records</span>
             </div>
             <div className="batch-action-buttons">
-              <button 
-                className="btn btn-secondary action-btn-selected" 
-                onClick={handlePrintCheckedStaff} 
+              <button
+                className="btn btn-secondary action-btn-selected"
+                onClick={handlePrintCheckedStaff}
                 disabled={checkedStaffIds.size === 0 || isPrinting}
               >
                 🖨️ Print Selected ({checkedStaffIds.size})
               </button>
-              <button 
-                className="btn btn-success action-btn-all" 
-                onClick={handlePrintAllStaff} 
+              <button
+                className="btn btn-success action-btn-all"
+                onClick={handlePrintAllStaff}
                 disabled={filteredStaff.length === 0 || isPrinting}
               >
                 🖨️ Print All Filtered ({filteredStaff.length})
@@ -775,9 +825,11 @@ export default function VendorHub() {
               <thead>
                 <tr>
                   <th style={{ width: '40px', textAlign: 'center' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={checkedStaffIds.size === filteredStaff.length && filteredStaff.length > 0}
+                    <input
+                      type="checkbox"
+                      checked={
+                        checkedStaffIds.size === filteredStaff.length && filteredStaff.length > 0
+                      }
                       onChange={toggleStaffCheckAll}
                     />
                   </th>
@@ -792,36 +844,52 @@ export default function VendorHub() {
               <tbody>
                 {loadingStaff ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-4">Loading staff records...</td>
+                    <td colSpan={7} className="text-center py-4">
+                      Loading staff records...
+                    </td>
                   </tr>
                 ) : filteredStaff.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-4">No staff records found matching the selected filters.</td>
+                    <td colSpan={7} className="text-center py-4">
+                      No staff records found matching the selected filters.
+                    </td>
                   </tr>
                 ) : (
-                  filteredStaff.map(staff => (
+                  filteredStaff.map((staff) => (
                     <tr key={staff.id}>
                       <td style={{ textAlign: 'center' }}>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={checkedStaffIds.has(staff.id)}
                           onChange={() => toggleStaffCheck(staff.id)}
                         />
                       </td>
                       <td>
                         {staff.passportUrl || staff.avatarUrl ? (
-                          <img src={getFullUrl(staff.passportUrl || staff.avatarUrl)} alt="passport" className="avatar-img" />
+                          <img
+                            src={getFullUrl(staff.passportUrl || staff.avatarUrl)}
+                            alt="passport"
+                            className="avatar-img"
+                          />
                         ) : (
                           <div className="avatar-placeholder">STF</div>
                         )}
                       </td>
-                      <td><span className="code-pill">{staff.staffCode}</span></td>
-                      <td className="font-bold">{formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}</td>
-                      <td>{staff.designation || 'Staff Member'} ({staff.staffCategory || 'Teaching'})</td>
-                      <td><span className="badge badge-role">{staff.role || 'Staff'}</span></td>
+                      <td>
+                        <span className="code-pill">{staff.staffCode}</span>
+                      </td>
+                      <td className="font-bold">
+                        {formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}
+                      </td>
+                      <td>
+                        {staff.designation || 'Staff Member'} ({staff.staffCategory || 'Teaching'})
+                      </td>
+                      <td>
+                        <span className="badge badge-role">{staff.role || 'Staff'}</span>
+                      </td>
                       <td style={{ textAlign: 'right' }}>
-                        <button 
-                          className="btn btn-sm btn-secondary" 
+                        <button
+                          className="btn btn-sm btn-secondary"
                           onClick={() => handlePrintSingleStaff(staff)}
                           disabled={isPrinting}
                         >
@@ -841,7 +909,7 @@ export default function VendorHub() {
       <div style={{ display: 'none' }}>
         <div className="id-cards-grid print-section" ref={printRef}>
           {/* STUDENT CARDS PRINT LOOP */}
-          {selectedStudentsToPrint.map(student => (
+          {selectedStudentsToPrint.map((student) => (
             <React.Fragment key={student.id}>
               {/* FRONT OF STUDENT CARD */}
               <div className="id-card-wrapper">
@@ -850,11 +918,34 @@ export default function VendorHub() {
                     <div className="head-row">
                       <div className="mark-cell">
                         {schoolProfile?.logoUrl ? (
-                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                          <img
+                            src={getFullUrl(schoolProfile.logoUrl)}
+                            alt="Logo"
+                            style={{ width: '0.45in', height: 'auto', display: 'block' }}
+                          />
                         ) : (
-                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
-                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10" strokeLinejoin="round"/>
-                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#12386E"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                          <svg
+                            viewBox="0 0 500 660"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{ width: '0.45in' }}
+                          >
+                            <path
+                              d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                              fill="#FFFFFF"
+                              stroke="#12386E"
+                              strokeWidth="10"
+                              strokeLinejoin="round"
+                            />
+                            <g
+                              font-family="Georgia,'Times New Roman',serif"
+                              font-weight="700"
+                              font-size="40"
+                              fill="#12386E"
+                            >
+                              <text x="250" y="182" textAnchor="middle">
+                                RMS
+                              </text>
+                            </g>
                           </svg>
                         )}
                       </div>
@@ -866,25 +957,41 @@ export default function VendorHub() {
                   </div>
 
                   <div className="rule"></div>
-                  <div className="id-row"><span className="id-pill">STUDENT ID</span></div>
+                  <div className="id-row">
+                    <span className="id-pill">STUDENT ID</span>
+                  </div>
 
                   <div className="photo-box">
                     <div className="cell">
                       {student.passportUrl ? (
-                        <img src={getFullUrl(student.passportUrl)} alt="Student" className="student-photo-img" />
+                        <img
+                          src={getFullUrl(student.passportUrl)}
+                          alt="Student"
+                          className="student-photo-img"
+                        />
                       ) : (
                         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="50" cy="38" r="20" fill="#B9C2CA"/>
-                          <path d="M12,98 C12,72 28,58 50,58 C72,58 88,72 88,98 Z" fill="#B9C2CA"/>
+                          <circle cx="50" cy="38" r="20" fill="#B9C2CA" />
+                          <path d="M12,98 C12,72 28,58 50,58 C72,58 88,72 88,98 Z" fill="#B9C2CA" />
                         </svg>
                       )}
                     </div>
                   </div>
 
                   <div className="name-band">
-                    <div className="name">{formatStudentDisplayName(student.surname, student.firstName, student.otherNames)}</div>
-                    <div className="field"><b>Admission No:</b> {student.registrationNumber}</div>
-                    <div className="field"><b>Session:</b> {activeSession}</div>
+                    <div className="name">
+                      {formatStudentDisplayName(
+                        student.surname,
+                        student.firstName,
+                        student.otherNames,
+                      )}
+                    </div>
+                    <div className="field">
+                      <b>Admission No:</b> {student.registrationNumber}
+                    </div>
+                    <div className="field">
+                      <b>Session:</b> {activeSession}
+                    </div>
                   </div>
 
                   <div className="foot-strip">
@@ -901,11 +1008,33 @@ export default function VendorHub() {
                     <div className="head-row">
                       <div className="mark-cell">
                         {schoolProfile?.logoUrl ? (
-                          <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" style={{ width: '0.45in', height: 'auto', display: 'block' }} />
+                          <img
+                            src={getFullUrl(schoolProfile.logoUrl)}
+                            alt="Logo"
+                            style={{ width: '0.45in', height: 'auto', display: 'block' }}
+                          />
                         ) : (
-                          <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '0.45in' }}>
-                            <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10"/>
-                            <g font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="40" fill="#12386E"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                          <svg
+                            viewBox="0 0 500 660"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{ width: '0.45in' }}
+                          >
+                            <path
+                              d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                              fill="#FFFFFF"
+                              stroke="#12386E"
+                              strokeWidth="10"
+                            />
+                            <g
+                              font-family="Georgia,'Times New Roman',serif"
+                              font-weight="700"
+                              font-size="40"
+                              fill="#12386E"
+                            >
+                              <text x="250" y="182" textAnchor="middle">
+                                RMS
+                              </text>
+                            </g>
                           </svg>
                         )}
                       </div>
@@ -919,35 +1048,118 @@ export default function VendorHub() {
                   <div className="rule"></div>
 
                   <p className="notice">
-                    This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                    This card is the property of {fullSchoolTitle}. If found, please return to the
+                    school office. Unauthorised use of this card is strictly prohibited.
                   </p>
 
                   <div className="rule"></div>
 
-                  <div className="scan-block" style={{ height: '1.58in', marginTop: '0.02in', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div className="scan-label" style={{ color: '#000080', fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', marginBottom: '4px' }}>
+                  <div
+                    className="scan-block"
+                    style={{
+                      height: '1.58in',
+                      marginTop: '0.02in',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <div
+                      className="scan-label"
+                      style={{
+                        color: '#000080',
+                        fontSize: '9px',
+                        fontWeight: 800,
+                        letterSpacing: '1.2px',
+                        marginBottom: '4px',
+                      }}
+                    >
                       SCAN TO CLOCK IN
                     </div>
-                    <div className="qr-wrap" style={{ width: '1.15in', height: '1.15in', padding: '5px', background: '#FFFFFF', border: '2px solid #CBD5E1', borderRadius: '10px', boxShadow: '0 3px 10px rgba(0,0,0,0.1)', display: 'block' }}>
-                      <div className="cell" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <QRCodeSVG 
-                          value={student.registrationNumber} 
+                    <div
+                      className="qr-wrap"
+                      style={{
+                        width: '1.15in',
+                        height: '1.15in',
+                        padding: '5px',
+                        background: '#FFFFFF',
+                        border: '2px solid #CBD5E1',
+                        borderRadius: '10px',
+                        boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
+                        display: 'block',
+                      }}
+                    >
+                      <div
+                        className="cell"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <QRCodeSVG
+                          value={student.registrationNumber}
                           size={95}
                           level="M"
                           includeMargin={true}
                         />
                       </div>
                     </div>
-                    <span className="encoded-pill" style={{ background: '#000080', color: '#FFFFFF', fontSize: '8px', fontWeight: 800, letterSpacing: '0.8px', padding: '3px 10px', borderRadius: '12px', marginTop: '6px' }}>
+                    <span
+                      className="encoded-pill"
+                      style={{
+                        background: '#000080',
+                        color: '#FFFFFF',
+                        fontSize: '8px',
+                        fontWeight: 800,
+                        letterSpacing: '0.8px',
+                        padding: '3px 10px',
+                        borderRadius: '12px',
+                        marginTop: '6px',
+                      }}
+                    >
                       ENCODED ID: {student.registrationNumber}
                     </span>
                   </div>
 
-                  <div className="sig-block" style={{ marginTop: '0.06in', marginBottom: '0.04in', padding: '0 0.16in', textAlign: 'center', position: 'relative', zIndex: 5 }}>
+                  <div
+                    className="sig-block"
+                    style={{
+                      marginTop: '0.06in',
+                      marginBottom: '0.04in',
+                      padding: '0 0.16in',
+                      textAlign: 'center',
+                      position: 'relative',
+                      zIndex: 5,
+                    }}
+                  >
                     {principalSig && (
-                      <img src={getFullUrl(principalSig)} alt="Principal Signature" style={{ height: '0.28in', width: 'auto', maxWidth: '100%', display: 'block', margin: '0 auto -6px', objectFit: 'contain', position: 'relative', zIndex: 6 }} />
+                      <img
+                        src={getFullUrl(principalSig)}
+                        alt="Principal Signature"
+                        style={{
+                          height: '0.28in',
+                          width: 'auto',
+                          maxWidth: '100%',
+                          display: 'block',
+                          margin: '0 auto -6px',
+                          objectFit: 'contain',
+                          position: 'relative',
+                          zIndex: 6,
+                        }}
+                      />
                     )}
-                    <div style={{ fontSize: '7.5px', color: '#000080', fontWeight: 700, letterSpacing: '0.2px' }}>
+                    <div
+                      style={{
+                        fontSize: '7.5px',
+                        color: '#000080',
+                        fontWeight: 700,
+                        letterSpacing: '0.2px',
+                      }}
+                    >
                       Signed ....................................................
                     </div>
                   </div>
@@ -961,7 +1173,7 @@ export default function VendorHub() {
           ))}
 
           {/* STAFF CARDS PRINT LOOP */}
-          {selectedStaffToPrint.map(staff => (
+          {selectedStaffToPrint.map((staff) => (
             <React.Fragment key={staff.id}>
               {/* FRONT OF STAFF CARD */}
               <div className="id-card-wrapper">
@@ -970,9 +1182,27 @@ export default function VendorHub() {
                     {schoolProfile?.logoUrl ? (
                       <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
                     ) : (
-                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px' }}>
-                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10"/>
-                        <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                      <svg
+                        viewBox="0 0 500 660"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ width: '32px' }}
+                      >
+                        <path
+                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                          fill="#FFFFFF"
+                          stroke="#0B2545"
+                          strokeWidth="10"
+                        />
+                        <g
+                          font-family="Georgia,serif"
+                          font-weight="700"
+                          font-size="40"
+                          fill="#0B2545"
+                        >
+                          <text x="250" y="182" textAnchor="middle">
+                            RMS
+                          </text>
+                        </g>
                       </svg>
                     )}
                     <div>
@@ -984,9 +1214,9 @@ export default function VendorHub() {
                   <div className="id-tag">STAFF IDENTIFICATION</div>
 
                   <div className="large-photo-box">
-                    <img 
-                      src={getFullUrl(staff.passportUrl || staff.avatarUrl)} 
-                      alt={staff.surname} 
+                    <img
+                      src={getFullUrl(staff.passportUrl || staff.avatarUrl)}
+                      alt={staff.surname}
                       className="student-photo-img"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
@@ -996,10 +1226,18 @@ export default function VendorHub() {
                   </div>
 
                   <div className="name-block">
-                    <div className="name">{formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}</div>
+                    <div className="name">
+                      {formatStudentDisplayName(staff.surname, staff.firstName, staff.otherNames)}
+                    </div>
                     <div className="name-underline"></div>
-                    <div className="meta-row"><span className="lbl">ROLE:</span>{(staff.designation || staff.role || 'STAFF').toUpperCase()}</div>
-                    <div className="meta-row"><span className="lbl">STAFF ID:</span>{staff.staffCode}</div>
+                    <div className="meta-row">
+                      <span className="lbl">ROLE:</span>
+                      {(staff.designation || staff.role || 'STAFF').toUpperCase()}
+                    </div>
+                    <div className="meta-row">
+                      <span className="lbl">STAFF ID:</span>
+                      {staff.staffCode}
+                    </div>
                     <div className="bottom-accent-rule"></div>
                     <div className="bottom-school-watermark">{fullSchoolTitle}</div>
                   </div>
@@ -1013,9 +1251,27 @@ export default function VendorHub() {
                     {schoolProfile?.logoUrl ? (
                       <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
                     ) : (
-                      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '32px' }}>
-                        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10"/>
-                        <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545"><text x="250" y="182" textAnchor="middle">RMS</text></g>
+                      <svg
+                        viewBox="0 0 500 660"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ width: '32px' }}
+                      >
+                        <path
+                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                          fill="#FFFFFF"
+                          stroke="#0B2545"
+                          strokeWidth="10"
+                        />
+                        <g
+                          font-family="Georgia,serif"
+                          font-weight="700"
+                          font-size="40"
+                          fill="#0B2545"
+                        >
+                          <text x="250" y="182" textAnchor="middle">
+                            RMS
+                          </text>
+                        </g>
                       </svg>
                     )}
                     <div>
@@ -1027,25 +1283,29 @@ export default function VendorHub() {
                   <div className="accent-rule"></div>
 
                   <div className="back-body">
-                    <p className="owner-text">This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.</p>
+                    <p className="owner-text">
+                      This card is the property of {fullSchoolTitle}. If found, please return to the
+                      school office. Unauthorised use of this card is strictly prohibited.
+                    </p>
                   </div>
 
                   <div className="scan-label">SCAN TO CLOCK IN</div>
                   <div className="qr-wrap">
                     <div className="qr-box">
-                      <QRCodeSVG 
-                        value={staff.staffCode} 
-                        size={80}
-                        level="M"
-                        includeMargin={true}
-                      />
+                      <QRCodeSVG value={staff.staffCode} size={80} level="M" includeMargin={true} />
                     </div>
                   </div>
-                  <div className="encoded-id">ID: <b>{staff.staffCode}</b></div>
+                  <div className="encoded-id">
+                    ID: <b>{staff.staffCode}</b>
+                  </div>
 
                   <div className="sig-block">
                     {principalSig && (
-                      <img src={getFullUrl(principalSig)} alt="Principal Signature" className="sig-img" />
+                      <img
+                        src={getFullUrl(principalSig)}
+                        alt="Principal Signature"
+                        className="sig-img"
+                      />
                     )}
                     <div className="sig-line-text">Authorised Signature</div>
                   </div>

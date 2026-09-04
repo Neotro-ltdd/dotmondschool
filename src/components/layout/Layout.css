@@ -134,10 +134,10 @@
 }
 
 .nav-item:hover {
-  background: var(--secondary-color, #FACC15) !important;
+  background: var(--secondary-color, #facc15) !important;
   color: #0f172a !important;
   font-weight: 700;
-  border-color: var(--secondary-color, #FACC15) !important;
+  border-color: var(--secondary-color, #facc15) !important;
   transform: translateX(2px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
@@ -148,8 +148,8 @@
 }
 
 .nav-item.active {
-  background: var(--secondary-color, #FACC15) !important;
-  border: 1px solid var(--secondary-color, #FACC15) !important;
+  background: var(--secondary-color, #facc15) !important;
+  border: 1px solid var(--secondary-color, #facc15) !important;
   color: #0f172a !important;
   font-weight: 800;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
@@ -192,10 +192,10 @@
 
 .submenu-item:hover,
 .submenu-item.active {
-  background: var(--secondary-color, #FACC15) !important;
+  background: var(--secondary-color, #facc15) !important;
   color: #0f172a !important;
   font-weight: 700 !important;
-  border: 1px solid var(--secondary-color, #FACC15) !important;
+  border: 1px solid var(--secondary-color, #facc15) !important;
 }
 
 .submenu-item:hover svg,
@@ -233,8 +233,8 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #38BDF8;
-  color: #0F172A;
+  background: #38bdf8;
+  color: #0f172a;
   font-weight: 800;
   font-size: 0.85rem;
   display: flex;
@@ -281,7 +281,7 @@
 
 .btn-sidebar-logout:hover {
   background: rgba(239, 68, 68, 0.2);
-  color: #F87171;
+  color: #f87171;
 }
 
 /* Main Content Area */
@@ -336,16 +336,16 @@
 body[data-theme='dark'] .theme-toggle-btn {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
-  color: #F8FAFC;
+  color: #f8fafc;
 }
 
 body[data-theme='dark'] .theme-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.2);
-  color: #FDE047;
+  color: #fde047;
 }
 
 .theme-icon.sun {
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 .theme-icon.moon {
@@ -537,7 +537,7 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
 
   body[data-theme='dark'] .mobile-menu-toggle {
     background: rgba(255, 255, 255, 0.1);
-    color: #F8FAFC;
+    color: #f8fafc;
     border-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -611,9 +611,9 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
 
 /* ════════ SCROLLING HOLIDAY MARQUEE BANNER ════════ */
 .holiday-banner-container {
-  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-  color: #78350F;
-  border-bottom: 1px solid #FCD34D;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #78350f;
+  border-bottom: 1px solid #fcd34d;
   padding: 0.55rem 0;
   overflow: hidden;
   position: relative;

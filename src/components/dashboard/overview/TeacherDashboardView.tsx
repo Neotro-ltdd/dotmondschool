@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  BookOpen, 
-  UserCheck, 
-  CheckCircle, 
-  FileText, 
-  Calendar, 
+import {
+  BookOpen,
+  UserCheck,
+  CheckCircle,
+  FileText,
+  Calendar,
   Award,
   Users,
   LayoutDashboard,
-  GraduationCap
+  GraduationCap,
 } from 'lucide-react';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import StatCard from './StatCard';
 import { formatDisplayName } from '../../../utils/nameFormatter';
 import HolidayBanner from '../../ui/HolidayBanner';
@@ -35,7 +46,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
   isHolidayMode,
   resumptionDate,
   teacherData,
-  loading
+  loading,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -57,7 +68,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   const isClassTeacher = teacherData?.isClassTeacher ?? false;
@@ -99,9 +110,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
             <h2>
               {getGreeting()}, {formattedDisplayName} 👋
             </h2>
-            <p>
-              {getWelcomeSubtitle()}
-            </p>
+            <p>{getWelcomeSubtitle()}</p>
           </div>
 
           <div className="banner-actions">
@@ -111,9 +120,11 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
               </Link>
             )}
             {isSubjectTeacher && (
-              <Link 
-                to="/dashboard/teacher/assessment" 
-                className={isClassTeacher ? "banner-btn banner-btn-outline" : "banner-btn banner-btn-primary"}
+              <Link
+                to="/dashboard/teacher/assessment"
+                className={
+                  isClassTeacher ? 'banner-btn banner-btn-outline' : 'banner-btn banner-btn-primary'
+                }
               >
                 <BookOpen size={16} /> Enter Assessment Scores
               </Link>
@@ -126,14 +137,16 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
       {(() => {
         if (!isClassTeacher && isSubjectTeacher) {
           // Subject Teacher View
-          const totalAllocations = teacherData?.subjectTeacherMetrics?.totalAllocations ?? (teacherData?.totalAllocations || 0);
+          const totalAllocations =
+            teacherData?.subjectTeacherMetrics?.totalAllocations ??
+            (teacherData?.totalAllocations || 0);
           const totalSubjectStudents = teacherData?.subjectTeacherMetrics?.totalStudents ?? 0;
           const allocationsList = teacherData?.subjectTeacherMetrics?.allocations || [];
           const distinctClassesCount = new Set(allocationsList.map((a: any) => a.className)).size;
 
           return (
             <div className="stats-grid">
-              <StatCard 
+              <StatCard
                 label="ASSIGNED SUBJECTS"
                 value={totalAllocations}
                 icon={BookOpen}
@@ -144,7 +157,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
                 subText="Subject Allocations"
               />
 
-              <StatCard 
+              <StatCard
                 label="TOTAL SUBJECT STUDENTS"
                 value={totalSubjectStudents}
                 icon={Users}
@@ -155,7 +168,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
                 subText="Assigned Roster Count"
               />
 
-              <StatCard 
+              <StatCard
                 label="CLASSES TAUGHT"
                 value={distinctClassesCount}
                 icon={GraduationCap}
@@ -166,7 +179,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
                 subText="Class Allocations"
               />
 
-              <StatCard 
+              <StatCard
                 label="C.A. SCORE ENTRY STATUS"
                 value="Active"
                 icon={FileText}
@@ -188,7 +201,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
 
         return (
           <div className="stats-grid">
-            <StatCard 
+            <StatCard
               label="ASSIGNED CLASS"
               value={assignedClass}
               icon={BookOpen}
@@ -199,7 +212,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
               subText="Primary Class Roster"
             />
 
-            <StatCard 
+            <StatCard
               label="STUDENTS IN CLASS"
               value={studentCount}
               icon={Users}
@@ -210,25 +223,31 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
               subText="Active Class Students"
             />
 
-            <StatCard 
+            <StatCard
               label="TODAY'S ATTENDANCE"
               value={`${attendanceToday}%`}
               icon={CheckCircle}
               topColor="#000080"
               iconBg="#EFF6FF"
               iconColor="#000080"
-              trendTag={{ type: 'positive', text: `Present: ${teacherData?.classTeacherMetrics?.attendanceToday?.present ?? 0}` }}
+              trendTag={{
+                type: 'positive',
+                text: `Present: ${teacherData?.classTeacherMetrics?.attendanceToday?.present ?? 0}`,
+              }}
               subText="Daily Gate & Register"
             />
 
-            <StatCard 
+            <StatCard
               label="PENDING REMARKS"
               value={pendingRemarks}
               icon={FileText}
               topColor="#000080"
               iconBg="#EFF6FF"
               iconColor="#000080"
-              trendTag={{ type: pendingRemarks > 0 ? 'negative' : 'positive', text: pendingRemarks > 0 ? '● Action Required' : '● Completed' }}
+              trendTag={{
+                type: pendingRemarks > 0 ? 'negative' : 'positive',
+                text: pendingRemarks > 0 ? '● Action Required' : '● Completed',
+              }}
               subText="Classroom Affective Log"
             />
           </div>

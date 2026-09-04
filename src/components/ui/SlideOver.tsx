@@ -63,8 +63,8 @@ export const SlideOver: React.FC<SlideOverProps> = ({
   };
 
   return ReactDOM.createPortal(
-    <div 
-      className={`slideover-overlay ${isOpen ? 'open' : ''}`} 
+    <div
+      className={`slideover-overlay ${isOpen ? 'open' : ''}`}
       onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"
@@ -75,9 +75,9 @@ export const SlideOver: React.FC<SlideOverProps> = ({
             {title && <h3 className="slideover-title">{title}</h3>}
             {subtitle && <p className="slideover-subtitle">{subtitle}</p>}
           </div>
-          <button 
-            type="button" 
-            className="slideover-close-btn" 
+          <button
+            type="button"
+            className="slideover-close-btn"
             onClick={onClose}
             aria-label="Close slide panel"
           >
@@ -85,18 +85,12 @@ export const SlideOver: React.FC<SlideOverProps> = ({
           </button>
         </div>
 
-        <div className="slideover-body">
-          {children}
-        </div>
+        <div className="slideover-body">{children}</div>
 
-        {footer && (
-          <div className="slideover-footer">
-            {footer}
-          </div>
-        )}
+        {footer && <div className="slideover-footer">{footer}</div>}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

@@ -70,10 +70,14 @@ export const SlideNotification: React.FC<SlideNotificationProps> = ({
 
   const defaultTitle = () => {
     switch (type) {
-      case 'success': return 'Success';
-      case 'warning': return 'Notice';
-      case 'error': return 'Action Failed';
-      default: return 'Information';
+      case 'success':
+        return 'Success';
+      case 'warning':
+        return 'Notice';
+      case 'error':
+        return 'Action Failed';
+      default:
+        return 'Information';
     }
   };
 
@@ -81,11 +85,11 @@ export const SlideNotification: React.FC<SlideNotificationProps> = ({
     <div className="slide-notification-container" role="alert" aria-live="assertive">
       <div className={`slide-notification-card ${type} ${isClosing ? 'closing' : ''}`}>
         {renderIcon()}
-        
+
         <div className="slide-notification-content">
           <h4 className="slide-notification-title">{title || defaultTitle()}</h4>
           <p className="slide-notification-message">{message}</p>
-          
+
           {action && (
             <div className="slide-notification-actions">
               <button
@@ -112,7 +116,7 @@ export const SlideNotification: React.FC<SlideNotificationProps> = ({
         </button>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

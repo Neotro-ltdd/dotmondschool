@@ -14,7 +14,7 @@ const TenantContext = createContext<TenantContextType>({
   logoUrl: '/images/dotmond-logo-1.png',
   primaryColor: '#007bff',
   secondaryColor: '#cfecf7',
-  refreshTenantDetails: async () => { }
+  refreshTenantDetails: async () => {},
 });
 
 export const TenantProvider = ({ children }: { children: ReactNode }) => {
@@ -46,7 +46,7 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       } catch (err) {
-        console.error("Failed to load tenant details", err);
+        console.error('Failed to load tenant details', err);
       }
     }
   };
@@ -59,7 +59,9 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <TenantContext.Provider value={{ schoolName, logoUrl, primaryColor, secondaryColor, refreshTenantDetails }}>
+    <TenantContext.Provider
+      value={{ schoolName, logoUrl, primaryColor, secondaryColor, refreshTenantDetails }}
+    >
       {children}
     </TenantContext.Provider>
   );

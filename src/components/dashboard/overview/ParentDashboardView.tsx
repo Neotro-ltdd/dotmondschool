@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Users, 
-  CreditCard, 
-  Award, 
-  Calendar, 
-  CheckCircle, 
-  BookOpen, 
-  LayoutDashboard 
+import {
+  Users,
+  CreditCard,
+  Award,
+  Calendar,
+  CheckCircle,
+  BookOpen,
+  LayoutDashboard,
 } from 'lucide-react';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import StatCard from './StatCard';
 import { formatDisplayName } from '../../../utils/nameFormatter';
 import HolidayBanner from '../../ui/HolidayBanner';
@@ -33,7 +44,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
   isHolidayMode,
   resumptionDate,
   parentData = [],
-  loading
+  loading,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -55,7 +66,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   const wardCount = parentData.length || 2;
@@ -84,7 +95,8 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
               {getGreeting()}, {formatDisplayName(userTitle, userName)} 👋
             </h2>
             <p>
-              Parent & Guardian Portal: Access ward academic report cards, continuous assessment scores, term tuition payment receipts, and attendance logs.
+              Parent & Guardian Portal: Access ward academic report cards, continuous assessment
+              scores, term tuition payment receipts, and attendance logs.
             </p>
           </div>
 
@@ -101,7 +113,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
 
       {/* ════════ EXECUTIVE STAT CARDS GRID ════════ */}
       <div className="stats-grid">
-        <StatCard 
+        <StatCard
           label="LINKED WARDS"
           value={wardCount}
           icon={Users}
@@ -112,7 +124,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
           subText="Registered Student Files"
         />
 
-        <StatCard 
+        <StatCard
           label="FEE PAYMENT STATUS"
           value="Cleared"
           icon={CreditCard}
@@ -123,7 +135,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
           subText="Current Term Tuition"
         />
 
-        <StatCard 
+        <StatCard
           label="TERM REPORT CARDS"
           value="Available"
           icon={Award}
@@ -134,7 +146,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
           subText="Finalized Broadsheets"
         />
 
-        <StatCard 
+        <StatCard
           label="WARD ATTENDANCE RATE"
           value="96%"
           icon={CheckCircle}
@@ -204,45 +216,71 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
         {/* Fee Payment Breakdown */}
         <div className="chart-card">
           <div className="chart-card-header">
-            <h3><CreditCard size={18} style={{ color: '#000080' }} /> Tuition Clearance</h3>
+            <h3>
+              <CreditCard size={18} style={{ color: '#000080' }} /> Tuition Clearance
+            </h3>
             <span>Status</span>
           </div>
-          
+
           <div style={{ height: 260, position: 'relative' }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
               <PieChart>
-                <Pie 
+                <Pie
                   data={[
                     { name: 'Cleared Wards', value: wardCount },
-                    { name: 'Pending Balance', value: 0 }
-                  ]} 
-                  cx="50%" 
-                  cy="50%" 
-                  innerRadius={65} 
-                  outerRadius={95} 
-                  paddingAngle={5} 
+                    { name: 'Pending Balance', value: 0 },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={65}
+                  outerRadius={95}
+                  paddingAngle={5}
                   dataKey="value"
                 >
                   <Cell fill="#000080" />
                   <Cell fill="#F59E0B" />
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0F172A',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#fff',
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
 
             {/* Donut Center Overlay */}
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              textAlign: 'center',
-              pointerEvents: 'none'
-            }}>
-              <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0F172A', display: 'block', lineHeight: 1 }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '1.6rem',
+                  fontWeight: 900,
+                  color: '#0F172A',
+                  display: 'block',
+                  lineHeight: 1,
+                }}
+              >
                 100%
               </span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: '#64748B',
+                  textTransform: 'uppercase',
+                }}
+              >
                 Cleared
               </span>
             </div>
@@ -251,7 +289,9 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
           <div className="chart-summary-pills">
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
-              <span>Cleared Wards: <strong>{wardCount}</strong></span>
+              <span>
+                Cleared Wards: <strong>{wardCount}</strong>
+              </span>
             </div>
           </div>
         </div>
@@ -259,25 +299,34 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
         {/* Ward Subject Grades Bar Chart */}
         <div className="chart-card">
           <div className="chart-card-header">
-            <h3><LayoutDashboard size={18} style={{ color: '#10B981' }} /> Ward Academic Performance</h3>
+            <h3>
+              <LayoutDashboard size={18} style={{ color: '#10B981' }} /> Ward Academic Performance
+            </h3>
             <span>Subject Averages</span>
           </div>
-          
+
           <div style={{ height: 260 }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-              <BarChart 
+              <BarChart
                 data={[
                   { name: 'Maths', Score: 85 },
                   { name: 'English', Score: 90 },
                   { name: 'Science', Score: 78 },
-                  { name: 'Civics', Score: 92 }
+                  { name: 'Civics', Score: 92 },
                 ]}
                 margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} domain={[0, 100]} />
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', border: 'none', borderRadius: '10px', color: '#fff' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0F172A',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#fff',
+                  }}
+                />
                 <Bar dataKey="Score" fill="#000080" radius={[6, 6, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
@@ -286,7 +335,9 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
           <div className="chart-summary-pills">
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
-              <span>Top Grade: <strong>Civics (92%)</strong></span>
+              <span>
+                Top Grade: <strong>Civics (92%)</strong>
+              </span>
             </div>
           </div>
         </div>

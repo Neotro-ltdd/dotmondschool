@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../../services/api';
 import './GateAttendanceLog.css';
-import { 
-  Scan, 
-  UserCheck, 
-  Clock, 
-  LogOut, 
-  Search, 
-  RefreshCw, 
-  List, 
-  LayoutGrid, 
-  Calendar 
+import {
+  Scan,
+  UserCheck,
+  Clock,
+  LogOut,
+  Search,
+  RefreshCw,
+  List,
+  LayoutGrid,
+  Calendar,
 } from 'lucide-react';
 
 interface GateLog {
@@ -38,7 +38,7 @@ const GateAttendanceLog: React.FC = () => {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  
+
   // Filters & View Controls
   const [filterSearch, setFilterSearch] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<string>('');
@@ -50,7 +50,7 @@ const GateAttendanceLog: React.FC = () => {
       const classData = await api.get('/setup/classes');
       setClasses(classData);
     } catch (err) {
-      console.error("Failed to load classes");
+      console.error('Failed to load classes');
     }
   };
 
@@ -84,25 +84,26 @@ const GateAttendanceLog: React.FC = () => {
   let filteredLogs = logs;
   if (filterSearch) {
     const searchLower = filterSearch.toLowerCase();
-    filteredLogs = filteredLogs.filter(s => 
-      s.studentName.toLowerCase().includes(searchLower) ||
-      (s.registrationNumber && s.registrationNumber.toLowerCase().includes(searchLower))
+    filteredLogs = filteredLogs.filter(
+      (s) =>
+        s.studentName.toLowerCase().includes(searchLower) ||
+        (s.registrationNumber && s.registrationNumber.toLowerCase().includes(searchLower)),
     );
   }
   if (filterLevel) {
-    filteredLogs = filteredLogs.filter(s => s.level === filterLevel);
+    filteredLogs = filteredLogs.filter((s) => s.level === filterLevel);
   }
   if (filterClassId) {
-    filteredLogs = filteredLogs.filter(s => s.classId === filterClassId);
+    filteredLogs = filteredLogs.filter((s) => s.classId === filterClassId);
   }
 
-  const classOptions = filterLevel ? classes.filter(c => c.level === filterLevel) : classes;
+  const classOptions = filterLevel ? classes.filter((c) => c.level === filterLevel) : classes;
 
   // Metrics
   const totalScans = logs.length;
-  const presentCount = logs.filter(l => l.clockInTime && !l.clockOutTime).length;
-  const lateCount = logs.filter(l => l.status?.toLowerCase().includes('late')).length;
-  const departedCount = logs.filter(l => !!l.clockOutTime).length;
+  const presentCount = logs.filter((l) => l.clockInTime && !l.clockOutTime).length;
+  const lateCount = logs.filter((l) => l.status?.toLowerCase().includes('late')).length;
+  const departedCount = logs.filter((l) => !!l.clockOutTime).length;
 
   return (
     <div className="gate-page-container">
@@ -111,11 +112,26 @@ const GateAttendanceLog: React.FC = () => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <h1 className="gate-page-title">Gate Attendance Logs</h1>
-            <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', padding: '0.2rem 0.65rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <span
+              style={{
+                background: '#ECFDF5',
+                color: '#047857',
+                border: '1px solid #A7F3D0',
+                padding: '0.2rem 0.65rem',
+                borderRadius: '20px',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
               <span className="status-dot"></span> Live Gate Feed
             </span>
           </div>
-          <p className="gate-page-subtitle">Real-time gatekeeper scans, barcode check-ins, and student arrival/departure timestamps</p>
+          <p className="gate-page-subtitle">
+            Real-time gatekeeper scans, barcode check-ins, and student arrival/departure timestamps
+          </p>
         </div>
 
         <button className="btn-refresh-feed" onClick={fetchLogs} disabled={loading}>
@@ -149,7 +165,9 @@ const GateAttendanceLog: React.FC = () => {
         <div className="gate-metric-card">
           <div className="metric-info-box">
             <span className="metric-label">Late Arrivals</span>
-            <span className="metric-number" style={{ color: '#B45309' }}>{lateCount}</span>
+            <span className="metric-number" style={{ color: '#B45309' }}>
+              {lateCount}
+            </span>
           </div>
           <div className="metric-icon-badge late">
             <Clock size={24} />
@@ -172,8 +190,8 @@ const GateAttendanceLog: React.FC = () => {
         <div className="gate-search-group">
           <div className="gate-search-box">
             <Search className="gate-search-icon" size={16} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search by student name or reg. number..."
               value={filterSearch}
               onChange={(e) => setFilterSearch(e.target.value)}
@@ -181,10 +199,13 @@ const GateAttendanceLog: React.FC = () => {
           </div>
 
           {/* Level Filter */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterLevel} 
-            onChange={(e) => { setFilterLevel(e.target.value); setFilterClassId(''); }}
+            value={filterLevel}
+            onChange={(e) => {
+              setFilterLevel(e.target.value);
+              setFilterClassId('');
+            }}
           >
             <option value="">All Academic Levels</option>
             <option value="Senior Secondary">Senior Secondary</option>
@@ -200,23 +221,26 @@ const GateAttendanceLog: React.FC = () => {
           </select>
 
           {/* Class Filter */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterClassId} 
+            value={filterClassId}
             onChange={(e) => setFilterClassId(e.target.value)}
           >
             <option value="">All Classes</option>
-            {classOptions.map(cls => (
-              <option key={cls.id} value={cls.id}>{`${cls.level} ${cls.name} ${cls.section || ''}`}</option>
+            {classOptions.map((cls) => (
+              <option
+                key={cls.id}
+                value={cls.id}
+              >{`${cls.level} ${cls.name} ${cls.section || ''}`}</option>
             ))}
           </select>
 
           {/* Date Picker Filter */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Calendar size={16} color="#64748B" />
-            <input 
-              type="date" 
-              className="select-filter-input" 
+            <input
+              type="date"
+              className="select-filter-input"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
               style={{ padding: '0.6rem 0.85rem' }}
@@ -226,14 +250,14 @@ const GateAttendanceLog: React.FC = () => {
 
         {/* View Switcher Toggle */}
         <div className="view-mode-toggle">
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
             title="Table View"
           >
             <List size={16} /> Table View
           </button>
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
             title="Grid View"
@@ -245,11 +269,17 @@ const GateAttendanceLog: React.FC = () => {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="gate-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="gate-table-wrapper"
+          style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}
+        >
           Fetching real-time gate logs...
         </div>
       ) : filteredLogs.length === 0 ? (
-        <div className="gate-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="gate-table-wrapper"
+          style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}
+        >
           No gate attendance records found for {filterDate}.
         </div>
       ) : viewMode === 'table' ? (
@@ -267,13 +297,11 @@ const GateAttendanceLog: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredLogs.map(log => (
+              {filteredLogs.map((log) => (
                 <tr key={log.studentId}>
                   <td>
                     <div className="teacher-profile-cell">
-                      <div className="teacher-avatar">
-                        {getStudentInitials(log.studentName)}
-                      </div>
+                      <div className="teacher-avatar">{getStudentInitials(log.studentName)}</div>
                       <span className="teacher-name-title">{log.studentName}</span>
                     </div>
                   </td>
@@ -283,14 +311,35 @@ const GateAttendanceLog: React.FC = () => {
                     </span>
                   </td>
                   <td>
-                    <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.25rem 0.65rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700 }}>
+                    <span
+                      style={{
+                        background: '#EFF6FF',
+                        color: '#1E40AF',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '6px',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                      }}
+                    >
                       {log.className || 'Unassigned'}
                     </span>
                   </td>
                   <td>
                     {log.clockInTime ? (
-                      <span style={{ fontWeight: 800, color: '#047857', background: '#ECFDF5', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.82rem' }}>
-                        {new Date(log.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <span
+                        style={{
+                          fontWeight: 800,
+                          color: '#047857',
+                          background: '#ECFDF5',
+                          padding: '0.2rem 0.6rem',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                        }}
+                      >
+                        {new Date(log.clockInTime).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </span>
                     ) : (
                       <span style={{ color: '#94A3B8' }}>-</span>
@@ -298,16 +347,36 @@ const GateAttendanceLog: React.FC = () => {
                   </td>
                   <td>
                     {log.clockOutTime ? (
-                      <span style={{ fontWeight: 800, color: '#1E40AF', background: '#EFF6FF', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.82rem' }}>
-                        {new Date(log.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <span
+                        style={{
+                          fontWeight: 800,
+                          color: '#1E40AF',
+                          background: '#EFF6FF',
+                          padding: '0.2rem 0.6rem',
+                          borderRadius: '6px',
+                          fontSize: '0.82rem',
+                        }}
+                      >
+                        {new Date(log.clockOutTime).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </span>
                     ) : (
                       <span style={{ color: '#94A3B8' }}>-</span>
                     )}
                   </td>
                   <td>
-                    <span className={`status-pill ${log.status === 'Present' || log.clockInTime ? 'active' : 'inactive'}`}>
-                      <span className={log.status === 'Present' || log.clockInTime ? 'status-dot' : 'status-dot-inactive'}></span>
+                    <span
+                      className={`status-pill ${log.status === 'Present' || log.clockInTime ? 'active' : 'inactive'}`}
+                    >
+                      <span
+                        className={
+                          log.status === 'Present' || log.clockInTime
+                            ? 'status-dot'
+                            : 'status-dot-inactive'
+                        }
+                      ></span>
                       {log.status || (log.clockInTime ? 'Timed In' : 'Absent')}
                     </span>
                   </td>
@@ -319,37 +388,88 @@ const GateAttendanceLog: React.FC = () => {
       ) : (
         /* GRID CARDS VIEW */
         <div className="gate-grid-wrapper">
-          {filteredLogs.map(log => (
+          {filteredLogs.map((log) => (
             <div key={log.studentId} className="gate-grid-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
                 <div className="teacher-profile-cell">
-                  <div className="teacher-avatar">
-                    {getStudentInitials(log.studentName)}
-                  </div>
+                  <div className="teacher-avatar">{getStudentInitials(log.studentName)}</div>
                   <div>
-                    <span className="teacher-name-title" style={{ fontSize: '1.05rem' }}>{log.studentName}</span>
-                    <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginTop: '0.1rem' }}>
+                    <span className="teacher-name-title" style={{ fontSize: '1.05rem' }}>
+                      {log.studentName}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.78rem',
+                        color: '#64748B',
+                        display: 'block',
+                        marginTop: '0.1rem',
+                      }}
+                    >
                       {log.registrationNumber || 'No Reg. ID'}
                     </span>
                   </div>
                 </div>
 
-                <span className={`status-pill ${log.status === 'Present' || log.clockInTime ? 'active' : 'inactive'}`}>
+                <span
+                  className={`status-pill ${log.status === 'Present' || log.clockInTime ? 'active' : 'inactive'}`}
+                >
                   {log.status || (log.clockInTime ? 'Timed In' : 'Absent')}
                 </span>
               </div>
 
-              <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, background: '#EFF6FF', color: '#1E40AF', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+              <div
+                style={{
+                  paddingTop: '0.85rem',
+                  borderTop: '1px solid #F1F5F9',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    background: '#EFF6FF',
+                    color: '#1E40AF',
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '6px',
+                  }}
+                >
                   {log.className || 'Unassigned'}
                 </span>
 
                 <div style={{ textAlign: 'right', fontSize: '0.8rem' }}>
                   <span style={{ display: 'block', color: '#047857', fontWeight: 800 }}>
-                    In: {log.clockInTime ? new Date(log.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                    In:{' '}
+                    {log.clockInTime
+                      ? new Date(log.clockInTime).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '-'}
                   </span>
-                  <span style={{ display: 'block', color: '#1E40AF', fontWeight: 800, marginTop: '0.1rem' }}>
-                    Out: {log.clockOutTime ? new Date(log.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                  <span
+                    style={{
+                      display: 'block',
+                      color: '#1E40AF',
+                      fontWeight: 800,
+                      marginTop: '0.1rem',
+                    }}
+                  >
+                    Out:{' '}
+                    {log.clockOutTime
+                      ? new Date(log.clockOutTime).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '-'}
                   </span>
                 </div>
               </div>

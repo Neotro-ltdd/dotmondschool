@@ -78,14 +78,14 @@ function App() {
                   <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />
                   <Route path="/change-password" element={<ChangePassword />} />
                   <Route path="/master-login" element={<MasterLogin />} />
-                  
+
                   <Route path="/system-admin" element={<SystemLayout />}>
                     <Route index element={<SystemOverview />} />
                     <Route path="schools" element={<SystemSchools />} />
                     <Route path="schools/:id" element={<SchoolManagement />} />
                     <Route path="settings" element={<SystemSettings />} />
                   </Route>
-                  
+
                   {/* Protected Dashboard Routes */}
                   <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<Overview />} />

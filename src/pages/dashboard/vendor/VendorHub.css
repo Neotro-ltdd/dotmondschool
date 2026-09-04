@@ -4,7 +4,11 @@
   background-color: #f8fafc;
   min-height: 100vh;
   color: #0f172a;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* Page Header & Category Tabs */
@@ -118,15 +122,36 @@
   font-size: 1.25rem;
 }
 
-.icon-blue { background: #eff6ff; color: #2563eb; }
-.icon-green { background: #ecfdf5; color: #10b981; }
-.icon-amber { background: #fffbeb; color: #f59e0b; }
-.icon-purple { background: #faf5ff; color: #9333ea; }
-.icon-rose { background: #fff1f2; color: #f43f5e; }
+.icon-blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.icon-green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+.icon-amber {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+.icon-purple {
+  background: #faf5ff;
+  color: #9333ea;
+}
+.icon-rose {
+  background: #fff1f2;
+  color: #f43f5e;
+}
 
-.text-white { color: #0f172a; }
-.text-emerald { color: #10b981; }
-.text-amber { color: #f59e0b; }
+.text-white {
+  color: #0f172a;
+}
+.text-emerald {
+  color: #10b981;
+}
+.text-amber {
+  color: #f59e0b;
+}
 
 /* Filter Toolbar Panel */
 .filter-toolbar-panel {
@@ -382,7 +407,9 @@
   box-sizing: border-box;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 

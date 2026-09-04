@@ -28,10 +28,12 @@ export default function Overview() {
   const { userRole, userName, userTitle } = useAuth();
   const { schoolName } = useTenant();
   const { session, term, isHoliday, resumptionDate } = useActiveTerm();
-  
-  const isHolidayMode = isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
-  const displayTerm = term === 'MTB (Mid Term Break)' || term === 'MTB' ? 'Mid Term Break (MTB)' : term;
-  
+
+  const isHolidayMode =
+    isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
+  const displayTerm =
+    term === 'MTB (Mid Term Break)' || term === 'MTB' ? 'Mid Term Break (MTB)' : term;
+
   const [showActivityLog, setShowActivityLog] = React.useState(false);
   const [accountantData, setAccountantData] = React.useState<any>(null);
   const [teacherData, setTeacherData] = React.useState<any>(null);
@@ -49,7 +51,7 @@ export default function Overview() {
       return Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
     },
     enabled: showActivityLog,
-    refetchInterval: 15000
+    refetchInterval: 15000,
   });
 
   React.useEffect(() => {
@@ -62,7 +64,11 @@ export default function Overview() {
         } else if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
           const res = await api.get('/academics/teacher/dashboard');
           setTeacherData(res?.data || res);
-        } else if (userRole === 'Admin' || userRole === 'SuperAdmin' || userRole === 'SystemAdmin') {
+        } else if (
+          userRole === 'Admin' ||
+          userRole === 'SuperAdmin' ||
+          userRole === 'SystemAdmin'
+        ) {
           let res;
           try {
             res = await api.get('/setup/admin/dashboard');
@@ -73,11 +79,14 @@ export default function Overview() {
         } else if (userRole === 'Director' || userRole === 'Principal') {
           const [pData, pSummary] = await Promise.all([
             api.get('/academics/principal/dashboard').catch(() => null),
-            api.get('/setup/admin/dashboard').catch(() => api.get('/platform/summary')).catch(() => null)
+            api
+              .get('/setup/admin/dashboard')
+              .catch(() => api.get('/platform/summary'))
+              .catch(() => null),
           ]);
           setPrincipalData({
             ...(pSummary?.data || pSummary || {}),
-            ...(pData?.data || pData || {})
+            ...(pData?.data || pData || {}),
           });
         } else if (userRole === 'Parent') {
           const res = await api.get('/parents/wards');
@@ -95,7 +104,7 @@ export default function Overview() {
           setAdminData(res?.data || res);
         }
       } catch (err) {
-        console.error("Dashboard fetch error:", err);
+        console.error('Dashboard fetch error:', err);
       } finally {
         setLoading(false);
       }
@@ -107,70 +116,70 @@ export default function Overview() {
   return (
     <div className="overview-page-container">
       {userRole === 'Accountant' ? (
-        <AccountantDashboardView 
+        <AccountantDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
-          accountantData={accountantData} 
-          loading={loading} 
+          accountantData={accountantData}
+          loading={loading}
         />
-      ) : (userRole === 'Teacher' || userRole === 'SubjectTeacher') ? (
-        <TeacherDashboardView 
+      ) : userRole === 'Teacher' || userRole === 'SubjectTeacher' ? (
+        <TeacherDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
-          teacherData={teacherData} 
-          loading={loading} 
+          teacherData={teacherData}
+          loading={loading}
         />
-      ) : (userRole === 'Director' || userRole === 'Principal') ? (
-        <PrincipalDashboardView 
+      ) : userRole === 'Director' || userRole === 'Principal' ? (
+        <PrincipalDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
-          principalData={principalData} 
-          loading={loading} 
+          principalData={principalData}
+          loading={loading}
         />
       ) : userRole === 'Parent' ? (
-        <ParentDashboardView 
+        <ParentDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
-          parentData={parentData} 
-          loading={loading} 
+          parentData={parentData}
+          loading={loading}
         />
-      ) : (userRole === 'Vendor' || userRole === 'GateSecurity') ? (
-        <VendorDashboardView 
+      ) : userRole === 'Vendor' || userRole === 'GateSecurity' ? (
+        <VendorDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
-          vendorData={vendorData} 
-          loading={loading} 
+          vendorData={vendorData}
+          loading={loading}
         />
       ) : (
-        <AdminDashboardView 
+        <AdminDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
-          adminData={adminData} 
-          loading={loading} 
+          adminData={adminData}
+          loading={loading}
           onToggleActivityLog={() => setShowActivityLog(!showActivityLog)}
         />
       )}
@@ -183,11 +192,19 @@ export default function Overview() {
         subtitle="Live audit tracking of administrative actions across the portal."
         width="md"
         footer={
-          <button 
-            type="button" 
-            onClick={() => setShowActivityLog(false)} 
-            className="banner-btn" 
-            style={{ background: '#000080', color: '#fff', padding: '10px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+          <button
+            type="button"
+            onClick={() => setShowActivityLog(false)}
+            className="banner-btn"
+            style={{
+              background: '#000080',
+              color: '#fff',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
           >
             Close Panel
           </button>
@@ -204,15 +221,46 @@ export default function Overview() {
             </div>
           ) : (
             activityLogs.map((item, i) => (
-              <div key={item.id || i} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FAFCFE', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                key={item.id || i}
+                style={{
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: '1px solid #E2E8F0',
+                  backgroundColor: '#FAFCFE',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
+              >
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <strong style={{ color: '#0F172A', fontSize: '0.95rem' }}>{item.title}</strong>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: item.color || '#10B981', background: `${item.color || '#10B981'}15`, padding: '4px 10px', borderRadius: '6px' }}>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: item.color || '#10B981',
+                      background: `${item.color || '#10B981'}15`,
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                    }}
+                  >
                     {item.status || 'Success'}
                   </span>
                 </div>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>{item.desc}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>
+                  {item.desc}
+                </p>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '4px',
+                  }}
+                >
                   <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>
                     {item.initiatedBy || 'Initiated by School Administrator'}
                   </span>
