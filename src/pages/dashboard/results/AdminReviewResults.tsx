@@ -4,19 +4,19 @@ import { getSessionOptions } from '../../../utils/sessionOptions';
 import { api } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
 import './AdminReviewResults.css';
-import { 
-  Users, 
-  TrendingUp, 
-  Award, 
-  ShieldCheck, 
-  Search, 
-  RotateCcw, 
-  MoreVertical, 
-  FileText, 
-  Printer, 
-  BarChart2, 
-  List, 
-  LayoutGrid 
+import {
+  Users,
+  TrendingUp,
+  Award,
+  ShieldCheck,
+  Search,
+  RotateCcw,
+  MoreVertical,
+  FileText,
+  Printer,
+  BarChart2,
+  List,
+  LayoutGrid,
 } from 'lucide-react';
 
 interface StudentResultItem {
@@ -51,7 +51,12 @@ export default function AdminReviewResults() {
   const { showConfirm, showAlert } = useDialog();
 
   // Controls & Filters
-  const { session: filterSession, term: filterTerm, setSession: setFilterSession, setTerm: setFilterTerm } = useActiveTerm();
+  const {
+    session: filterSession,
+    term: filterTerm,
+    setSession: setFilterSession,
+    setTerm: setFilterTerm,
+  } = useActiveTerm();
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
@@ -64,6 +69,7 @@ export default function AdminReviewResults() {
   // Close 3-dots menu on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // SAFETY: document mousedown targets are always DOM Nodes (Element/Text), so the EventTarget narrows to Node here.
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpenDropdownId(null);
       }
@@ -90,11 +96,13 @@ export default function AdminReviewResults() {
     try {
       setLoading(true);
       setError(null);
-      const res = await api.get(`/academics/admin/class-results?classId=${selectedClassId}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`);
-      
+      const res = await api.get(
+        `/academics/admin/class-results?classId=${selectedClassId}&session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`,
+      );
+
       if (!res.batchId || res.batchId === '00000000-0000-0000-0000-000000000000') {
         setData(null);
-        setError("No results found or results have not been compiled yet for this term.");
+        setError('No results found or results have not been compiled yet for this term.');
       } else {
         setData(res);
       }
@@ -108,16 +116,16 @@ export default function AdminReviewResults() {
 
   const handleReset = async () => {
     if (!data?.batchId) return;
-    
+
     const confirmed = await showConfirm(
-      "Are you sure you want to reset and delete this compilation for this class? This will return the class to a pre-compiled state."
+      'Are you sure you want to reset and delete this compilation for this class? This will return the class to a pre-compiled state.',
     );
     if (!confirmed) return;
 
     try {
       setLoading(true);
       await api.delete(`/academics/results/reset/${data.batchId}`);
-      await showAlert("Results have been successfully reset.", { type: 'success' });
+      await showAlert('Results have been successfully reset.', { type: 'success' });
       fetchResults();
     } catch (err: any) {
       await showAlert(err.message || 'Failed to reset results.', { type: 'danger' });
@@ -139,7 +147,7 @@ export default function AdminReviewResults() {
   };
 
   const formatOrdinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
+    const s = ['th', 'st', 'nd', 'rd'];
     const v = n % 100;
     return n + (s[(v - 20) % 10] || s[v] || s[0]);
   };
@@ -147,7 +155,7 @@ export default function AdminReviewResults() {
   // Filtered student results
   const rawResults = data?.results || [];
   const filteredResults = [...rawResults]
-    .filter(r => {
+    .filter((r) => {
       const text = `${r.studentName} ${r.positionInClass} ${r.averageScore}`.toLowerCase();
       return text.includes(searchTerm.toLowerCase());
     })
@@ -155,15 +163,17 @@ export default function AdminReviewResults() {
 
   // Metrics
   const totalStudents = rawResults.length;
-  const classAvg = totalStudents > 0 
-    ? (rawResults.reduce((acc, curr) => acc + curr.averageScore, 0) / totalStudents).toFixed(2)
-    : '0.00';
-  const topResult = rawResults.length > 0 
-    ? [...rawResults].sort((a, b) => a.positionInClass - b.positionInClass)[0]
-    : null;
+  const classAvg =
+    totalStudents > 0
+      ? (rawResults.reduce((acc, curr) => acc + curr.averageScore, 0) / totalStudents).toFixed(2)
+      : '0.00';
+  const topResult =
+    rawResults.length > 0
+      ? [...rawResults].sort((a, b) => a.positionInClass - b.positionInClass)[0]
+      : null;
   const batchStatus = data?.status || 'Pending';
 
-  const selectedClass = classes.find(c => c.id === selectedClassId);
+  const selectedClass = classes.find((c) => c.id === selectedClassId);
 
   return (
     <div className="review-page-container">
@@ -171,7 +181,9 @@ export default function AdminReviewResults() {
       <div className="review-page-header">
         <div>
           <h1 className="review-page-title">Review Class Results</h1>
-          <p className="review-page-subtitle">Preview, audit, and inspect compiled academic performance rosters across classes</p>
+          <p className="review-page-subtitle">
+            Preview, audit, and inspect compiled academic performance rosters across classes
+          </p>
         </div>
         {data?.batchId && (
           <button className="btn-reset-compilation" onClick={handleReset} disabled={loading}>
@@ -217,7 +229,14 @@ export default function AdminReviewResults() {
         <div className="review-metric-card">
           <div className="metric-info-box">
             <span className="metric-label">Batch Approval Status</span>
-            <span className="metric-number" style={{ fontSize: '1.2rem', marginTop: '0.4rem', color: batchStatus === 'Approved' ? '#047857' : '#B45309' }}>
+            <span
+              className="metric-number"
+              style={{
+                fontSize: '1.2rem',
+                marginTop: '0.4rem',
+                color: batchStatus === 'Approved' ? '#047857' : '#B45309',
+              }}
+            >
               {batchStatus}
             </span>
           </div>
@@ -232,8 +251,8 @@ export default function AdminReviewResults() {
         <div className="review-search-group">
           <div className="review-search-box">
             <Search className="review-search-icon" size={16} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search student name or rank..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -241,32 +260,36 @@ export default function AdminReviewResults() {
           </div>
 
           {/* Class Select Dropdown */}
-          <select 
+          <select
             className="select-filter-input"
-            value={selectedClassId} 
+            value={selectedClassId}
             onChange={(e) => setSelectedClassId(e.target.value)}
             style={{ minWidth: '180px' }}
           >
-            {classes.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+            {classes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
             ))}
           </select>
 
           {/* Session Selector */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterSession} 
+            value={filterSession}
             onChange={(e) => setFilterSession(e.target.value)}
           >
-            {getSessionOptions(filterSession).map(s => (
-              <option key={s} value={s}>{s}</option>
+            {getSessionOptions(filterSession).map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
 
           {/* Term Selector */}
-          <select 
+          <select
             className="select-filter-input"
-            value={filterTerm} 
+            value={filterTerm}
             onChange={(e) => setFilterTerm(e.target.value)}
           >
             <option value="First Term">First Term</option>
@@ -277,14 +300,14 @@ export default function AdminReviewResults() {
 
         {/* View Switcher Toggle */}
         <div className="view-mode-toggle">
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
             title="Table View"
           >
             <List size={16} /> Table View
           </button>
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
             title="Grid View"
@@ -298,12 +321,19 @@ export default function AdminReviewResults() {
 
       {/* Main Roster Area */}
       {loading ? (
-        <div className="review-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="review-table-wrapper"
+          style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}
+        >
           Loading compiled results...
         </div>
       ) : !data || !data.results || data.results.length === 0 ? (
-        <div className="review-table-wrapper" style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}>
-          No compiled results available for <strong>{selectedClass?.name || 'this class'}</strong> in {filterSession} ({filterTerm}).
+        <div
+          className="review-table-wrapper"
+          style={{ padding: '3.5rem', textAlign: 'center', color: '#64748B' }}
+        >
+          No compiled results available for <strong>{selectedClass?.name || 'this class'}</strong>{' '}
+          in {filterSession} ({filterTerm}).
         </div>
       ) : viewMode === 'table' ? (
         /* TABLE VIEW */
@@ -320,7 +350,7 @@ export default function AdminReviewResults() {
               </tr>
             </thead>
             <tbody>
-              {filteredResults.map(r => {
+              {filteredResults.map((r) => {
                 const isDropdownOpen = openDropdownId === r.id;
                 const reportUrl = `/dashboard/reports/result/${r.studentId}/${data.batchId}`;
 
@@ -328,32 +358,48 @@ export default function AdminReviewResults() {
                   <tr key={r.id}>
                     <td>
                       <div className="teacher-profile-cell">
-                        <div className="teacher-avatar">
-                          {getStudentInitials(r.studentName)}
-                        </div>
+                        <div className="teacher-avatar">{getStudentInitials(r.studentName)}</div>
                         <span className="teacher-name-title">{r.studentName}</span>
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.95rem' }}>{r.totalScore}</span>
-                    </td>
-                    <td>
-                      <span style={{ fontWeight: 800, color: '#000080', fontSize: '0.95rem' }}>{r.averageScore.toFixed(2)}%</span>
-                    </td>
-                    <td>
-                      <span className={`rank-badge ${r.positionInClass === 1 ? 'rank-1' : r.positionInClass === 2 ? 'rank-2' : r.positionInClass === 3 ? 'rank-3' : 'rank-general'}`}>
-                        {r.positionInClass === 1 ? '🥇 1st Position' : r.positionInClass === 2 ? '🥈 2nd Position' : r.positionInClass === 3 ? '🥉 3rd Position' : `${formatOrdinal(r.positionInClass)} Position`}
+                      <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.95rem' }}>
+                        {r.totalScore}
                       </span>
                     </td>
                     <td>
-                      <span className={`status-pill ${batchStatus === 'Approved' ? 'active' : 'inactive'}`}>
-                        <span className={batchStatus === 'Approved' ? 'status-dot' : 'status-dot-inactive'}></span>
+                      <span style={{ fontWeight: 800, color: '#000080', fontSize: '0.95rem' }}>
+                        {r.averageScore.toFixed(2)}%
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`rank-badge ${r.positionInClass === 1 ? 'rank-1' : r.positionInClass === 2 ? 'rank-2' : r.positionInClass === 3 ? 'rank-3' : 'rank-general'}`}
+                      >
+                        {r.positionInClass === 1
+                          ? '🥇 1st Position'
+                          : r.positionInClass === 2
+                            ? '🥈 2nd Position'
+                            : r.positionInClass === 3
+                              ? '🥉 3rd Position'
+                              : `${formatOrdinal(r.positionInClass)} Position`}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`status-pill ${batchStatus === 'Approved' ? 'active' : 'inactive'}`}
+                      >
+                        <span
+                          className={
+                            batchStatus === 'Approved' ? 'status-dot' : 'status-dot-inactive'
+                          }
+                        ></span>
                         {batchStatus}
                       </span>
                     </td>
                     <td style={{ textAlign: 'center' }}>
                       <div className="action-dropdown-container">
-                        <button 
+                        <button
                           className="btn-action-dots"
                           onClick={() => setOpenDropdownId(isDropdownOpen ? null : r.id)}
                         >
@@ -362,19 +408,19 @@ export default function AdminReviewResults() {
 
                         {isDropdownOpen && (
                           <div className="action-dropdown-menu">
-                            <a 
-                              href={reportUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
+                            <a
+                              href={reportUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="dropdown-action-item"
                               onClick={() => setOpenDropdownId(null)}
                             >
                               <FileText size={15} color="#000080" /> View Report Card
                             </a>
-                            <a 
-                              href={reportUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
+                            <a
+                              href={reportUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="dropdown-action-item"
                               onClick={() => setOpenDropdownId(null)}
                             >
@@ -393,27 +439,40 @@ export default function AdminReviewResults() {
       ) : (
         /* GRID CARDS VIEW */
         <div className="review-grid-wrapper" ref={dropdownRef}>
-          {filteredResults.map(r => {
+          {filteredResults.map((r) => {
             const isDropdownOpen = openDropdownId === r.id;
             const reportUrl = `/dashboard/reports/result/${r.studentId}/${data.batchId}`;
 
             return (
               <div key={r.id} className="review-grid-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
                   <div className="teacher-profile-cell">
-                    <div className="teacher-avatar">
-                      {getStudentInitials(r.studentName)}
-                    </div>
+                    <div className="teacher-avatar">{getStudentInitials(r.studentName)}</div>
                     <div>
-                      <span className="teacher-name-title" style={{ fontSize: '1.05rem' }}>{r.studentName}</span>
-                      <span style={{ fontSize: '0.78rem', color: '#64748B', display: 'block', marginTop: '0.1rem' }}>
+                      <span className="teacher-name-title" style={{ fontSize: '1.05rem' }}>
+                        {r.studentName}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.78rem',
+                          color: '#64748B',
+                          display: 'block',
+                          marginTop: '0.1rem',
+                        }}
+                      >
                         {selectedClass?.name || 'Class Room'}
                       </span>
                     </div>
                   </div>
 
                   <div className="action-dropdown-container">
-                    <button 
+                    <button
                       className="btn-action-dots"
                       onClick={() => setOpenDropdownId(isDropdownOpen ? null : r.id)}
                     >
@@ -422,19 +481,19 @@ export default function AdminReviewResults() {
 
                     {isDropdownOpen && (
                       <div className="action-dropdown-menu">
-                        <a 
-                          href={reportUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={reportUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="dropdown-action-item"
                           onClick={() => setOpenDropdownId(null)}
                         >
                           <FileText size={15} color="#000080" /> View Report Card
                         </a>
-                        <a 
-                          href={reportUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <a
+                          href={reportUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="dropdown-action-item"
                           onClick={() => setOpenDropdownId(null)}
                         >
@@ -445,24 +504,74 @@ export default function AdminReviewResults() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '0.75rem',
+                    borderTop: '1px solid #F1F5F9',
+                  }}
+                >
                   <div>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block' }}>Total Marks</span>
-                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>{r.totalScore} pts</span>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                        color: '#64748B',
+                        display: 'block',
+                      }}
+                    >
+                      Total Marks
+                    </span>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+                      {r.totalScore} pts
+                    </span>
                   </div>
 
                   <div>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block' }}>Term Average</span>
-                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#000080' }}>{r.averageScore.toFixed(2)}%</span>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                        color: '#64748B',
+                        display: 'block',
+                      }}
+                    >
+                      Term Average
+                    </span>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#000080' }}>
+                      {r.averageScore.toFixed(2)}%
+                    </span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid #F1F5F9' }}>
-                  <span className={`rank-badge ${r.positionInClass === 1 ? 'rank-1' : r.positionInClass === 2 ? 'rank-2' : r.positionInClass === 3 ? 'rank-3' : 'rank-general'}`}>
-                    {r.positionInClass === 1 ? '🥇 1st Position' : r.positionInClass === 2 ? '🥈 2nd Position' : r.positionInClass === 3 ? '🥉 3rd Position' : `${formatOrdinal(r.positionInClass)} Position`}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '0.65rem',
+                    borderTop: '1px solid #F1F5F9',
+                  }}
+                >
+                  <span
+                    className={`rank-badge ${r.positionInClass === 1 ? 'rank-1' : r.positionInClass === 2 ? 'rank-2' : r.positionInClass === 3 ? 'rank-3' : 'rank-general'}`}
+                  >
+                    {r.positionInClass === 1
+                      ? '🥇 1st Position'
+                      : r.positionInClass === 2
+                        ? '🥈 2nd Position'
+                        : r.positionInClass === 3
+                          ? '🥉 3rd Position'
+                          : `${formatOrdinal(r.positionInClass)} Position`}
                   </span>
 
-                  <span className={`status-pill ${batchStatus === 'Approved' ? 'active' : 'inactive'}`}>
+                  <span
+                    className={`status-pill ${batchStatus === 'Approved' ? 'active' : 'inactive'}`}
+                  >
                     {batchStatus}
                   </span>
                 </div>

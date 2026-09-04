@@ -3,16 +3,16 @@ import { api } from '../../../../services/api';
 import './RoleManagement.css';
 import { useDialog } from '../../../../context/DialogContext';
 import { useAuth } from '../../../../context/AuthContext';
-import { 
-  Shield, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Users, 
-  UserCheck, 
-  DollarSign, 
-  BookOpen, 
-  Search, 
-  User, 
+import {
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+  Users,
+  UserCheck,
+  DollarSign,
+  BookOpen,
+  Search,
+  User,
   Info,
   Mail,
   CheckCircle2,
@@ -33,7 +33,8 @@ import {
   Settings,
   Sparkles,
   RotateCcw,
-  Check
+  Check,
+  type LucideIcon,
 } from 'lucide-react';
 
 interface TeacherItem {
@@ -61,15 +62,67 @@ interface EmailChangeRequestItem {
   staffRole: string;
 }
 
+interface ModuleIconMap {
+  [moduleId: string]: LucideIcon;
+}
+
 const AVAILABLE_ROLES = [
-  { id: 'Director', name: 'Director', description: 'Executive oversight, school-wide management, and approval authority', icon: Shield, color: 'admin' },
-  { id: 'Chairman', name: 'Chairman', description: 'Executive academic & result oversight (financial access restricted by default)', icon: Shield, color: 'admin' },
-  { id: 'Admin', name: 'Admin', description: 'Full system management, staff setup, and operations governance', icon: ShieldCheck, color: 'admin' },
-  { id: 'Principal', name: 'Principal', description: 'Academic administration, report approvals, and school leadership', icon: Shield, color: 'admin' },
-  { id: 'Accountant', name: 'Accountant', description: 'Fee billing, ledger management, online verification & POS', icon: DollarSign, color: 'accountant' },
-  { id: 'Teacher', name: 'Form Teacher', description: 'Class roster management, attendance registers, and grade submission', icon: BookOpen, color: 'teacher' },
-  { id: 'SubjectTeacher', name: 'Subject Teacher', description: 'Subject assessment entry and score recording', icon: UserCheck, color: 'teacher' },
-  { id: 'Vendor', name: 'Vendor', description: 'Store orders, item dispatch, and receipt fulfillment', icon: Users, color: 'vendor' },
+  {
+    id: 'Director',
+    name: 'Director',
+    description: 'Executive oversight, school-wide management, and approval authority',
+    icon: Shield,
+    color: 'admin',
+  },
+  {
+    id: 'Chairman',
+    name: 'Chairman',
+    description: 'Executive academic & result oversight (financial access restricted by default)',
+    icon: Shield,
+    color: 'admin',
+  },
+  {
+    id: 'Admin',
+    name: 'Admin',
+    description: 'Full system management, staff setup, and operations governance',
+    icon: ShieldCheck,
+    color: 'admin',
+  },
+  {
+    id: 'Principal',
+    name: 'Principal',
+    description: 'Academic administration, report approvals, and school leadership',
+    icon: Shield,
+    color: 'admin',
+  },
+  {
+    id: 'Accountant',
+    name: 'Accountant',
+    description: 'Fee billing, ledger management, online verification & POS',
+    icon: DollarSign,
+    color: 'accountant',
+  },
+  {
+    id: 'Teacher',
+    name: 'Form Teacher',
+    description: 'Class roster management, attendance registers, and grade submission',
+    icon: BookOpen,
+    color: 'teacher',
+  },
+  {
+    id: 'SubjectTeacher',
+    name: 'Subject Teacher',
+    description: 'Subject assessment entry and score recording',
+    icon: UserCheck,
+    color: 'teacher',
+  },
+  {
+    id: 'Vendor',
+    name: 'Vendor',
+    description: 'Store orders, item dispatch, and receipt fulfillment',
+    icon: Users,
+    color: 'vendor',
+  },
 ];
 
 export default function RoleManagement() {
@@ -80,10 +133,25 @@ export default function RoleManagement() {
     return (
       <div className="role-page-container">
         <div className="role-card-wrapper" style={{ padding: '3rem', textAlign: 'center' }}>
-          <ShieldAlert size={48} style={{ color: '#DC2626', marginBottom: '1rem', display: 'inline-block' }} />
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>Access Restricted</h2>
-          <p style={{ color: '#64748B', maxWidth: '480px', margin: '0.5rem auto 0', fontSize: '0.9rem', lineHeight: '1.5' }}>
-            User Role & Access Governance is restricted to Administrators and Directors. As Chairman, you have read-only executive oversight across academic results, classes, attendance, and reports.
+          <ShieldAlert
+            size={48}
+            style={{ color: '#DC2626', marginBottom: '1rem', display: 'inline-block' }}
+          />
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>
+            Access Restricted
+          </h2>
+          <p
+            style={{
+              color: '#64748B',
+              maxWidth: '480px',
+              margin: '0.5rem auto 0',
+              fontSize: '0.9rem',
+              lineHeight: '1.5',
+            }}
+          >
+            User Role & Access Governance is restricted to Administrators and Directors. As
+            Chairman, you have read-only executive oversight across academic results, classes,
+            attendance, and reports.
           </p>
         </div>
       </div>
@@ -101,7 +169,9 @@ export default function RoleManagement() {
   // Email Change Requests State
   const [emailRequests, setEmailRequests] = useState<EmailChangeRequestItem[]>([]);
   const [requestsLoading, setRequestsLoading] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Approved' | 'Rejected'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'Pending' | 'Approved' | 'Rejected'>(
+    'ALL',
+  );
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Direct Staff Email Edit Modal State
@@ -119,7 +189,7 @@ export default function RoleManagement() {
   const [savingPermissions, setSavingPermissions] = useState<boolean>(false);
   const [matrixSearchQuery, setMatrixSearchQuery] = useState<string>('');
 
-  const MODULE_ICONS: Record<string, any> = {
+  const MODULE_ICONS: ModuleIconMap = {
     users: UserCheck,
     admissions: FileText,
     academics: GraduationCap,
@@ -130,7 +200,7 @@ export default function RoleManagement() {
     setups: Sliders,
     finance: DollarSign,
     reports: BarChart2,
-    settings: Settings
+    settings: Settings,
   };
 
   // Custom Role Modal State
@@ -158,42 +228,46 @@ export default function RoleManagement() {
         }
       }
     } catch (err) {
-      console.error("Failed to load role permissions matrix", err);
+      console.error('Failed to load role permissions matrix', err);
     } finally {
       setMatrixLoading(false);
     }
   };
 
   const handleTogglePermission = (roleName: string, permKey: string) => {
-    setRbacMappings(prev => {
+    setRbacMappings((prev) => {
       const currentPerms = prev[roleName] || [];
       const updated = currentPerms.includes(permKey)
-        ? currentPerms.filter(k => k !== permKey)
+        ? currentPerms.filter((k) => k !== permKey)
         : [...currentPerms, permKey];
       return { ...prev, [roleName]: updated };
     });
   };
 
-  const handleBulkModuleToggle = (roleName: string, modulePermKeys: string[], enableAll: boolean) => {
-    setRbacMappings(prev => {
+  const handleBulkModuleToggle = (
+    roleName: string,
+    modulePermKeys: string[],
+    enableAll: boolean,
+  ) => {
+    setRbacMappings((prev) => {
       const currentPerms = prev[roleName] || [];
       let updated: string[];
       if (enableAll) {
         updated = Array.from(new Set([...currentPerms, ...modulePermKeys]));
       } else {
-        updated = currentPerms.filter(k => !modulePermKeys.includes(k));
+        updated = currentPerms.filter((k) => !modulePermKeys.includes(k));
       }
       return { ...prev, [roleName]: updated };
     });
   };
 
   const handleGrantAllPermissions = (roleName: string) => {
-    const allKeys = rbacModules.flatMap(m => (m.permissions || []).map((p: any) => p.key));
-    setRbacMappings(prev => ({ ...prev, [roleName]: Array.from(new Set(allKeys)) }));
+    const allKeys = rbacModules.flatMap((m) => (m.permissions || []).map((p: any) => p.key));
+    setRbacMappings((prev) => ({ ...prev, [roleName]: Array.from(new Set(allKeys)) }));
   };
 
   const handleRevokeAllPermissions = (roleName: string) => {
-    setRbacMappings(prev => ({ ...prev, [roleName]: [] }));
+    setRbacMappings((prev) => ({ ...prev, [roleName]: [] }));
   };
 
   const handleSaveRolePermissions = async () => {
@@ -202,7 +276,7 @@ export default function RoleManagement() {
       const currentPerms = rbacMappings[selectedMatrixRole] || [];
       const res: any = await api.post('/identity/save-role-permissions', {
         roleName: selectedMatrixRole,
-        permissions: currentPerms
+        permissions: currentPerms,
       });
       showAlert(res.message || `Successfully saved permissions for '${selectedMatrixRole}'.`);
       fetchRolePermissions();
@@ -224,7 +298,7 @@ export default function RoleManagement() {
       setCreatingRole(true);
       const res: any = await api.post('/identity/create-custom-role', {
         roleName: newRoleName.trim(),
-        description: newRoleDesc.trim()
+        description: newRoleDesc.trim(),
       });
       showAlert(res.message || `Custom role '${newRoleName.trim()}' created.`);
       setCustomRoleModalOpen(false);
@@ -244,7 +318,7 @@ export default function RoleManagement() {
       const data = await api.get('/setup/staff');
       setTeachers(data || []);
     } catch (err) {
-      console.error("Failed to load teachers for role management", err);
+      console.error('Failed to load teachers for role management', err);
     }
   };
 
@@ -254,7 +328,7 @@ export default function RoleManagement() {
       const data = await api.get('/setup/staff/email-change-requests');
       setEmailRequests(data || []);
     } catch (err) {
-      console.error("Failed to load email change requests", err);
+      console.error('Failed to load email change requests', err);
     } finally {
       setRequestsLoading(false);
     }
@@ -265,17 +339,22 @@ export default function RoleManagement() {
       showAlert('Please select a staff member.');
       return;
     }
-    const staffMember = teachers.find(t => t.email === roleEmail);
+    const staffMember = teachers.find((t) => t.email === roleEmail);
     const staffName = staffMember ? `${staffMember.firstName} ${staffMember.surname}` : roleEmail;
 
-    if (!await showConfirm(`Are you sure you want to ${action.toLowerCase()} the ${selectedRole} role for ${staffName}?`)) return;
-    
+    if (
+      !(await showConfirm(
+        `Are you sure you want to ${action.toLowerCase()} the ${selectedRole} role for ${staffName}?`,
+      ))
+    )
+      return;
+
     try {
       setManagingRole(true);
       const res = await api.post('/identity/manage-role', {
         email: roleEmail,
         roleName: selectedRole,
-        action: action
+        action: action,
       });
       showAlert(res.message || `Successfully ${action.toLowerCase()}ed role.`);
       fetchTeachers();
@@ -287,12 +366,17 @@ export default function RoleManagement() {
   };
 
   const handleApproveEmailRequest = async (req: EmailChangeRequestItem) => {
-    if (!await showConfirm(`Approve email update for ${req.staffName} from ${req.oldEmail} to ${req.newEmail}? Their existing password will be preserved.`)) return;
+    if (
+      !(await showConfirm(
+        `Approve email update for ${req.staffName} from ${req.oldEmail} to ${req.newEmail}? Their existing password will be preserved.`,
+      ))
+    )
+      return;
 
     try {
       setProcessingId(req.id);
       const res = await api.post(`/setup/staff/email-change-requests/${req.id}/process`, {
-        approve: true
+        approve: true,
       });
       showAlert(res.message || `Email updated successfully to ${req.newEmail}.`);
       fetchEmailRequests();
@@ -305,14 +389,17 @@ export default function RoleManagement() {
   };
 
   const handleRejectEmailRequest = async (req: EmailChangeRequestItem) => {
-    const reasonPrompt = window.prompt("Enter rejection reason (optional):", "Incorrect email request");
+    const reasonPrompt = window.prompt(
+      'Enter rejection reason (optional):',
+      'Incorrect email request',
+    );
     if (reasonPrompt === null) return;
 
     try {
       setProcessingId(req.id);
       const res = await api.post(`/setup/staff/email-change-requests/${req.id}/process`, {
         approve: false,
-        rejectionReason: reasonPrompt
+        rejectionReason: reasonPrompt,
       });
       showAlert(res.message || 'Email change request rejected.');
       fetchEmailRequests();
@@ -334,15 +421,22 @@ export default function RoleManagement() {
       return;
     }
 
-    const staffMember = teachers.find(t => t.id === selectedStaffId);
-    const staffName = staffMember ? `${staffMember.firstName} ${staffMember.surname}` : 'Staff Member';
+    const staffMember = teachers.find((t) => t.id === selectedStaffId);
+    const staffName = staffMember
+      ? `${staffMember.firstName} ${staffMember.surname}`
+      : 'Staff Member';
 
-    if (!await showConfirm(`Directly update email for ${staffName} to ${directNewEmail.trim()}? Their existing password will be preserved.`)) return;
+    if (
+      !(await showConfirm(
+        `Directly update email for ${staffName} to ${directNewEmail.trim()}? Their existing password will be preserved.`,
+      ))
+    )
+      return;
 
     try {
       setDirectUpdating(true);
       const res = await api.put(`/setup/staff/${selectedStaffId}/update-email`, {
-        newEmail: directNewEmail.trim()
+        newEmail: directNewEmail.trim(),
       });
       showAlert(res.message || `Staff email updated successfully to ${directNewEmail.trim()}.`);
       setDirectEditModalOpen(false);
@@ -363,9 +457,9 @@ export default function RoleManagement() {
     return `${f}${s}`.toUpperCase() || 'ST';
   };
 
-  const selectedRoleMeta = AVAILABLE_ROLES.find(r => r.id === selectedRole) || AVAILABLE_ROLES[0];
+  const selectedRoleMeta = AVAILABLE_ROLES.find((r) => r.id === selectedRole) || AVAILABLE_ROLES[0];
 
-  const filteredTeachers = teachers.filter(t => {
+  const filteredTeachers = teachers.filter((t) => {
     if (!searchFilter) return true;
     const lower = searchFilter.toLowerCase();
     return (
@@ -376,21 +470,22 @@ export default function RoleManagement() {
     );
   });
 
-  const filteredRequests = emailRequests.filter(r => {
+  const filteredRequests = emailRequests.filter((r) => {
     const matchesStatus = statusFilter === 'ALL' || r.status === statusFilter;
     if (!searchFilter) return matchesStatus;
     const lower = searchFilter.toLowerCase();
-    return matchesStatus && (
-      r.staffName?.toLowerCase().includes(lower) ||
-      r.oldEmail?.toLowerCase().includes(lower) ||
-      r.newEmail?.toLowerCase().includes(lower) ||
-      r.staffCode?.toLowerCase().includes(lower)
+    return (
+      matchesStatus &&
+      (r.staffName?.toLowerCase().includes(lower) ||
+        r.oldEmail?.toLowerCase().includes(lower) ||
+        r.newEmail?.toLowerCase().includes(lower) ||
+        r.staffCode?.toLowerCase().includes(lower))
     );
   });
 
   const totalStaff = teachers.length;
-  const adminCount = teachers.filter(t => t.role === 'Admin' || t.role === 'Principal').length;
-  const pendingRequestsCount = emailRequests.filter(r => r.status === 'Pending').length;
+  const adminCount = teachers.filter((t) => t.role === 'Admin' || t.role === 'Principal').length;
+  const pendingRequestsCount = emailRequests.filter((r) => r.status === 'Pending').length;
 
   return (
     <div className="role-page-container">
@@ -398,11 +493,22 @@ export default function RoleManagement() {
       <div className="role-page-header">
         <div>
           <h1 className="role-page-title">User & Access Governance</h1>
-          <p className="role-page-subtitle">Manage system roles, staff permissions, and profile email change requests</p>
+          <p className="role-page-subtitle">
+            Manage system roles, staff permissions, and profile email change requests
+          </p>
         </div>
 
         {/* Tab Switcher */}
-        <div style={{ display: 'flex', background: '#F1F5F9', padding: '4px', borderRadius: '10px', gap: '4px', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            background: '#F1F5F9',
+            padding: '4px',
+            borderRadius: '10px',
+            gap: '4px',
+            flexWrap: 'wrap',
+          }}
+        >
           <button
             onClick={() => setActiveTab('roles')}
             style={{
@@ -418,7 +524,7 @@ export default function RoleManagement() {
               transition: 'all 0.2s ease',
               background: activeTab === 'roles' ? '#000080' : 'transparent',
               color: activeTab === 'roles' ? '#FFFFFF' : '#64748B',
-              boxShadow: activeTab === 'roles' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none'
+              boxShadow: activeTab === 'roles' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
             }}
           >
             <Shield size={16} />
@@ -443,13 +549,13 @@ export default function RoleManagement() {
               transition: 'all 0.2s ease',
               background: activeTab === 'permissions' ? '#000080' : 'transparent',
               color: activeTab === 'permissions' ? '#FFFFFF' : '#64748B',
-              boxShadow: activeTab === 'permissions' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none'
+              boxShadow: activeTab === 'permissions' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
             }}
           >
             <Sliders size={16} />
             Permission Control Matrix
           </button>
-          
+
           <button
             onClick={() => setActiveTab('email-requests')}
             style={{
@@ -466,21 +572,23 @@ export default function RoleManagement() {
               background: activeTab === 'email-requests' ? '#000080' : 'transparent',
               color: activeTab === 'email-requests' ? '#FFFFFF' : '#64748B',
               boxShadow: activeTab === 'email-requests' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
-              position: 'relative'
+              position: 'relative',
             }}
           >
             <Mail size={16} />
             Staff Email Change Requests
             {pendingRequestsCount > 0 && (
-              <span style={{
-                background: '#EF4444',
-                color: '#FFFFFF',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                padding: '2px 7px',
-                borderRadius: '999px',
-                lineHeight: 1
-              }}>
+              <span
+                style={{
+                  background: '#EF4444',
+                  color: '#FFFFFF',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  padding: '2px 7px',
+                  borderRadius: '999px',
+                  lineHeight: 1,
+                }}
+              >
                 {pendingRequestsCount}
               </span>
             )}
@@ -526,17 +634,30 @@ export default function RoleManagement() {
           <div className="role-workspace-grid">
             <div className="role-card-wrapper">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>Assign User Role</h3>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: '#64748B' }}>Grant or revoke specialized permissions for portal staff</p>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+                  Assign User Role
+                </h3>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: '#64748B' }}>
+                  Grant or revoke specialized permissions for portal staff
+                </p>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#475569',
+                    display: 'block',
+                    marginBottom: '0.4rem',
+                  }}
+                >
                   Select Target Staff
                 </label>
                 <select
                   value={roleEmail}
-                  onChange={e => setRoleEmail(e.target.value)}
+                  onChange={(e) => setRoleEmail(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.75rem 0.85rem',
@@ -544,25 +665,35 @@ export default function RoleManagement() {
                     border: '1.5px solid #CBD5E1',
                     fontSize: '0.9rem',
                     fontWeight: 600,
-                    outline: 'none'
+                    outline: 'none',
                   }}
                 >
                   <option value="">-- Choose Staff Member --</option>
-                  {teachers.map(t => (
+                  {teachers.map((t) => (
                     <option key={t.id} value={t.email}>
-                      {`${t.surname}, ${t.firstName} (${t.email})`} {t.role ? `[Role: ${t.role}]` : ''}
+                      {`${t.surname}, ${t.firstName} (${t.email})`}{' '}
+                      {t.role ? `[Role: ${t.role}]` : ''}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#475569',
+                    display: 'block',
+                    marginBottom: '0.4rem',
+                  }}
+                >
                   Select Target Role
                 </label>
                 <select
                   value={selectedRole}
-                  onChange={e => setSelectedRole(e.target.value)}
+                  onChange={(e) => setSelectedRole(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.75rem 0.85rem',
@@ -570,28 +701,43 @@ export default function RoleManagement() {
                     border: '1.5px solid #CBD5E1',
                     fontSize: '0.9rem',
                     fontWeight: 600,
-                    outline: 'none'
+                    outline: 'none',
                   }}
                 >
-                  {AVAILABLE_ROLES.map(r => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
+                  {AVAILABLE_ROLES.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
                   ))}
                 </select>
               </div>
 
-              <div style={{
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderRadius: '12px',
-                padding: '1rem',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.65rem'
-              }}>
+              <div
+                style={{
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '12px',
+                  padding: '1rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.65rem',
+                }}
+              >
                 <Info size={18} style={{ color: '#000080', flexShrink: 0, marginTop: '2px' }} />
                 <div>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', display: 'block' }}>{selectedRoleMeta.name}</span>
-                  <span style={{ fontSize: '0.8rem', color: '#64748B', lineHeight: 1.4 }}>{selectedRoleMeta.description}</span>
+                  <span
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 800,
+                      color: '#0F172A',
+                      display: 'block',
+                    }}
+                  >
+                    {selectedRoleMeta.name}
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B', lineHeight: 1.4 }}>
+                    {selectedRoleMeta.description}
+                  </span>
                 </div>
               </div>
 
@@ -609,7 +755,7 @@ export default function RoleManagement() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '0.4rem'
+                    gap: '0.4rem',
                   }}
                 >
                   <UserCheck size={16} />
@@ -624,7 +770,7 @@ export default function RoleManagement() {
                     padding: '0.75rem',
                     fontWeight: 700,
                     color: '#EF4444',
-                    borderColor: '#FECACA'
+                    borderColor: '#FECACA',
                   }}
                 >
                   Revoke Role
@@ -633,21 +779,40 @@ export default function RoleManagement() {
             </div>
 
             <div className="role-card-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
-              <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>Active Staff Role Roster</h3>
+              <div
+                style={{
+                  padding: '1.25rem 1.5rem',
+                  borderBottom: '1px solid #E2E8F0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
+                  Active Staff Role Roster
+                </h3>
                 <div style={{ position: 'relative', width: '220px' }}>
-                  <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                  <Search
+                    size={15}
+                    style={{
+                      position: 'absolute',
+                      left: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: '#94A3B8',
+                    }}
+                  />
                   <input
                     type="text"
                     placeholder="Search staff..."
                     value={searchFilter}
-                    onChange={e => setSearchFilter(e.target.value)}
+                    onChange={(e) => setSearchFilter(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '0.45rem 0.65rem 0.45rem 2rem',
                       borderRadius: '8px',
                       border: '1.5px solid #CBD5E1',
-                      fontSize: '0.82rem'
+                      fontSize: '0.82rem',
                     }}
                   />
                 </div>
@@ -664,34 +829,44 @@ export default function RoleManagement() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredTeachers.map(t => (
+                    {filteredTeachers.map((t) => (
                       <tr key={t.id}>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                            <div style={{
-                              width: '34px',
-                              height: '34px',
-                              borderRadius: '50%',
-                              background: '#EEF2FF',
-                              color: '#000080',
-                              fontWeight: 800,
-                              fontSize: '0.8rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0
-                            }}>
+                            <div
+                              style={{
+                                width: '34px',
+                                height: '34px',
+                                borderRadius: '50%',
+                                background: '#EEF2FF',
+                                color: '#000080',
+                                fontWeight: 800,
+                                fontSize: '0.8rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                              }}
+                            >
                               {getInitials(t.firstName, t.surname)}
                             </div>
                             <div>
-                              <span style={{ fontWeight: 700, color: '#0F172A', display: 'block' }}>{`${t.surname}, ${t.firstName}`}</span>
-                              {t.staffCode && <span style={{ fontSize: '0.75rem', color: '#64748B' }}>{t.staffCode}</span>}
+                              <span
+                                style={{ fontWeight: 700, color: '#0F172A', display: 'block' }}
+                              >{`${t.surname}, ${t.firstName}`}</span>
+                              {t.staffCode && (
+                                <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                                  {t.staffCode}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </td>
                         <td style={{ color: '#475569', fontWeight: 500 }}>{t.email}</td>
                         <td>
-                          <span className={`role-badge-pill ${t.role ? t.role.toLowerCase() : 'user'}`}>
+                          <span
+                            className={`role-badge-pill ${t.role ? t.role.toLowerCase() : 'user'}`}
+                          >
                             {t.role || 'Staff User'}
                           </span>
                         </td>
@@ -703,7 +878,17 @@ export default function RoleManagement() {
                               setDirectEditModalOpen(true);
                             }}
                             className="btn-link"
-                            style={{ fontSize: '0.8rem', fontWeight: 700, color: '#000080', cursor: 'pointer', background: 'none', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                            style={{
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              color: '#000080',
+                              cursor: 'pointer',
+                              background: 'none',
+                              border: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
                           >
                             <Edit size={14} />
                             Edit Email
@@ -724,37 +909,76 @@ export default function RoleManagement() {
         <div className="permission-matrix-container">
           {/* Top Role Selector Toolbar */}
           <div className="permission-roles-toolbar">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1rem',
+              }}
+            >
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: '1.15rem',
+                    fontWeight: 800,
+                    color: '#0F172A',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                  }}
+                >
                   <Sliders size={20} style={{ color: '#000080' }} /> Select Role to Configure
                 </h3>
                 <p style={{ margin: '0.2rem 0 0', fontSize: '0.83rem', color: '#64748B' }}>
-                  Choose an existing role or create a custom role to toggle feature access across all system modules
+                  Choose an existing role or create a custom role to toggle feature access across
+                  all system modules
                 </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}
+              >
                 <div style={{ position: 'relative', width: '220px' }}>
-                  <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                  <Search
+                    size={16}
+                    style={{
+                      position: 'absolute',
+                      left: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: '#94A3B8',
+                    }}
+                  />
                   <input
                     type="text"
                     placeholder="Search permissions..."
                     value={matrixSearchQuery}
-                    onChange={e => setMatrixSearchQuery(e.target.value)}
+                    onChange={(e) => setMatrixSearchQuery(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '0.55rem 0.75rem 0.55rem 2.25rem',
                       borderRadius: '10px',
                       border: '1px solid #CBD5E1',
                       fontSize: '0.82rem',
-                      outline: 'none'
+                      outline: 'none',
                     }}
                   />
                   {matrixSearchQuery && (
                     <button
                       onClick={() => setMatrixSearchQuery('')}
-                      style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
+                      style={{
+                        position: 'absolute',
+                        right: '8px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#94A3B8',
+                      }}
                     >
                       <X size={14} />
                     </button>
@@ -764,12 +988,19 @@ export default function RoleManagement() {
                 <button
                   onClick={() => setCustomRoleModalOpen(true)}
                   className="btn btn-outline"
-                  style={{ fontWeight: 700, padding: '0.58rem 1.1rem', display: 'inline-flex', alignItems: 'center', gap: '0.45rem', borderRadius: '10px' }}
+                  style={{
+                    fontWeight: 700,
+                    padding: '0.58rem 1.1rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    borderRadius: '10px',
+                  }}
                 >
                   <Plus size={16} />
                   Add Custom Role
                 </button>
-                
+
                 <button
                   onClick={handleSaveRolePermissions}
                   disabled={savingPermissions}
@@ -783,7 +1014,7 @@ export default function RoleManagement() {
                     alignItems: 'center',
                     gap: '0.45rem',
                     borderRadius: '10px',
-                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
                   }}
                 >
                   <Save size={16} />
@@ -793,9 +1024,12 @@ export default function RoleManagement() {
             </div>
 
             <div className="permission-roles-flex">
-              {rbacRoles.map(role => {
+              {rbacRoles.map((role) => {
                 const rolePermCount = (rbacMappings[role] || []).length;
-                const totalSystemPerms = rbacModules.reduce((sum, m) => sum + (m.permissions?.length || 0), 0);
+                const totalSystemPerms = rbacModules.reduce(
+                  (sum, m) => sum + (m.permissions?.length || 0),
+                  0,
+                );
                 const isSelected = selectedMatrixRole === role;
 
                 return (
@@ -806,9 +1040,7 @@ export default function RoleManagement() {
                   >
                     <Shield size={14} />
                     <span>{role}</span>
-                    <span className="role-count-badge">
-                      {rolePermCount}
-                    </span>
+                    <span className="role-count-badge">{rolePermCount}</span>
                   </button>
                 );
               })}
@@ -818,29 +1050,74 @@ export default function RoleManagement() {
           {/* Selected Role Governance Banner Card */}
           {(() => {
             const currentRolePerms = rbacMappings[selectedMatrixRole] || [];
-            const totalAvailablePerms = rbacModules.reduce((sum, m) => sum + (m.permissions?.length || 0), 0);
-            const percentage = totalAvailablePerms > 0 ? Math.round((currentRolePerms.length / totalAvailablePerms) * 100) : 0;
+            const totalAvailablePerms = rbacModules.reduce(
+              (sum, m) => sum + (m.permissions?.length || 0),
+              0,
+            );
+            const percentage =
+              totalAvailablePerms > 0
+                ? Math.round((currentRolePerms.length / totalAvailablePerms) * 100)
+                : 0;
 
             return (
               <div className="permission-card-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                  <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: '#000080', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0, 0, 128, 0.2)' }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}
+                >
+                  <div
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      borderRadius: '14px',
+                      background: '#000080',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 4px 12px rgba(0, 0, 128, 0.2)',
+                    }}
+                  >
                     <Shield size={26} />
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}>{selectedMatrixRole} Role Governance</h2>
-                      <span style={{ background: '#EEF2FF', color: '#000080', fontWeight: 800, fontSize: '0.78rem', padding: '0.2rem 0.65rem', borderRadius: '20px', border: '1px solid #C7D2FE' }}>
+                      <h2
+                        style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0F172A' }}
+                      >
+                        {selectedMatrixRole} Role Governance
+                      </h2>
+                      <span
+                        style={{
+                          background: '#EEF2FF',
+                          color: '#000080',
+                          fontWeight: 800,
+                          fontSize: '0.78rem',
+                          padding: '0.2rem 0.65rem',
+                          borderRadius: '20px',
+                          border: '1px solid #C7D2FE',
+                        }}
+                      >
                         {percentage}% Access Granted
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.85rem', color: '#64748B', display: 'block', marginTop: '0.15rem' }}>
-                      <strong>{currentRolePerms.length}</strong> of <strong>{totalAvailablePerms}</strong> system feature permissions currently assigned to <strong>{selectedMatrixRole}</strong> users
+                    <span
+                      style={{
+                        fontSize: '0.85rem',
+                        color: '#64748B',
+                        display: 'block',
+                        marginTop: '0.15rem',
+                      }}
+                    >
+                      <strong>{currentRolePerms.length}</strong> of{' '}
+                      <strong>{totalAvailablePerms}</strong> system feature permissions currently
+                      assigned to <strong>{selectedMatrixRole}</strong> users
                     </span>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}
+                >
                   <button
                     onClick={() => handleGrantAllPermissions(selectedMatrixRole)}
                     style={{
@@ -854,7 +1131,7 @@ export default function RoleManagement() {
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.35rem'
+                      gap: '0.35rem',
                     }}
                     title="Grant all 28 feature permissions to this role"
                   >
@@ -874,7 +1151,7 @@ export default function RoleManagement() {
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.35rem'
+                      gap: '0.35rem',
                     }}
                     title="Revoke all permissions from this role"
                   >
@@ -883,10 +1160,18 @@ export default function RoleManagement() {
                 </div>
 
                 {selectedMatrixRole === 'Chairman' && (
-                  <div className="permission-rule-banner" style={{ width: '100%', marginTop: '0.5rem' }}>
-                    <AlertCircle size={20} style={{ color: '#D97706', flexShrink: 0, marginTop: '1px' }} />
+                  <div
+                    className="permission-rule-banner"
+                    style={{ width: '100%', marginTop: '0.5rem' }}
+                  >
+                    <AlertCircle
+                      size={20}
+                      style={{ color: '#D97706', flexShrink: 0, marginTop: '1px' }}
+                    />
                     <div>
-                      <strong>Client Specification:</strong> Chairman role has executive academic & result oversight, but financial module permissions (`finance.*` and `reports.finance`) are restricted by default.
+                      <strong>Client Specification:</strong> Chairman role has executive academic &
+                      result oversight, but financial module permissions (`finance.*` and
+                      `reports.finance`) are restricted by default.
                     </div>
                   </div>
                 )}
@@ -895,21 +1180,32 @@ export default function RoleManagement() {
           })()}
 
           {matrixLoading ? (
-            <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748B', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '4rem 1rem',
+                color: '#64748B',
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
+              }}
+            >
               <div className="spinner" style={{ margin: '0 auto 1rem' }} />
               <span>Loading system permission matrix configuration...</span>
             </div>
           ) : (
             <div className="permission-modules-grid">
               {rbacModules
-                .map(mod => {
+                .map((mod) => {
                   const filteredPerms = (mod.permissions || []).filter((p: any) => {
                     if (!matrixSearchQuery.trim()) return true;
                     const q = matrixSearchQuery.toLowerCase();
-                    return p.name.toLowerCase().includes(q) || 
-                           p.key.toLowerCase().includes(q) || 
-                           p.description.toLowerCase().includes(q) ||
-                           mod.moduleName.toLowerCase().includes(q);
+                    return (
+                      p.name.toLowerCase().includes(q) ||
+                      p.key.toLowerCase().includes(q) ||
+                      p.description.toLowerCase().includes(q) ||
+                      mod.moduleName.toLowerCase().includes(q)
+                    );
                   });
 
                   if (matrixSearchQuery.trim() && filteredPerms.length === 0) {
@@ -918,8 +1214,12 @@ export default function RoleManagement() {
 
                   const moduleKeys = mod.permissions.map((p: any) => p.key);
                   const activeRoleKeys = rbacMappings[selectedMatrixRole] || [];
-                  const activeInModuleCount = moduleKeys.filter((k: string) => activeRoleKeys.includes(k)).length;
-                  const isAllSelected = moduleKeys.length > 0 && moduleKeys.every((k: string) => activeRoleKeys.includes(k));
+                  const activeInModuleCount = moduleKeys.filter((k: string) =>
+                    activeRoleKeys.includes(k),
+                  ).length;
+                  const isAllSelected =
+                    moduleKeys.length > 0 &&
+                    moduleKeys.every((k: string) => activeRoleKeys.includes(k));
                   const IconComp = MODULE_ICONS[mod.moduleId] || BookOpen;
 
                   return (
@@ -930,15 +1230,28 @@ export default function RoleManagement() {
                             <IconComp size={18} />
                           </div>
                           <div>
-                            <span style={{ display: 'block', fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>{mod.moduleName}</span>
-                            <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>
+                            <span
+                              style={{
+                                display: 'block',
+                                fontSize: '0.95rem',
+                                fontWeight: 800,
+                                color: '#0F172A',
+                              }}
+                            >
+                              {mod.moduleName}
+                            </span>
+                            <span
+                              style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}
+                            >
                               {activeInModuleCount} of {moduleKeys.length} Enabled
                             </span>
                           </div>
                         </div>
 
                         <button
-                          onClick={() => handleBulkModuleToggle(selectedMatrixRole, moduleKeys, !isAllSelected)}
+                          onClick={() =>
+                            handleBulkModuleToggle(selectedMatrixRole, moduleKeys, !isAllSelected)
+                          }
                           className={`btn-module-bulk-toggle ${isAllSelected ? 'deselect' : 'select'}`}
                         >
                           {isAllSelected ? 'Deselect All' : 'Select All'}
@@ -950,8 +1263,8 @@ export default function RoleManagement() {
                           const isChecked = activeRoleKeys.includes(perm.key);
 
                           return (
-                            <div 
-                              key={perm.key} 
+                            <div
+                              key={perm.key}
                               className={`permission-item-row ${isChecked ? 'active' : ''}`}
                               onClick={() => handleTogglePermission(selectedMatrixRole, perm.key)}
                               style={{ cursor: 'pointer' }}
@@ -989,14 +1302,28 @@ export default function RoleManagement() {
       {/* TAB 3: STAFF EMAIL CHANGE REQUESTS */}
       {activeTab === 'email-requests' && (
         <div className="role-card-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div
+            style={{
+              padding: '1.25rem 1.5rem',
+              borderBottom: '1px solid #E2E8F0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+            }}
+          >
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>Staff Profile Email Change Requests</h3>
-              <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#64748B' }}>Review and approve staff email modifications submitted from profile settings</p>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>
+                Staff Profile Email Change Requests
+              </h3>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#64748B' }}>
+                Review and approve staff email modifications submitted from profile settings
+              </p>
             </div>
 
             <div style={{ display: 'flex', gap: '0.65rem' }}>
-              {(['ALL', 'Pending', 'Approved', 'Rejected'] as const).map(st => (
+              {(['ALL', 'Pending', 'Approved', 'Rejected'] as const).map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
@@ -1008,7 +1335,7 @@ export default function RoleManagement() {
                     color: statusFilter === st ? '#FFFFFF' : '#475569',
                     fontSize: '0.8rem',
                     fontWeight: 700,
-                    cursor: 'pointer'
+                    cursor: 'pointer',
                   }}
                 >
                   {st}
@@ -1029,25 +1356,41 @@ export default function RoleManagement() {
                 </tr>
               </thead>
               <tbody>
-                {filteredRequests.map(r => (
+                {filteredRequests.map((r) => (
                   <tr key={r.id}>
                     <td>
                       <div>
-                        <span style={{ fontWeight: 700, color: '#0F172A', display: 'block' }}>{r.staffName}</span>
-                        <span style={{ fontSize: '0.75rem', color: '#64748B' }}>{r.staffCode} ({r.staffRole})</span>
+                        <span style={{ fontWeight: 700, color: '#0F172A', display: 'block' }}>
+                          {r.staffName}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                          {r.staffCode} ({r.staffRole})
+                        </span>
                       </div>
                     </td>
                     <td style={{ color: '#64748B' }}>{r.oldEmail}</td>
                     <td style={{ color: '#0F172A', fontWeight: 700 }}>{r.newEmail}</td>
                     <td>
-                      <span style={{
-                        padding: '0.2rem 0.6rem',
-                        borderRadius: '12px',
-                        fontSize: '0.75rem',
-                        fontWeight: 800,
-                        background: r.status === 'Approved' ? '#DCFCE7' : r.status === 'Rejected' ? '#FEE2E2' : '#FEF3C7',
-                        color: r.status === 'Approved' ? '#15803D' : r.status === 'Rejected' ? '#B91C1C' : '#B45309'
-                      }}>
+                      <span
+                        style={{
+                          padding: '0.2rem 0.6rem',
+                          borderRadius: '12px',
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          background:
+                            r.status === 'Approved'
+                              ? '#DCFCE7'
+                              : r.status === 'Rejected'
+                                ? '#FEE2E2'
+                                : '#FEF3C7',
+                          color:
+                            r.status === 'Approved'
+                              ? '#15803D'
+                              : r.status === 'Rejected'
+                                ? '#B91C1C'
+                                : '#B45309',
+                        }}
+                      >
                         {r.status}
                       </span>
                     </td>
@@ -1058,7 +1401,13 @@ export default function RoleManagement() {
                             onClick={() => handleApproveEmailRequest(r)}
                             disabled={processingId === r.id}
                             className="btn"
-                            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', background: '#10B981', color: '#FFFFFF', fontWeight: 700 }}
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.78rem',
+                              background: '#10B981',
+                              color: '#FFFFFF',
+                              fontWeight: 700,
+                            }}
                           >
                             Approve
                           </button>
@@ -1066,7 +1415,13 @@ export default function RoleManagement() {
                             onClick={() => handleRejectEmailRequest(r)}
                             disabled={processingId === r.id}
                             className="btn btn-outline"
-                            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', color: '#EF4444', borderColor: '#FECACA', fontWeight: 700 }}
+                            style={{
+                              padding: '0.35rem 0.75rem',
+                              fontSize: '0.78rem',
+                              color: '#EF4444',
+                              borderColor: '#FECACA',
+                              fontWeight: 700,
+                            }}
                           >
                             Reject
                           </button>
@@ -1083,48 +1438,78 @@ export default function RoleManagement() {
 
       {/* CREATE CUSTOM ROLE MODAL */}
       {customRoleModalOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '16px',
-            maxWidth: '480px',
-            width: '100%',
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)'
-          }}>
-            <div style={{
-              padding: '1.25rem 1.5rem',
-              background: '#000080',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '16px',
+              maxWidth: '480px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            <div
+              style={{
+                padding: '1.25rem 1.5rem',
+                background: '#000080',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Plus size={20} />
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Create Custom Role</h3>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>
+                  Create Custom Role
+                </h3>
               </div>
               <button
                 onClick={() => setCustomRoleModalOpen(false)}
-                style={{ background: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateCustomRole} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <form
+              onSubmit={handleCreateCustomRole}
+              style={{
+                padding: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.25rem',
+              }}
+            >
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#475569',
+                    display: 'block',
+                    marginBottom: '0.4rem',
+                  }}
+                >
                   ROLE TITLE <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <input
@@ -1132,7 +1517,7 @@ export default function RoleManagement() {
                   required
                   placeholder="e.g. VicePrincipal, Bursar, SchoolNurse"
                   value={newRoleName}
-                  onChange={e => setNewRoleName(e.target.value)}
+                  onChange={(e) => setNewRoleName(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.75rem 0.85rem',
@@ -1140,32 +1525,48 @@ export default function RoleManagement() {
                     border: '1.5px solid #CBD5E1',
                     fontSize: '0.9rem',
                     fontWeight: 600,
-                    outline: 'none'
+                    outline: 'none',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#475569',
+                    display: 'block',
+                    marginBottom: '0.4rem',
+                  }}
+                >
                   ROLE DESCRIPTION
                 </label>
                 <textarea
                   rows={3}
                   placeholder="Briefly describe what this custom role is responsible for..."
                   value={newRoleDesc}
-                  onChange={e => setNewRoleDesc(e.target.value)}
+                  onChange={(e) => setNewRoleDesc(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '0.75rem 0.85rem',
                     borderRadius: '8px',
                     border: '1.5px solid #CBD5E1',
                     fontSize: '0.85rem',
-                    outline: 'none'
+                    outline: 'none',
                   }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  justifyContent: 'flex-end',
+                  marginTop: '0.5rem',
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setCustomRoleModalOpen(false)}
@@ -1186,7 +1587,7 @@ export default function RoleManagement() {
                     color: '#FFFFFF',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.45rem'
+                    gap: '0.45rem',
                   }}
                 >
                   <Plus size={15} />
@@ -1200,57 +1601,87 @@ export default function RoleManagement() {
 
       {/* DIRECT STAFF EMAIL EDIT MODAL */}
       {directEditModalOpen && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
-          <div style={{
-            background: '#FFFFFF',
-            borderRadius: '16px',
-            maxWidth: '480px',
-            width: '100%',
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)'
-          }}>
-            <div style={{
-              padding: '1.25rem 1.5rem',
-              background: '#000080',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '16px',
+              maxWidth: '480px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            <div
+              style={{
+                padding: '1.25rem 1.5rem',
+                background: '#000080',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Edit size={20} />
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Direct Staff Email Edit</h3>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>
+                  Direct Staff Email Edit
+                </h3>
               </div>
               <button
                 onClick={() => setDirectEditModalOpen(false)}
-                style={{ background: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  cursor: 'pointer',
+                }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleDirectEditSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <form
+              onSubmit={handleDirectEditSubmit}
+              style={{
+                padding: '1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.25rem',
+              }}
+            >
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#475569', display: 'block', marginBottom: '0.4rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#475569',
+                    display: 'block',
+                    marginBottom: '0.4rem',
+                  }}
+                >
                   SELECT STAFF MEMBER <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <select
                   required
                   value={selectedStaffId}
-                  onChange={e => {
+                  onChange={(e) => {
                     const id = e.target.value;
                     setSelectedStaffId(id);
-                    const found = teachers.find(t => t.id === id);
+                    const found = teachers.find((t) => t.id === id);
                     if (found) {
                       setDirectNewEmail(found.email || '');
                     }
@@ -1262,11 +1693,11 @@ export default function RoleManagement() {
                     border: '1.5px solid #CBD5E1',
                     fontSize: '0.9rem',
                     fontWeight: 600,
-                    outline: 'none'
+                    outline: 'none',
                   }}
                 >
                   <option value="">-- Choose Staff Profile --</option>
-                  {teachers.map(t => (
+                  {teachers.map((t) => (
                     <option key={t.id} value={t.id}>
                       {`${t.surname}, ${t.firstName} (${t.email})`}
                     </option>
@@ -1276,7 +1707,16 @@ export default function RoleManagement() {
 
               {selectedStaffId && (
                 <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#0F172A', display: 'block', marginBottom: '0.4rem' }}>
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      color: '#0F172A',
+                      display: 'block',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
                     NEW EMAIL ADDRESS <span style={{ color: '#EF4444' }}>*</span>
                   </label>
                   <input
@@ -1284,7 +1724,7 @@ export default function RoleManagement() {
                     required
                     placeholder="Enter new email address"
                     value={directNewEmail}
-                    onChange={e => setDirectNewEmail(e.target.value)}
+                    onChange={(e) => setDirectNewEmail(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '0.75rem 0.85rem',
@@ -1292,24 +1732,35 @@ export default function RoleManagement() {
                       border: '1.5px solid #000080',
                       fontSize: '0.9rem',
                       fontWeight: 600,
-                      outline: 'none'
+                      outline: 'none',
                     }}
                   />
                 </div>
               )}
 
-              <div style={{
-                background: '#F0FDF4',
-                border: '1px solid #BBF7D0',
-                borderRadius: '8px',
-                padding: '0.75rem 0.9rem',
-                fontSize: '0.78rem',
-                color: '#166534'
-              }}>
-                <strong>🔒 Security Assurance:</strong> The staff member's password hash will be preserved intact. They will log in using this updated email address with their existing password.
+              <div
+                style={{
+                  background: '#F0FDF4',
+                  border: '1px solid #BBF7D0',
+                  borderRadius: '8px',
+                  padding: '0.75rem 0.9rem',
+                  fontSize: '0.78rem',
+                  color: '#166534',
+                }}
+              >
+                <strong>🔒 Security Assurance:</strong> The staff member's password hash will be
+                preserved intact. They will log in using this updated email address with their
+                existing password.
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  justifyContent: 'flex-end',
+                  marginTop: '0.5rem',
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setDirectEditModalOpen(false)}
@@ -1330,7 +1781,7 @@ export default function RoleManagement() {
                     color: '#FFFFFF',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.45rem'
+                    gap: '0.45rem',
                   }}
                 >
                   <Send size={15} />

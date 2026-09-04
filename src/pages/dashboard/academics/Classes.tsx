@@ -2,20 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../../../services/api';
 import './Classes.css';
 import { useDialog } from '../../../context/DialogContext';
-import { 
-  BookOpen, 
-  Users, 
-  UserCheck, 
-  Layers, 
-  Search, 
-  Plus, 
-  X, 
-  MoreVertical, 
-  Edit3, 
-  Trash2, 
-  LayoutGrid, 
-  List, 
-  AlertCircle 
+import {
+  BookOpen,
+  Users,
+  UserCheck,
+  Layers,
+  Search,
+  Plus,
+  X,
+  MoreVertical,
+  Edit3,
+  Trash2,
+  LayoutGrid,
+  List,
+  AlertCircle,
 } from 'lucide-react';
 
 import { useAuth } from '../../../context/AuthContext';
@@ -55,7 +55,7 @@ export default function Classes() {
     session: '2025/2026',
     level: 'Junior Secondary',
     name: '1',
-    section: ''
+    section: '',
   });
   const [isEditing, setIsEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -80,6 +80,7 @@ export default function Classes() {
   // Close 3-dots dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // SAFETY: document mousedown targets are always DOM Nodes (Element/Text), so the EventTarget narrows to Node here.
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpenDropdownId(null);
       }
@@ -92,7 +93,7 @@ export default function Classes() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCreateOrUpdate = async (e: React.FormEvent) => {
+  const handleCreateOrUpdate = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setSubmitting(true);
@@ -117,7 +118,7 @@ export default function Classes() {
       session: cls.session,
       level: cls.level,
       name: cls.name,
-      section: cls.section
+      section: cls.section,
     });
     setIsEditing(true);
     setShowModal(true);
@@ -126,7 +127,12 @@ export default function Classes() {
 
   const handleDelete = async (id: string, className: string) => {
     setOpenDropdownId(null);
-    if (!await showConfirm(`Are you sure you want to delete class ${className}? This action cannot be undone.`)) return;
+    if (
+      !(await showConfirm(
+        `Are you sure you want to delete class ${className}? This action cannot be undone.`,
+      ))
+    )
+      return;
     try {
       await api.delete(`/setup/classes/${id}`);
       fetchClasses();
@@ -141,7 +147,7 @@ export default function Classes() {
       session: '2025/2026',
       level: 'Junior Secondary',
       name: '1',
-      section: ''
+      section: '',
     });
     setIsEditing(false);
     setShowModal(true);
@@ -173,43 +179,60 @@ export default function Classes() {
   };
 
   // Sorting hierarchy
-  const levelOrder: Record<string, number> = {
+  interface LevelRankMap {
+    [level: string]: number;
+  }
+
+  const levelOrder: LevelRankMap = {
     'Senior Secondary': 1,
     'Junior Secondary': 2,
     'Upper Primary': 3,
     'Lower Primary': 4,
     'Middle Primary': 5,
-    'Primary': 5,
+    Primary: 5,
     'Nursery 2': 6,
     'Nursery 1': 7,
-    'Nursery': 8,
-    'Kindergarten': 9
+    Nursery: 8,
+    Kindergarten: 9,
   };
 
   const sortedClasses = [...classes].sort((a, b) => {
     const levelA = levelOrder[a.level] || 99;
     const levelB = levelOrder[b.level] || 99;
-    
+
     if (levelA !== levelB) {
       return levelA - levelB;
     }
-    
+
     const numA = parseInt(a.name.replace(/\D/g, '')) || 0;
     const numB = parseInt(b.name.replace(/\D/g, '')) || 0;
-    
+
     if (numA !== numB) {
-      if (['Senior Secondary', 'Junior Secondary', 'Upper Primary', 'Middle Primary', 'Lower Primary', 'Primary', 'Nursery 2', 'Nursery 1', 'Nursery'].includes(a.level)) {
+      if (
+        [
+          'Senior Secondary',
+          'Junior Secondary',
+          'Upper Primary',
+          'Middle Primary',
+          'Lower Primary',
+          'Primary',
+          'Nursery 2',
+          'Nursery 1',
+          'Nursery',
+        ].includes(a.level)
+      ) {
         return numB - numA;
       }
       return numA - numB;
     }
-    
+
     return (a.section || '').localeCompare(b.section || '');
   });
 
   // Filter logic
-  const filteredClasses = sortedClasses.filter(cls => {
-    const fullClassText = `${cls.level} ${cls.name} ${cls.section} ${cls.classTeacherName || ''}`.toLowerCase();
+  const filteredClasses = sortedClasses.filter((cls) => {
+    const fullClassText =
+      `${cls.level} ${cls.name} ${cls.section} ${cls.classTeacherName || ''}`.toLowerCase();
     const matchesSearch = fullClassText.includes(searchTerm.toLowerCase());
     const matchesLevel = selectedLevel === 'All' || cls.level === selectedLevel;
     const matchesSession = selectedSessionFilter === 'All' || cls.session === selectedSessionFilter;
@@ -219,10 +242,10 @@ export default function Classes() {
   // Metrics
   const totalClasses = classes.length;
   const totalStudents = classes.reduce((sum, c) => sum + (c.studentCount || 0), 0);
-  const assignedTeachers = classes.filter(c => !!c.classTeacherName).length;
-  const uniqueLevels = Array.from(new Set(classes.map(c => c.level))).length;
+  const assignedTeachers = classes.filter((c) => !!c.classTeacherName).length;
+  const uniqueLevels = Array.from(new Set(classes.map((c) => c.level))).length;
 
-  const availableSessions = Array.from(new Set(classes.map(c => c.session))).filter(Boolean);
+  const availableSessions = Array.from(new Set(classes.map((c) => c.session))).filter(Boolean);
 
   return (
     <div className="classes-page-container">
@@ -230,7 +253,9 @@ export default function Classes() {
       <div className="classes-page-header">
         <div>
           <h1 className="classes-page-title">Class Management</h1>
-          <p className="classes-page-subtitle">Configure class structures, form teacher assignments, and student rosters</p>
+          <p className="classes-page-subtitle">
+            Configure class structures, form teacher assignments, and student rosters
+          </p>
         </div>
         {!isReadOnly && (
           <button className="btn-add-class" onClick={openCreateModal}>
@@ -287,15 +312,15 @@ export default function Classes() {
         <div className="classes-search-group">
           <div className="classes-search-box">
             <Search className="classes-search-icon" size={16} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search by class name or teacher..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <select 
+          <select
             className="select-filter-input"
             value={selectedLevel}
             onChange={(e) => setSelectedLevel(e.target.value)}
@@ -312,14 +337,16 @@ export default function Classes() {
           </select>
 
           {availableSessions.length > 0 && (
-            <select 
+            <select
               className="select-filter-input"
               value={selectedSessionFilter}
               onChange={(e) => setSelectedSessionFilter(e.target.value)}
             >
               <option value="All">All Sessions</option>
-              {availableSessions.map(s => (
-                <option key={s} value={s}>{s}</option>
+              {availableSessions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
               ))}
             </select>
           )}
@@ -327,14 +354,14 @@ export default function Classes() {
 
         {/* View Switcher Toggle */}
         <div className="view-mode-toggle">
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
             title="Table View"
           >
             <List size={16} /> Table View
           </button>
-          <button 
+          <button
             className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
             title="Grid View"
@@ -348,11 +375,17 @@ export default function Classes() {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="classes-table-wrapper" style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="classes-table-wrapper"
+          style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}
+        >
           Loading class records...
         </div>
       ) : filteredClasses.length === 0 ? (
-        <div className="classes-table-wrapper" style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+        <div
+          className="classes-table-wrapper"
+          style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}
+        >
           No classes match your current search and filter criteria.
         </div>
       ) : viewMode === 'table' ? (
@@ -371,7 +404,7 @@ export default function Classes() {
               </tr>
             </thead>
             <tbody>
-              {filteredClasses.map(cls => {
+              {filteredClasses.map((cls) => {
                 const fullClassName = `${cls.level} ${cls.name}`;
                 const isDropdownOpen = openDropdownId === cls.id;
 
@@ -387,7 +420,16 @@ export default function Classes() {
                     </td>
                     <td>
                       {cls.section ? (
-                        <span style={{ background: '#F1F5F9', color: '#475569', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700 }}>
+                        <span
+                          style={{
+                            background: '#F1F5F9',
+                            color: '#475569',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: '6px',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                          }}
+                        >
                           {cls.section}
                         </span>
                       ) : (
@@ -395,9 +437,7 @@ export default function Classes() {
                       )}
                     </td>
                     <td>
-                      <span className="class-session-pill">
-                        {cls.session}
-                      </span>
+                      <span className="class-session-pill">{cls.session}</span>
                     </td>
                     <td>
                       {formatTeacherName(cls.classTeacherName) ? (
@@ -405,7 +445,9 @@ export default function Classes() {
                           <div className="teacher-avatar">
                             {getTeacherInitials(cls.classTeacherName)}
                           </div>
-                          <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
+                          <span className="teacher-name-title">
+                            {formatTeacherName(cls.classTeacherName)}
+                          </span>
                         </div>
                       ) : (
                         <span className="unassigned-warning-pill">
@@ -420,7 +462,7 @@ export default function Classes() {
                     </td>
                     <td style={{ textAlign: 'center' }}>
                       <div className="action-dropdown-container">
-                        <button 
+                        <button
                           className="btn-action-dots"
                           onClick={() => setOpenDropdownId(isDropdownOpen ? null : cls.id)}
                         >
@@ -429,15 +471,15 @@ export default function Classes() {
 
                         {isDropdownOpen && !isReadOnly && (
                           <div className="action-dropdown-menu">
-                            <button 
-                              className="dropdown-action-item" 
+                            <button
+                              className="dropdown-action-item"
                               onClick={() => handleEdit(cls)}
                             >
                               <Edit3 size={15} color="#000080" /> Edit Class Details
                             </button>
                             <div className="dropdown-divider" />
-                            <button 
-                              className="dropdown-action-item danger" 
+                            <button
+                              className="dropdown-action-item danger"
                               onClick={() => handleDelete(cls.id, fullClassName)}
                             >
                               <Trash2 size={15} /> Delete Class
@@ -455,20 +497,30 @@ export default function Classes() {
       ) : (
         /* GRID CARDS VIEW */
         <div className="classes-grid-wrapper" ref={dropdownRef}>
-          {filteredClasses.map(cls => {
+          {filteredClasses.map((cls) => {
             const fullClassName = `${cls.level} ${cls.name}`;
             const isDropdownOpen = openDropdownId === cls.id;
 
             return (
               <div key={cls.id} className="class-grid-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>{cls.name}</h3>
+                    <h3
+                      style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}
+                    >
+                      {cls.name}
+                    </h3>
                     <span style={{ fontSize: '0.8rem', color: '#64748B' }}>{cls.level}</span>
                   </div>
-                  
+
                   <div className="action-dropdown-container">
-                    <button 
+                    <button
                       className="btn-action-dots"
                       onClick={() => setOpenDropdownId(isDropdownOpen ? null : cls.id)}
                     >
@@ -477,15 +529,12 @@ export default function Classes() {
 
                     {isDropdownOpen && (
                       <div className="action-dropdown-menu">
-                        <button 
-                          className="dropdown-action-item" 
-                          onClick={() => handleEdit(cls)}
-                        >
+                        <button className="dropdown-action-item" onClick={() => handleEdit(cls)}>
                           <Edit3 size={15} color="#000080" /> Edit Class Details
                         </button>
                         <div className="dropdown-divider" />
-                        <button 
-                          className="dropdown-action-item danger" 
+                        <button
+                          className="dropdown-action-item danger"
                           onClick={() => handleDelete(cls.id, fullClassName)}
                         >
                           <Trash2 size={15} /> Delete Class
@@ -497,17 +546,45 @@ export default function Classes() {
 
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                   {cls.section && (
-                    <span style={{ background: '#F1F5F9', color: '#475569', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700 }}>
+                    <span
+                      style={{
+                        background: '#F1F5F9',
+                        color: '#475569',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                      }}
+                    >
                       Section: {cls.section}
                     </span>
                   )}
-                  <span style={{ background: '#EFF6FF', color: '#1E40AF', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, fontFamily: 'monospace' }}>
+                  <span
+                    style={{
+                      background: '#EFF6FF',
+                      color: '#1E40AF',
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '6px',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      fontFamily: 'monospace',
+                    }}
+                  >
                     {cls.session}
                   </span>
                 </div>
 
                 <div style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: '#64748B', display: 'block', marginBottom: '0.5rem' }}>
+                  <span
+                    style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      color: '#64748B',
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Form Teacher
                   </span>
                   {formatTeacherName(cls.classTeacherName) ? (
@@ -515,7 +592,9 @@ export default function Classes() {
                       <div className="teacher-avatar">
                         {getTeacherInitials(cls.classTeacherName)}
                       </div>
-                      <span className="teacher-name-title">{formatTeacherName(cls.classTeacherName)}</span>
+                      <span className="teacher-name-title">
+                        {formatTeacherName(cls.classTeacherName)}
+                      </span>
                     </div>
                   ) : (
                     <span className="unassigned-warning-pill">
@@ -524,7 +603,15 @@ export default function Classes() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '0.75rem',
+                    borderTop: '1px solid #F1F5F9',
+                  }}
+                >
                   <span className="student-count-badge">
                     <Users size={13} /> {cls.studentCount} Students
                   </span>
@@ -545,7 +632,9 @@ export default function Classes() {
                   {isEditing ? 'Edit Class Details' : 'Add New Class'}
                 </h2>
                 <p className="class-slideover-subtitle">
-                  {isEditing ? 'Update academic level and section details' : 'Configure a new class room structure for the school'}
+                  {isEditing
+                    ? 'Update academic level and section details'
+                    : 'Configure a new class room structure for the school'}
                 </p>
               </div>
               <button className="btn-close-slideover" onClick={() => setShowModal(false)}>
@@ -553,36 +642,72 @@ export default function Classes() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateOrUpdate} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+            <form
+              onSubmit={handleCreateOrUpdate}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flex: 1,
+                minHeight: 0,
+                overflow: 'hidden',
+              }}
+            >
               <div className="class-slideover-body">
                 {/* Academic Session */}
                 <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                  <label
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#334155',
+                      display: 'block',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
                     Academic Session <span style={{ color: '#E11D48' }}>*</span>
                   </label>
-                  <input 
-                    type="text" 
-                    name="session" 
-                    value={formData.session} 
-                    onChange={handleInputChange} 
-                    required 
+                  <input
+                    type="text"
+                    name="session"
+                    value={formData.session}
+                    onChange={handleInputChange}
+                    required
                     placeholder="e.g. 2025/2026"
-                    style={{ width: '100%', padding: '0.7rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.85rem',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: '10px',
+                      fontSize: '0.9rem',
+                    }}
                   />
                 </div>
 
                 {/* Level Select */}
                 <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                  <label
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#334155',
+                      display: 'block',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
                     Academic Level <span style={{ color: '#E11D48' }}>*</span>
                   </label>
-                  <select 
-                    name="level" 
-                    value={formData.level} 
-                    onChange={handleInputChange} 
-                    required 
+                  <select
+                    name="level"
+                    value={formData.level}
+                    onChange={handleInputChange}
+                    required
                     className="select-filter-input"
-                    style={{ width: '100%', padding: '0.7rem', fontSize: '0.9rem', borderRadius: '10px' }}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem',
+                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                    }}
                   >
                     <option value="Senior Secondary">Senior Secondary</option>
                     <option value="Junior Secondary">Junior Secondary</option>
@@ -597,48 +722,99 @@ export default function Classes() {
 
                 {/* Class Name */}
                 <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                  <label
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#334155',
+                      display: 'block',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
                     Class Name / Number <span style={{ color: '#E11D48' }}>*</span>
                   </label>
-                  <input 
-                    type="text" 
-                    name="name" 
-                    value={formData.name} 
-                    onChange={handleInputChange} 
-                    required 
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
                     placeholder="e.g. SS 1, JSS 2, PRIMARY 3"
-                    style={{ width: '100%', padding: '0.7rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.85rem',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: '10px',
+                      fontSize: '0.9rem',
+                    }}
                   />
                 </div>
 
                 {/* Section */}
                 <div className="form-group">
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
+                  <label
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#334155',
+                      display: 'block',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
                     Section (Optional)
                   </label>
-                  <input 
-                    type="text" 
-                    name="section" 
-                    value={formData.section} 
-                    onChange={handleInputChange} 
+                  <input
+                    type="text"
+                    name="section"
+                    value={formData.section}
+                    onChange={handleInputChange}
                     placeholder="e.g. Gold, A, Science Track"
-                    style={{ width: '100%', padding: '0.7rem 0.85rem', border: '1px solid #CBD5E1', borderRadius: '10px', fontSize: '0.9rem' }}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.85rem',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: '10px',
+                      fontSize: '0.9rem',
+                    }}
                   />
                 </div>
 
-                <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '0.82rem', color: '#64748B', display: 'flex', gap: '0.5rem' }}>
-                  <AlertCircle size={16} color="#3B82F6" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <span>Creating or modifying a class will immediately make it available for student enrollments and form teacher assignments across the school portal.</span>
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    fontSize: '0.82rem',
+                    color: '#64748B',
+                    display: 'flex',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <AlertCircle
+                    size={16}
+                    color="#3B82F6"
+                    style={{ flexShrink: 0, marginTop: '2px' }}
+                  />
+                  <span>
+                    Creating or modifying a class will immediately make it available for student
+                    enrollments and form teacher assignments across the school portal.
+                  </span>
                 </div>
               </div>
 
               {/* Fixed Sticky Footer */}
               <div className="class-slideover-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} disabled={submitting}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                  disabled={submitting}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Class')}
+                  {submitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Class'}
                 </button>
               </div>
             </form>

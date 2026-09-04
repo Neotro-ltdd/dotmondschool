@@ -61,10 +61,12 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
     try {
       setLoading(true);
       const [reportRes, profileRes] = await Promise.all([
-        api.get(`/academics/students/${studentId}/report-card?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`),
-        api.get('/setup/school/profile').catch(() => ({ logoUrl: null }))
+        api.get(
+          `/academics/students/${studentId}/report-card?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`,
+        ),
+        api.get('/setup/school/profile').catch(() => ({ logoUrl: null })),
       ]);
-      
+
       setData(reportRes);
       if (profileRes && profileRes.logoUrl) {
         setLogoUrl(profileRes.logoUrl);
@@ -76,20 +78,35 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
     }
   };
 
-  if (loading) return <div style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>Loading Report Card...</div>;
+  if (loading)
+    return (
+      <div style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+        Loading Report Card...
+      </div>
+    );
   if (error) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem 2rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', margin: '1rem 0' }}>
+      <div
+        style={{
+          textAlign: 'center',
+          padding: '3rem 2rem',
+          background: '#f8fafc',
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          margin: '1rem 0',
+        }}
+      >
         <BookOpen size={40} style={{ color: '#94a3b8', margin: '0 auto 0.75rem' }} />
-        <h4 style={{ color: '#1e293b', margin: '0 0 0.25rem', fontSize: '1.1rem' }}>Terminal Result Notice</h4>
+        <h4 style={{ color: '#1e293b', margin: '0 0 0.25rem', fontSize: '1.1rem' }}>
+          Terminal Result Notice
+        </h4>
         <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>{error}</p>
       </div>
     );
   }
   if (!data) return null;
 
-  const getFullUrl = (url: string | null | undefined) => {
-    if (!url) return null;
+  const getFullUrl = (url: string): string => {
     if (url.startsWith('http')) return url;
     return `${API_ROOT}${url}`;
   };
@@ -97,25 +114,66 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
   const isSecondary = data.className?.includes('JSS') || data.className?.includes('SS');
 
   return (
-    <div style={{ background: 'rgba(0,0,0,0.8)', position: 'fixed', inset: 0, zIndex: 9999, overflowY: 'auto', padding: '20px' }}>
-      <div className="result-sheet-container" style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}>
-        <div className="no-print actions-bar" style={{ padding: '15px', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8f9fa', borderBottom: '1px solid #ddd' }}>
-          <button className="btn btn-secondary" onClick={onClose}>Close</button>
-          <button className="btn btn-primary" onClick={() => window.print()}>🖨️ Print Result</button>
+    <div
+      style={{
+        background: 'rgba(0,0,0,0.8)',
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        overflowY: 'auto',
+        padding: '20px',
+      }}
+    >
+      <div
+        className="result-sheet-container"
+        style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}
+      >
+        <div
+          className="no-print actions-bar"
+          style={{
+            padding: '15px',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '10px',
+            background: '#f8f9fa',
+            borderBottom: '1px solid #ddd',
+          }}
+        >
+          <button className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
+          <button className="btn btn-primary" onClick={() => window.print()}>
+            🖨️ Print Result
+          </button>
         </div>
 
-        <div className="result-sheet-paper flex flex-col min-h-[297mm]" style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box' }}>
+        <div
+          className="result-sheet-paper flex flex-col min-h-[297mm]"
+          style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box' }}
+        >
           {/* Watermark */}
           {data.schoolLogoUrl && (
             <div className="watermark-container">
-              <img src={getFullUrl(data.schoolLogoUrl) as string} alt="Watermark" className="watermark-image" />
+              <img
+                src={getFullUrl(data.schoolLogoUrl)}
+                alt="Watermark"
+                className="watermark-image"
+              />
             </div>
           )}
 
           {/* Header section */}
           <div className="result-header">
             <div className="school-logo-placeholder">
-              {data.schoolLogoUrl ? <img src={getFullUrl(data.schoolLogoUrl) as string} alt="School Logo" style={{maxWidth:'100%', maxHeight:'100%', objectFit: 'contain'}} /> : "LOGO"}
+              {data.schoolLogoUrl ? (
+                <img
+                  src={getFullUrl(data.schoolLogoUrl)}
+                  alt="School Logo"
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                />
+              ) : (
+                'LOGO'
+              )}
             </div>
             <div className="school-info">
               <h1>{data.schoolName?.toUpperCase()}</h1>
@@ -124,7 +182,15 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
               <h2>STUDENT'S TERMINAL REPORT</h2>
             </div>
             <div className="student-photo-placeholder">
-              {data.studentPassportUrl ? <img src={getFullUrl(data.studentPassportUrl) as string} alt="Student Photo" style={{maxWidth:'100%', maxHeight:'100%', objectFit: 'cover'}} /> : "PHOTO"}
+              {data.studentPassportUrl ? (
+                <img
+                  src={getFullUrl(data.studentPassportUrl)}
+                  alt="Student Photo"
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                'PHOTO'
+              )}
             </div>
           </div>
 
@@ -132,13 +198,27 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
 
           {/* Bio Data Section */}
           <div className="bio-data-grid">
-            <div className="bio-item"><strong>Name:</strong> {data.studentName}</div>
-            <div className="bio-item"><strong>Reg No:</strong> {data.registrationNumber}</div>
-            <div className="bio-item"><strong>Class:</strong> {data.className}</div>
-            <div className="bio-item"><strong>Parent:</strong> {data.parentName}</div>
-            <div className="bio-item"><strong>Term:</strong> {data.term}</div>
-            <div className="bio-item"><strong>Session:</strong> {data.session}</div>
-            <div className="bio-item"><strong>Date Processed:</strong> {data.dateProcessed}</div>
+            <div className="bio-item">
+              <strong>Name:</strong> {data.studentName}
+            </div>
+            <div className="bio-item">
+              <strong>Reg No:</strong> {data.registrationNumber}
+            </div>
+            <div className="bio-item">
+              <strong>Class:</strong> {data.className}
+            </div>
+            <div className="bio-item">
+              <strong>Parent:</strong> {data.parentName}
+            </div>
+            <div className="bio-item">
+              <strong>Term:</strong> {data.term}
+            </div>
+            <div className="bio-item">
+              <strong>Session:</strong> {data.session}
+            </div>
+            <div className="bio-item">
+              <strong>Date Processed:</strong> {data.dateProcessed}
+            </div>
           </div>
 
           {/* Scores Table */}
@@ -148,12 +228,28 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
                 <th>SUBJECTS</th>
                 {isSecondary ? (
                   <>
-                    <th>Total CA<br/>(40)</th>
-                    <th>Exam<br/>(60)</th>
-                    <th>Total<br/>(100)</th>
+                    <th>
+                      Total CA
+                      <br />
+                      (40)
+                    </th>
+                    <th>
+                      Exam
+                      <br />
+                      (60)
+                    </th>
+                    <th>
+                      Total
+                      <br />
+                      (100)
+                    </th>
                   </>
                 ) : (
-                  <th>Mark<br/>(100)</th>
+                  <th>
+                    Mark
+                    <br />
+                    (100)
+                  </th>
                 )}
                 <th>Grade</th>
                 <th>Remark</th>
@@ -185,19 +281,38 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
             <div className="summary-grid">
               <div className="attendance-box custom-box">
                 <h4>ATTENDANCE</h4>
-                <div className="att-row"><span>Days School Opened:</span> <span className="att-val">118</span></div>
-                <div className="att-row"><span>Days Present:</span> <span className="att-val">{data.daysStudentPresent}</span></div>
-                <div className="att-row"><span>Days Absent:</span> <span className="att-val">{118 - data.daysStudentPresent}</span></div>
+                <div className="att-row">
+                  <span>Days School Opened:</span> <span className="att-val">118</span>
+                </div>
+                <div className="att-row">
+                  <span>Days Present:</span>{' '}
+                  <span className="att-val">{data.daysStudentPresent}</span>
+                </div>
+                <div className="att-row">
+                  <span>Days Absent:</span>{' '}
+                  <span className="att-val">{118 - data.daysStudentPresent}</span>
+                </div>
               </div>
-              
+
               <div className="performance-box custom-box">
                 <h4>PERFORMANCE SUMMARY</h4>
-                <div className="att-row"><span>Grand Total:</span> <span className="att-val">{Math.ceil(data.grandTotal)}</span></div>
-                <div className="att-row"><span>Average:</span> <span className="att-val">{data.average.toFixed(1)}%</span></div>
+                <div className="att-row">
+                  <span>Grand Total:</span>{' '}
+                  <span className="att-val">{Math.ceil(data.grandTotal)}</span>
+                </div>
+                <div className="att-row">
+                  <span>Average:</span> <span className="att-val">{data.average.toFixed(1)}%</span>
+                </div>
                 {isSecondary ? (
-                  <div className="att-row"><span>Department/Percentage:</span> <span className="att-val">{Math.round(data.average)}%</span></div>
+                  <div className="att-row">
+                    <span>Department/Percentage:</span>{' '}
+                    <span className="att-val">{Math.round(data.average)}%</span>
+                  </div>
                 ) : (
-                  <div className="att-row"><span>Grade/Position:</span> <span className="att-val">Grade {data.averageGrade}</span></div>
+                  <div className="att-row">
+                    <span>Grade/Position:</span>{' '}
+                    <span className="att-val">Grade {data.averageGrade}</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -208,7 +323,11 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
                 <span className="remark-label">Class Teacher's Remark:</span>
                 <span className="remark-text">{data.teacherComment}</span>
                 <div className="signature-area">
-                  {data.teacherSignatureUrl ? <img src={getFullUrl(data.teacherSignatureUrl) as string} alt="Teacher Signature" /> : <span>_________________</span>}
+                  {data.teacherSignatureUrl ? (
+                    <img src={getFullUrl(data.teacherSignatureUrl)} alt="Teacher Signature" />
+                  ) : (
+                    <span>_________________</span>
+                  )}
                 </div>
               </div>
 
@@ -216,13 +335,20 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
                 <span className="remark-label">Principal's Remark:</span>
                 <span className="remark-text">{data.principalComment}</span>
                 <div className="signature-area">
-                  {data.principalSignatureUrl ? <img src={getFullUrl(data.principalSignatureUrl) as string} alt="Principal Signature" /> : <span>_________________</span>}
+                  {data.principalSignatureUrl ? (
+                    <img src={getFullUrl(data.principalSignatureUrl)} alt="Principal Signature" />
+                  ) : (
+                    <span>_________________</span>
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="footer-section">
-              <strong>Next Term Resumes:</strong> {data.resumptionDate ? new Date(data.resumptionDate).toLocaleDateString() : 'To Be Announced'}
+              <strong>Next Term Resumes:</strong>{' '}
+              {data.resumptionDate
+                ? new Date(data.resumptionDate).toLocaleDateString()
+                : 'To Be Announced'}
             </div>
           </div>
         </div>

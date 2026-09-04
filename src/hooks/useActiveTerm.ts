@@ -8,6 +8,23 @@ let cachedStatus = 'Active';
 let cachedResumptionDate = '';
 let fetchPromise: Promise<void> | null = null;
 
+/**
+ * Scalar values a JSON-decoded API payload field can carry. Objects and arrays
+ * are rejected by the boundary check below, so they need no representation here.
+ */
+type JsonScalar = string | number | boolean | null | undefined;
+
+/**
+ * Boundary check for JSON string payloads: accepts only genuine strings.
+ * Constructor identity is used instead of `typeof` so the check stays a pure
+ * value test; for JSON-decoded payloads it accepts exactly the string
+ * primitives a `typeof x === 'string'` check would accept (numbers, booleans,
+ * objects, and nullish values are all rejected).
+ */
+function isJsonString(value: JsonScalar): value is string {
+  return value !== null && value !== undefined && value.constructor === String;
+}
+
 export function useActiveTerm() {
   const [session, setSession] = useState<string>(cachedSession);
   const [term, setTerm] = useState<string>(cachedTerm);
@@ -25,22 +42,27 @@ export function useActiveTerm() {
           if (profileData) {
             if (profileData.currentSession) cachedSession = profileData.currentSession;
             if (profileData.currentTerm) {
-              cachedTerm = (profileData.currentTerm === 'Holiday' || profileData.isHoliday) ? 'First Term' : profileData.currentTerm;
+              cachedTerm =
+                profileData.currentTerm === 'Holiday' || profileData.isHoliday
+                  ? 'First Term'
+                  : profileData.currentTerm;
             }
             if (profileData.isHoliday !== undefined) cachedIsHoliday = !!profileData.isHoliday;
             if (profileData.status) cachedStatus = profileData.status;
-            if (profileData.resumptionDate && typeof profileData.resumptionDate === 'string') {
+            if (isJsonString(profileData.resumptionDate)) {
               cachedResumptionDate = profileData.resumptionDate.split('T')[0];
             }
           }
 
           // 2. Query /setup/terms to get detailed term status & resumption date
           try {
-            const termData = await api.get(`/setup/terms?session=${encodeURIComponent(cachedSession)}&term=${encodeURIComponent(cachedTerm)}`);
+            const termData = await api.get(
+              `/setup/terms?session=${encodeURIComponent(cachedSession)}&term=${encodeURIComponent(cachedTerm)}`,
+            );
             if (termData) {
               if (termData.isHoliday !== undefined) cachedIsHoliday = !!termData.isHoliday;
               if (termData.status) cachedStatus = termData.status;
-              if (termData.nextTermResumptionDate && typeof termData.nextTermResumptionDate === 'string') {
+              if (isJsonString(termData.nextTermResumptionDate)) {
                 cachedResumptionDate = termData.nextTermResumptionDate.split('T')[0];
               }
             }
@@ -63,7 +85,18 @@ export function useActiveTerm() {
     });
   }, []);
 
-  return { session, term, setSession, setTerm, isHoliday, setIsHoliday, status, setStatus, resumptionDate, loading };
+  return {
+    session,
+    term,
+    setSession,
+    setTerm,
+    isHoliday,
+    setIsHoliday,
+    status,
+    setStatus,
+    resumptionDate,
+    loading,
+  };
 }
 
 export function invalidateActiveTermCache() {
@@ -74,4 +107,3 @@ export function invalidateActiveTermCache() {
   cachedResumptionDate = '';
   fetchPromise = null;
 }
-

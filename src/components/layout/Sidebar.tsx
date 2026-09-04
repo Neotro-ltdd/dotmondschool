@@ -1,48 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Users, 
+import {
+  LayoutDashboard,
+  Users,
   UserCheck,
-  GraduationCap, 
-  School, 
-  BookOpen, 
-  Award, 
-  BarChart3, 
-  Settings, 
-  User, 
-  Printer, 
-  ChevronDown, 
-  ChevronRight, 
-  CreditCard, 
-  CheckCircle, 
-  FileText, 
-  Sparkles, 
-  ShieldCheck, 
-  LogOut, 
+  GraduationCap,
+  School,
+  BookOpen,
+  Award,
+  BarChart3,
+  Settings,
+  User,
+  Printer,
+  ChevronDown,
+  ChevronRight,
+  CreditCard,
+  CheckCircle,
+  FileText,
+  Sparkles,
+  ShieldCheck,
+  LogOut,
   Sliders,
   Calendar,
   Wrench,
-  QrCode
+  QrCode,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
 import { api } from '../../services/api';
 import './Layout.css';
 
-export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen?: boolean, setIsSidebarOpen?: (open: boolean) => void }) {
+export default function Sidebar({
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: {
+  isSidebarOpen?: boolean;
+  setIsSidebarOpen?: (open: boolean) => void;
+}) {
   const { logout, userRole, userName } = useAuth();
   const { schoolName, logoUrl } = useTenant();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSuperAdmin = userRole === 'Director' || userRole === 'Chairman' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin';
-  const isDeveloperRoot = userRole === 'SuperAdmin' || userRole === 'Superadmin' || userRole === 'SystemAdmin';
+  const isSuperAdmin =
+    userRole === 'Director' ||
+    userRole === 'Chairman' ||
+    userRole === 'Principal' ||
+    userRole === 'Superadmin' ||
+    userRole === 'SuperAdmin';
+  const isDeveloperRoot =
+    userRole === 'SuperAdmin' || userRole === 'Superadmin' || userRole === 'SystemAdmin';
   const [isFormClassTeacher, setIsFormClassTeacher] = useState<boolean | null>(null);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
   useEffect(() => {
-    api.get('/identity/my-permissions')
+    api
+      .get('/identity/my-permissions')
       .then((res: any) => {
         if (res && Array.isArray(res.permissions)) {
           setUserPermissions(res.permissions);
@@ -51,12 +64,23 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
       .catch(() => {});
   }, []);
 
-  const canAccessFinance = userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Director' || (userRole !== 'Chairman' && userPermissions.includes('finance.overview'));
-  const canAccessFinancialReports = userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Director' || (userRole !== 'Chairman' && userPermissions.includes('reports.finance'));
+  const canAccessFinance =
+    userRole === 'Accountant' ||
+    userRole === 'Superadmin' ||
+    userRole === 'SuperAdmin' ||
+    userRole === 'Director' ||
+    (userRole !== 'Chairman' && userPermissions.includes('finance.overview'));
+  const canAccessFinancialReports =
+    userRole === 'Accountant' ||
+    userRole === 'Superadmin' ||
+    userRole === 'SuperAdmin' ||
+    userRole === 'Director' ||
+    (userRole !== 'Chairman' && userPermissions.includes('reports.finance'));
 
   useEffect(() => {
     if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
-      api.get('/academics/teacher/my-classes')
+      api
+        .get('/academics/teacher/my-classes')
         .then((classes: any) => {
           const classList = Array.isArray(classes) ? classes : [];
           const isClassT = classList.some((c: any) => c.isClassTeacher);
@@ -86,22 +110,43 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
     if (path.includes('/dashboard/teachers') || path.includes('/dashboard/operations/roles')) {
       setIsUserRoleOpen(true);
     }
-    if (path.includes('/dashboard/classes') || path.includes('/dashboard/students') || path.includes('/dashboard/allocations/class-allocations')) {
+    if (
+      path.includes('/dashboard/classes') ||
+      path.includes('/dashboard/students') ||
+      path.includes('/dashboard/allocations/class-allocations')
+    ) {
       setIsClassStudentOpen(true);
     }
-    if (path.includes('/dashboard/subjects') || path.includes('/dashboard/allocations/subject-allocations')) {
+    if (
+      path.includes('/dashboard/subjects') ||
+      path.includes('/dashboard/allocations/subject-allocations')
+    ) {
       setIsSubjectOpen(true);
     }
-    if (path.includes('/dashboard/operations/result-management') || path.includes('/dashboard/operations/review-results')) {
+    if (
+      path.includes('/dashboard/operations/result-management') ||
+      path.includes('/dashboard/operations/review-results')
+    ) {
       setIsResultMgmtOpen(true);
     }
-    if (path.includes('/dashboard/approvals') || path.includes('/dashboard/operations/promotions')) {
+    if (
+      path.includes('/dashboard/approvals') ||
+      path.includes('/dashboard/operations/promotions')
+    ) {
       setIsApprovalMgmtOpen(true);
     }
-    if (path.includes('/dashboard/operations/term-setup') || path.includes('/dashboard/operations/session') || path.includes('/dashboard/operations/grading') || path.includes('/dashboard/operations/manual-clearance')) {
+    if (
+      path.includes('/dashboard/operations/term-setup') ||
+      path.includes('/dashboard/operations/session') ||
+      path.includes('/dashboard/operations/grading') ||
+      path.includes('/dashboard/operations/manual-clearance')
+    ) {
       setIsSetupsOpen(true);
     }
-    if (path.includes('/dashboard/operations/gate-scanner') || path.includes('/dashboard/operations/gate-logs')) {
+    if (
+      path.includes('/dashboard/operations/gate-scanner') ||
+      path.includes('/dashboard/operations/gate-logs')
+    ) {
       setIsAttendanceOpen(true);
     }
     if (path.includes('/dashboard/finance/')) {
@@ -133,7 +178,11 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
     <aside className={`sidebar glass-panel ${isSidebarOpen ? 'mobile-open' : ''}`}>
       {/* Mobile Close Button */}
       {isSidebarOpen && setIsSidebarOpen && (
-        <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="Close menu">
+        <button
+          className="mobile-close-btn"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-label="Close menu"
+        >
           ×
         </button>
       )}
@@ -154,13 +203,23 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
           <span className="brand-tag">PORTAL CONTROL HUB</span>
         </div>
       </div>
-      
-      <nav className="sidebar-nav" onClick={(e) => { if ((e.target as HTMLElement).closest('a')) setIsSidebarOpen?.(false); }}>
+
+      <nav
+        className="sidebar-nav"
+        onClick={(e) => {
+          if (e.target instanceof Element && e.target.closest('a')) setIsSidebarOpen?.(false);
+        }}
+      >
         {userRole === 'Vendor' ? (
           <>
             <div className="sidebar-section-header">VENDOR HUB</div>
-            <NavLink to="/dashboard/vendor-hub" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <span className="nav-icon-box"><Printer size={18} /></span>
+            <NavLink
+              to="/dashboard/vendor-hub"
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+              <span className="nav-icon-box">
+                <Printer size={18} />
+              </span>
               Printing Hub
             </NavLink>
           </>
@@ -168,8 +227,14 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
           <>
             {/* CORE NAVIGATION */}
             <div className="sidebar-section-header">MAIN NAVIGATION</div>
-            <NavLink to="/dashboard" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <span className="nav-icon-box"><LayoutDashboard size={18} /></span>
+            <NavLink
+              to="/dashboard"
+              end
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+              <span className="nav-icon-box">
+                <LayoutDashboard size={18} />
+              </span>
               Overview
             </NavLink>
 
@@ -177,30 +242,60 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
             {isDeveloperRoot && (
               <>
                 <div className="sidebar-section-header">TEACHER WORKSTATION (SAMPLE)</div>
-                <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Users size={18} /></span>
+                <NavLink
+                  to="/dashboard/teacher/my-class"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <Users size={18} />
+                  </span>
                   My Class / Subjects
                 </NavLink>
-                <NavLink to="/dashboard/teacher/attendance" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Calendar size={18} /></span>
+                <NavLink
+                  to="/dashboard/teacher/attendance"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <Calendar size={18} />
+                  </span>
                   Attendance Register
                 </NavLink>
-                <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><FileText size={18} /></span>
+                <NavLink
+                  to="/dashboard/teacher/assessment"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <FileText size={18} />
+                  </span>
                   Continuous Assessment
                 </NavLink>
-                <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><CheckCircle size={18} /></span>
+                <NavLink
+                  to="/dashboard/teacher/results"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <CheckCircle size={18} />
+                  </span>
                   Review Results
                 </NavLink>
-                <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Wrench size={18} /></span>
+                <NavLink
+                  to="/dashboard/teacher/utilities"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <Wrench size={18} />
+                  </span>
                   Utilities
                 </NavLink>
 
                 <div className="sidebar-section-header">VENDOR HUB (SAMPLE)</div>
-                <NavLink to="/dashboard/vendor-hub" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Printer size={18} /></span>
+                <NavLink
+                  to="/dashboard/vendor-hub"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <Printer size={18} />
+                  </span>
                   Printing Hub
                 </NavLink>
               </>
@@ -211,44 +306,89 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 {isFormClassTeacher !== false ? (
                   <>
                     <div className="sidebar-section-header">TEACHER WORKSTATION</div>
-                    <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><Users size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/my-class"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <Users size={18} />
+                      </span>
                       My Class
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/attendance" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><Calendar size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/attendance"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <Calendar size={18} />
+                      </span>
                       Attendance Register
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><FileText size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/assessment"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <FileText size={18} />
+                      </span>
                       Continuous Assessment
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><CheckCircle size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/results"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <CheckCircle size={18} />
+                      </span>
                       Review Results
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><Wrench size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/utilities"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <Wrench size={18} />
+                      </span>
                       Utilities
                     </NavLink>
                   </>
                 ) : (
                   <>
                     <div className="sidebar-section-header">SUBJECT WORKSTATION</div>
-                    <NavLink to="/dashboard/teacher/my-class" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><BookOpen size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/my-class"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <BookOpen size={18} />
+                      </span>
                       My Subjects
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/assessment" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><FileText size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/assessment"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <FileText size={18} />
+                      </span>
                       Continuous Assessment
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/results" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><CheckCircle size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/results"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <CheckCircle size={18} />
+                      </span>
                       Review Results
                     </NavLink>
-                    <NavLink to="/dashboard/teacher/utilities" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><Wrench size={18} /></span>
+                    <NavLink
+                      to="/dashboard/teacher/utilities"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <Wrench size={18} />
+                      </span>
                       Utilities
                     </NavLink>
                   </>
@@ -259,8 +399,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
             {userRole === 'Parent' && (
               <>
                 <div className="sidebar-section-header">PARENT PORTAL</div>
-                <NavLink to="/dashboard/parent-hub" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                  <span className="nav-icon-box"><Users size={18} /></span>
+                <NavLink
+                  to="/dashboard/parent-hub"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <Users size={18} />
+                  </span>
                   My Kids
                 </NavLink>
               </>
@@ -272,8 +417,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 <div className="sidebar-section-header">MANAGEMENT MODULES</div>
 
                 {userRole !== 'Chairman' && (
-                  <NavLink to="/dashboard/admissions" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <span className="nav-icon-box"><FileText size={18} /></span>
+                  <NavLink
+                    to="/dashboard/admissions"
+                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                  >
+                    <span className="nav-icon-box">
+                      <FileText size={18} />
+                    </span>
                     Admission Applications
                   </NavLink>
                 )}
@@ -281,11 +431,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 {/* 1. USER & ROLE MANAGEMENT */}
                 {userRole !== 'Accountant' && (
                   <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isUserRoleOpen ? 'open' : ''}`} 
+                    <button
+                      className={`nav-item dropdown-toggle ${isUserRoleOpen ? 'open' : ''}`}
                       onClick={() => setIsUserRoleOpen(!isUserRoleOpen)}
                     >
-                      <span className="nav-icon-box"><UserCheck size={18} /></span>
+                      <span className="nav-icon-box">
+                        <UserCheck size={18} />
+                      </span>
                       User & Role Management
                       <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                         {isUserRoleOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -293,11 +445,21 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     </button>
                     {isUserRoleOpen && (
                       <div className="submenu">
-                        <NavLink to="/dashboard/teachers" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/teachers"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Staff Roster
                         </NavLink>
                         {userRole !== 'Chairman' && (
-                          <NavLink to="/dashboard/operations/roles" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/operations/roles"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Role Management
                           </NavLink>
                         )}
@@ -309,31 +471,61 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 {/* 2. CLASS & STUDENT MANAGEMENT */}
                 {userRole !== 'Accountant' && userRole !== 'Principal' && (
                   <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isClassStudentOpen ? 'open' : ''}`} 
+                    <button
+                      className={`nav-item dropdown-toggle ${isClassStudentOpen ? 'open' : ''}`}
                       onClick={() => setIsClassStudentOpen(!isClassStudentOpen)}
                     >
-                      <span className="nav-icon-box"><GraduationCap size={18} /></span>
+                      <span className="nav-icon-box">
+                        <GraduationCap size={18} />
+                      </span>
                       Class & Student Mgmt
                       <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                        {isClassStudentOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        {isClassStudentOpen ? (
+                          <ChevronDown size={16} />
+                        ) : (
+                          <ChevronRight size={16} />
+                        )}
                       </span>
                     </button>
                     {isClassStudentOpen && (
                       <div className="submenu">
-                        <NavLink to="/dashboard/classes" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/classes"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Classes
                         </NavLink>
-                        <NavLink to="/dashboard/students" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/students"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Students
                         </NavLink>
                         {userRole !== 'Principal' && (
-                          <NavLink to="/dashboard/allocations/class-allocations" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/allocations/class-allocations"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Class Allocation
                           </NavLink>
                         )}
-                        {(userRole === 'Admin' || userRole === 'Superadmin' || userRole === 'SuperAdmin' || userRole === 'Principal' || userRole === 'Chairman') && (
-                          <NavLink to="/dashboard/operations/promotions" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        {(userRole === 'Admin' ||
+                          userRole === 'Superadmin' ||
+                          userRole === 'SuperAdmin' ||
+                          userRole === 'Principal' ||
+                          userRole === 'Chairman') && (
+                          <NavLink
+                            to="/dashboard/operations/promotions"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Student Promotions
                           </NavLink>
                         )}
@@ -345,11 +537,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 {/* 3. SUBJECT MANAGEMENT */}
                 {userRole !== 'Accountant' && userRole !== 'Principal' && (
                   <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isSubjectOpen ? 'open' : ''}`} 
+                    <button
+                      className={`nav-item dropdown-toggle ${isSubjectOpen ? 'open' : ''}`}
                       onClick={() => setIsSubjectOpen(!isSubjectOpen)}
                     >
-                      <span className="nav-icon-box"><BookOpen size={18} /></span>
+                      <span className="nav-icon-box">
+                        <BookOpen size={18} />
+                      </span>
                       Subject Management
                       <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                         {isSubjectOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -357,11 +551,21 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     </button>
                     {isSubjectOpen && (
                       <div className="submenu">
-                        <NavLink to="/dashboard/subjects" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/subjects"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Subjects
                         </NavLink>
                         {userRole !== 'Principal' && (
-                          <NavLink to="/dashboard/allocations/subject-allocations" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/allocations/subject-allocations"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Subject Allocations
                           </NavLink>
                         )}
@@ -373,11 +577,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 {/* 4. RESULT MANAGEMENT */}
                 {userRole !== 'Accountant' && userRole !== 'Parent' && (
                   <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isResultMgmtOpen ? 'open' : ''}`} 
+                    <button
+                      className={`nav-item dropdown-toggle ${isResultMgmtOpen ? 'open' : ''}`}
                       onClick={() => setIsResultMgmtOpen(!isResultMgmtOpen)}
                     >
-                      <span className="nav-icon-box"><Award size={18} /></span>
+                      <span className="nav-icon-box">
+                        <Award size={18} />
+                      </span>
                       Result Management
                       <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                         {isResultMgmtOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -386,11 +592,21 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     {isResultMgmtOpen && (
                       <div className="submenu">
                         {userRole !== 'Principal' && userRole !== 'Chairman' && (
-                          <NavLink to="/dashboard/operations/result-management" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/operations/result-management"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Compute Result
                           </NavLink>
                         )}
-                        <NavLink to="/dashboard/operations/review-results" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/operations/review-results"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           {userRole === 'Chairman' ? 'View Results' : 'Review Results'}
                         </NavLink>
                       </div>
@@ -399,24 +615,42 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 5. APPROVAL MANAGEMENT (PRINCIPAL / SUPERADMIN) */}
-                {(userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
+                {(userRole === 'Principal' ||
+                  userRole === 'Superadmin' ||
+                  userRole === 'SuperAdmin') && (
                   <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isApprovalMgmtOpen ? 'open' : ''}`} 
+                    <button
+                      className={`nav-item dropdown-toggle ${isApprovalMgmtOpen ? 'open' : ''}`}
                       onClick={() => setIsApprovalMgmtOpen(!isApprovalMgmtOpen)}
                     >
-                      <span className="nav-icon-box"><ShieldCheck size={18} /></span>
+                      <span className="nav-icon-box">
+                        <ShieldCheck size={18} />
+                      </span>
                       Approval Management
                       <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                        {isApprovalMgmtOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        {isApprovalMgmtOpen ? (
+                          <ChevronDown size={16} />
+                        ) : (
+                          <ChevronRight size={16} />
+                        )}
                       </span>
                     </button>
                     {isApprovalMgmtOpen && (
                       <div className="submenu">
-                        <NavLink to="/dashboard/approvals" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/approvals"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Result Approval
                         </NavLink>
-                        <NavLink to="/dashboard/operations/promotions" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/operations/promotions"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Promotion Approval
                         </NavLink>
                       </div>
@@ -425,47 +659,78 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 )}
 
                 {/* 5. SETUPS */}
-                {userRole !== 'Accountant' && userRole !== 'Principal' && userRole !== 'Chairman' && (
-                  <div className="nav-group">
-                    <button 
-                      className={`nav-item dropdown-toggle ${isSetupsOpen ? 'open' : ''}`} 
-                      onClick={() => setIsSetupsOpen(!isSetupsOpen)}
-                    >
-                      <span className="nav-icon-box"><Sliders size={18} /></span>
-                      Setups
-                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                        {isSetupsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                      </span>
-                    </button>
-                    {isSetupsOpen && (
-                      <div className="submenu">
-                        <NavLink to="/dashboard/operations/term-setup" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Term & Session Setup
-                        </NavLink>
-                        <NavLink to="/dashboard/operations/branches" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Campus Branches
-                        </NavLink>
-                        <NavLink to="/dashboard/operations/session" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Session Operations
-                        </NavLink>
-                        <NavLink to="/dashboard/operations/grading" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Grading Rules
-                        </NavLink>
-                        <NavLink to="/dashboard/operations/manual-clearance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Manual Clearance
-                        </NavLink>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {userRole !== 'Accountant' &&
+                  userRole !== 'Principal' &&
+                  userRole !== 'Chairman' && (
+                    <div className="nav-group">
+                      <button
+                        className={`nav-item dropdown-toggle ${isSetupsOpen ? 'open' : ''}`}
+                        onClick={() => setIsSetupsOpen(!isSetupsOpen)}
+                      >
+                        <span className="nav-icon-box">
+                          <Sliders size={18} />
+                        </span>
+                        Setups
+                        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                          {isSetupsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </span>
+                      </button>
+                      {isSetupsOpen && (
+                        <div className="submenu">
+                          <NavLink
+                            to="/dashboard/operations/term-setup"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Term & Session Setup
+                          </NavLink>
+                          <NavLink
+                            to="/dashboard/operations/branches"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Campus Branches
+                          </NavLink>
+                          <NavLink
+                            to="/dashboard/operations/session"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Session Operations
+                          </NavLink>
+                          <NavLink
+                            to="/dashboard/operations/grading"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Grading Rules
+                          </NavLink>
+                          <NavLink
+                            to="/dashboard/operations/manual-clearance"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Manual Clearance
+                          </NavLink>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
                 <div className="nav-group">
-                  <button 
-                    className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`} 
+                  <button
+                    className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`}
                     onClick={() => setIsAttendanceOpen(!isAttendanceOpen)}
                   >
-                    <span className="nav-icon-box"><QrCode size={18} /></span>
+                    <span className="nav-icon-box">
+                      <QrCode size={18} />
+                    </span>
                     Attendance Management
                     <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                       {isAttendanceOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -473,17 +738,34 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                   </button>
                   {isAttendanceOpen && (
                     <div className="submenu">
-                      {userRole !== 'Accountant' && userRole !== 'Principal' && userRole !== 'Chairman' && (
-                        <NavLink to="/dashboard/operations/gate-scanner" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                          Gate Scanner
-                        </NavLink>
-                      )}
+                      {userRole !== 'Accountant' &&
+                        userRole !== 'Principal' &&
+                        userRole !== 'Chairman' && (
+                          <NavLink
+                            to="/dashboard/operations/gate-scanner"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Gate Scanner
+                          </NavLink>
+                        )}
                       {userRole !== 'Accountant' && userRole !== 'Principal' && (
-                        <NavLink to="/dashboard/operations/gate-logs" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        <NavLink
+                          to="/dashboard/operations/gate-logs"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
                           Gate Logs
                         </NavLink>
                       )}
-                      <NavLink to="/dashboard/staff-attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                      <NavLink
+                        to="/dashboard/staff-attendance"
+                        className={({ isActive }) =>
+                          `nav-item submenu-item ${isActive ? 'active' : ''}`
+                        }
+                      >
                         Staff Attendance Log
                       </NavLink>
                     </div>
@@ -491,19 +773,28 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                 </div>
 
                 {/* ACCOUNTANT / SUPERADMIN FINANCE MODULES */}
-                {(userRole === 'Accountant' || userRole === 'Superadmin' || userRole === 'SuperAdmin') && (
+                {(userRole === 'Accountant' ||
+                  userRole === 'Superadmin' ||
+                  userRole === 'SuperAdmin') && (
                   <>
                     <div className="sidebar-section-header">FINANCE & BILLING</div>
-                    <NavLink to="/dashboard/students" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                      <span className="nav-icon-box"><GraduationCap size={18} /></span>
+                    <NavLink
+                      to="/dashboard/students"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <GraduationCap size={18} />
+                      </span>
                       Students
                     </NavLink>
                     <div className="nav-group">
-                      <button 
-                        className={`nav-item dropdown-toggle ${isFinanceOpen ? 'open' : ''}`} 
+                      <button
+                        className={`nav-item dropdown-toggle ${isFinanceOpen ? 'open' : ''}`}
                         onClick={() => setIsFinanceOpen(!isFinanceOpen)}
                       >
-                        <span className="nav-icon-box"><CreditCard size={18} /></span>
+                        <span className="nav-icon-box">
+                          <CreditCard size={18} />
+                        </span>
                         Finance Operations
                         <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                           {isFinanceOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -511,19 +802,44 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                       </button>
                       {isFinanceOpen && (
                         <div className="submenu">
-                          <NavLink to="/dashboard/finance/verifications" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance/verifications"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Online Verifications
                           </NavLink>
-                          <NavLink to="/dashboard/finance/pos" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance/pos"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Point of Sale
                           </NavLink>
-                          <NavLink to="/dashboard/finance/proxy-upload" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance/proxy-upload"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Proxy Upload
                           </NavLink>
-                          <NavLink to="/dashboard/finance/ledger" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance/ledger"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Student Ledger
                           </NavLink>
-                          <NavLink to="/dashboard/operations/manual-clearance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/operations/manual-clearance"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Manual Clearance
                           </NavLink>
                         </div>
@@ -531,25 +847,46 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     </div>
 
                     <div className="nav-group">
-                      <button 
-                        className={`nav-item dropdown-toggle ${isFinanceSetupOpen ? 'open' : ''}`} 
+                      <button
+                        className={`nav-item dropdown-toggle ${isFinanceSetupOpen ? 'open' : ''}`}
                         onClick={() => setIsFinanceSetupOpen(!isFinanceSetupOpen)}
                       >
-                        <span className="nav-icon-box"><Settings size={18} /></span>
+                        <span className="nav-icon-box">
+                          <Settings size={18} />
+                        </span>
                         Finance Setup
                         <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                          {isFinanceSetupOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                          {isFinanceSetupOpen ? (
+                            <ChevronDown size={16} />
+                          ) : (
+                            <ChevronRight size={16} />
+                          )}
                         </span>
                       </button>
                       {isFinanceSetupOpen && (
                         <div className="submenu">
-                          <NavLink to="/dashboard/finance-setup/assets" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance-setup/assets"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Upload Assets
                           </NavLink>
-                          <NavLink to="/dashboard/finance-setup/builder" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance-setup/builder"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Fee Builder
                           </NavLink>
-                          <NavLink to="/dashboard/finance-setup/class-fees" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                          <NavLink
+                            to="/dashboard/finance-setup/class-fees"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Class Fees
                           </NavLink>
                         </div>
@@ -564,11 +901,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
 
                     <div className="nav-group">
-                      <button 
-                        className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`} 
+                      <button
+                        className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`}
                         onClick={() => setIsReportsOpen(!isReportsOpen)}
                       >
-                        <span className="nav-icon-box"><BarChart3 size={18} /></span>
+                        <span className="nav-icon-box">
+                          <BarChart3 size={18} />
+                        </span>
                         Reports & Analytics
                         <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                           {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -577,12 +916,22 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                       {isReportsOpen && (
                         <div className="submenu">
                           {userRole !== 'Accountant' && (
-                            <NavLink to="/dashboard/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            <NavLink
+                              to="/dashboard/reports"
+                              className={({ isActive }) =>
+                                `nav-item submenu-item ${isActive ? 'active' : ''}`
+                              }
+                            >
                               Academic Reports
                             </NavLink>
                           )}
                           {canAccessFinancialReports && (
-                            <NavLink to="/dashboard/finance/reports" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            <NavLink
+                              to="/dashboard/finance/reports"
+                              className={({ isActive }) =>
+                                `nav-item submenu-item ${isActive ? 'active' : ''}`
+                              }
+                            >
                               Financial Reports Hub
                             </NavLink>
                           )}
@@ -591,8 +940,13 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebar
                     </div>
 
                     {userRole !== 'Accountant' && (
-                      <NavLink to="/dashboard/settings/school" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                        <span className="nav-icon-box"><Settings size={18} /></span>
+                      <NavLink
+                        to="/dashboard/settings/school"
+                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                      >
+                        <span className="nav-icon-box">
+                          <Settings size={18} />
+                        </span>
                         Settings
                       </NavLink>
                     )}
