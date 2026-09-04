@@ -57,12 +57,17 @@ const GateAttendanceLog: React.FC = () => {
   // Tracks which WhatsApp messages were already opened/sent.
   // Key: `${studentId}|${dateScanned}|arrival|departure`. Persisted so refresh keeps buttons grey.
   const [sentMap, setSentMap] = useState<Record<string, boolean>>(() => {
-    try {
-      const raw = localStorage.getItem('gate-wa-sent');
-      return raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-    } catch {
-      return {};
-    }
+  try {
+  const raw = localStorage.getItem('gate-wa-sent');
+  if (!raw) return {};
+  const parsed: unknown = JSON.parse(raw);
+  // SAFETY: gate-wa-sent is only ever written by markWaSent() below, which
+  // always serializes a Record<string, boolean>. If storage is corrupted
+  // externally, worst case is a bad lookup (falsy), not a crash.
+  return parsed as Record<string, boolean>;
+} catch {
+  return {};
+}
   });
 
   useEffect(() => {
