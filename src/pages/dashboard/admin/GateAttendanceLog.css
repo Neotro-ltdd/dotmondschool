@@ -242,3 +242,102 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
+
+/* WhatsApp notify */
+.wa-notify-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 190px;
+}
+
+.wa-parent-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  max-width: 230px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wa-parent-info svg {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+.wa-btn-row {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.wa-btn-row-grid {
+  margin-top: 0.15rem;
+}
+
+.wa-grid-footer {
+  padding-top: 0.85rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 0.42rem 0.7rem;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.wa-btn-arrival {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.wa-btn-arrival:hover {
+  background: #25d366;
+  border-color: #25d366;
+  color: #ffffff;
+}
+
+.wa-btn-departure {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.wa-btn-departure:hover {
+  background: #1e40af;
+  border-color: #1e40af;
+  color: #ffffff;
+}
+
+.wa-btn-disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.wa-btn-sent {
+  background: #e2e8f0;
+  color: #64748b;
+  border-color: #cbd5e1;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.85;
+}

@@ -11,6 +11,9 @@ import {
   List,
   LayoutGrid,
   Calendar,
+  MessageCircle,
+  Phone,
+  Check,
 } from 'lucide-react';
 
 interface GateLog {
@@ -24,6 +27,12 @@ interface GateLog {
   clockInTime: string | null;
   clockOutTime: string | null;
   status: string;
+  parentName?: string | null;
+  parentPhoneNumber?: string | null;
+  arrivalWhatsappMessage?: string | null;
+  arrivalWhatsappUrl?: string | null;
+  departureWhatsappMessage?: string | null;
+  departureWhatsappUrl?: string | null;
 }
 
 interface ClassItem {
@@ -45,12 +54,31 @@ const GateAttendanceLog: React.FC = () => {
   const [filterClassId, setFilterClassId] = useState<string>('');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
+  // Tracks which WhatsApp messages were already opened/sent.
+  // Key: `${studentId}|${dateScanned}|arrival|departure`. Persisted so refresh keeps buttons grey.
+  const [sentMap, setSentMap] = useState<Record<string, boolean>>(() => {
+    try {
+      const raw = localStorage.getItem('gate-wa-sent');
+      return raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('gate-wa-sent', JSON.stringify(sentMap));
+    } catch {
+      // ignore storage errors
+    }
+  }, [sentMap]);
+
   const fetchClasses = async () => {
     try {
       const classData = await api.get('/setup/classes');
       setClasses(classData);
     } catch (err) {
-      console.error('Failed to load classes');
+      console.error('Failed to load classes', err);
     }
   };
 
@@ -79,6 +107,127 @@ const GateAttendanceLog: React.FC = () => {
     const parts = name.trim().split(' ');
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     return parts[0].substring(0, 2).toUpperCase();
+  };
+
+  const normalizePhoneForWhatsApp = (phone?: string | null): string => {
+    if (!phone) return '';
+    const digits = phone.replace(/\D/g, '');
+    // Convert local Nigerian format 080... -> 23480...
+    if (digits.length === 11 && digits.startsWith('0')) return `234${digits.slice(1)}`;
+    if (digits.length === 10 && digits.startsWith('0')) return `234${digits.slice(1)}`;
+    return digits;
+  };
+
+  const buildWhatsappUrl = (phone?: string | null, message?: string | null): string | null => {
+    if (!message) return null;
+    const normalized = normalizePhoneForWhatsApp(phone);
+    if (!normalized) return null;
+    return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+  };
+
+  const getWhatsappLink = (log: GateLog, type: 'arrival' | 'departure'): string | null => {
+    if (type === 'arrival') {
+      // Prefer backend URL, but repair it if it contains a local-format number
+      if (log.arrivalWhatsappUrl) {
+        try {
+          const url = new URL(log.arrivalWhatsappUrl);
+          const rawPhone = url.pathname.replace('/', '');
+          const fixed = normalizePhoneForWhatsApp(rawPhone);
+          if (fixed && fixed !== rawPhone) {
+            const text = url.searchParams.get('text') || log.arrivalWhatsappMessage || '';
+            return `https://wa.me/${fixed}?text=${encodeURIComponent(text)}`;
+          }
+        } catch {
+          // fall through to builder
+        }
+        // If URL parses fine (or unparseable), still ensure message is embedded
+        if (log.arrivalWhatsappMessage && !log.arrivalWhatsappUrl.includes('text=')) {
+          return buildWhatsappUrl(log.parentPhoneNumber, log.arrivalWhatsappMessage);
+        }
+        if (
+          log.arrivalWhatsappUrl.includes('wa.me') ||
+          log.arrivalWhatsappUrl.includes('whatsapp')
+        ) {
+          return log.arrivalWhatsappUrl;
+        }
+      }
+      return buildWhatsappUrl(log.parentPhoneNumber, log.arrivalWhatsappMessage);
+    }
+    if (log.departureWhatsappUrl) {
+      try {
+        const url = new URL(log.departureWhatsappUrl);
+        const rawPhone = url.pathname.replace('/', '');
+        const fixed = normalizePhoneForWhatsApp(rawPhone);
+        if (fixed && fixed !== rawPhone) {
+          const text = url.searchParams.get('text') || log.departureWhatsappMessage || '';
+          return `https://wa.me/${fixed}?text=${encodeURIComponent(text)}`;
+        }
+      } catch {
+        // fall through
+      }
+      if (
+        log.departureWhatsappUrl.includes('wa.me') ||
+        log.departureWhatsappUrl.includes('whatsapp')
+      ) {
+        return log.departureWhatsappUrl;
+      }
+    }
+    return buildWhatsappUrl(log.parentPhoneNumber, log.departureWhatsappMessage);
+  };
+
+  const getSentKey = (log: GateLog, type: 'arrival' | 'departure'): string =>
+    `${log.studentId}|${log.dateScanned || filterDate}|${type}`;
+
+  const isSent = (log: GateLog, type: 'arrival' | 'departure'): boolean =>
+    !!sentMap[getSentKey(log, type)];
+
+  const markAsSent = (log: GateLog, type: 'arrival' | 'departure') => {
+    const key = getSentKey(log, type);
+    setSentMap((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
+  };
+
+  const renderWaButton = (log: GateLog, type: 'arrival' | 'departure') => {
+    const url = getWhatsappLink(log, type);
+    const hasScan = type === 'arrival' ? !!log.clockInTime : !!log.clockOutTime;
+    const label = type === 'arrival' ? 'Arrival WhatsApp' : 'Exit WhatsApp';
+    const message =
+      type === 'arrival' ? log.arrivalWhatsappMessage : log.departureWhatsappMessage;
+    const btnClass = type === 'arrival' ? 'wa-btn-arrival' : 'wa-btn-departure';
+
+    if (isSent(log, type)) {
+      return (
+        <span className="wa-btn wa-btn-sent" title="Already sent — message opened in WhatsApp">
+          <Check size={14} />
+          {label} • Sent
+        </span>
+      );
+    }
+
+    if (url && hasScan) {
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`wa-btn ${btnClass}`}
+          title={message || `Send ${type} notification`}
+          onClick={() => markAsSent(log, type)}
+        >
+          <MessageCircle size={14} />
+          {label}
+        </a>
+      );
+    }
+
+    return (
+      <span
+        className="wa-btn wa-btn-disabled"
+        title={!hasScan ? (type === 'arrival' ? 'No clock-in yet' : 'No clock-out yet') : 'No message available'}
+      >
+        <MessageCircle size={14} />
+        {label}
+      </span>
+    );
   };
 
   let filteredLogs = logs;
@@ -294,6 +443,7 @@ const GateAttendanceLog: React.FC = () => {
                 <th>Time In</th>
                 <th>Time Out</th>
                 <th>Gate Status</th>
+                <th>Send to WhatsApp</th>
               </tr>
             </thead>
             <tbody>
@@ -379,6 +529,23 @@ const GateAttendanceLog: React.FC = () => {
                       ></span>
                       {log.status || (log.clockInTime ? 'Timed In' : 'Absent')}
                     </span>
+                  </td>
+                  <td>
+                    <div className="wa-notify-cell">
+                      {(log.parentName || log.parentPhoneNumber) && (
+                        <div className="wa-parent-info" title={log.parentPhoneNumber || ''}>
+                          <Phone size={12} />
+                          <span>
+                            {log.parentName || 'Parent'}
+                            {log.parentPhoneNumber ? ` • ${log.parentPhoneNumber}` : ''}
+                          </span>
+                        </div>
+                      )}
+                      <div className="wa-btn-row">
+                        {renderWaButton(log, 'arrival')}
+                        {renderWaButton(log, 'departure')}
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -471,6 +638,22 @@ const GateAttendanceLog: React.FC = () => {
                         })
                       : '-'}
                   </span>
+                </div>
+              </div>
+
+              <div className="wa-grid-footer">
+                {(log.parentName || log.parentPhoneNumber) && (
+                  <div className="wa-parent-info" title={log.parentPhoneNumber || ''}>
+                    <Phone size={12} />
+                    <span>
+                      {log.parentName || 'Parent'}
+                      {log.parentPhoneNumber ? ` • ${log.parentPhoneNumber}` : ''}
+                    </span>
+                  </div>
+                )}
+                <div className="wa-btn-row wa-btn-row-grid">
+                  {renderWaButton(log, 'arrival')}
+                  {renderWaButton(log, 'departure')}
                 </div>
               </div>
             </div>
