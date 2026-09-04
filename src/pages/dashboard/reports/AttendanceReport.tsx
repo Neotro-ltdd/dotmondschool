@@ -78,18 +78,21 @@ export default function AttendanceReport() {
     setErrorMsg(null);
 
     try {
-      const params: Record<string, any> = {};
-      if (selectedClassId) params.ClassId = selectedClassId;
-      if (searchQuery.trim()) params.Search = searchQuery.trim();
-      if (session) params.Session = session;
-      if (term) params.Term = term;
+      const params = new URLSearchParams();
+      if (selectedClassId) params.append('ClassId', selectedClassId);
+      if (searchQuery.trim()) params.append('Search', searchQuery.trim());
+      if (session) params.append('Session', session);
+      if (term) params.append('Term', term);
 
-      const response: any = await api.get('/reports/attendance', { params });
+      const queryString = params.toString();
+      const endpoint = queryString ? `/reports/attendance?${queryString}` : '/reports/attendance';
+
+      const response: any = await api.get(endpoint);
       const data = Array.isArray(response) ? response : (response?.data || []);
       setReportData(data);
     } catch (err: any) {
       console.error("Failed to fetch attendance report:", err);
-      setErrorMsg(err?.response?.data?.message || "Failed to load attendance report.");
+      setErrorMsg(err?.message || err?.response?.data?.message || "Failed to load attendance report.");
     } finally {
       setIsLoading(false);
     }
@@ -152,11 +155,16 @@ export default function AttendanceReport() {
     setHistoryLogs([]);
 
     try {
-      const params: Record<string, any> = {};
-      if (session) params.session = session;
-      if (term) params.term = term;
+      const params = new URLSearchParams();
+      if (session) params.append('session', session);
+      if (term) params.append('term', term);
 
-      const response: any = await api.get(`/reports/attendance/student/${student.studentId}`, { params });
+      const queryString = params.toString();
+      const endpoint = queryString 
+        ? `/reports/attendance/student/${student.studentId}?${queryString}`
+        : `/reports/attendance/student/${student.studentId}`;
+
+      const response: any = await api.get(endpoint);
       const logs = Array.isArray(response) ? response : (response?.data || []);
       setHistoryLogs(logs);
     } catch (err) {
