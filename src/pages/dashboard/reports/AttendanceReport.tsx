@@ -111,7 +111,6 @@ export default function AttendanceReport() {
   const handleExportCsv = async () => {
     setIsExporting(true);
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
       if (selectedClassId) params.append('ClassId', selectedClassId);
       if (searchQuery.trim()) params.append('Search', searchQuery.trim());
@@ -119,30 +118,18 @@ export default function AttendanceReport() {
       if (term) params.append('Term', term);
       params.append('ExportAsCsv', 'true');
 
-      const baseUrl = import.meta.env.VITE_API_URL || 'https://api.easyworka.com';
-      const downloadUrl = `${baseUrl}/api/reports/attendance?${params.toString()}`;
-
-      // Fetch blob with Authorization Header
-      const response = await fetch(downloadUrl, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Download failed');
-
-      const blob = await response.blob();
+      const blob = await api.download(`/reports/attendance?${params.toString()}`);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Attendance_Report_${new Date().toISOString().slice(0,10)}.csv`;
+      a.download = `Attendance_Report_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to export CSV:", err);
-      alert("Could not export attendance CSV report.");
+      alert(err?.message || "Could not export attendance CSV report.");
     } finally {
       setIsExporting(false);
     }

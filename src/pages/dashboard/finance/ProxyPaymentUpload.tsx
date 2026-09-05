@@ -135,21 +135,7 @@ export default function ProxyPaymentUpload() {
       formData.append('remarks', directRemarks || 'Bank proof verified by Accountant.');
       formData.append('file', selectedFile);
 
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_ROOT}/api/finance/proxy-record`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Upload failed');
-      }
-
-      const data = await response.json();
+      const data = await api.post('/finance/proxy-record', formData);
 
       let msg = data.message;
       if (data.invoiceStatus === 'Completed') {
