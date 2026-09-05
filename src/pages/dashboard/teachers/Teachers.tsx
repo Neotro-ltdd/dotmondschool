@@ -159,10 +159,12 @@ export default function Teachers() {
     mutationFn: async (variables: { isEdit: boolean; id?: string; data: any }) => {
       if (variables.isEdit && variables.id) {
         const formDataPayload = new FormData();
+        if (variables.data.title) formDataPayload.append('title', variables.data.title);
         formDataPayload.append('surname', variables.data.surname);
         formDataPayload.append('firstName', variables.data.firstName);
         if (variables.data.otherNames)
           formDataPayload.append('otherNames', variables.data.otherNames);
+        if (variables.data.gender) formDataPayload.append('gender', variables.data.gender);
         formDataPayload.append('phoneNumber', variables.data.phoneNumber);
         formDataPayload.append('email', variables.data.email);
         formDataPayload.append('role', variables.data.role);
