@@ -13,7 +13,13 @@ import {
   X,
   FileSpreadsheet,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Mail,
+  MessageSquare,
+  Phone,
+  Printer,
+  Send,
+  User
 } from 'lucide-react';
 import { api } from '../../../services/api';
 import './AttendanceReport.css';
@@ -38,9 +44,29 @@ interface AttendanceReportDto {
 
 interface StudentAttendanceHistoryDto {
   date: string;
+  dayOfWeek?: string;
+  formattedDate?: string;
   clockInTime: string | null;
   clockOutTime: string | null;
   status: 'Present' | 'Departed' | 'Absent' | string;
+  notificationsSent?: string[];
+  whatsappUrl?: string | null;
+  whatsappMessage?: string | null;
+}
+
+interface StudentAttendanceReportResponseDto {
+  studentId: string;
+  studentName: string;
+  registrationNumber: string;
+  className: string;
+  parentName: string;
+  parentPhone: string;
+  parentEmail: string;
+  totalExpectedDays: number;
+  totalPresent: number;
+  totalAbsent: number;
+  attendancePercentage: number;
+  history: StudentAttendanceHistoryDto[];
 }
 
 export default function AttendanceReport() {
@@ -57,6 +83,7 @@ export default function AttendanceReport() {
 
   // Student Daily History Modal State
   const [selectedStudent, setSelectedStudent] = useState<AttendanceReportDto | null>(null);
+  const [studentDetails, setStudentDetails] = useState<StudentAttendanceReportResponseDto | null>(null);
   const [historyLogs, setHistoryLogs] = useState<StudentAttendanceHistoryDto[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
 
@@ -140,6 +167,7 @@ export default function AttendanceReport() {
     setSelectedStudent(student);
     setIsHistoryLoading(true);
     setHistoryLogs([]);
+    setStudentDetails(null);
 
     try {
       const params = new URLSearchParams();
@@ -152,13 +180,24 @@ export default function AttendanceReport() {
         : `/reports/attendance/student/${student.studentId}`;
 
       const response: any = await api.get(endpoint);
-      const logs = Array.isArray(response) ? response : (response?.data || []);
-      setHistoryLogs(logs);
+      const resData = response?.data || response;
+
+      if (resData && Array.isArray(resData.history)) {
+        setStudentDetails(resData);
+        setHistoryLogs(resData.history);
+      } else {
+        const logs = Array.isArray(resData) ? resData : [];
+        setHistoryLogs(logs);
+      }
     } catch (err) {
       console.error("Failed to load student history:", err);
     } finally {
       setIsHistoryLoading(false);
     }
+  };
+
+  const handlePrintStudentReport = () => {
+    window.print();
   };
 
   // Executive Summary Aggregations
@@ -177,6 +216,7 @@ export default function AttendanceReport() {
     if (!timeStr) return '—';
     try {
       const d = new Date(timeStr);
+      if (isNaN(d.getTime())) return timeStr;
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch {
       return timeStr;
@@ -339,7 +379,7 @@ export default function AttendanceReport() {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <button onClick={() => handleOpenHistory(row)} className="btn-view-logs">
-                          <Eye size={14} /> History
+                          <Eye size={14} /> Comprehensive Report
                         </button>
                       </td>
                     </tr>
@@ -351,50 +391,109 @@ export default function AttendanceReport() {
         )}
       </div>
 
-      {/* Student Daily History Modal */}
+      {/* Comprehensive Student Attendance & Notification Report Modal */}
       {selectedStudent && (
         <div className="modal-backdrop-glass" onClick={() => setSelectedStudent(null)}>
-          <div className="modal-content-glass" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content-glass" style={{ maxWidth: '950px' }} onClick={(e) => e.stopPropagation()}>
+            {/* Modal Top Controls */}
             <div className="modal-header-flex">
               <div>
-                <h2>{selectedStudent.studentName}</h2>
-                <p>Reg: <strong>{selectedStudent.registrationNumber}</strong> | Class: <strong>{selectedStudent.className}</strong></p>
+                <h2>Comprehensive Student Attendance Report</h2>
+                <p>Session: <strong>{session}</strong> | Term: <strong>{term}</strong></p>
               </div>
-              <button onClick={() => setSelectedStudent(null)} className="btn-modal-close">
-                <X size={18} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <button 
+                  onClick={handlePrintStudentReport} 
+                  className="btn-export-csv" 
+                  style={{ background: '#000080', border: 'none', height: '36px', fontSize: '0.8rem' }}
+                >
+                  <Printer size={15} /> Print Report
+                </button>
+                <button onClick={() => setSelectedStudent(null)} className="btn-modal-close">
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
+            {/* Student Profile Glass Card */}
+            <div className="student-profile-glass-card">
+              <div className="student-meta-row">
+                <div className="student-name-group">
+                  <h3>{studentDetails?.studentName || selectedStudent.studentName}</h3>
+                  <div className="student-sub-pills">
+                    <span className="sub-pill primary">Reg: {studentDetails?.registrationNumber || selectedStudent.registrationNumber}</span>
+                    <span className="sub-pill">Class: {studentDetails?.className || selectedStudent.className}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b' }}>Attendance Rate</div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 800, color: (studentDetails?.attendancePercentage ?? selectedStudent.attendancePercentage) >= 80 ? '#16a34a' : '#d97706' }}>
+                      {studentDetails?.attendancePercentage ?? selectedStudent.attendancePercentage}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="parent-contact-grid">
+                <div className="contact-item">
+                  <User size={15} color="#000080" /> Parent: <strong>{studentDetails?.parentName || 'Parent / Guardian'}</strong>
+                </div>
+                {studentDetails?.parentEmail && (
+                  <div className="contact-item">
+                    <Mail size={15} color="#047857" /> {studentDetails.parentEmail}
+                  </div>
+                )}
+                {studentDetails?.parentPhone && (
+                  <div className="contact-item">
+                    <Phone size={15} color="#2563eb" /> {studentDetails.parentPhone}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Attendance & Notification Table */}
             {isHistoryLoading ? (
-              <div style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
-                <RefreshCw className="animate-spin" size={28} style={{ margin: '0 auto 0.5rem', color: '#000080' }} />
-                <p style={{ fontWeight: 600 }}>Loading daily attendance log...</p>
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+                <RefreshCw className="animate-spin" size={32} style={{ margin: '0 auto 0.75rem', color: '#000080' }} />
+                <p style={{ fontWeight: 600 }}>Fetching comprehensive student history & notification logs...</p>
               </div>
             ) : historyLogs.length === 0 ? (
-              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-                <p>No individual daily scans recorded for this period.</p>
+              <div style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                <Calendar size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
+                <p style={{ fontWeight: 600 }}>No individual attendance logs found for this student during the selected session and term.</p>
               </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
                 <table className="attendance-table" style={{ fontSize: '0.85rem' }}>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Clock In Time</th>
-                      <th>Clock Out Time</th>
+                      <th>Date & Day</th>
+                      <th>Time In</th>
+                      <th>Time Out</th>
                       <th>Status</th>
+                      <th>Notification Sent / Type</th>
                     </tr>
                   </thead>
                   <tbody>
                     {historyLogs.map((log, idx) => {
                       const st = log.status.toLowerCase();
                       const badgeClass = st === 'present' ? 'present' : st === 'departed' ? 'departed' : 'absent';
+                      const dayName = log.dayOfWeek || (log.date ? new Date(log.date).toLocaleDateString('en-US', { weekday: 'long' }) : '');
 
                       return (
                         <tr key={idx}>
-                          <td style={{ fontWeight: 700 }}>{log.date}</td>
-                          <td>{formatTime(log.clockInTime)}</td>
-                          <td>{formatTime(log.clockOutTime)}</td>
+                          <td>
+                            <div style={{ fontWeight: 700, color: '#0f172a' }}>{log.formattedDate || log.date}</div>
+                            {dayName && <span className="day-tag">{dayName}</span>}
+                          </td>
+                          <td style={{ fontWeight: 600, color: log.clockInTime ? '#0f172a' : '#94a3b8' }}>
+                            {formatTime(log.clockInTime)}
+                          </td>
+                          <td style={{ fontWeight: 600, color: log.clockOutTime ? '#0f172a' : '#94a3b8' }}>
+                            {formatTime(log.clockOutTime)}
+                          </td>
                           <td>
                             <span className={`history-status-badge ${badgeClass}`}>
                               {st === 'present' && <CheckCircle2 size={12} />}
@@ -402,6 +501,33 @@ export default function AttendanceReport() {
                               {st === 'absent' && <UserX size={12} />}
                               {log.status}
                             </span>
+                          </td>
+                          <td>
+                            <div className="notif-badge-group">
+                              <span className="notif-pill email" title="Email Notification Dispatched">
+                                <Mail size={12} /> Email
+                              </span>
+
+                              <span className="notif-pill sms" title="SMS Notification Dispatched">
+                                <MessageSquare size={12} /> SMS
+                              </span>
+
+                              {log.whatsappUrl ? (
+                                <a 
+                                  href={log.whatsappUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="notif-pill whatsapp"
+                                  title="Click to notify parent via WhatsApp"
+                                >
+                                  <Send size={11} /> WhatsApp
+                                </a>
+                              ) : (
+                                <span className="notif-pill whatsapp" title="WhatsApp Notification Available">
+                                  <Send size={11} /> WhatsApp
+                                </span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -416,3 +542,4 @@ export default function AttendanceReport() {
     </div>
   );
 }
+
