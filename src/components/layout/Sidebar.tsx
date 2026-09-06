@@ -768,6 +768,9 @@ export default function Sidebar({
                       >
                         Staff Attendance Log
                       </NavLink>
+                      <NavLink to="/dashboard/reports/attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        Attendance Summary Report
+                      </NavLink>
                     </div>
                   )}
                 </div>
@@ -895,63 +898,69 @@ export default function Sidebar({
                   </>
                 )}
 
-                {/* 7. REPORTS & ANALYTICS (EXCLUDE ADMIN) */}
-                {userRole !== 'Admin' && (
-                  <>
-                    <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
+                {/* 7. REPORTS & ANALYTICS */}
+                <>
+                  <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
 
-                    <div className="nav-group">
-                      <button
-                        className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`}
-                        onClick={() => setIsReportsOpen(!isReportsOpen)}
-                      >
-                        <span className="nav-icon-box">
-                          <BarChart3 size={18} />
-                        </span>
-                        Reports & Analytics
-                        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                          {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                        </span>
-                      </button>
-                      {isReportsOpen && (
-                        <div className="submenu">
-                          {userRole !== 'Accountant' && (
-                            <NavLink
-                              to="/dashboard/reports"
-                              className={({ isActive }) =>
-                                `nav-item submenu-item ${isActive ? 'active' : ''}`
-                              }
-                            >
-                              Academic Reports
-                            </NavLink>
-                          )}
-                          {canAccessFinancialReports && (
-                            <NavLink
-                              to="/dashboard/finance/reports"
-                              className={({ isActive }) =>
-                                `nav-item submenu-item ${isActive ? 'active' : ''}`
-                              }
-                            >
-                              Financial Reports Hub
-                            </NavLink>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {userRole !== 'Accountant' && (
-                      <NavLink
-                        to="/dashboard/settings/school"
-                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                      >
-                        <span className="nav-icon-box">
-                          <Settings size={18} />
-                        </span>
-                        Settings
-                      </NavLink>
+                  <div className="nav-group">
+                    <button
+                      className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`}
+                      onClick={() => setIsReportsOpen(!isReportsOpen)}
+                    >
+                      <span className="nav-icon-box">
+                        <BarChart3 size={18} />
+                      </span>
+                      Reports & Analytics
+                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                        {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      </span>
+                    </button>
+                    {isReportsOpen && (
+                      <div className="submenu">
+                        {userRole !== 'Accountant' && (
+                          <NavLink
+                            to="/dashboard/reports"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Academic Reports
+                          </NavLink>
+                        )}
+                        <NavLink
+                          to="/dashboard/reports/attendance"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
+                          Attendance Summary Report
+                        </NavLink>
+                        {canAccessFinancialReports && (
+                          <NavLink
+                            to="/dashboard/finance/reports"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Financial Reports Hub
+                          </NavLink>
+                        )}
+                      </div>
                     )}
-                  </>
-                )}
+                  </div>
+
+                  {userRole !== 'Accountant' && (
+                    <NavLink
+                      to="/dashboard/settings/school"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <Settings size={18} />
+                      </span>
+                      Settings
+                    </NavLink>
+                  )}
+                </>
               </>
             )}
           </>

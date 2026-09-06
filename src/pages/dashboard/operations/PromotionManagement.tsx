@@ -29,6 +29,7 @@ import {
   UserX,
   Award,
   Trash2,
+  Send,
 } from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
@@ -267,6 +268,44 @@ export default function PromotionManagement() {
       );
     },
   });
+
+  const promoteSingleMutation = useMutation({
+    mutationFn: async (payload: { recommendationId: string }) => {
+      return await api.post('/academics/promotion/promote-single', payload);
+    },
+    onSuccess: (res: any) => {
+      showNotification(
+        res?.message || 'Single student promotion notification processed successfully.',
+        'success',
+        'Notification Sent',
+      );
+      queryClient.invalidateQueries({ queryKey: ['promotionReport', batchId] });
+      queryClient.invalidateQueries({ queryKey: ['promotionReportByClass'] });
+      queryClient.invalidateQueries({ queryKey: ['allPromotionBatches'] });
+    },
+    onError: (err: any) => {
+      showNotification(
+        err.message || 'Failed to send student notification.',
+        'error',
+        'Notification Error',
+      );
+    },
+  });
+
+  const handlePromoteSingle = async (recId: string, studentName: string, decision: string) => {
+    const confirmed = await showConfirm(
+      `Do you want to execute promotion & send the notification email for ${studentName} based on the Final Decision (${decision})?`,
+      {
+        title: 'Send Student Promotion Notification',
+        type: 'info',
+        confirmText: 'Send Notification',
+        cancelText: 'Cancel',
+      },
+    );
+    if (confirmed) {
+      promoteSingleMutation.mutate({ recommendationId: recId });
+    }
+  };
 
   const deleteBatchMutation = useMutation({
     mutationFn: async (targetBatchId: string) => {
@@ -777,19 +816,38 @@ export default function PromotionManagement() {
                               {rec.finalDecision}
                             </span>
                           </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <button
-                              className="btn-action-override"
-                              onClick={() =>
-                                openOverrideModal(
-                                  rec.recommendationId || rec.studentId,
-                                  rec.finalDecision,
-                                )
-                              }
-                            >
-                              <Edit3 size={14} />
-                              Override
-                            </button>
+                          <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'inline-flex', gap: '6px' }}>
+                              <button
+                                className="btn-action-override"
+                                title="Override Decision"
+                                onClick={() =>
+                                  openOverrideModal(
+                                    rec.recommendationId || rec.studentId,
+                                    rec.finalDecision,
+                                  )
+                                }
+                              >
+                                <Edit3 size={14} />
+                                Override
+                              </button>
+                              <button
+                                className="btn-action-override"
+                                style={{ backgroundColor: '#EEF2FF', color: '#3730A3', borderColor: '#C7D2FE' }}
+                                title="Process & Send Notification for this student"
+                                disabled={promoteSingleMutation.isPending}
+                                onClick={() =>
+                                  handlePromoteSingle(
+                                    rec.recommendationId || rec.studentId,
+                                    rec.studentName,
+                                    rec.finalDecision,
+                                  )
+                                }
+                              >
+                                <Send size={14} />
+                                Test Email
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -839,17 +897,33 @@ export default function PromotionManagement() {
 
                         <div className="card-footer-actions">
                           <span className="system-rec-lbl">System: {rec.systemRecommendation}</span>
-                          <button
-                            className="btn-action-override"
-                            onClick={() =>
-                              openOverrideModal(
-                                rec.recommendationId || rec.studentId,
-                                rec.finalDecision,
-                              )
-                            }
-                          >
-                            <Edit3 size={14} /> Override
-                          </button>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                              className="btn-action-override"
+                              onClick={() =>
+                                openOverrideModal(
+                                  rec.recommendationId || rec.studentId,
+                                  rec.finalDecision,
+                                )
+                              }
+                            >
+                              <Edit3 size={14} /> Override
+                            </button>
+                            <button
+                              className="btn-action-override"
+                              style={{ backgroundColor: '#EEF2FF', color: '#3730A3', borderColor: '#C7D2FE' }}
+                              disabled={promoteSingleMutation.isPending}
+                              onClick={() =>
+                                handlePromoteSingle(
+                                  rec.recommendationId || rec.studentId,
+                                  rec.studentName,
+                                  rec.finalDecision,
+                                )
+                              }
+                            >
+                              <Send size={14} /> Test Email
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))

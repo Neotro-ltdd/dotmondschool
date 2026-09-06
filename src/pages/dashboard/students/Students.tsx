@@ -46,6 +46,8 @@ interface StudentItem {
   status: string;
   isCleared: boolean;
   departmentTrack?: string;
+  gender?: string;
+  passportUrl?: string;
 }
 
 import { useAuth } from '../../../context/AuthContext';

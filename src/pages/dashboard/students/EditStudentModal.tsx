@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import SlideOver from '../../../components/ui/SlideOver';
+import AvatarCropper from '../../../components/dashboard/settings/AvatarCropper';
 import {
   User,
   Mail,
@@ -15,6 +16,7 @@ import {
   ShieldCheck,
   AlertCircle,
   X,
+  Camera
 } from 'lucide-react';
 import '../students/Students.css';
 
@@ -36,12 +38,13 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
     surname: student?.surname || '',
     firstName: student?.firstName || '',
     otherNames: student?.otherNames || '',
-    gender: student?.gender || 'Male',
+    gender: student?.gender || 'Female',
     departmentTrack: student?.departmentTrack || 'General',
     parentPhoneNumber: student?.parentPhoneNumber || '',
     parentEmail: student?.parentEmail || '',
   });
   const [passport, setPassport] = useState<File | null>(null);
+  const [rawPassportFile, setRawPassportFile] = useState<File | null>(null);
   const [passportPreview, setPassportPreview] = useState<string | null>(
     student?.passportUrl ? getFullUrl(student.passportUrl) : null,
   );
@@ -56,13 +59,13 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      setPassport(file);
-      setPassportPreview(URL.createObjectURL(file));
+      setRawPassportFile(file);
     }
   };
 
   const handleRemovePhoto = () => {
     setPassport(null);
+    setRawPassportFile(null);
     setPassportPreview(null);
   };
 
@@ -352,7 +355,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
                   fontSize: '0.82rem',
                 }}
               >
-                Gender
+                Gender <span style={{ color: '#EF4444' }}>*</span>
               </label>
               <select
                 name="gender"
@@ -370,8 +373,9 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
                   outline: 'none',
                 }}
               >
-                <option value="Male">Male</option>
+                <option value="">-- Select Gender --</option>
                 <option value="Female">Female</option>
+                <option value="Male">Male</option>
               </select>
             </div>
 
@@ -505,7 +509,7 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
             </div>
           </div>
 
-          {/* PASSPORT UPLOAD DROPZONE */}
+          {/* PASSPORT UPLOAD DROPZONE & BADGE FRAME PREVIEW */}
           <div>
             <label
               style={{
@@ -516,118 +520,150 @@ export default function EditStudentModal({ student, onClose, onSuccess }: EditSt
                 fontSize: '0.82rem',
               }}
             >
-              Student Passport Photo
+              Student Passport Photo & ID Frame Preview
             </label>
 
-            <div
-              style={{
-                background: '#F8FAFC',
-                border: '2px dashed #CBD5E1',
-                borderRadius: '14px',
-                padding: '1.5rem',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.75rem',
-              }}
-            >
-              {passportPreview ? (
-                <div style={{ position: 'relative' }}>
-                  <img
-                    src={passportPreview}
-                    alt="Passport Preview"
+            {rawPassportFile ? (
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '1.25rem' }}>
+                <AvatarCropper
+                  imageFile={rawPassportFile}
+                  onPreviewChange={(url) => setPassportPreview(url)}
+                  onCroppedFileReady={(file) => setPassport(file)}
+                  uploading={loading}
+                  onCancel={() => setRawPassportFile(null)}
+                />
+              </div>
+            ) : (
+              <div>
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    border: '2px dashed #CBD5E1',
+                    borderRadius: '14px',
+                    padding: '1.5rem',
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div
                     style={{
-                      width: '96px',
-                      height: '96px',
+                      width: '56px',
+                      height: '56px',
                       borderRadius: '50%',
-                      objectFit: 'cover',
-                      border: '3px solid #FFFFFF',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      right: 0,
-                      background: '#EF4444',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '24px',
-                      height: '24px',
+                      background: '#EFF6FF',
+                      color: '#000080',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      cursor: 'pointer',
                     }}
-                    title="Remove Photo"
                   >
-                    <X size={14} />
-                  </button>
+                    <Camera size={26} />
+                  </div>
+
+                  <div>
+                    <h4
+                      style={{
+                        margin: '0 0 0.25rem 0',
+                        fontSize: '1.05rem',
+                        fontWeight: 800,
+                        color: '#0F172A',
+                      }}
+                    >
+                      Select Official Passport Photograph
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B' }}>
+                      Upload a clear headshot photo. Supports PNG, JPG or WEBP.
+                    </p>
+                  </div>
+
+                  <input
+                    type="file"
+                    id="editStudentPassportInput"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                  <label
+                    htmlFor="editStudentPassportInput"
+                    className="btn btn-secondary"
+                    style={{
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      marginTop: '0.25rem',
+                    }}
+                  >
+                    <UploadCloud size={16} /> Browse Photo...
+                  </label>
                 </div>
-              ) : (
+
+                {/* STUDENT ID BADGE FRAME PREVIEW */}
                 <div
                   style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '50%',
-                    background: '#E2E8F0',
-                    color: '#64748B',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    textAlign: 'center',
+                    padding: '1.5rem',
+                    background: '#F8FAFC',
+                    borderRadius: '14px',
+                    border: '1px solid #E2E8F0',
+                    marginTop: '1.25rem',
                   }}
                 >
-                  <ImageIcon size={28} />
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      color: '#64748B',
+                      marginBottom: '1rem',
+                    }}
+                  >
+                    STUDENT ID BADGE FRAME PREVIEW
+                  </div>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '4px',
+                      background: '#000080',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 14px rgba(0, 0, 128, 0.2)',
+                    }}
+                  >
+                    <img
+                      src={
+                        passportPreview ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(studentFullName)}&background=0F172A&color=fff&rounded=true&bold=true`
+                      }
+                      alt="Student ID Badge Preview"
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        borderRadius: '8px',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </div>
+                  <p
+                    style={{
+                      fontSize: '0.78rem',
+                      color: '#64748B',
+                      marginTop: '0.75rem',
+                      fontStyle: 'italic',
+                      margin: '0.75rem 0 0 0',
+                    }}
+                  >
+                    {passport
+                      ? 'New cropped passport ready. Click Save Changes to apply.'
+                      : 'Using current passport photo. Upload a new photo to adjust.'}
+                  </p>
                 </div>
-              )}
-
-              <div>
-                <p
-                  style={{
-                    margin: '0 0 0.25rem',
-                    fontWeight: 700,
-                    color: '#0F172A',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {passport
-                    ? passport.name
-                    : passportPreview
-                      ? 'Passport Photo Attached'
-                      : 'Upload Student Passport Photo'}
-                </p>
-                <p style={{ margin: 0, color: '#64748B', fontSize: '0.8rem' }}>
-                  Supports PNG, JPG, or JPEG (Max 5MB)
-                </p>
               </div>
-
-              <input
-                type="file"
-                id="editStudentPassportInput"
-                accept="image/*"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
-              <label
-                htmlFor="editStudentPassportInput"
-                className="btn btn-secondary"
-                style={{
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  marginTop: '0.25rem',
-                }}
-              >
-                <UploadCloud size={16} /> {passportPreview ? 'Change Photo' : 'Browse Local Image'}
-              </label>
-            </div>
+            )}
           </div>
         </div>
       )}

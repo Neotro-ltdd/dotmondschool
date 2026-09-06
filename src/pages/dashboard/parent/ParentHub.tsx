@@ -202,10 +202,38 @@ export default function ParentHub() {
   const fetchAttendance = async (studentId: string, sess: string, trm: string) => {
     try {
       setLoadingTab(true);
-      const data = await api.get(
-        `/parents/my-kids/${studentId}/attendance?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`,
-      );
-      setAttendanceData(data || null);
+      let data: any = null;
+      try {
+        data = await api.get(`/reports/attendance/student/${studentId}?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`);
+      } catch {
+        data = await api.get(`/parents/my-kids/${studentId}/attendance?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`);
+      }
+
+      if (Array.isArray(data)) {
+        const totalDays = data.length;
+        const presentDays = data.filter((d: any) => d.status === 'Present' || d.status === 'Departed').length;
+        const absentDays = data.filter((d: any) => d.status === 'Absent').length;
+        const rate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
+        
+        setAttendanceData({
+          totalSchoolDays: totalDays,
+          daysPresent: presentDays,
+          daysLate: 0,
+          daysAbsent: absentDays,
+          attendanceRatePercentage: rate,
+          logs: data.map((d: any) => ({
+            date: d.date,
+            dayName: d.date,
+            formattedDate: d.date,
+            timeIn: d.clockInTime ? new Date(d.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
+            timeOut: d.clockOutTime ? new Date(d.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
+            status: d.status,
+            remarks: d.status === 'Absent' ? 'System Automated Absent Log' : 'Gate Scan Verified'
+          }))
+        });
+      } else {
+        setAttendanceData(data || null);
+      }
     } catch (error) {
       console.error('Failed to fetch attendance', error);
       setAttendanceData(null);

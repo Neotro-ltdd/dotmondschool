@@ -129,7 +129,11 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Link to="/dashboard/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link
+            to="/dashboard/profile"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            aria-label={`View profile of ${displayUserName}`}
+          >
             <div className="user-profile" style={{ cursor: 'pointer' }}>
               {avatarUrl && !imgError ? (
                 <img

@@ -441,7 +441,7 @@ export default function VendorHub() {
 
         {/* Executive Stats Cards */}
         {activeTab === 'students' ? (
-          <div className="stats-grid">
+          <div className="vendor-stats-grid">
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Total Students</span>
@@ -479,7 +479,7 @@ export default function VendorHub() {
             </div>
           </div>
         ) : (
-          <div className="stats-grid grid-cols-3">
+          <div className="vendor-stats-grid grid-cols-3">
             <div className="stat-card">
               <div className="stat-info">
                 <span className="stat-label">Total Active Staff</span>
