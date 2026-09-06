@@ -8,8 +8,9 @@ import {
   Activity,
   BookOpen,
   CreditCard,
-  Award,
-  Palmtree,
+  ChevronRight,
+  Sparkles,
+  Clock,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -79,7 +80,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const totalSubjects = adminData?.metrics?.totalSubjects ?? 118;
 
   if (loading) {
-    return <div className="p-6 text-center">Loading Executive Overview...</div>;
+    return <div className="p-6 text-center text-slate-500 font-semibold">Loading Executive Overview...</div>;
   }
 
   return (
@@ -87,14 +88,14 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       {/* ════════ HOLIDAY OPERATIONAL NOTICE BANNER ════════ */}
       <HolidayBanner isHolidayMode={isHolidayMode} resumptionDate={resumptionDate} />
 
-      {/* ════════ EXECUTIVE HERO BANNER (BLUE) ════════ */}
+      {/* ════════ EXECUTIVE HERO BANNER (AMBIENT GLASS) ════════ */}
       <div className="dashboard-banner">
         <div className="banner-header-row">
           <span className="banner-date-pill">
             <Calendar size={14} /> {currentDateFormatted}
           </span>
-          <span className="banner-status-pill">
-            {session} Session • {displayTerm}
+          <span className={`banner-status-pill ${isHolidayMode ? 'holiday' : ''}`}>
+            <Sparkles size={14} /> {session} Session • {displayTerm} {isHolidayMode ? '(Holiday Break)' : ''}
           </span>
         </div>
 
@@ -143,9 +144,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           label="TOTAL STAFF & FACULTY"
           value={totalStaff}
           icon={Users}
-          topColor="#000080"
-          iconBg="#EFF6FF"
-          iconColor="#000080"
+          topColor="#10B981"
+          iconBg="#ECFDF5"
+          iconColor="#10B981"
           trendTag={{ type: 'positive', text: '● 100% Active' }}
           subText="Teaching & Administrative"
         />
@@ -154,77 +155,88 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           label="CLASSES & SUBJECTS"
           value={`${totalClasses} / ${totalSubjects}`}
           icon={LayoutDashboard}
-          topColor="#000080"
-          iconBg="#EFF6FF"
-          iconColor="#000080"
+          topColor="#6366F1"
+          iconBg="#EEF2FF"
+          iconColor="#6366F1"
           trendTag={{ type: 'positive', text: '● Operational' }}
           subText="Academic Infrastructure"
         />
 
         <StatCard
           label="CURRENT TERM STATUS"
-          value={`${session} ${displayTerm} – ${isHolidayMode ? 'Holiday' : 'In Session'}`}
+          value={`${session} ${displayTerm}`}
           icon={Calendar}
-          topColor="#000080"
-          iconBg="#EFF6FF"
-          iconColor="#000080"
+          topColor="#F59E0B"
+          iconBg="#FEF3C7"
+          iconColor="#F59E0B"
           trendTag={{
-            type: 'positive',
-            text: isHolidayMode ? '🌴 Holiday / Closed' : '● In Session',
+            type: isHolidayMode ? 'warning' : 'positive',
+            text: isHolidayMode ? '🌴 Holiday Break' : '● In Session',
           }}
-          subText="Termly Operational Status"
+          subText={isHolidayMode ? `Resumes ${resumptionDate || '2026-09-14'}` : 'Term Operational'}
         />
       </div>
 
-      {/* ════════ QUICK OPERATIONAL SHORTCUTS ════════ */}
-      <div className="quick-shortcuts-section">
-        <div className="shortcuts-header">
-          <div>
-            <h3>Quick Operational Shortcuts</h3>
-            <p>Fast administrative access to common portal functions.</p>
-          </div>
-          <span className="quick-action-pill">Quick Actions</span>
+      {/* ════════ UN-NESTED QUICK OPERATIONAL SHORTCUTS ════════ */}
+      <div>
+        <div className="shortcuts-section-header">
+          <h3>
+            <Sparkles size={18} style={{ color: '#000080' }} /> Quick Operational Shortcuts
+          </h3>
+          <span>Administrative Access</span>
         </div>
 
         <div className="shortcuts-grid">
           <Link to="/dashboard/students" className="shortcut-card">
-            <div className="shortcut-icon">
-              <GraduationCap size={20} />
+            <div className="shortcut-card-left">
+              <div className="shortcut-icon" style={{ background: '#000080' }}>
+                <GraduationCap size={22} />
+              </div>
+              <div className="shortcut-info">
+                <h4>Student Directory</h4>
+                <p>View & manage students</p>
+              </div>
             </div>
-            <div className="shortcut-info">
-              <h4>Student Directory</h4>
-              <p>View & manage students</p>
-            </div>
+            <ChevronRight size={18} className="shortcut-arrow" />
           </Link>
 
           <Link to="/dashboard/teachers" className="shortcut-card">
-            <div className="shortcut-icon">
-              <Users size={20} />
+            <div className="shortcut-card-left">
+              <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                <Users size={22} />
+              </div>
+              <div className="shortcut-info">
+                <h4>Staff Roster</h4>
+                <p>Manage faculty & roles</p>
+              </div>
             </div>
-            <div className="shortcut-info">
-              <h4>Staff Roster</h4>
-              <p>Manage faculty & roles</p>
-            </div>
+            <ChevronRight size={18} className="shortcut-arrow" />
           </Link>
 
           <Link to="/dashboard/approvals" className="shortcut-card">
-            <div className="shortcut-icon">
-              <BookOpen size={20} />
+            <div className="shortcut-card-left">
+              <div className="shortcut-icon" style={{ background: '#6366F1' }}>
+                <BookOpen size={22} />
+              </div>
+              <div className="shortcut-info">
+                <h4>Result Broadsheets</h4>
+                <p>Process & review grades</p>
+              </div>
             </div>
-            <div className="shortcut-info">
-              <h4>Result Broadsheets</h4>
-              <p>Process & review grades</p>
-            </div>
+            <ChevronRight size={18} className="shortcut-arrow" />
           </Link>
 
           <Link to="/dashboard/finance/verifications" className="shortcut-card">
-            <div className="shortcut-icon">
-              <CreditCard size={20} />
+            <div className="shortcut-card-left">
+              <div className="shortcut-icon" style={{ background: '#F59E0B' }}>
+                <CreditCard size={22} />
+              </div>
+              <div className="shortcut-info">
+                <h4>Fee Clearance</h4>
+                <p>Reconcile tuition receipts</p>
+              </div>
             </div>
-            <div className="shortcut-info">
-              <h4>Fee Clearance</h4>
-              <p>Reconcile tuition receipts</p>
-            </div>
+            <ChevronRight size={18} className="shortcut-arrow" />
           </Link>
         </div>
       </div>
@@ -250,9 +262,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   ]}
                   cx="50%"
                   cy="50%"
-                  innerRadius={65}
-                  outerRadius={95}
-                  paddingAngle={5}
+                  innerRadius={68}
+                  outerRadius={96}
+                  paddingAngle={6}
                   dataKey="value"
                 >
                   <Cell fill="#000080" />
@@ -262,8 +274,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   contentStyle={{
                     backgroundColor: '#0F172A',
                     border: 'none',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     color: '#fff',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
                   }}
                 />
               </PieChart>
@@ -282,11 +295,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             >
               <span
                 style={{
-                  fontSize: '1.6rem',
+                  fontSize: '1.65rem',
                   fontWeight: 900,
                   color: '#0F172A',
                   display: 'block',
                   lineHeight: 1,
+                  letterSpacing: '-0.02em',
                 }}
               >
                 {totalStudents + totalStaff}
@@ -294,9 +308,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <span
                 style={{
                   fontSize: '0.7rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   color: '#64748B',
                   textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
                 }}
               >
                 Total Users
@@ -344,13 +359,14 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   contentStyle={{
                     backgroundColor: '#0F172A',
                     border: 'none',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     color: '#fff',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
                   }}
                   cursor={{ fill: 'rgba(0,0,128,0.04)' }}
                 />
-                <Bar dataKey="Classes" fill="#000080" radius={[6, 6, 0, 0]} barSize={55} />
-                <Bar dataKey="Subjects" fill="#F59E0B" radius={[6, 6, 0, 0]} barSize={55} />
+                <Bar dataKey="Classes" fill="#000080" radius={[8, 8, 0, 0]} barSize={55} />
+                <Bar dataKey="Subjects" fill="#F59E0B" radius={[8, 8, 0, 0]} barSize={55} />
               </BarChart>
             </ResponsiveContainer>
           </div>
