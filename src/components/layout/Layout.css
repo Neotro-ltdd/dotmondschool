@@ -286,10 +286,11 @@
 
 /* Main Content Area */
 .dashboard-main {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -433,7 +434,9 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
 .dashboard-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: clip;
   padding: 2rem;
+  min-width: 0;
 }
 
 /* Print Layout Fixes */
@@ -605,6 +608,16 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
   }
 
   .user-info {
+    display: none;
+  }
+
+  /* Avatar-only profile on mobile: hide name/role text, keep 44px avatar target */
+  .top-header .user-profile {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .top-header .user-profile .user-info {
     display: none;
   }
 }

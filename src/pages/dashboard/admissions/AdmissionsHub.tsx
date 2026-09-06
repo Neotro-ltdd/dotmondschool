@@ -1,4 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Inbox,
+  ClipboardList,
+  GraduationCap,
+  BadgeCheck,
+  FileText,
+  School,
+  CalendarDays,
+  Link2,
+  Search,
+  Eye,
+  ClipboardCheck,
+  CheckCircle2,
+  CalendarCheck,
+  X,
+  Mail,
+  Phone,
+} from 'lucide-react';
 import { api, API_ROOT, getTenantId } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
 import { useTenant } from '../../../context/TenantContext';
@@ -357,7 +375,7 @@ export default function AdmissionsHub() {
             onClick={() => handleOpenLinkModal('Schedule a School Visit Link', '/schedule-visit')}
             className="btn btn-secondary"
           >
-            📅 Public Schedule Visit Link
+            <CalendarDays size={16} aria-hidden="true" /> Public Schedule Visit Link
           </button>
           <button
             type="button"
@@ -366,19 +384,21 @@ export default function AdmissionsHub() {
             }
             className="btn btn-primary public-apply-link-btn"
           >
-            🔗 Public Application Portal Link
+            <Link2 size={16} aria-hidden="true" /> Public Application Portal Link
           </button>
         </div>
       </div>
 
       {/* Top Primary View Toggle Tabs */}
-      <div className="hub-top-tabs">
+      <div className="hub-top-tabs" role="tablist" aria-label="Admissions views">
         <button
           type="button"
+          role="tab"
+          aria-selected={activeHubTab === 'applications'}
           className={`hub-tab-btn ${activeHubTab === 'applications' ? 'active' : ''}`}
           onClick={() => setActiveHubTab('applications')}
         >
-          📄 Admission Applications
+          <FileText size={16} aria-hidden="true" /> Admission Applications
           <span className="tab-badge-blue">
             {summary?.totalApplications || applications.length}
           </span>
@@ -386,13 +406,15 @@ export default function AdmissionsHub() {
 
         <button
           type="button"
+          role="tab"
+          aria-selected={activeHubTab === 'visits'}
           className={`hub-tab-btn ${activeHubTab === 'visits' ? 'active' : ''}`}
           onClick={() => {
             setActiveHubTab('visits');
             fetchSchoolVisits();
           }}
         >
-          🏫 Scheduled Campus Visits
+          <School size={16} aria-hidden="true" /> Scheduled Campus Visits
           <span className="tab-badge-amber">{schoolVisits.length}</span>
         </button>
       </div>
@@ -421,16 +443,18 @@ export default function AdmissionsHub() {
                 fetchSchoolVisits();
               }}
               className="search-form-row"
+              role="search"
             >
               <input
-                type="text"
+                type="search"
                 placeholder="Search visitor name, email, phone..."
+                aria-label="Search visits by visitor name, email, or phone"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="form-control search-input"
               />
               <button type="submit" className="btn btn-secondary">
-                🔍 Search
+                <Search size={16} aria-hidden="true" /> Search
               </button>
             </form>
           </div>
@@ -446,35 +470,39 @@ export default function AdmissionsHub() {
                     <th>Child &amp; Interest</th>
                     <th>Scheduled Date &amp; Time</th>
                     <th>Status</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
+                    <th className="actions-cell">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-4">
+                      <td colSpan={6} data-label="" className="text-center py-4">
                         Loading campus visit requests...
                       </td>
                     </tr>
                   ) : schoolVisits.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-4">
+                      <td colSpan={6} data-label="" className="text-center py-4">
                         No campus visit requests found matching filter.
                       </td>
                     </tr>
                   ) : (
                     schoolVisits.map((visit) => (
                       <tr key={visit.id}>
-                        <td>
+                        <td data-label="Parent">
                           <strong className="applicant-name">{visit.parentName}</strong>
                         </td>
-                        <td>
+                        <td data-label="Contact">
                           <div className="contact-block">
-                            <span>📧 {visit.email}</span>
-                            <span className="text-muted">📱 {visit.phoneNumber}</span>
+                            <span className="contact-line">
+                              <Mail size={13} aria-hidden="true" /> {visit.email}
+                            </span>
+                            <span className="contact-line text-muted">
+                              <Phone size={13} aria-hidden="true" /> {visit.phoneNumber}
+                            </span>
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Child & Interest">
                           <div>
                             <strong>{visit.childName || 'Child Tour'}</strong>
                           </div>
@@ -482,9 +510,9 @@ export default function AdmissionsHub() {
                             {visit.classLevelInterested}
                           </small>
                         </td>
-                        <td>
-                          <div>
-                            📅{' '}
+                        <td data-label="Scheduled">
+                          <div className="contact-line">
+                            <CalendarDays size={13} aria-hidden="true" />{' '}
                             {new Date(visit.preferredDate).toLocaleDateString('en-GB', {
                               weekday: 'short',
                               day: '2-digit',
@@ -492,19 +520,22 @@ export default function AdmissionsHub() {
                               year: 'numeric',
                             })}
                           </div>
-                          <small style={{ color: '#047857', fontWeight: 600 }}>
-                            ⏰ {visit.timeSlot}
+                          <small
+                            className="contact-line"
+                            style={{ color: '#047857', fontWeight: 600 }}
+                          >
+                            {visit.timeSlot}
                           </small>
                         </td>
-                        <td>{formatVisitStatusBadge(visit.status)}</td>
-                        <td style={{ textAlign: 'right' }}>
+                        <td data-label="Status">{formatVisitStatusBadge(visit.status)}</td>
+                        <td data-label="Actions" className="actions-cell">
                           <div className="table-action-group">
                             <button
                               className="act-btn act-btn-view"
                               onClick={() => setViewVisit(visit)}
                               title="View Visit Details"
                             >
-                              👁️ View
+                              <Eye size={14} aria-hidden="true" /> View
                             </button>
                             {visit.status === 'Pending' && (
                               <button
@@ -512,7 +543,7 @@ export default function AdmissionsHub() {
                                 onClick={() => handleUpdateVisitStatus(visit.id, 'Confirmed')}
                                 disabled={submittingAction}
                               >
-                                📅 Confirm
+                                <CalendarCheck size={14} aria-hidden="true" /> Confirm
                               </button>
                             )}
                             {(visit.status === 'Confirmed' || visit.status === 'Pending') && (
@@ -521,7 +552,7 @@ export default function AdmissionsHub() {
                                 onClick={() => handleUpdateVisitStatus(visit.id, 'Completed')}
                                 disabled={submittingAction}
                               >
-                                ✅ Complete
+                                <CheckCircle2 size={14} aria-hidden="true" /> Complete
                               </button>
                             )}
                             {visit.status !== 'Cancelled' && (
@@ -530,7 +561,7 @@ export default function AdmissionsHub() {
                                 onClick={() => handleUpdateVisitStatus(visit.id, 'Cancelled')}
                                 disabled={submittingAction}
                               >
-                                ❌ Cancel
+                                <X size={14} aria-hidden="true" /> Cancel
                               </button>
                             )}
                           </div>
@@ -548,36 +579,92 @@ export default function AdmissionsHub() {
         <>
           {/* KPI Stage Counter Cards */}
           <div className="kpi-stats-grid">
-            <div className="kpi-card" onClick={() => setStatusFilter('Submitted')}>
+            <div
+              className="kpi-card"
+              role="button"
+              tabIndex={0}
+              aria-label={`Filter by new submitted applications, ${summary?.submittedCount || 0}`}
+              onClick={() => setStatusFilter('Submitted')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setStatusFilter('Submitted');
+                }
+              }}
+            >
               <div className="kpi-info">
                 <span className="kpi-label">New Submitted</span>
                 <span className="kpi-value">{summary?.submittedCount || 0}</span>
               </div>
-              <div className="kpi-icon-box icon-blue">📥</div>
+              <div className="kpi-icon-box icon-blue" aria-hidden="true">
+                <Inbox size={22} />
+              </div>
             </div>
 
-            <div className="kpi-card" onClick={() => setStatusFilter('ApprovedForAssessment')}>
+            <div
+              className="kpi-card"
+              role="button"
+              tabIndex={0}
+              aria-label={`Filter by scheduled assessments, ${summary?.approvedForAssessmentCount || 0}`}
+              onClick={() => setStatusFilter('ApprovedForAssessment')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setStatusFilter('ApprovedForAssessment');
+                }
+              }}
+            >
               <div className="kpi-info">
                 <span className="kpi-label">Assessment Scheduled</span>
                 <span className="kpi-value">{summary?.approvedForAssessmentCount || 0}</span>
               </div>
-              <div className="kpi-icon-box icon-amber">📋</div>
+              <div className="kpi-icon-box icon-amber" aria-hidden="true">
+                <ClipboardList size={22} />
+              </div>
             </div>
 
-            <div className="kpi-card" onClick={() => setStatusFilter('ReadyForAdmission')}>
+            <div
+              className="kpi-card"
+              role="button"
+              tabIndex={0}
+              aria-label={`Filter by ready for admission, ${summary?.readyForAdmissionCount || 0}`}
+              onClick={() => setStatusFilter('ReadyForAdmission')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setStatusFilter('ReadyForAdmission');
+                }
+              }}
+            >
               <div className="kpi-info">
                 <span className="kpi-label">Ready For Admission</span>
                 <span className="kpi-value">{summary?.readyForAdmissionCount || 0}</span>
               </div>
-              <div className="kpi-icon-box icon-purple">🎓</div>
+              <div className="kpi-icon-box icon-purple" aria-hidden="true">
+                <GraduationCap size={22} />
+              </div>
             </div>
 
-            <div className="kpi-card" onClick={() => setStatusFilter('Admitted')}>
+            <div
+              className="kpi-card"
+              role="button"
+              tabIndex={0}
+              aria-label={`Filter by admitted students, ${summary?.admittedCount || 0}`}
+              onClick={() => setStatusFilter('Admitted')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setStatusFilter('Admitted');
+                }
+              }}
+            >
               <div className="kpi-info">
                 <span className="kpi-label">Admitted Students</span>
                 <span className="kpi-value">{summary?.admittedCount || 0}</span>
               </div>
-              <div className="kpi-icon-box icon-green">✅</div>
+              <div className="kpi-icon-box icon-green" aria-hidden="true">
+                <BadgeCheck size={22} />
+              </div>
             </div>
           </div>
 
@@ -603,16 +690,17 @@ export default function AdmissionsHub() {
               )}
             </div>
 
-            <form onSubmit={handleSearchSubmit} className="search-form-row">
+            <form onSubmit={handleSearchSubmit} className="search-form-row" role="search">
               <input
-                type="text"
+                type="search"
                 className="form-control search-input"
                 placeholder="Search applicant name, email, or phone number..."
+                aria-label="Search applicants by name, email, or phone number"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <button type="submit" className="btn btn-secondary">
-                🔍 Search
+                <Search size={16} aria-hidden="true" /> Search
               </button>
             </form>
           </div>
@@ -629,26 +717,26 @@ export default function AdmissionsHub() {
                     <th>Parent Email &amp; Phone</th>
                     <th>Submitted Date</th>
                     <th>Status</th>
-                    <th style={{ textAlign: 'right' }}>Lifecycle Actions</th>
+                    <th className="actions-cell">Lifecycle Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-4">
+                      <td colSpan={7} data-label="" className="text-center py-4">
                         Loading admission applications...
                       </td>
                     </tr>
                   ) : applications.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-4">
+                      <td colSpan={7} data-label="" className="text-center py-4">
                         No admission applications found matching the selected filter.
                       </td>
                     </tr>
                   ) : (
                     applications.map((appItem) => (
                       <tr key={appItem.id}>
-                        <td>
+                        <td data-label="Applicant">
                           <div className="applicant-name-block">
                             <span className="applicant-name">{appItem.fullName}</span>
                             {appItem.assignedRegistrationNumber && (
@@ -658,31 +746,37 @@ export default function AdmissionsHub() {
                             )}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Age / Gender">
                           {appItem.age} yrs ({appItem.gender})
                         </td>
-                        <td className="font-bold">{appItem.targetClassName}</td>
-                        <td>
+                        <td data-label="Class Applied" className="font-bold">
+                          {appItem.targetClassName}
+                        </td>
+                        <td data-label="Parent Contact">
                           <div className="contact-block">
-                            <span>📧 {appItem.parentEmail}</span>
-                            <span className="text-muted">📱 {appItem.parentPhoneNumber}</span>
+                            <span className="contact-line">
+                              <Mail size={13} aria-hidden="true" /> {appItem.parentEmail}
+                            </span>
+                            <span className="contact-line text-muted">
+                              <Phone size={13} aria-hidden="true" /> {appItem.parentPhoneNumber}
+                            </span>
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Submitted">
                           {new Date(appItem.appliedAt).toLocaleDateString('en-GB', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
                           })}
                         </td>
-                        <td>{formatStatusBadge(appItem.status)}</td>
-                        <td style={{ textAlign: 'right' }}>
+                        <td data-label="Status">{formatStatusBadge(appItem.status)}</td>
+                        <td data-label="Actions" className="actions-cell">
                           <div className="table-action-group">
                             <button
                               className="act-btn act-btn-view"
                               onClick={() => setViewApp(appItem)}
                             >
-                              👁️ View Form
+                              <Eye size={14} aria-hidden="true" /> View Form
                             </button>
 
                             {/* Lifecycle Stage Action Triggers */}
@@ -694,7 +788,8 @@ export default function AdmissionsHub() {
                                   setRegFeeAmount(appItem.registrationFeeAmount || 10000);
                                 }}
                               >
-                                📋 Approve for Assessment
+                                <ClipboardCheck size={14} aria-hidden="true" /> Approve for
+                                Assessment
                               </button>
                             )}
 
@@ -703,7 +798,7 @@ export default function AdmissionsHub() {
                                 className="act-btn act-btn-complete"
                                 onClick={() => setCompleteApp(appItem)}
                               >
-                                ✅ Complete Assessment
+                                <CheckCircle2 size={14} aria-hidden="true" /> Complete Assessment
                               </button>
                             )}
 
@@ -714,7 +809,7 @@ export default function AdmissionsHub() {
                                 onClick={() => setAdmitApp(appItem)}
                                 disabled={submittingAction}
                               >
-                                🎓 Admit Student
+                                <GraduationCap size={14} aria-hidden="true" /> Admit Student
                               </button>
                             )}
                           </div>

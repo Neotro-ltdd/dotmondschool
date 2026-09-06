@@ -59,8 +59,10 @@ export default function Teachers() {
   const isReadOnly = userRole === 'Chairman';
   const queryClient = useQueryClient();
 
-  // View Switcher & Dropdown State
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+  // View Switcher & Dropdown State (cards first on small screens — table scrolls poorly on phones)
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 'grid' : 'table',
+  );
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [selectedStaffIdForCard, setSelectedStaffIdForCard] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -402,10 +404,11 @@ export default function Teachers() {
       <div className="management-desk">
         <div className="desk-toolbar">
           <div className="search-box">
-            <Search size={16} />
+            <Search size={16} aria-hidden="true" />
             <input
-              type="text"
+              type="search"
               placeholder="Search staff by name, email or phone..."
+              aria-label="Search staff by name, email, or phone"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -416,6 +419,7 @@ export default function Teachers() {
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
               className="filter-select"
+              aria-label="Filter by role"
             >
               <option value="ALL">All Roles</option>
               <option value="Teacher">Teacher</option>
@@ -430,6 +434,7 @@ export default function Teachers() {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="filter-select"
+              aria-label="Filter by account status"
             >
               <option value="ALL">All Status</option>
               <option value="ACTIVE">Active</option>
@@ -437,20 +442,22 @@ export default function Teachers() {
             </select>
 
             {/* View Mode Switcher Toggle */}
-            <div className="view-mode-toggle">
+            <div className="view-mode-toggle" role="group" aria-label="Change staff layout">
               <button
                 className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
                 onClick={() => setViewMode('table')}
                 title="Table View"
+                aria-pressed={viewMode === 'table'}
               >
-                <List size={16} /> Table View
+                <List size={16} aria-hidden="true" /> Table View
               </button>
               <button
                 className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
                 onClick={() => setViewMode('grid')}
                 title="Grid View"
+                aria-pressed={viewMode === 'grid'}
               >
-                <LayoutGrid size={16} /> Grid Cards
+                <LayoutGrid size={16} aria-hidden="true" /> Grid Cards
               </button>
             </div>
           </div>
@@ -478,7 +485,7 @@ export default function Teachers() {
                   <th>Contact Information</th>
                   <th>Designated Role</th>
                   <th>Account Status</th>
-                  <th style={{ textAlign: 'center' }}>Actions</th>
+                  <th className="actions-cell">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -490,7 +497,7 @@ export default function Teachers() {
 
                   return (
                     <tr key={teacher.id}>
-                      <td>
+                      <td data-label="Staff Member">
                         <div className="staff-profile-cell">
                           {teacher.avatarUrl &&
                           teacher.avatarUrl !== 'default.jpg' &&
@@ -524,7 +531,7 @@ export default function Teachers() {
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td data-label="Contact">
                         <div className="contact-cell">
                           <div className="contact-row">
                             <Mail size={13} color="#64748B" />
@@ -536,14 +543,14 @@ export default function Teachers() {
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td data-label="Role">
                         <span
                           className={`role-pill ${teacher.role === 'Admin' || teacher.role === 'Director' || teacher.role === 'Principal' ? 'role-pill-admin' : ''}`}
                         >
                           {teacher.role || 'Staff'}
                         </span>
                       </td>
-                      <td>
+                      <td data-label="Status">
                         {teacher.isActive ? (
                           <span className="status-pill status-active">
                             <span className="status-dot"></span>
@@ -556,13 +563,16 @@ export default function Teachers() {
                           </span>
                         )}
                       </td>
-                      <td style={{ textAlign: 'center' }}>
+                      <td data-label="Actions" className="actions-cell">
                         <div className="action-dropdown-container">
                           <button
                             className="btn-action-dots"
                             onClick={() => setOpenDropdownId(isDropdownOpen ? null : teacher.id)}
+                            aria-label={`Actions for ${fullName}`}
+                            aria-expanded={isDropdownOpen}
+                            aria-haspopup="menu"
                           >
-                            <MoreVertical size={18} />
+                            <MoreVertical size={18} aria-hidden="true" />
                           </button>
 
                           {isDropdownOpen && (
@@ -691,8 +701,11 @@ export default function Teachers() {
                       <button
                         className="btn-action-dots"
                         onClick={() => setOpenDropdownId(isDropdownOpen ? null : teacher.id)}
+                        aria-label={`Actions for ${fullName}`}
+                        aria-expanded={isDropdownOpen}
+                        aria-haspopup="menu"
                       >
-                        <MoreVertical size={18} />
+                        <MoreVertical size={18} aria-hidden="true" />
                       </button>
 
                       {isDropdownOpen && (
