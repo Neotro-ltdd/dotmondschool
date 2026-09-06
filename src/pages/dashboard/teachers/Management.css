@@ -1,5 +1,19 @@
 .management-page {
   padding: 2rem;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Scoped page-header fix: global .page-header (Academics.css) has no wrap */
+.management-page .page-header {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.management-page .page-title {
+  font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2rem);
+  line-height: 1.2;
+  text-wrap: balance;
 }
 
 .table-container {
@@ -124,7 +138,7 @@
 .search-box {
   position: relative;
   flex: 1;
-  min-width: 280px;
+  min-width: 0;
   max-width: 420px;
 }
 
@@ -159,10 +173,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .filter-select {
   padding: 0.55rem 2rem 0.55rem 0.85rem;
+  min-height: 44px;
   border-radius: 8px;
   border: 1px solid #cbd5e1;
   background-color: #ffffff;
@@ -170,7 +187,10 @@
   color: #334155;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  max-width: 100%;
 }
 
 .filter-select:focus {
@@ -185,6 +205,7 @@
 
 .executive-table {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -202,6 +223,11 @@
   letter-spacing: 0.05em;
   color: #64748b;
   white-space: nowrap;
+}
+
+.executive-table th.actions-cell,
+.executive-table td.actions-cell {
+  text-align: center;
 }
 
 .executive-table tbody tr {
@@ -534,9 +560,10 @@
 /* ════════ STAFF GRID CARDS VIEW ════════ */
 .staff-grid-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1.25rem;
   padding: 1.25rem;
+  min-width: 0;
 }
 
 .staff-card-item {
@@ -555,4 +582,297 @@
 .staff-card-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ════════ TEACHERS POLISH: responsive + touch + a11y + dark mode ════════ */
+
+/* 44px touch targets (dots trigger + view switcher + dropdown items) */
+.management-page .btn-action-dots {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.management-page .view-toggle-btn {
+  min-height: 44px;
+}
+
+.management-page .dropdown-action-item {
+  min-height: 44px;
+}
+
+.management-page .btn-executive-onboard {
+  min-height: 44px;
+}
+
+/* Visible keyboard focus */
+.management-page .btn-executive-onboard:focus-visible,
+.management-page .view-toggle-btn:focus-visible,
+.management-page .filter-select:focus-visible,
+.management-page .btn-action-dots:focus-visible,
+.management-page .dropdown-action-item:focus-visible,
+.management-page .staff-card-item:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 2px;
+}
+
+/* Tablet + mobile */
+@media (max-width: 768px) {
+  .management-page {
+    padding: 1rem;
+  }
+
+  .management-page .btn-executive-onboard {
+    width: 100%;
+  }
+
+  .desk-toolbar {
+    padding: 1rem;
+  }
+
+  .search-box {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .filter-controls {
+    width: 100%;
+  }
+
+  .filter-select {
+    flex: 1 1 auto;
+  }
+
+  .view-mode-toggle {
+    width: 100%;
+  }
+
+  .view-toggle-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .staff-grid-wrapper {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .desk-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* ── Table rows become labeled cards ── */
+  .management-page .table-container {
+    overflow: visible;
+  }
+
+  .management-page .executive-table {
+    min-width: 0;
+    display: block;
+  }
+
+  .management-page .executive-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .management-page .executive-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .management-page .executive-table tbody tr {
+    display: block;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0.4rem 1.1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .management-page .executive-table tbody tr:hover {
+    background: #ffffff;
+  }
+
+  .management-page .executive-table tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+  }
+
+  .management-page .executive-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .management-page .executive-table tbody td::before {
+    content: attr(data-label);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    flex-shrink: 0;
+    max-width: 38%;
+  }
+
+  /* Value blocks right-align opposite their label */
+  .management-page .executive-table tbody td .staff-profile-cell,
+  .management-page .executive-table tbody td .contact-cell {
+    margin-left: auto;
+    text-align: right;
+    min-width: 0;
+  }
+
+  .management-page .executive-table tbody td .contact-cell .contact-row {
+    justify-content: flex-end;
+  }
+
+  /* Actions cell keeps the dots trigger right-aligned under its label */
+  .management-page .executive-table tbody td.actions-cell {
+    flex-direction: row;
+  }
+
+  .management-page .executive-table th.actions-cell,
+  .management-page .executive-table td.actions-cell {
+    text-align: left;
+  }
+}
+
+/* Dark-mode pairing for main surfaces */
+body[data-theme='dark'] .management-page .page-title,
+body.dark-theme .management-page .page-title {
+  color: #f8fafc;
+}
+
+body[data-theme='dark'] .management-page .page-subtitle,
+body.dark-theme .management-page .page-subtitle {
+  color: #94a3b8;
+}
+
+body[data-theme='dark'] .management-page .btn-executive-onboard,
+body.dark-theme .management-page .btn-executive-onboard {
+  background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 100%);
+  border-color: #334155;
+}
+
+body[data-theme='dark'] .management-page .desk-toolbar,
+body.dark-theme .management-page .desk-toolbar,
+body[data-theme='dark'] .management-page .desk-footer,
+body.dark-theme .management-page .desk-footer {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+body[data-theme='dark'] .management-page .desk-footer,
+body.dark-theme .management-page .desk-footer {
+  color: #94a3b8;
+}
+
+body[data-theme='dark'] .management-page .search-input,
+body.dark-theme .management-page .search-input,
+body[data-theme='dark'] .management-page .filter-select,
+body.dark-theme .management-page .filter-select {
+  background-color: #0f172a;
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+body[data-theme='dark'] .management-page .executive-table thead,
+body.dark-theme .management-page .executive-table thead {
+  background-color: #0f172a;
+}
+
+body[data-theme='dark'] .management-page .executive-table th,
+body.dark-theme .management-page .executive-table th {
+  color: #94a3b8;
+}
+
+body[data-theme='dark'] .management-page .executive-table tbody tr,
+body.dark-theme .management-page .executive-table tbody tr {
+  border-bottom-color: #334155;
+}
+
+body[data-theme='dark'] .management-page .executive-table tbody tr:hover,
+body.dark-theme .management-page .executive-table tbody tr:hover {
+  background-color: #1e293b;
+}
+
+body[data-theme='dark'] .management-page .executive-table td,
+body.dark-theme .management-page .executive-table td {
+  color: #e2e8f0;
+}
+
+body[data-theme='dark'] .management-page .staff-primary-name,
+body.dark-theme .management-page .staff-primary-name {
+  color: #f8fafc;
+}
+
+body[data-theme='dark'] .management-page .contact-row,
+body.dark-theme .management-page .contact-row {
+  color: #cbd5e1;
+}
+
+body[data-theme='dark'] .management-page .staff-card-item,
+body.dark-theme .management-page .staff-card-item {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+body[data-theme='dark'] .management-page .btn-action-dots,
+body.dark-theme .management-page .btn-action-dots {
+  color: #94a3b8;
+}
+
+body[data-theme='dark'] .management-page .btn-action-dots:hover,
+body.dark-theme .management-page .btn-action-dots:hover {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  body[data-theme='dark'] .management-page .executive-table tbody tr,
+  body.dark-theme .management-page .executive-table tbody tr {
+    background-color: #1e293b;
+    border-color: #334155;
+  }
+
+  body[data-theme='dark'] .management-page .executive-table tbody td,
+  body.dark-theme .management-page .executive-table tbody td {
+    border-bottom-color: #334155;
+  }
+
+  body[data-theme='dark'] .management-page .executive-table tbody td::before,
+  body.dark-theme .management-page .executive-table tbody td::before {
+    color: #94a3b8;
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .management-page .staff-card-item,
+  .management-page .staff-card-item:hover,
+  .management-page .btn-executive-onboard,
+  .management-page .btn-executive-onboard:hover {
+    transition: none !important;
+    transform: none !important;
+  }
 }
