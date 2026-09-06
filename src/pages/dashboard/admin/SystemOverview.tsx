@@ -89,7 +89,7 @@ export default function SystemOverview() {
         <div className="chart-card">
           <h3>School Status Distribution</h3>
           <div className="chart-container">
-            <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0}>
+            <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0} initialDimension={{ width: 300, height: 300 }}>
               <PieChart>
                 <Pie
                   data={statusData}
@@ -115,7 +115,7 @@ export default function SystemOverview() {
         <div className="chart-card">
           <h3>Students per School (Top)</h3>
           <div className="chart-container">
-            <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0}>
+            <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0} initialDimension={{ width: 300, height: 300 }}>
               <BarChart data={studentData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />

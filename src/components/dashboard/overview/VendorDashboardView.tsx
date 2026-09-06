@@ -223,7 +223,7 @@ export const VendorDashboardView: React.FC<VendorDashboardViewProps> = ({
           </div>
 
           <div style={{ height: 260, position: 'relative' }}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} initialDimension={{ width: 300, height: 260 }}>
               <PieChart>
                 <Pie
                   data={[
@@ -312,7 +312,7 @@ export const VendorDashboardView: React.FC<VendorDashboardViewProps> = ({
           </div>
 
           <div style={{ height: 260 }}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} initialDimension={{ width: 300, height: 260 }}>
               <BarChart
                 data={[
                   { name: '7:00 AM', Scans: 45 },
