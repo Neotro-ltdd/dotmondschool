@@ -9,7 +9,7 @@ interface StatCardProps {
   iconBg?: string;
   iconColor?: string;
   trendTag?: {
-    type?: 'positive' | 'negative' | 'neutral';
+    type?: 'positive' | 'negative' | 'neutral' | 'warning';
     text: string;
   };
   subText?: string;
