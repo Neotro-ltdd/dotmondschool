@@ -50,7 +50,6 @@ export function BranchProvider({ children }: { children: ReactNode }) {
   }, [userRole]);
 
   const fetchBranches = async () => {
-    if (!isAuthenticated) return;
     setLoading(true);
     try {
       const data = await api.get('/setup/branches');
@@ -65,9 +64,7 @@ export function BranchProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchBranches();
-    }
+    fetchBranches();
   }, [isAuthenticated]);
 
   const setActiveBranchId = (id: string | null) => {

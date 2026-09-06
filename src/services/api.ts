@@ -74,12 +74,12 @@ async function handleResponse(response: Response) {
     if (response.status === 401) {
       localStorage.removeItem('srms_token');
       localStorage.removeItem('srms_user');
-      sessionStorage.setItem(
-        'srms_auth_error',
-        message || 'Session expired or authorization failed. Please log in again.',
-      );
-      // If we are not already on the login page, redirect
+      // If we are not already on the login page, set auth error and redirect
       if (!window.location.pathname.includes('/login')) {
+        sessionStorage.setItem(
+          'srms_auth_error',
+          message || 'Session expired or authorization failed. Please log in again.',
+        );
         window.location.href = '/login';
       }
     }
