@@ -71,11 +71,18 @@ export default function Sidebar({
     userRole === 'Director' ||
     (userRole !== 'Chairman' && userPermissions.includes('finance.overview'));
   const canAccessFinancialReports =
-    userRole === 'Accountant' ||
+    userRole === 'Director' ||
+    userRole === 'Principal' ||
     userRole === 'Superadmin' ||
     userRole === 'SuperAdmin' ||
+    userRole === 'Accountant';
+
+  const canAccessSettings =
     userRole === 'Director' ||
-    (userRole !== 'Chairman' && userPermissions.includes('reports.finance'));
+    userRole === 'Principal' ||
+    userRole === 'Superadmin' ||
+    userRole === 'SuperAdmin' ||
+    userRole === 'Accountant';
 
   useEffect(() => {
     if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
@@ -949,7 +956,7 @@ export default function Sidebar({
                     )}
                   </div>
 
-                  {userRole !== 'Accountant' && (
+                  {canAccessSettings && (
                     <NavLink
                       to="/dashboard/settings/school"
                       className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
