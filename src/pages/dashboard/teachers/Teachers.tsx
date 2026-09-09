@@ -91,6 +91,39 @@ export default function Teachers() {
 
   const error = queryError ? queryError.message || 'Failed to load staff.' : null;
 
+  const { data: rolePermissionsData } = useQuery({
+    queryKey: ['rolePermissions'],
+    queryFn: async () => {
+      try {
+        const res: any = await api.get('/identity/role-permissions');
+        return res;
+      } catch {
+        return null;
+      }
+    },
+  });
+
+  const availableSystemRoles = React.useMemo(() => {
+    const defaultRoles = [
+      { id: 'Teacher', label: 'Teacher (Class & Attendance)' },
+      { id: 'Admin', label: 'Admin (System Configuration)' },
+      { id: 'SubjectTeacher', label: 'Subject Teacher (Grading)' },
+      { id: 'Accountant', label: 'Accountant (Fees & POS)' },
+      { id: 'Director', label: 'Director (Superadmin Overseer)' },
+      { id: 'Principal', label: 'Principal (Executive Overseer)' },
+      { id: 'Staff', label: 'General Non-Teaching Staff' },
+      { id: 'Vendor', label: 'Vendor' },
+    ];
+    const fetchedRoles: string[] = rolePermissionsData?.roles || [];
+    const mergedIds = Array.from(new Set([...defaultRoles.map((r) => r.id), ...fetchedRoles]));
+
+    return mergedIds.map((roleId) => {
+      const existing = defaultRoles.find((r) => r.id.toLowerCase() === roleId.toLowerCase());
+      if (existing) return existing;
+      return { id: roleId, label: roleId };
+    });
+  }, [rolePermissionsData]);
+
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
@@ -418,12 +451,11 @@ export default function Teachers() {
               className="filter-select"
             >
               <option value="ALL">All Roles</option>
-              <option value="Teacher">Teacher</option>
-              <option value="Accountant">Accountant</option>
-              <option value="Director">Director</option>
-              <option value="Principal">Principal</option>
-              <option value="Admin">Admin</option>
-              <option value="Staff">Staff</option>
+              {availableSystemRoles.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.id}
+                </option>
+              ))}
             </select>
 
             <select
@@ -1124,15 +1156,7 @@ export default function Teachers() {
                     marginTop: '4px',
                   }}
                 >
-                  {[
-                    { id: 'Teacher', label: 'Teacher (Class & Attendance)' },
-                    { id: 'Admin', label: 'Admin (System Configuration)' },
-                    { id: 'SubjectTeacher', label: 'Subject Teacher (Grading)' },
-                    { id: 'Accountant', label: 'Accountant (Fees & POS)' },
-                    { id: 'Director', label: 'Director (Superadmin Overseer)' },
-                    { id: 'Principal', label: 'Principal (Executive Overseer)' },
-                    { id: 'Staff', label: 'General Non-Teaching Staff' },
-                  ].map((roleItem) => (
+                  {availableSystemRoles.map((roleItem) => (
                     <label
                       key={roleItem.id}
                       style={{

@@ -306,6 +306,7 @@ export default function RoleManagement() {
       setNewRoleDesc('');
       await fetchRolePermissions();
       setSelectedMatrixRole(newRoleName.trim());
+      setSelectedRole(newRoleName.trim());
     } catch (err: any) {
       showAlert(err?.response?.data?.message || err?.message || 'Failed to create custom role.');
     } finally {
@@ -457,7 +458,35 @@ export default function RoleManagement() {
     return `${f}${s}`.toUpperCase() || 'ST';
   };
 
-  const selectedRoleMeta = AVAILABLE_ROLES.find((r) => r.id === selectedRole) || AVAILABLE_ROLES[0];
+  const allAvailableRoles = React.useMemo(() => {
+    const defaultIds = AVAILABLE_ROLES.map((r) => r.id);
+    const dynamicRoles = rbacRoles && rbacRoles.length > 0 ? rbacRoles : defaultIds;
+    const combinedSet = Array.from(new Set([...defaultIds, ...dynamicRoles]));
+
+    return combinedSet.map((roleId) => {
+      const existing = AVAILABLE_ROLES.find(
+        (r) => r.id.toLowerCase() === roleId.toLowerCase() || r.name.toLowerCase() === roleId.toLowerCase(),
+      );
+      if (existing) return existing;
+      return {
+        id: roleId,
+        name: roleId,
+        description: `Custom system role (${roleId})`,
+        icon: Shield,
+        color: 'admin',
+      };
+    });
+  }, [rbacRoles]);
+
+  const selectedRoleMeta =
+    allAvailableRoles.find((r) => r.id === selectedRole || r.name === selectedRole) ||
+    allAvailableRoles[0] || {
+      id: selectedRole,
+      name: selectedRole,
+      description: 'Custom system role',
+      icon: Shield,
+      color: 'admin',
+    };
 
   const filteredTeachers = teachers.filter((t) => {
     if (!searchFilter) return true;
@@ -704,7 +733,7 @@ export default function RoleManagement() {
                     outline: 'none',
                   }}
                 >
-                  {AVAILABLE_ROLES.map((r) => (
+                  {allAvailableRoles.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.name}
                     </option>
@@ -1281,10 +1310,7 @@ export default function RoleManagement() {
                                 type="checkbox"
                                 className="toggle-switch-input"
                                 checked={isChecked}
-                                onChange={(e) => {
-                                  e.stopPropagation();
-                                  handleTogglePermission(selectedMatrixRole, perm.key);
-                                }}
+                                readOnly
                               />
                             </div>
                           );
