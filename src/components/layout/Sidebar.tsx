@@ -429,7 +429,7 @@ export default function Sidebar({
               <>
                 <div className="sidebar-section-header">MANAGEMENT MODULES</div>
 
-                {userRole !== 'Chairman' && (
+                {(hasPermission('admissions.view') || hasPermission('admissions.manage')) && userRole !== 'Chairman' && (
                   <NavLink
                     to="/dashboard/admissions"
                     className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -442,7 +442,7 @@ export default function Sidebar({
                 )}
 
                 {/* 1. USER & ROLE MANAGEMENT */}
-                {userRole !== 'Accountant' && (
+                {(hasPermission('users.view') || hasPermission('users.manage') || hasPermission('roles.manage')) && userRole !== 'Accountant' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isUserRoleOpen ? 'open' : ''}`}
@@ -458,15 +458,17 @@ export default function Sidebar({
                     </button>
                     {isUserRoleOpen && (
                       <div className="submenu">
-                        <NavLink
-                          to="/dashboard/teachers"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Staff Roster
-                        </NavLink>
-                        {userRole !== 'Chairman' && (
+                        {(hasPermission('users.view') || hasPermission('users.manage')) && (
+                          <NavLink
+                            to="/dashboard/teachers"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Staff Roster
+                          </NavLink>
+                        )}
+                        {hasPermission('roles.manage') && userRole !== 'Chairman' && (
                           <NavLink
                             to="/dashboard/operations/roles"
                             className={({ isActive }) =>
@@ -482,7 +484,7 @@ export default function Sidebar({
                 )}
 
                 {/* 2. CLASS & STUDENT MANAGEMENT */}
-                {userRole !== 'Accountant' && userRole !== 'Principal' && (
+                {(hasPermission('classes.view') || hasPermission('classes.manage') || hasPermission('allocations.class') || hasPermission('promotions.view')) && userRole !== 'Accountant' && userRole !== 'Principal' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isClassStudentOpen ? 'open' : ''}`}
@@ -502,23 +504,27 @@ export default function Sidebar({
                     </button>
                     {isClassStudentOpen && (
                       <div className="submenu">
-                        <NavLink
-                          to="/dashboard/classes"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Classes
-                        </NavLink>
-                        <NavLink
-                          to="/dashboard/students"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Students
-                        </NavLink>
-                        {userRole !== 'Principal' && (
+                        {(hasPermission('classes.view') || hasPermission('classes.manage')) && (
+                          <NavLink
+                            to="/dashboard/classes"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Classes
+                          </NavLink>
+                        )}
+                        {(hasPermission('classes.view') || hasPermission('classes.manage')) && (
+                          <NavLink
+                            to="/dashboard/students"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Students
+                          </NavLink>
+                        )}
+                        {hasPermission('allocations.class') && userRole !== 'Principal' && (
                           <NavLink
                             to="/dashboard/allocations/class-allocations"
                             className={({ isActive }) =>
@@ -528,11 +534,7 @@ export default function Sidebar({
                             Class Allocation
                           </NavLink>
                         )}
-                        {(userRole === 'Admin' ||
-                          userRole === 'Superadmin' ||
-                          userRole === 'SuperAdmin' ||
-                          userRole === 'Principal' ||
-                          userRole === 'Chairman') && (
+                        {(hasPermission('promotions.view') || hasPermission('promotions.approve')) && (
                           <NavLink
                             to="/dashboard/operations/promotions"
                             className={({ isActive }) =>
@@ -548,7 +550,7 @@ export default function Sidebar({
                 )}
 
                 {/* 3. SUBJECT MANAGEMENT */}
-                {userRole !== 'Accountant' && userRole !== 'Principal' && (
+                {(hasPermission('subjects.view') || hasPermission('subjects.manage') || hasPermission('allocations.subject')) && userRole !== 'Accountant' && userRole !== 'Principal' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isSubjectOpen ? 'open' : ''}`}
@@ -564,15 +566,17 @@ export default function Sidebar({
                     </button>
                     {isSubjectOpen && (
                       <div className="submenu">
-                        <NavLink
-                          to="/dashboard/subjects"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Subjects
-                        </NavLink>
-                        {userRole !== 'Principal' && (
+                        {(hasPermission('subjects.view') || hasPermission('subjects.manage')) && (
+                          <NavLink
+                            to="/dashboard/subjects"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Subjects
+                          </NavLink>
+                        )}
+                        {hasPermission('allocations.subject') && userRole !== 'Principal' && (
                           <NavLink
                             to="/dashboard/allocations/subject-allocations"
                             className={({ isActive }) =>
@@ -588,7 +592,7 @@ export default function Sidebar({
                 )}
 
                 {/* 4. RESULT MANAGEMENT */}
-                {userRole !== 'Accountant' && userRole !== 'Parent' && (
+                {(hasPermission('results.entry') || hasPermission('results.compile') || hasPermission('results.approve') || hasPermission('results.unlock')) && userRole !== 'Accountant' && userRole !== 'Parent' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isResultMgmtOpen ? 'open' : ''}`}
@@ -604,7 +608,7 @@ export default function Sidebar({
                     </button>
                     {isResultMgmtOpen && (
                       <div className="submenu">
-                        {userRole !== 'Principal' && userRole !== 'Chairman' && (
+                        {(hasPermission('results.entry') || hasPermission('results.compile')) && userRole !== 'Principal' && userRole !== 'Chairman' && (
                           <NavLink
                             to="/dashboard/operations/result-management"
                             className={({ isActive }) =>
@@ -614,23 +618,23 @@ export default function Sidebar({
                             Compute Result
                           </NavLink>
                         )}
-                        <NavLink
-                          to="/dashboard/operations/review-results"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          {userRole === 'Chairman' ? 'View Results' : 'Review Results'}
-                        </NavLink>
+                        {(hasPermission('results.approve') || hasPermission('results.compile') || hasPermission('results.entry')) && (
+                          <NavLink
+                            to="/dashboard/operations/review-results"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            {userRole === 'Chairman' ? 'View Results' : 'Review Results'}
+                          </NavLink>
+                        )}
                       </div>
                     )}
                   </div>
                 )}
 
                 {/* 5. APPROVAL MANAGEMENT (PRINCIPAL / SUPERADMIN) */}
-                {(userRole === 'Principal' ||
-                  userRole === 'Superadmin' ||
-                  userRole === 'SuperAdmin') && (
+                {(hasPermission('results.approve') || hasPermission('promotions.approve')) && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isApprovalMgmtOpen ? 'open' : ''}`}
@@ -650,46 +654,49 @@ export default function Sidebar({
                     </button>
                     {isApprovalMgmtOpen && (
                       <div className="submenu">
-                        <NavLink
-                          to="/dashboard/approvals"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Result Approval
-                        </NavLink>
-                        <NavLink
-                          to="/dashboard/operations/promotions"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Promotion Approval
-                        </NavLink>
+                        {hasPermission('results.approve') && (
+                          <NavLink
+                            to="/dashboard/approvals"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Result Approval
+                          </NavLink>
+                        )}
+                        {hasPermission('promotions.approve') && (
+                          <NavLink
+                            to="/dashboard/operations/promotions"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Promotion Approval
+                          </NavLink>
+                        )}
                       </div>
                     )}
                   </div>
                 )}
 
                 {/* 5. SETUPS */}
-                {userRole !== 'Accountant' &&
-                  userRole !== 'Principal' &&
-                  userRole !== 'Chairman' && (
-                    <div className="nav-group">
-                      <button
-                        className={`nav-item dropdown-toggle ${isSetupsOpen ? 'open' : ''}`}
-                        onClick={() => setIsSetupsOpen(!isSetupsOpen)}
-                      >
-                        <span className="nav-icon-box">
-                          <Sliders size={18} />
-                        </span>
-                        Setups
-                        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                          {isSetupsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                        </span>
-                      </button>
-                      {isSetupsOpen && (
-                        <div className="submenu">
+                {(hasPermission('setups.term') || hasPermission('setups.grading') || hasPermission('setups.session') || hasPermission('setups.clearance')) && userRole !== 'Accountant' && userRole !== 'Principal' && userRole !== 'Chairman' && (
+                  <div className="nav-group">
+                    <button
+                      className={`nav-item dropdown-toggle ${isSetupsOpen ? 'open' : ''}`}
+                      onClick={() => setIsSetupsOpen(!isSetupsOpen)}
+                    >
+                      <span className="nav-icon-box">
+                        <Sliders size={18} />
+                      </span>
+                      Setups
+                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                        {isSetupsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      </span>
+                    </button>
+                    {isSetupsOpen && (
+                      <div className="submenu">
+                        {hasPermission('setups.term') && (
                           <NavLink
                             to="/dashboard/operations/term-setup"
                             className={({ isActive }) =>
@@ -698,6 +705,8 @@ export default function Sidebar({
                           >
                             Term & Session Setup
                           </NavLink>
+                        )}
+                        {hasPermission('setups.term') && (
                           <NavLink
                             to="/dashboard/operations/branches"
                             className={({ isActive }) =>
@@ -706,6 +715,8 @@ export default function Sidebar({
                           >
                             Campus Branches
                           </NavLink>
+                        )}
+                        {hasPermission('setups.session') && (
                           <NavLink
                             to="/dashboard/operations/session"
                             className={({ isActive }) =>
@@ -714,6 +725,8 @@ export default function Sidebar({
                           >
                             Session Operations
                           </NavLink>
+                        )}
+                        {hasPermission('setups.grading') && (
                           <NavLink
                             to="/dashboard/operations/grading"
                             className={({ isActive }) =>
@@ -722,6 +735,8 @@ export default function Sidebar({
                           >
                             Grading Rules
                           </NavLink>
+                        )}
+                        {hasPermission('setups.clearance') && (
                           <NavLink
                             to="/dashboard/operations/manual-clearance"
                             className={({ isActive }) =>
@@ -730,31 +745,30 @@ export default function Sidebar({
                           >
                             Manual Clearance
                           </NavLink>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
-                <div className="nav-group">
-                  <button
-                    className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`}
-                    onClick={() => setIsAttendanceOpen(!isAttendanceOpen)}
-                  >
-                    <span className="nav-icon-box">
-                      <QrCode size={18} />
-                    </span>
-                    Attendance Management
-                    <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                      {isAttendanceOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                    </span>
-                  </button>
-                  {isAttendanceOpen && (
-                    <div className="submenu">
-                      {(hasPermission('attendance.scan') || isSuperAdmin || userRole === 'Admin') &&
-                        userRole !== 'Accountant' &&
-                        userRole !== 'Principal' &&
-                        userRole !== 'Chairman' && (
+                {(hasPermission('attendance.view') || hasPermission('attendance.scan')) && (
+                  <div className="nav-group">
+                    <button
+                      className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`}
+                      onClick={() => setIsAttendanceOpen(!isAttendanceOpen)}
+                    >
+                      <span className="nav-icon-box">
+                        <QrCode size={18} />
+                      </span>
+                      Attendance Management
+                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                        {isAttendanceOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      </span>
+                    </button>
+                    {isAttendanceOpen && (
+                      <div className="submenu">
+                        {hasPermission('attendance.scan') && (
                           <NavLink
                             to="/dashboard/operations/gate-scanner"
                             className={({ isActive }) =>
@@ -764,9 +778,7 @@ export default function Sidebar({
                             Gate Scanner
                           </NavLink>
                         )}
-                      {(hasPermission('attendance.view') || isSuperAdmin || userRole === 'Admin') &&
-                        userRole !== 'Accountant' &&
-                        userRole !== 'Principal' && (
+                        {hasPermission('attendance.view') && (
                           <NavLink
                             to="/dashboard/operations/gate-logs"
                             className={({ isActive }) =>
@@ -776,20 +788,25 @@ export default function Sidebar({
                             Gate Logs
                           </NavLink>
                         )}
-                      <NavLink
-                        to="/dashboard/staff-attendance"
-                        className={({ isActive }) =>
-                          `nav-item submenu-item ${isActive ? 'active' : ''}`
-                        }
-                      >
-                        Staff Attendance Log
-                      </NavLink>
-                      <NavLink to="/dashboard/reports/attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
-                        Attendance Summary Report
-                      </NavLink>
-                    </div>
-                  )}
-                </div>
+                        {hasPermission('attendance.view') && (
+                          <NavLink
+                            to="/dashboard/staff-attendance"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Staff Attendance Log
+                          </NavLink>
+                        )}
+                        {hasPermission('attendance.view') && (
+                          <NavLink to="/dashboard/reports/attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                            Attendance Summary Report
+                          </NavLink>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* ACCOUNTANT / SUPERADMIN FINANCE MODULES */}
                 {(userRole === 'Accountant' ||

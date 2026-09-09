@@ -113,6 +113,19 @@ export default function Overview() {
     fetchData();
   }, [userRole]);
 
+  const [userPermissions, setUserPermissions] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    api
+      .get('/identity/my-permissions')
+      .then((res: any) => {
+        if (res && Array.isArray(res.permissions)) {
+          setUserPermissions(res.permissions);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="overview-page-container">
       {userRole === 'Accountant' ? (
@@ -174,13 +187,15 @@ export default function Overview() {
         <AdminDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}
+          userRole={userRole || undefined}
+          userPermissions={userPermissions}
           session={session || '2026/2027'}
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
           adminData={adminData}
           loading={loading}
-          onToggleActivityLog={() => setShowActivityLog(!showActivityLog)}
+          onToggleActivityLog={() => setShowActivityLog((prev) => !prev)}
         />
       )}
 

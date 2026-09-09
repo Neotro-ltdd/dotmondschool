@@ -31,6 +31,8 @@ import HolidayBanner from '../../ui/HolidayBanner';
 interface AdminDashboardViewProps {
   userName?: string;
   userTitle?: string;
+  userRole?: string;
+  userPermissions?: string[];
   session?: string;
   displayTerm?: string;
   isHolidayMode?: boolean;
@@ -43,6 +45,8 @@ interface AdminDashboardViewProps {
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   userName = 'Admin',
   userTitle,
+  userRole,
+  userPermissions = [],
   session = '2026/2027',
   displayTerm = 'First Term',
   isHolidayMode = true,
@@ -59,6 +63,20 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+
+  const isSuperAdmin =
+    userRole === 'Admin' ||
+    userRole === 'SuperAdmin' ||
+    userRole === 'Superadmin' ||
+    userRole === 'Director' ||
+    userRole === 'Principal' ||
+    userRole === 'SystemAdmin';
+
+  const hasPermission = (permKey: string) => {
+    if (isSuperAdmin) return true;
+    if (!userPermissions || userPermissions.length === 0) return false;
+    return userPermissions.includes(permKey);
+  };
 
   const getGreeting = () => {
     const hour = currentDate.getHours();
@@ -83,6 +101,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     return <div className="p-6 text-center text-slate-500 font-semibold">Loading Executive Overview...</div>;
   }
 
+  const bannerText = isSuperAdmin
+    ? 'Institutional Governance & Operations Control Hub: Oversee staff, student records, academics, and system setup.'
+    : `Portal Operational Hub: Access assigned tasks, departmental logs, and operations for ${userRole || 'Staff'}.`;
+
   return (
     <div className="overview-page">
       {/* ════════ HOLIDAY OPERATIONAL NOTICE BANNER ════════ */}
@@ -102,18 +124,17 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         <div className="banner-content">
           <div className="banner-text">
             <h2>
-              {getGreeting()}, {formatDisplayName(userTitle, userName || 'Admin')} 👋
+              {getGreeting()}, {formatDisplayName(userTitle, userName || 'User')} 👋
             </h2>
-            <p>
-              Institutional Governance & Operations Control Hub: Oversee staff, student records,
-              academics, and system setup.
-            </p>
+            <p>{bannerText}</p>
           </div>
 
           <div className="banner-actions">
-            <Link to="/dashboard/teachers" className="banner-btn banner-btn-primary">
-              <Users size={16} /> Staff Management
-            </Link>
+            {(hasPermission('users.view') || hasPermission('users.manage')) && (
+              <Link to="/dashboard/teachers" className="banner-btn banner-btn-primary">
+                <Users size={16} /> Staff Management
+              </Link>
+            )}
             {onToggleActivityLog && (
               <button
                 type="button"
@@ -178,68 +199,82 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       </div>
 
       {/* ════════ UN-NESTED QUICK OPERATIONAL SHORTCUTS ════════ */}
-      <div>
-        <div className="shortcuts-section-header">
-          <h3>
-            <Sparkles size={18} style={{ color: '#000080' }} /> Quick Operational Shortcuts
-          </h3>
-          <span>Administrative Access</span>
+      {(hasPermission('classes.view') ||
+        hasPermission('users.view') ||
+        hasPermission('results.approve') ||
+        hasPermission('finance.payments') ||
+        hasPermission('setups.clearance')) && (
+        <div>
+          <div className="shortcuts-section-header">
+            <h3>
+              <Sparkles size={18} style={{ color: '#000080' }} /> Quick Operational Shortcuts
+            </h3>
+            <span>{isSuperAdmin ? 'Administrative Access' : `${userRole || 'Staff'} Access`}</span>
+          </div>
+
+          <div className="shortcuts-grid">
+            {(hasPermission('classes.view') || hasPermission('classes.manage')) && (
+              <Link to="/dashboard/students" className="shortcut-card">
+                <div className="shortcut-card-left">
+                  <div className="shortcut-icon" style={{ background: '#000080' }}>
+                    <GraduationCap size={22} />
+                  </div>
+                  <div className="shortcut-info">
+                    <h4>Student Directory</h4>
+                    <p>View & manage students</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="shortcut-arrow" />
+              </Link>
+            )}
+
+            {(hasPermission('users.view') || hasPermission('users.manage')) && (
+              <Link to="/dashboard/teachers" className="shortcut-card">
+                <div className="shortcut-card-left">
+                  <div className="shortcut-icon" style={{ background: '#10B981' }}>
+                    <Users size={22} />
+                  </div>
+                  <div className="shortcut-info">
+                    <h4>Staff Roster</h4>
+                    <p>Manage faculty & roles</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="shortcut-arrow" />
+              </Link>
+            )}
+
+            {(hasPermission('results.approve') || hasPermission('results.compile')) && (
+              <Link to="/dashboard/approvals" className="shortcut-card">
+                <div className="shortcut-card-left">
+                  <div className="shortcut-icon" style={{ background: '#6366F1' }}>
+                    <BookOpen size={22} />
+                  </div>
+                  <div className="shortcut-info">
+                    <h4>Result Broadsheets</h4>
+                    <p>Process & review grades</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="shortcut-arrow" />
+              </Link>
+            )}
+
+            {(hasPermission('finance.payments') || hasPermission('setups.clearance')) && (
+              <Link to="/dashboard/finance/verifications" className="shortcut-card">
+                <div className="shortcut-card-left">
+                  <div className="shortcut-icon" style={{ background: '#F59E0B' }}>
+                    <CreditCard size={22} />
+                  </div>
+                  <div className="shortcut-info">
+                    <h4>Fee Clearance</h4>
+                    <p>Reconcile tuition receipts</p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="shortcut-arrow" />
+              </Link>
+            )}
+          </div>
         </div>
-
-        <div className="shortcuts-grid">
-          <Link to="/dashboard/students" className="shortcut-card">
-            <div className="shortcut-card-left">
-              <div className="shortcut-icon" style={{ background: '#000080' }}>
-                <GraduationCap size={22} />
-              </div>
-              <div className="shortcut-info">
-                <h4>Student Directory</h4>
-                <p>View & manage students</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="shortcut-arrow" />
-          </Link>
-
-          <Link to="/dashboard/teachers" className="shortcut-card">
-            <div className="shortcut-card-left">
-              <div className="shortcut-icon" style={{ background: '#10B981' }}>
-                <Users size={22} />
-              </div>
-              <div className="shortcut-info">
-                <h4>Staff Roster</h4>
-                <p>Manage faculty & roles</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="shortcut-arrow" />
-          </Link>
-
-          <Link to="/dashboard/approvals" className="shortcut-card">
-            <div className="shortcut-card-left">
-              <div className="shortcut-icon" style={{ background: '#6366F1' }}>
-                <BookOpen size={22} />
-              </div>
-              <div className="shortcut-info">
-                <h4>Result Broadsheets</h4>
-                <p>Process & review grades</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="shortcut-arrow" />
-          </Link>
-
-          <Link to="/dashboard/finance/verifications" className="shortcut-card">
-            <div className="shortcut-card-left">
-              <div className="shortcut-icon" style={{ background: '#F59E0B' }}>
-                <CreditCard size={22} />
-              </div>
-              <div className="shortcut-info">
-                <h4>Fee Clearance</h4>
-                <p>Reconcile tuition receipts</p>
-              </div>
-            </div>
-            <ChevronRight size={18} className="shortcut-arrow" />
-          </Link>
-        </div>
-      </div>
+      )}
 
       {/* ════════ CHARTS GRID ════════ */}
       <div className="charts-grid">
