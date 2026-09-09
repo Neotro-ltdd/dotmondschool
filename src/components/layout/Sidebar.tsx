@@ -64,18 +64,24 @@ export default function Sidebar({
       .catch(() => {});
   }, []);
 
+  const hasPermission = (permKey: string) => {
+    if (isDeveloperRoot || userRole === 'Director' || userRole === 'Admin') return true;
+    if (!userPermissions || userPermissions.length === 0) return false;
+    return userPermissions.includes(permKey);
+  };
+
   const canAccessFinance =
     userRole === 'Accountant' ||
-    userRole === 'Superadmin' ||
-    userRole === 'SuperAdmin' ||
-    userRole === 'Director' ||
-    (userRole !== 'Chairman' && userPermissions.includes('finance.overview'));
+    isSuperAdmin ||
+    (userRole !== 'Chairman' &&
+      (userPermissions.includes('finance.overview') ||
+        userPermissions.includes('finance.billing') ||
+        userPermissions.includes('finance.pos') ||
+        userPermissions.includes('finance.ledger')));
   const canAccessFinancialReports =
-    userRole === 'Director' ||
-    userRole === 'Principal' ||
-    userRole === 'Superadmin' ||
-    userRole === 'SuperAdmin' ||
-    userRole === 'Accountant';
+    isSuperAdmin ||
+    userRole === 'Accountant' ||
+    userPermissions.includes('reports.finance');
 
   const canAccessSettings =
     userRole === 'Director' ||
@@ -745,7 +751,8 @@ export default function Sidebar({
                   </button>
                   {isAttendanceOpen && (
                     <div className="submenu">
-                      {userRole !== 'Accountant' &&
+                      {(hasPermission('attendance.scan') || isSuperAdmin || userRole === 'Admin') &&
+                        userRole !== 'Accountant' &&
                         userRole !== 'Principal' &&
                         userRole !== 'Chairman' && (
                           <NavLink
@@ -757,16 +764,18 @@ export default function Sidebar({
                             Gate Scanner
                           </NavLink>
                         )}
-                      {userRole !== 'Accountant' && userRole !== 'Principal' && (
-                        <NavLink
-                          to="/dashboard/operations/gate-logs"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Gate Logs
-                        </NavLink>
-                      )}
+                      {(hasPermission('attendance.view') || isSuperAdmin || userRole === 'Admin') &&
+                        userRole !== 'Accountant' &&
+                        userRole !== 'Principal' && (
+                          <NavLink
+                            to="/dashboard/operations/gate-logs"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Gate Logs
+                          </NavLink>
+                        )}
                       <NavLink
                         to="/dashboard/staff-attendance"
                         className={({ isActive }) =>
