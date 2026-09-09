@@ -52,6 +52,7 @@ interface StudentItem {
 
 import { useAuth } from '../../../context/AuthContext';
 import { useBranchContext } from '../../../context/BranchContext';
+import { usePermissions } from '../../../hooks/usePermissions';
 
 interface ClassItem {
   id: string;
@@ -64,7 +65,8 @@ export default function Students() {
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
   const { activeBranchId, branches } = useBranchContext();
-  const isReadOnly = userRole === 'Chairman';
+  const { canManageClasses } = usePermissions();
+  const isReadOnly = userRole === 'Chairman' || !canManageClasses;
 
   const [students, setStudents] = useState<StudentItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);

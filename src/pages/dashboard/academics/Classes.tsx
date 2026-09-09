@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 
 import { useAuth } from '../../../context/AuthContext';
+import { usePermissions } from '../../../hooks/usePermissions';
 
 interface ClassItem {
   id: string;
@@ -34,7 +35,8 @@ interface ClassItem {
 export default function Classes() {
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
-  const isReadOnly = userRole === 'Chairman';
+  const { canManageClasses } = usePermissions();
+  const isReadOnly = userRole === 'Chairman' || !canManageClasses;
 
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);

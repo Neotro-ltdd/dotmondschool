@@ -752,7 +752,10 @@ export default function Sidebar({
                 )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
-                {(hasPermission('attendance.view') || hasPermission('attendance.scan')) && (
+                {(hasPermission('attendance.student.view') ||
+                  hasPermission('attendance.staff.view') ||
+                  hasPermission('attendance.view') ||
+                  hasPermission('attendance.scan')) && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isAttendanceOpen ? 'open' : ''}`}
@@ -768,6 +771,16 @@ export default function Sidebar({
                     </button>
                     {isAttendanceOpen && (
                       <div className="submenu">
+                        {hasPermission('attendance.student.view') && (
+                          <NavLink
+                            to="/dashboard/teacher/attendance"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Student Attendance Log
+                          </NavLink>
+                        )}
                         {hasPermission('attendance.scan') && (
                           <NavLink
                             to="/dashboard/operations/gate-scanner"
@@ -788,7 +801,7 @@ export default function Sidebar({
                             Gate Logs
                           </NavLink>
                         )}
-                        {hasPermission('attendance.view') && (
+                        {hasPermission('attendance.staff.view') && (
                           <NavLink
                             to="/dashboard/staff-attendance"
                             className={({ isActive }) =>
@@ -798,8 +811,13 @@ export default function Sidebar({
                             Staff Attendance Log
                           </NavLink>
                         )}
-                        {hasPermission('attendance.view') && (
-                          <NavLink to="/dashboard/reports/attendance" className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}>
+                        {hasPermission('reports.attendance') && (
+                          <NavLink
+                            to="/dashboard/reports/attendance"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
                             Attendance Summary Report
                           </NavLink>
                         )}
@@ -932,68 +950,74 @@ export default function Sidebar({
                 )}
 
                 {/* 7. REPORTS & ANALYTICS */}
-                <>
-                  <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
+                {(hasPermission('reports.academic') ||
+                  hasPermission('reports.attendance') ||
+                  canAccessFinancialReports) && (
+                  <>
+                    <div className="sidebar-section-header">ANALYTICS & SETTINGS</div>
 
-                  <div className="nav-group">
-                    <button
-                      className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`}
-                      onClick={() => setIsReportsOpen(!isReportsOpen)}
-                    >
-                      <span className="nav-icon-box">
-                        <BarChart3 size={18} />
-                      </span>
-                      Reports & Analytics
-                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                        {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                      </span>
-                    </button>
-                    {isReportsOpen && (
-                      <div className="submenu">
-                        {userRole !== 'Accountant' && (
-                          <NavLink
-                            to="/dashboard/reports"
-                            className={({ isActive }) =>
-                              `nav-item submenu-item ${isActive ? 'active' : ''}`
-                            }
-                          >
-                            Academic Reports
-                          </NavLink>
-                        )}
-                        <NavLink
-                          to="/dashboard/reports/attendance"
-                          className={({ isActive }) =>
-                            `nav-item submenu-item ${isActive ? 'active' : ''}`
-                          }
-                        >
-                          Attendance Summary Report
-                        </NavLink>
-                        {canAccessFinancialReports && (
-                          <NavLink
-                            to="/dashboard/finance/reports"
-                            className={({ isActive }) =>
-                              `nav-item submenu-item ${isActive ? 'active' : ''}`
-                            }
-                          >
-                            Financial Reports Hub
-                          </NavLink>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    <div className="nav-group">
+                      <button
+                        className={`nav-item dropdown-toggle ${isReportsOpen ? 'open' : ''}`}
+                        onClick={() => setIsReportsOpen(!isReportsOpen)}
+                      >
+                        <span className="nav-icon-box">
+                          <BarChart3 size={18} />
+                        </span>
+                        Reports & Analytics
+                        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                          {isReportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </span>
+                      </button>
+                      {isReportsOpen && (
+                        <div className="submenu">
+                          {hasPermission('reports.academic') && userRole !== 'Accountant' && (
+                            <NavLink
+                              to="/dashboard/reports"
+                              className={({ isActive }) =>
+                                `nav-item submenu-item ${isActive ? 'active' : ''}`
+                              }
+                            >
+                              Academic Reports
+                            </NavLink>
+                          )}
+                          {hasPermission('reports.attendance') && (
+                            <NavLink
+                              to="/dashboard/reports/attendance"
+                              className={({ isActive }) =>
+                                `nav-item submenu-item ${isActive ? 'active' : ''}`
+                              }
+                            >
+                              Attendance Summary Report
+                            </NavLink>
+                          )}
+                          {canAccessFinancialReports && (
+                            <NavLink
+                              to="/dashboard/finance/reports"
+                              className={({ isActive }) =>
+                                `nav-item submenu-item ${isActive ? 'active' : ''}`
+                              }
+                            >
+                              Financial Reports Hub
+                            </NavLink>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
 
-                  {canAccessSettings && (
-                    <NavLink
-                      to="/dashboard/settings/school"
-                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                    >
-                      <span className="nav-icon-box">
-                        <Settings size={18} />
-                      </span>
-                      Settings
-                    </NavLink>
-                  )}
-                </>
+                {canAccessSettings && (
+                  <NavLink
+                    to="/dashboard/settings/school"
+                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                  >
+                    <span className="nav-icon-box">
+                      <Settings size={18} />
+                    </span>
+                    Settings
+                  </NavLink>
+                )}
               </>
             )}
           </>
