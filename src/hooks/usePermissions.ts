@@ -41,6 +41,7 @@ export function usePermissions() {
 
   const canManageClasses = isDeveloperRoot || permissions.includes('classes.manage');
   const canViewClasses = isDeveloperRoot || permissions.includes('classes.view') || permissions.includes('classes.manage');
+  const canPrintStudentIdCard = isDeveloperRoot || permissions.includes('students.idcard') || permissions.includes('vendor.idcards');
 
   return {
     permissions,
@@ -48,6 +49,7 @@ export function usePermissions() {
     hasPermission,
     canManageClasses,
     canViewClasses,
+    canPrintStudentIdCard,
     isDeveloperRoot,
   };
 }

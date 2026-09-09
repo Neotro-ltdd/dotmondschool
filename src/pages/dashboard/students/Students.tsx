@@ -65,7 +65,7 @@ export default function Students() {
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
   const { activeBranchId, branches } = useBranchContext();
-  const { canManageClasses } = usePermissions();
+  const { canManageClasses, canPrintStudentIdCard } = usePermissions();
   const isReadOnly = userRole === 'Chairman' || !canManageClasses;
 
   const [students, setStudents] = useState<StudentItem[]>([]);
@@ -787,15 +787,17 @@ export default function Students() {
                             >
                               <Eye size={15} color="#3B82F6" /> View Full Profile
                             </button>
-                            <button
-                              className="dropdown-action-item"
-                              onClick={() => {
-                                setPrintStudentId(student.id);
-                                setOpenDropdownId(null);
-                              }}
-                            >
-                              <QrCode size={15} color="#059669" /> Print ID Card
-                            </button>
+                            {canPrintStudentIdCard && (
+                              <button
+                                className="dropdown-action-item"
+                                onClick={() => {
+                                  setPrintStudentId(student.id);
+                                  setOpenDropdownId(null);
+                                }}
+                              >
+                                <QrCode size={15} color="#059669" /> Print ID Card
+                              </button>
+                            )}
                             {!isReadOnly && (
                               <>
                                 <button
@@ -912,15 +914,17 @@ export default function Students() {
                         >
                           <Edit3 size={15} color="#000080" /> Edit Details
                         </button>
-                        <button
-                          className="dropdown-action-item"
-                          onClick={() => {
-                            setPrintStudentId(student.id);
-                            setOpenDropdownId(null);
-                          }}
-                        >
-                          <QrCode size={15} color="#059669" /> Print ID Card
-                        </button>
+                        {canPrintStudentIdCard && (
+                          <button
+                            className="dropdown-action-item"
+                            onClick={() => {
+                              setPrintStudentId(student.id);
+                              setOpenDropdownId(null);
+                            }}
+                          >
+                            <QrCode size={15} color="#059669" /> Print ID Card
+                          </button>
+                        )}
                         <button
                           className="dropdown-action-item"
                           onClick={() =>
