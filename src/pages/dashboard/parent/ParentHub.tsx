@@ -5,6 +5,8 @@ import { getSessionOptions } from '../../../utils/sessionOptions';
 import { useDialog } from '../../../context/DialogContext';
 import ReportCard from '../../../components/ReportCard';
 import { AcademicAnalysisView } from '../../../components/dashboard/reports/AcademicAnalysisView';
+import { useAuth } from '../../../context/AuthContext';
+import { getParentDisplayName } from '../../../utils/nameFormatter';
 import {
   Users,
   GraduationCap,
@@ -30,6 +32,9 @@ import {
   Copy,
   Check,
   Building,
+  Sparkles,
+  ArrowRight,
+  ChevronRight,
 } from 'lucide-react';
 import './ParentHub.css';
 
@@ -99,10 +104,28 @@ interface TranscriptTerm {
 export default function ParentHub() {
   const { showAlert } = useDialog();
   const { session: currentSession, term: currentTerm } = useActiveTerm();
+  const { userName } = useAuth();
 
   const [kids, setKids] = useState<Kid[]>([]);
   const [selectedKid, setSelectedKid] = useState<Kid | null>(null);
   const [loadingKids, setLoadingKids] = useState(true);
+
+  const resolvedParentGreeting = getParentDisplayName(userName, kids);
+
+  const toTitleCase = (str?: string) => {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .split(' ')
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  };
+
+  const handleSelectKid = (kid: Kid, tab: 'results' | 'fees' | 'report' = 'results') => {
+    setSelectedKid(kid);
+    setActiveTab(tab);
+  };
 
   // Workspace Filters
   const [filterSession, setFilterSession] = useState<string>(currentSession);
@@ -395,19 +418,33 @@ export default function ParentHub() {
         <>
           <div className="parent-hero-banner">
             <div className="parent-hero-header">
-              <div>
-                <h1 className="parent-hero-title">Parent Academic & Financial Portal</h1>
+              <div className="parent-hero-info">
+                <div className="parent-hero-eyebrow">
+                  <Sparkles size={14} className="eyebrow-icon" />
+                  <span>PARENT & GUARDIAN PORTAL</span>
+                </div>
+                <h1 className="parent-hero-title">
+                  {resolvedParentGreeting ? `Welcome, ${resolvedParentGreeting}` : 'Parent Academic & Financial Portal'}
+                </h1>
                 <p className="parent-hero-subtitle">
-                  Review your children's academic performance, monitor daily gate attendance logs,
-                  inspect itemized tuition billing, and download official payment receipts.
+                  Review your children's real-time continuous assessment scores, terminal broadsheets,
+                  daily gate attendance logs, and itemized tuition clearance.
                 </p>
               </div>
 
-              <div className="parent-hero-badge">
-                <ShieldCheck size={16} />
-                <span>
-                  {currentSession} Session • {currentTerm}
-                </span>
+              <div className="parent-hero-pills">
+                <div className="parent-hero-pill">
+                  <Calendar size={14} />
+                  <span>{currentSession} Session &bull; {currentTerm}</span>
+                </div>
+                <div className="parent-hero-pill">
+                  <Users size={14} />
+                  <span>{kids.length} Enrolled Ward{kids.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="parent-hero-pill live-indicator">
+                  <span className="pulse-dot"></span>
+                  <span>Portal Active</span>
+                </div>
               </div>
             </div>
           </div>
@@ -415,9 +452,10 @@ export default function ParentHub() {
           {loadingKids ? (
             <div
               className="glass-panel"
-              style={{ textAlign: 'center', padding: '3rem', borderRadius: '16px' }}
+              style={{ textAlign: 'center', padding: '3.5rem', borderRadius: '16px' }}
             >
-              <p style={{ color: '#64748b' }}>Loading children records...</p>
+              <div className="aa-spinner" style={{ margin: '0 auto 1rem' }}></div>
+              <p style={{ color: '#64748b', fontWeight: 600 }}>Loading ward records...</p>
             </div>
           ) : !kids || kids.length === 0 ? (
             <div
@@ -442,86 +480,131 @@ export default function ParentHub() {
             <div className="parent-kids-grid">
               {kids.map((kid) => {
                 const photoUrl = getFullUrl(kid.passportUrl);
+                const fullName = toTitleCase(`${kid.surname} ${kid.firstName} ${kid.otherNames || ''}`);
+                const isCleared = !!kid.isCleared;
+                const initials = `${kid.surname?.[0] || 'S'}${kid.firstName?.[0] || 'K'}`.toUpperCase();
+
                 return (
                   <div key={kid.id} className="child-card">
-                    <div>
-                      <div className="child-card-header">
-                        <div className="child-avatar-container">
-                          {photoUrl ? (
-                            <img src={photoUrl} alt={kid.firstName} className="child-avatar-img" />
-                          ) : (
-                            <div className="child-avatar-initials">
-                              {kid.firstName.charAt(0)}
-                              {kid.surname.charAt(0)}
-                            </div>
-                          )}
-                        </div>
-                        <div className="child-info">
-                          <h3>
-                            {kid.surname} {kid.firstName}
-                          </h3>
-                          <p className="child-meta">{kid.className || 'Student'}</p>
-                          <span className="child-reg-badge">{kid.registrationNumber}</span>
-                        </div>
+                    {/* Top Decorative Banner & Status Ribbon */}
+                    <div className="child-card-banner">
+                      <div className="child-card-banner-left">
+                        <span className="child-level-pill">
+                          <GraduationCap size={13} />
+                          {kid.level || 'Junior Secondary'}
+                        </span>
                       </div>
-
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '0.5rem',
-                          flexWrap: 'wrap',
-                          marginBottom: '1rem',
-                        }}
-                      >
-                        {kid.departmentTrack && kid.departmentTrack !== 'General' && (
-                          <span
-                            className="badge"
-                            style={{
-                              background: '#f3e8ff',
-                              color: '#6b21a8',
-                              padding: '0.3rem 0.6rem',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
-                              fontWeight: 600,
-                            }}
-                          >
-                            {kid.departmentTrack}
-                          </span>
-                        )}
-                        <span
-                          className="badge"
-                          style={{
-                            background: kid.isCleared ? '#dcfce7' : '#fee2e2',
-                            color: kid.isCleared ? '#15803d' : '#b91c1c',
-                            padding: '0.3rem 0.6rem',
-                            borderRadius: '6px',
-                            fontSize: '0.78rem',
-                            fontWeight: 600,
-                          }}
-                        >
-                          {kid.isCleared ? 'Fee Cleared' : 'Pending Clearance'}
+                      <div className="child-card-banner-right">
+                        <span className={`child-clearance-pill ${isCleared ? 'cleared' : 'pending'}`}>
+                          {isCleared ? (
+                            <>
+                              <CheckCircle2 size={13} /> Tuition Cleared
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle size={13} /> Clearance Pending
+                            </>
+                          )}
                         </span>
                       </div>
                     </div>
 
+                    {/* Student Identity Section */}
+                    <div className="child-card-body">
+                      <div className="child-profile-row">
+                        <div className="child-avatar-container">
+                          {photoUrl ? (
+                            <img src={photoUrl} alt={fullName} className="child-avatar-img" />
+                          ) : (
+                            <div className="child-avatar-initials">{initials}</div>
+                          )}
+                          <span className="child-avatar-dot" title="Active Enrolled Student"></span>
+                        </div>
+
+                        <div className="child-info">
+                          <h3 className="child-name" title={fullName}>
+                            {fullName}
+                          </h3>
+                          <div className="child-class-row">
+                            <span className="child-class-text">{kid.className || 'Class Unassigned'}</span>
+                          </div>
+                          <div className="child-reg-row">
+                            <span className="child-reg-badge">
+                              <Hash size={12} /> {kid.registrationNumber}
+                            </span>
+                            {kid.departmentTrack && kid.departmentTrack !== 'General' && (
+                              <span className="child-track-badge">{kid.departmentTrack}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 3-Column Micro Snapshot Dashboard */}
+                      <div className="child-metrics-snapshot">
+                        <div className="child-metric-box">
+                          <span className="metric-box-label">Academic Arm</span>
+                          <span className="metric-box-val">{kid.className?.split(' ')?.[0] || 'Basic'}</span>
+                        </div>
+                        <div className="child-metric-box">
+                          <span className="metric-box-label">Daily Gate</span>
+                          <span className="metric-box-val metric-green">
+                            <CheckCircle2 size={12} /> Active
+                          </span>
+                        </div>
+                        <div className="child-metric-box">
+                          <span className="metric-box-label">Term Report</span>
+                          <span className={`metric-box-val ${isCleared ? 'metric-blue' : 'metric-amber'}`}>
+                            {isCleared ? 'Available' : 'Restricted'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Interactive Quick-Jump Shortcuts */}
+                      <div className="child-quick-shortcuts">
+                        <button
+                          type="button"
+                          className="child-shortcut-btn"
+                          onClick={() => handleSelectKid(kid, 'results')}
+                          title="View terminal results & report cards"
+                        >
+                          <Award size={14} className="shortcut-icon" />
+                          <span>Results</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="child-shortcut-btn"
+                          onClick={() => handleSelectKid(kid, 'fees')}
+                          title="View invoices & tuition receipts"
+                        >
+                          <CreditCard size={14} className="shortcut-icon" />
+                          <span>Tuition</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="child-shortcut-btn"
+                          onClick={() => handleSelectKid(kid, 'report')}
+                          title="View gate attendance logs & academic trend"
+                        >
+                          <Calendar size={14} className="shortcut-icon" />
+                          <span>Attendance</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Card Footer with Primary CTA */}
                     <div className="child-card-footer">
-                      <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 500 }}>
-                        Active Student
-                      </span>
+                      <div className="child-status-tag">
+                        <span className="pulse-indicator"></span>
+                        <span>Active Student</span>
+                      </div>
+
                       <button
-                        className="btn btn-primary btn-sm"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.4rem',
-                          borderRadius: '8px',
-                          padding: '0.5rem 1rem',
-                          fontWeight: 600,
-                        }}
-                        onClick={() => setSelectedKid(kid)}
+                        type="button"
+                        className="btn-open-portal"
+                        onClick={() => handleSelectKid(kid, 'results')}
                       >
-                        <BookOpen size={15} />
-                        View Child Portal
+                        <span>Open Student Portal</span>
+                        <ArrowRight size={15} />
                       </button>
                     </div>
                   </div>
