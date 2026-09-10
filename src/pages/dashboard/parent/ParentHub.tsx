@@ -827,11 +827,11 @@ export default function ParentHub() {
 
                         <div className="bank-info-row">
                           <span className="bank-label">Bank Name</span>
-                          <span className="bank-value">ZENITH BANK PLC</span>
+                          <span className="bank-value">FCMB</span>
                         </div>
                         <div className="bank-info-row">
                           <span className="bank-label">Account Name</span>
-                          <span className="bank-value">DOTMOND INT'L SCHOOLS</span>
+                          <span className="bank-value">DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</span>
                         </div>
                         <div className="bank-info-row">
                           <span className="bank-label">Account Number</span>
@@ -840,12 +840,12 @@ export default function ParentHub() {
                               className="bank-value"
                               style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
                             >
-                              1012983745
+                              3455888011
                             </span>
                             <button
                               type="button"
                               className="copy-btn"
-                              onClick={() => handleCopyAccount('1012983745')}
+                              onClick={() => handleCopyAccount('3455888011')}
                             >
                               {copiedAccount ? (
                                 <Check size={14} style={{ color: '#4ade80' }} />
