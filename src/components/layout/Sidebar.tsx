@@ -83,6 +83,16 @@ export default function Sidebar({
     userRole === 'Accountant' ||
     userPermissions.includes('reports.finance');
 
+  const canViewAcademicAnalysis =
+    isSuperAdmin ||
+    hasPermission('reports.academic_analysis') ||
+    userRole === 'Teacher' ||
+    userRole === 'SubjectTeacher' ||
+    userRole === 'Principal' ||
+    userRole === 'Director' ||
+    userRole === 'Chairman' ||
+    userRole === 'Admin';
+
   const canAccessSettings =
     userRole === 'Director' ||
     userRole === 'Principal' ||
@@ -356,6 +366,15 @@ export default function Sidebar({
                       Review Results
                     </NavLink>
                     <NavLink
+                      to="/dashboard/reports/academic-analysis"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <BarChart3 size={18} />
+                      </span>
+                      Academic Analysis
+                    </NavLink>
+                    <NavLink
                       to="/dashboard/teacher/utilities"
                       className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                     >
@@ -394,6 +413,15 @@ export default function Sidebar({
                         <CheckCircle size={18} />
                       </span>
                       Review Results
+                    </NavLink>
+                    <NavLink
+                      to="/dashboard/reports/academic-analysis"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <BarChart3 size={18} />
+                      </span>
+                      Academic Analysis
                     </NavLink>
                     <NavLink
                       to="/dashboard/teacher/utilities"
@@ -951,6 +979,8 @@ export default function Sidebar({
 
                 {/* 7. REPORTS & ANALYTICS */}
                 {(hasPermission('reports.academic') ||
+                  hasPermission('reports.academic_analysis') ||
+                  canViewAcademicAnalysis ||
                   hasPermission('reports.attendance') ||
                   canAccessFinancialReports) && (
                   <>
@@ -979,6 +1009,16 @@ export default function Sidebar({
                               }
                             >
                               Academic Reports
+                            </NavLink>
+                          )}
+                          {canViewAcademicAnalysis && userRole !== 'Accountant' && (
+                            <NavLink
+                              to="/dashboard/reports/academic-analysis"
+                              className={({ isActive }) =>
+                                `nav-item submenu-item ${isActive ? 'active' : ''}`
+                              }
+                            >
+                              Academic Analysis
                             </NavLink>
                           )}
                           {hasPermission('reports.attendance') && (

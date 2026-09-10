@@ -42,6 +42,15 @@ export function usePermissions() {
   const canManageClasses = isDeveloperRoot || permissions.includes('classes.manage');
   const canViewClasses = isDeveloperRoot || permissions.includes('classes.view') || permissions.includes('classes.manage');
   const canPrintStudentIdCard = isDeveloperRoot || permissions.includes('students.idcard') || permissions.includes('vendor.idcards');
+  const canViewAcademicAnalysis =
+    isDeveloperRoot ||
+    permissions.includes('reports.academic_analysis') ||
+    permissions.includes('reports.academic') ||
+    userRole === 'Teacher' ||
+    userRole === 'SubjectTeacher' ||
+    userRole === 'Principal' ||
+    userRole === 'Director' ||
+    userRole === 'Chairman';
 
   return {
     permissions,
@@ -50,6 +59,7 @@ export function usePermissions() {
     canManageClasses,
     canViewClasses,
     canPrintStudentIdCard,
+    canViewAcademicAnalysis,
     isDeveloperRoot,
   };
 }

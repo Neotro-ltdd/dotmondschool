@@ -4,6 +4,7 @@ import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import { useDialog } from '../../../context/DialogContext';
 import ReportCard from '../../../components/ReportCard';
+import { AcademicAnalysisView } from '../../../components/dashboard/reports/AcademicAnalysisView';
 import {
   Users,
   GraduationCap,
@@ -110,7 +111,9 @@ export default function ParentHub() {
   // Tab States
   const [activeTab, setActiveTab] = useState<'results' | 'fees' | 'report'>('results');
   const [feeSubTab, setFeeSubTab] = useState<'breakdown' | 'history' | 'upload'>('breakdown');
-  const [reportSubTab, setReportSubTab] = useState<'attendance' | 'academic_trend'>('attendance');
+  const [reportSubTab, setReportSubTab] = useState<
+    'attendance' | 'academic_trend' | 'academic_analysis'
+  >('attendance');
 
   // Data States
   const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
@@ -1153,6 +1156,13 @@ export default function ParentHub() {
                 >
                   Academic History & Performance Compare
                 </button>
+                <button
+                  className={`parent-sub-tab ${reportSubTab === 'academic_analysis' ? 'active' : ''}`}
+                  onClick={() => setReportSubTab('academic_analysis')}
+                >
+                  <TrendingUp size={15} style={{ display: 'inline', marginRight: '0.35rem' }} />
+                  Academic Analysis & Subject Progression
+                </button>
               </div>
 
               {/* Sub-Tab 1: Attendance Log */}
@@ -1334,6 +1344,17 @@ export default function ParentHub() {
                       </table>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Sub-Tab 3: Academic Analysis & Subject Progression */}
+              {reportSubTab === 'academic_analysis' && selectedKid && (
+                <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
+                  <AcademicAnalysisView
+                    isParentView={true}
+                    initialStudentId={selectedKid.id}
+                    selectedKid={selectedKid}
+                  />
                 </div>
               )}
             </div>

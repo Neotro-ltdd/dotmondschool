@@ -27,6 +27,7 @@ import FinanceAssets from './pages/dashboard/finance-setup/FinanceAssets';
 import FinanceFeeBuilder from './pages/dashboard/finance-setup/FinanceFeeBuilder';
 import ClassFees from './pages/dashboard/finance-setup/ClassFees';
 import Reports from './pages/dashboard/reports/Reports';
+import AcademicAnalysis from './pages/dashboard/reports/AcademicAnalysis';
 import AttendanceReport from './pages/dashboard/reports/AttendanceReport';
 import ResultSheetViewer from './pages/dashboard/reports/ResultSheetViewer';
 import ResultSample from './pages/dashboard/reports/ResultSample';
@@ -119,6 +120,7 @@ function App() {
                     </Route>
                     <Route path="reports">
                       <Route index element={<Reports />} />
+                      <Route path="academic-analysis" element={<AcademicAnalysis />} />
                       <Route path="attendance" element={<AttendanceReport />} />
                       <Route path="result/:studentId/:batchId" element={<ResultSheetViewer />} />
                     </Route>
