@@ -49,10 +49,48 @@ export function formatDisplayName(
     return cleanName;
   }
 
-  const startsWithAnyTitle = /^(Mrs|Mr|Dr|Prof|Miss|Ms|Engr|Rev)\b/i.test(cleanName);
+  const startsWithAnyTitle = /^(Mrs|Mr|Dr|Prof|Miss|Ms|Engr|Rev|Mr\s*(&|and)\s*Mrs)\b/i.test(cleanName);
   if (startsWithAnyTitle) {
     return cleanName;
   }
 
   return `${cleanTitle} ${cleanName}`;
+}
+
+/**
+ * Formats a parent display name. If the parent name is not provided or is an auto-generated
+ * username (e.g., "Parent_8032455892", raw phone number, or "User"), it derives the name from the child's
+ * surname with "Mr & Mrs [ChildSurname]".
+ */
+export function getParentDisplayName(
+  rawParentName: string | null | undefined,
+  wards?: Array<{ surname?: string; firstName?: string } | null> | null,
+): string {
+  const isAutoOrMissing =
+    !rawParentName ||
+    !rawParentName.trim() ||
+    rawParentName.trim().toLowerCase() === 'user' ||
+    rawParentName.trim().toLowerCase() === 'parent' ||
+    rawParentName.trim().toLowerCase() === 'parent / guardian' ||
+    rawParentName.trim().toLowerCase().startsWith('parent_') ||
+    rawParentName.trim().toLowerCase().startsWith('parent-') ||
+    /^\+?\d+$/.test(rawParentName.trim()) ||
+    rawParentName.includes('@');
+
+  if (isAutoOrMissing) {
+    const childWithSurname = (wards || []).find((w) => w && w.surname && w.surname.trim());
+    if (childWithSurname && childWithSurname.surname) {
+      const surname = childWithSurname.surname.trim();
+      const formattedSurname = surname.charAt(0).toUpperCase() + surname.slice(1);
+      return `Mr & Mrs ${formattedSurname}`;
+    }
+    return 'Mr & Mrs Parent';
+  }
+
+  // If already prefixed with Mr & Mrs or similar
+  if (/^mr\s*(&|and)\s*mrs/i.test(rawParentName.trim())) {
+    return cleanDuplicateTitles(rawParentName);
+  }
+
+  return cleanDuplicateTitles(rawParentName);
 }

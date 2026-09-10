@@ -11,6 +11,7 @@ import AccountantDashboardView from '../../components/dashboard/overview/Account
 import PrincipalDashboardView from '../../components/dashboard/overview/PrincipalDashboardView';
 import ParentDashboardView from '../../components/dashboard/overview/ParentDashboardView';
 import VendorDashboardView from '../../components/dashboard/overview/VendorDashboardView';
+import { getParentDisplayName } from '../../utils/nameFormatter';
 import './Dashboard.css';
 
 interface SystemActivityItem {
@@ -25,7 +26,7 @@ interface SystemActivityItem {
 }
 
 export default function Overview() {
-  const { userRole, userName, userTitle } = useAuth();
+  const { userRole, userName, userTitle, updateUserInfo } = useAuth();
   const { schoolName } = useTenant();
   const { session, term, isHoliday, resumptionDate } = useActiveTerm();
 
@@ -40,7 +41,7 @@ export default function Overview() {
   const [adminData, setAdminData] = React.useState<any>(null);
   const [principalData, setPrincipalData] = React.useState<any>(null);
   const [vendorData, setVendorData] = React.useState<any>(null);
-  const [parentData, setParentData] = React.useState<any[]>([]);
+  const [parentData, setParentData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
 
   // Fetch Live Activity Log from Database
@@ -95,7 +96,94 @@ export default function Overview() {
           } catch {
             res = await api.get('/parents/wards').catch(() => null);
           }
-          setParentData(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+          const kids = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+
+          // Compute parent display name using child surname if parent name is missing or auto-generated
+          const computedParentName = getParentDisplayName(userName, kids);
+          if (
+            computedParentName &&
+            computedParentName !== userName &&
+            (!userName ||
+              userName.toLowerCase().startsWith('parent_') ||
+              userName.toLowerCase().startsWith('parent-') ||
+              userName.toLowerCase() === 'user' ||
+              userName.toLowerCase() === 'parent')
+          ) {
+            updateUserInfo({ userName: computedParentName });
+          }
+
+          // Fetch real fee and attendance statuses for each kid
+          let feeSummaries: any[] = [];
+          let attendanceRates: number[] = [];
+
+          if (kids.length > 0) {
+            const results = await Promise.all(
+              kids.map(async (k: any) => {
+                const [invRes, attRes] = await Promise.all([
+                  api.get(`/parents/my-kids/${k.id}/invoices`).catch(() => null),
+                  api
+                    .get(
+                      `/reports/attendance/student/${k.id}?session=${encodeURIComponent(session || '2026/2027')}&term=${encodeURIComponent(term || 'First Term')}`,
+                    )
+                    .catch(() => null),
+                ]);
+
+                const invoices = invRes?.invoices || [];
+                const unpaid = invoices.filter(
+                  (i: any) =>
+                    i.status !== 'Completed' && i.status !== 'Verified' && i.status !== 'Paid',
+                );
+                const isOwing = unpaid.length > 0 || k.isCleared === false;
+                const owingAmount = unpaid.reduce(
+                  (sum: number, i: any) => sum + ((i.totalAmount || 0) - (i.amountPaid || 0)),
+                  0,
+                );
+
+                const attRate =
+                  attRes?.attendancePercentage ??
+                  (attRes?.history && attRes.history.length > 0
+                    ? Math.round(
+                        (attRes.history.filter((h: any) => h.status === 'Present').length /
+                          attRes.history.length) *
+                          100,
+                      )
+                    : null);
+
+                return {
+                  kidId: k.id,
+                  isOwing,
+                  owingAmount,
+                  invoicesCount: invoices.length,
+                  attendanceRate: attRate,
+                };
+              }),
+            );
+
+            feeSummaries = results;
+            attendanceRates = results
+              .map((r) => r.attendanceRate)
+              .filter((r): r is number => r !== null && !isNaN(r));
+          }
+
+          const hasOwing = feeSummaries.some((f) => f.isOwing);
+          const totalOwing = feeSummaries.reduce((sum, f) => sum + f.owingAmount, 0);
+          const clearedCount = feeSummaries.filter((f) => !f.isOwing).length;
+          const owingCount = feeSummaries.filter((f) => f.isOwing).length;
+          const avgAttendance =
+            attendanceRates.length > 0
+              ? Math.round(attendanceRates.reduce((a, b) => a + b, 0) / attendanceRates.length)
+              : 96;
+
+          setParentData({
+            kids,
+            feeSummaries,
+            totalOwing,
+            hasOwing,
+            clearedCount,
+            owingCount,
+            averageAttendance: avgAttendance,
+            computedParentName,
+          });
         } else if (userRole === 'Vendor' || userRole === 'GateSecurity') {
           const res = await api.get('/vendor/dashboard');
           setVendorData(res?.data || res);

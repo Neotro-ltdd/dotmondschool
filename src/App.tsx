@@ -148,6 +148,7 @@ function App() {
                       <Route path="results" element={<TeacherResults />} />
                     </Route>
                     <Route path="parent-hub" element={<ParentHub />} />
+                    <Route path="parent" element={<ParentHub />} />
                     <Route path="vendor-hub" element={<VendorHub />} />
                     <Route path="admissions" element={<AdmissionsHub />} />
                     <Route path="profile" element={<ProfileSettings />} />

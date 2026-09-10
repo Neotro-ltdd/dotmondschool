@@ -18,6 +18,7 @@ interface AuthContextType {
     firstName?: string;
     lastName?: string;
     title?: string;
+    userName?: string;
   }) => void;
   login: (token: string) => void;
   logout: () => void;
@@ -171,6 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     firstName?: string;
     lastName?: string;
     title?: string;
+    userName?: string;
   }) => {
     if (data.avatarUrl !== undefined) {
       setUserAvatar(data.avatarUrl || null);
@@ -193,7 +195,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     let baseName = '';
-    if (data.firstName !== undefined && data.lastName !== undefined) {
+    if (data.userName) {
+      baseName = cleanDuplicateTitles(data.userName);
+    } else if (data.firstName !== undefined && data.lastName !== undefined) {
       baseName = `${data.firstName} ${data.lastName}`.trim();
     } else {
       baseName = cleanDuplicateTitles(userName);
