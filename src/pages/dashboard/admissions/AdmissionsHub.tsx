@@ -811,12 +811,7 @@ export default function AdmissionsHub() {
                           {appItem.age} yrs ({appItem.gender})
                         </td>
                         <td className="font-bold">
-                          <div>{appItem.targetClassName}</div>
-                          {appItem.branchName && (
-                            <div style={{ fontSize: '0.78rem', color: '#0369a1', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                              🏢 {appItem.branchName}
-                            </div>
-                          )}
+                          {appItem.targetClassName}
                         </td>
                         <td>
                           <div className="contact-block">
