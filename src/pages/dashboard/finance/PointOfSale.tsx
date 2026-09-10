@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import './PointOfSale.css';
@@ -75,6 +76,25 @@ export default function PointOfSale() {
   const [processing, setProcessing] = useState(false);
   const [searching, setSearching] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
+
+  // Lock background scroll and listen for Escape key when drawer is open
+  useEffect(() => {
+    if (showDrawer) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && !processing) {
+          setShowDrawer(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [showDrawer, processing]);
 
   // Helper to sort invoices oldest to newest
   const getSortedPendingInvoices = (student: PosStudent) => {
@@ -483,8 +503,8 @@ export default function PointOfSale() {
         )}
       </div>
 
-      {/* SLIDE-OVER DRAWER FOR RECORD PAYMENT FORM */}
-      {showDrawer && selectedStudent && (
+      {/* SLIDE-OVER DRAWER FOR RECORD PAYMENT FORM (PORTALED TO BODY TO PREVENT HIDING UNDER NAVBAR) */}
+      {showDrawer && selectedStudent && createPortal(
         <>
           {/* Backdrop */}
           <div className="pos-slideover-backdrop" onClick={() => setShowDrawer(false)} />
@@ -986,7 +1006,8 @@ export default function PointOfSale() {
               </div>
             )}
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );
