@@ -102,6 +102,7 @@ export default function AdmissionsHub() {
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [selectedBranchId, setSelectedBranchId] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Active Primary Tab: applications | visits
@@ -188,7 +189,7 @@ export default function AdmissionsHub() {
     fetchApplications();
     fetchSchoolVisits();
     fetchClasses();
-  }, [statusFilter, visitStatusFilter, activeHubTab]);
+  }, [statusFilter, selectedBranchId, visitStatusFilter, activeHubTab]);
 
   const handleOpenEditModal = (appItem: AdmissionApp) => {
     setEditApp(appItem);
@@ -341,6 +342,7 @@ export default function AdmissionsHub() {
       setLoading(true);
       let queryParams = [];
       if (statusFilter && statusFilter !== 'All') queryParams.push(`status=${statusFilter}`);
+      if (selectedBranchId && selectedBranchId !== 'All') queryParams.push(`branchId=${selectedBranchId}`);
       if (searchQuery.trim()) queryParams.push(`search=${encodeURIComponent(searchQuery)}`);
 
       const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
@@ -752,7 +754,32 @@ export default function AdmissionsHub() {
               )}
             </div>
 
-            <form onSubmit={handleSearchSubmit} className="search-form-row">
+            <form onSubmit={handleSearchSubmit} className="search-form-row" style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              {branches && branches.length > 0 && (
+                <select
+                  value={selectedBranchId}
+                  onChange={(e) => setSelectedBranchId(e.target.value)}
+                  className="form-control"
+                  style={{
+                    maxWidth: '220px',
+                    height: '42px',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    borderColor: '#cbd5e1',
+                    backgroundColor: '#f8fafc',
+                    color: '#0f172a'
+                  }}
+                  title="Filter by School Campus / Branch"
+                >
+                  <option value="All">🏢 All Campuses (All 8 Submissions)</option>
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      📍 {b.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               <input
                 type="text"
                 className="form-control search-input"
