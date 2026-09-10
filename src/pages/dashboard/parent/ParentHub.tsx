@@ -209,12 +209,25 @@ export default function ParentHub() {
         data = await api.get(`/parents/my-kids/${studentId}/attendance?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`);
       }
 
+      if (!data) {
+        setAttendanceData({
+          totalSchoolDays: 0,
+          daysPresent: 0,
+          daysLate: 0,
+          daysAbsent: 0,
+          attendanceRatePercentage: 100,
+          logs: [],
+        });
+        return;
+      }
+
+      // Format 1: Direct array of attendance logs
       if (Array.isArray(data)) {
         const totalDays = data.length;
         const presentDays = data.filter((d: any) => d.status === 'Present' || d.status === 'Departed').length;
         const absentDays = data.filter((d: any) => d.status === 'Absent').length;
         const rate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
-        
+
         setAttendanceData({
           totalSchoolDays: totalDays,
           daysPresent: presentDays,
@@ -222,21 +235,102 @@ export default function ParentHub() {
           daysAbsent: absentDays,
           attendanceRatePercentage: rate,
           logs: data.map((d: any) => ({
-            date: d.date,
-            dayName: d.date,
-            formattedDate: d.date,
-            timeIn: d.clockInTime ? new Date(d.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
-            timeOut: d.clockOutTime ? new Date(d.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—',
-            status: d.status,
-            remarks: d.status === 'Absent' ? 'System Automated Absent Log' : 'Gate Scan Verified'
-          }))
+            date: d.date || '',
+            dayName: d.dayOfWeek || d.dayName || d.date || '',
+            formattedDate: d.formattedDate || d.date || '',
+            timeIn: d.clockInTime ? new Date(d.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeIn || '—'),
+            timeOut: d.clockOutTime ? new Date(d.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeOut || '—'),
+            status: d.status || 'Present',
+            remarks: d.remarks || (d.status === 'Absent' ? 'System Automated Absent Log' : 'Gate Scan Verified'),
+          })),
         });
-      } else {
-        setAttendanceData(data || null);
+      }
+      // Format 2: Report object with history array (from /reports/attendance/student/{studentId})
+      else if (data.history && Array.isArray(data.history)) {
+        const historyLogs: AttendanceLogItem[] = data.history.map((h: any) => {
+          let timeInDisplay = '—';
+          let timeOutDisplay = '—';
+
+          if (h.clockInTime) {
+            try {
+              timeInDisplay = new Date(h.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch {
+              timeInDisplay = String(h.clockInTime);
+            }
+          }
+          if (h.clockOutTime) {
+            try {
+              timeOutDisplay = new Date(h.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch {
+              timeOutDisplay = String(h.clockOutTime);
+            }
+          }
+
+          return {
+            date: h.date || '',
+            dayName: h.dayOfWeek || h.dayName || '',
+            formattedDate: h.formattedDate || h.date || '',
+            timeIn: timeInDisplay,
+            timeOut: timeOutDisplay,
+            status: h.status || 'Present',
+            remarks: h.remarks || (h.status === 'Absent' ? 'Marked Absent' : 'Gate Scan Verified'),
+          };
+        });
+
+        const totalExpected = data.totalExpectedDays ?? historyLogs.length;
+        const totalPresent = data.totalPresent ?? historyLogs.filter((l: any) => l.status === 'Present').length;
+        const totalAbsent = data.totalAbsent ?? historyLogs.filter((l: any) => l.status === 'Absent').length;
+        const percent = Math.round(data.attendancePercentage ?? (totalExpected > 0 ? (totalPresent / totalExpected) * 100 : 100));
+
+        setAttendanceData({
+          totalSchoolDays: totalExpected,
+          daysPresent: totalPresent,
+          daysLate: 0,
+          daysAbsent: totalAbsent,
+          attendanceRatePercentage: percent,
+          logs: historyLogs,
+        });
+      }
+      // Format 3: Object with logs array (from /parents/my-kids/{studentId}/attendance)
+      else if (data.logs && Array.isArray(data.logs)) {
+        setAttendanceData({
+          totalSchoolDays: data.totalSchoolDays ?? data.logs.length,
+          daysPresent: data.daysPresent ?? 0,
+          daysLate: data.daysLate ?? 0,
+          daysAbsent: data.daysAbsent ?? 0,
+          attendanceRatePercentage: data.attendanceRatePercentage ?? 0,
+          logs: data.logs.map((l: any) => ({
+            date: l.date || '',
+            dayName: l.dayName || l.dayOfWeek || '',
+            formattedDate: l.formattedDate || l.date || '',
+            timeIn: l.timeIn || '—',
+            timeOut: l.timeOut || '—',
+            status: l.status || 'Present',
+            remarks: l.remarks || '',
+          })),
+        });
+      }
+      // Fallback
+      else {
+        setAttendanceData({
+          totalSchoolDays: 0,
+          daysPresent: 0,
+          daysLate: 0,
+          daysAbsent: 0,
+          attendanceRatePercentage: 100,
+          logs: [],
+        });
       }
     } catch (error) {
       console.error('Failed to fetch attendance', error);
-      setAttendanceData(null);
+      setAttendanceData({
+        totalSchoolDays: 0,
+        daysPresent: 0,
+        daysLate: 0,
+        daysAbsent: 0,
+        attendanceRatePercentage: 100,
+        logs: [],
+      });
     } finally {
       setLoadingTab(false);
     }
@@ -1105,7 +1199,7 @@ export default function ParentHub() {
 
                   {loadingTab ? (
                     <p style={{ color: '#64748b' }}>Loading gate attendance logs...</p>
-                  ) : !attendanceData || attendanceData.logs.length === 0 ? (
+                  ) : !attendanceData || !attendanceData.logs || attendanceData.logs.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#64748b' }}>
                       <Clock size={40} style={{ margin: '0 auto 0.5rem', color: '#94a3b8' }} />
                       <p>No daily gate attendance logs recorded for this term selection.</p>
@@ -1130,7 +1224,7 @@ export default function ParentHub() {
                           </tr>
                         </thead>
                         <tbody>
-                          {attendanceData.logs.map((log, idx) => (
+                          {(attendanceData.logs || []).map((log, idx) => (
                             <tr key={idx}>
                               <td style={{ fontWeight: 600, color: '#0f172a' }}>
                                 {log.formattedDate}
