@@ -70,14 +70,38 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
     day: 'numeric',
   });
 
-  const totalCollected = accountantData?.totalCollected ?? 45200000;
-  const pendingAmount = accountantData?.pendingAmount ?? 3850000;
-  const pendingCount = accountantData?.pendingCount ?? 65;
-  const outstandingAmount = accountantData?.outstandingAmount ?? 8400000;
-  const clearanceRate = accountantData?.clearanceRate ?? 78;
+  const totalCollected = Number(accountantData?.totalCollected ?? 0);
+  const pendingAmount = Number(accountantData?.pendingAmount ?? 0);
+  const pendingCount = Number(accountantData?.pendingCount ?? 0);
+  const outstandingAmount = Number(accountantData?.outstandingAmount ?? 0);
+  const clearanceRate = Number(accountantData?.clearanceRate ?? 0);
 
-  const fullyPaidCount = accountantData?.fullyPaidCount ?? 420;
-  const unpaidCount = accountantData?.unpaidCount ?? 120;
+  const fullyPaidCount = Number(accountantData?.fullyPaidCount ?? 0);
+  const partialPaidCount = Number(accountantData?.partialPaidCount ?? 0);
+  const unpaidCount = Number(accountantData?.unpaidCount ?? 0);
+  const totalInvoices = Number(accountantData?.totalInvoices ?? (fullyPaidCount + partialPaidCount + unpaidCount));
+
+  const monthlyRevenueData = Array.isArray(accountantData?.monthlyRevenue) && accountantData.monthlyRevenue.length > 0
+    ? accountantData.monthlyRevenue
+    : [
+        { name: 'May', Amount: 0 },
+        { name: 'Jun', Amount: 0 },
+        { name: 'Jul', Amount: 0 },
+        { name: 'Aug', Amount: 0 },
+        { name: 'Sep', Amount: totalCollected },
+      ];
+
+  const peakMonth = accountantData?.peakMonth || 'September';
+  const peakMonthAmount = Number(accountantData?.peakMonthAmount ?? totalCollected);
+
+  const pieData = [
+    { name: 'Fully Paid', value: fullyPaidCount, color: '#000080' },
+    { name: 'Part-Payment', value: partialPaidCount, color: '#10B981' },
+    { name: 'Pending Verification', value: pendingCount, color: '#F59E0B' },
+    { name: 'Unpaid Invoices', value: unpaidCount, color: '#EF4444' },
+  ].filter((d) => d.value > 0);
+
+  const displayPieData = pieData.length > 0 ? pieData : [{ name: 'No Invoices', value: 1, color: '#E2E8F0' }];
 
   if (loading) {
     return <div className="p-6 text-center">Loading Bursary Overview...</div>;
@@ -234,21 +258,17 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} initialDimension={{ width: 300, height: 260 }}>
               <PieChart>
                 <Pie
-                  data={[
-                    { name: 'Fully Paid', value: fullyPaidCount },
-                    { name: 'Pending Verification', value: pendingCount },
-                    { name: 'Unpaid Invoices', value: unpaidCount },
-                  ]}
+                  data={displayPieData}
                   cx="50%"
                   cy="50%"
                   innerRadius={65}
                   outerRadius={95}
-                  paddingAngle={5}
+                  paddingAngle={displayPieData.length > 1 ? 5 : 0}
                   dataKey="value"
                 >
-                  <Cell fill="#000080" />
-                  <Cell fill="#F59E0B" />
-                  <Cell fill="#EF4444" />
+                  {displayPieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
@@ -257,6 +277,7 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
                     borderRadius: '10px',
                     color: '#fff',
                   }}
+                  formatter={(val: any) => [Number(val).toLocaleString(), 'Invoices']}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -281,7 +302,7 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
                   lineHeight: 1,
                 }}
               >
-                {fullyPaidCount + pendingCount + unpaidCount}
+                {totalInvoices}
               </span>
               <span
                 style={{
@@ -303,10 +324,24 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
                 Paid: <strong>{fullyPaidCount}</strong>
               </span>
             </div>
+            {partialPaidCount > 0 && (
+              <div className="chart-pill-item">
+                <span className="chart-pill-dot" style={{ background: '#10B981' }}></span>
+                <span>
+                  Partial: <strong>{partialPaidCount}</strong>
+                </span>
+              </div>
+            )}
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#F59E0B' }}></span>
               <span>
-                Pending: <strong>{pendingCount}</strong>
+                Pending Check: <strong>{pendingCount}</strong>
+              </span>
+            </div>
+            <div className="chart-pill-item">
+              <span className="chart-pill-dot" style={{ background: '#EF4444' }}></span>
+              <span>
+                Unpaid: <strong>{unpaidCount}</strong>
               </span>
             </div>
           </div>
@@ -324,12 +359,7 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
           <div style={{ height: 260 }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} initialDimension={{ width: 300, height: 260 }}>
               <BarChart
-                data={[
-                  { name: 'May', Amount: 8500000 },
-                  { name: 'Jun', Amount: 12400000 },
-                  { name: 'Jul', Amount: 15800000 },
-                  { name: 'Aug', Amount: 8500000 },
-                ]}
+                data={monthlyRevenueData}
                 margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
@@ -337,7 +367,13 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
                 <YAxis
                   stroke="#64748B"
                   fontSize={11}
-                  tickFormatter={(val) => `₦${val / 1000000}M`}
+                  tickFormatter={(val) =>
+                    val >= 1000000
+                      ? `₦${(val / 1000000).toFixed(1)}M`
+                      : val >= 1000
+                      ? `₦${(val / 1000).toFixed(0)}k`
+                      : `₦${val}`
+                  }
                 />
                 <Tooltip
                   contentStyle={{
@@ -357,7 +393,7 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
             <div className="chart-pill-item">
               <span className="chart-pill-dot" style={{ background: '#000080' }}></span>
               <span>
-                Peak Month: <strong>July (₦15.8M)</strong>
+                Peak Month: <strong>{peakMonth} (₦{peakMonthAmount.toLocaleString()})</strong>
               </span>
             </div>
           </div>

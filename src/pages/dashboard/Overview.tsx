@@ -60,7 +60,9 @@ export default function Overview() {
       try {
         setLoading(true);
         if (userRole === 'Accountant') {
-          const res = await api.get('/finance/dashboard');
+          const res = await api.get(
+            `/finance/dashboard?session=${encodeURIComponent(session || '')}&term=${encodeURIComponent(term || '')}`
+          );
           setAccountantData(res?.data || res);
         } else if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
           const res = await api.get('/academics/teacher/dashboard');
@@ -204,7 +206,7 @@ export default function Overview() {
     };
 
     fetchData();
-  }, [userRole]);
+  }, [userRole, session, term]);
 
   const [userPermissions, setUserPermissions] = React.useState<string[]>([]);
 
