@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../../services/api';
 import './Classes.css';
 import { useDialog } from '../../../context/DialogContext';
@@ -33,6 +34,7 @@ interface ClassItem {
 }
 
 export default function Classes() {
+  const navigate = useNavigate();
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
   const { canManageClasses } = usePermissions();
@@ -458,7 +460,12 @@ export default function Classes() {
                       )}
                     </td>
                     <td>
-                      <span className="student-count-badge">
+                      <span 
+                        className="student-count-badge"
+                        onClick={() => navigate(`/dashboard/students?classId=${cls.id}`)}
+                        style={{ cursor: 'pointer' }}
+                        title="Click to view enrolled class students"
+                      >
                         <Users size={13} /> {cls.studentCount} Students
                       </span>
                     </td>
@@ -471,21 +478,35 @@ export default function Classes() {
                           <MoreVertical size={18} />
                         </button>
 
-                        {isDropdownOpen && !isReadOnly && (
+                        {isDropdownOpen && (
                           <div className="action-dropdown-menu">
                             <button
                               className="dropdown-action-item"
-                              onClick={() => handleEdit(cls)}
+                              onClick={() => {
+                                setOpenDropdownId(null);
+                                navigate(`/dashboard/students?classId=${cls.id}`);
+                              }}
                             >
-                              <Edit3 size={15} color="#000080" /> Edit Class Details
+                              <Users size={15} color="#000080" /> View Class Students
                             </button>
-                            <div className="dropdown-divider" />
-                            <button
-                              className="dropdown-action-item danger"
-                              onClick={() => handleDelete(cls.id, fullClassName)}
-                            >
-                              <Trash2 size={15} /> Delete Class
-                            </button>
+                            {!isReadOnly && (
+                              <>
+                                <div className="dropdown-divider" />
+                                <button
+                                  className="dropdown-action-item"
+                                  onClick={() => handleEdit(cls)}
+                                >
+                                  <Edit3 size={15} color="#000080" /> Edit Class Details
+                                </button>
+                                <div className="dropdown-divider" />
+                                <button
+                                  className="dropdown-action-item danger"
+                                  onClick={() => handleDelete(cls.id, fullClassName)}
+                                >
+                                  <Trash2 size={15} /> Delete Class
+                                </button>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>
@@ -531,16 +552,30 @@ export default function Classes() {
 
                     {isDropdownOpen && (
                       <div className="action-dropdown-menu">
-                        <button className="dropdown-action-item" onClick={() => handleEdit(cls)}>
-                          <Edit3 size={15} color="#000080" /> Edit Class Details
-                        </button>
-                        <div className="dropdown-divider" />
-                        <button
-                          className="dropdown-action-item danger"
-                          onClick={() => handleDelete(cls.id, fullClassName)}
+                        <button 
+                          className="dropdown-action-item" 
+                          onClick={() => {
+                            setOpenDropdownId(null);
+                            navigate(`/dashboard/students?classId=${cls.id}`);
+                          }}
                         >
-                          <Trash2 size={15} /> Delete Class
+                          <Users size={15} color="#000080" /> View Class Students
                         </button>
+                        {!isReadOnly && (
+                          <>
+                            <div className="dropdown-divider" />
+                            <button className="dropdown-action-item" onClick={() => handleEdit(cls)}>
+                              <Edit3 size={15} color="#000080" /> Edit Class Details
+                            </button>
+                            <div className="dropdown-divider" />
+                            <button
+                              className="dropdown-action-item danger"
+                              onClick={() => handleDelete(cls.id, fullClassName)}
+                            >
+                              <Trash2 size={15} /> Delete Class
+                            </button>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -614,7 +649,12 @@ export default function Classes() {
                     borderTop: '1px solid #F1F5F9',
                   }}
                 >
-                  <span className="student-count-badge">
+                  <span 
+                    className="student-count-badge"
+                    onClick={() => navigate(`/dashboard/students?classId=${cls.id}`)}
+                    style={{ cursor: 'pointer' }}
+                    title="Click to view enrolled class students"
+                  >
                     <Users size={13} /> {cls.studentCount} Students
                   </span>
                 </div>

@@ -53,6 +53,7 @@ interface StudentItem {
 import { useAuth } from '../../../context/AuthContext';
 import { useBranchContext } from '../../../context/BranchContext';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { useSearchParams } from 'react-router-dom';
 
 interface ClassItem {
   id: string;
@@ -62,6 +63,9 @@ interface ClassItem {
 }
 
 export default function Students() {
+  const [searchParams] = useSearchParams();
+  const queryClassId = searchParams.get('classId');
+
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
   const { activeBranchId, branches } = useBranchContext();
@@ -76,10 +80,16 @@ export default function Students() {
   // Filters & View Mode
   const [filterSearch, setFilterSearch] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<string>('');
-  const [filterClassId, setFilterClassId] = useState<string>('');
+  const [filterClassId, setFilterClassId] = useState<string>(queryClassId || '');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (queryClassId) {
+      setFilterClassId(queryClassId);
+    }
+  }, [queryClassId]);
 
   const {
     session: filterSession,
