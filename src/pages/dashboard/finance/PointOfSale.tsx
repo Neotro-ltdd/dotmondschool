@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   History,
   FileText,
+  Layers,
 } from 'lucide-react';
 
 interface PosReceipt {
@@ -31,11 +32,21 @@ interface PosReceipt {
   remarks: string;
 }
 
+export interface PosFeeItem {
+  id?: string;
+  name: string;
+  amount: number;
+  applicability?: string;
+  selected: boolean;
+}
+
 interface PosStudent {
   id: string;
   name: string;
   registrationNumber: string;
+  classId?: string;
   className: string;
+  classLevel?: string;
   invoices: any[];
   receipts?: PosReceipt[];
 }
@@ -58,7 +69,9 @@ export default function PointOfSale() {
   const [posAmountDue, setPosAmountDue] = useState<number>(0);
   const [posAmountPaid, setPosAmountPaid] = useState<number>(0);
   const [directMethod, setDirectMethod] = useState('Cash');
-  const [directRemarks, setDirectRemarks] = useState('');
+  const [directRemarks, setDirectRemarks] = useState('Received by Mrs. Olufunke Ikang');
+  const [feeBreakdownItems, setFeeBreakdownItems] = useState<PosFeeItem[]>([]);
+  const [loadingFeeTemplate, setLoadingFeeTemplate] = useState<boolean>(false);
   const [processing, setProcessing] = useState(false);
   const [searching, setSearching] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
@@ -77,26 +90,147 @@ export default function PointOfSale() {
       });
   };
 
+  const loadFeeBreakdown = async (student: PosStudent, session: string, term: string) => {
+    setLoadingFeeTemplate(true);
+    try {
+      let items: PosFeeItem[] = [];
+
+      // 1. Try class-specific template endpoint if classId is available
+      if (student.classId) {
+        try {
+          const classTemplate = await api.get(
+            `/finance/setup/fee-templates/class/${student.classId}?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`
+          );
+          if (classTemplate && Array.isArray(classTemplate.items) && classTemplate.items.length > 0) {
+            items = classTemplate.items.map((it: any) => ({
+              id: it.id,
+              name: it.name,
+              amount: Number(it.amount) || 0,
+              applicability: it.applicability || 'Compulsory',
+              selected: true,
+            }));
+          }
+        } catch (e) {
+          // Fall through to query all templates
+        }
+      }
+
+      // 2. Query all templates for session & term
+      if (items.length === 0) {
+        try {
+          const templates = await api.get(
+            `/finance/setup/fee-templates?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`
+          );
+          if (Array.isArray(templates) && templates.length > 0) {
+            const matched = templates.find((t: any) => 
+              (student.classId && t.classId === student.classId) ||
+              (student.className && (
+                t.className?.toLowerCase().includes(student.className.toLowerCase()) ||
+                student.className.toLowerCase().includes(t.className?.toLowerCase())
+              ))
+            ) || templates[0];
+
+            if (matched && Array.isArray(matched.items) && matched.items.length > 0) {
+              items = matched.items.map((it: any) => ({
+                id: it.id,
+                name: it.name,
+                amount: Number(it.amount) || 0,
+                applicability: it.applicability || 'Compulsory',
+                selected: true,
+              }));
+            }
+          }
+        } catch (e) {
+          // Fall through to default items
+        }
+      }
+
+      // 3. Fallback standard curriculum fee breakdown if template not yet configured
+      if (items.length === 0) {
+        items = [
+          { name: 'Tuition Fee', amount: 75000, applicability: 'Compulsory', selected: true },
+          { name: 'Development Levy', amount: 15000, applicability: 'Compulsory', selected: true },
+          { name: 'Textbooks & Learning Materials', amount: 35000, applicability: 'Compulsory', selected: true },
+          { name: 'Customized Notebooks Pack', amount: 10000, applicability: 'Compulsory', selected: true },
+          { name: 'School Uniform (2 Pairs)', amount: 25000, applicability: 'Compulsory', selected: true },
+          { name: 'Sportswear & House Wear', amount: 15000, applicability: 'Compulsory', selected: true },
+          { name: 'Student Identity Card & Lanyard', amount: 5000, applicability: 'Compulsory', selected: true },
+          { name: 'Co-Curricular & Club Dues', amount: 8000, applicability: 'Compulsory', selected: true },
+          { name: 'After-School Lessons & Tutorial', amount: 15000, applicability: 'Optional', selected: true },
+          { name: 'End of Year / Christmas Party', amount: 12000, applicability: 'Optional', selected: true },
+        ];
+      }
+
+      setFeeBreakdownItems(items);
+      const totalDue = items.reduce((acc, it) => it.selected ? acc + it.amount : acc, 0);
+      setPosAmountDue(totalDue);
+      setPosAmountPaid(totalDue);
+    } catch (err) {
+      console.error('Failed to load fee breakdown:', err);
+    } finally {
+      setLoadingFeeTemplate(false);
+    }
+  };
+
+  const toggleFeeItem = (index: number) => {
+    setFeeBreakdownItems((prev) => {
+      const updated = prev.map((item, i) => (i === index ? { ...item, selected: !item.selected } : item));
+      const newTotal = updated.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
+      setPosAmountDue(newTotal);
+      setPosAmountPaid((prevPaid) => (prevPaid === posAmountDue || prevPaid > newTotal ? newTotal : prevPaid));
+      return updated;
+    });
+  };
+
+  const handleSelectAllFeeItems = (selectAll: boolean) => {
+    setFeeBreakdownItems((prev) => {
+      const updated = prev.map((item) => ({ ...item, selected: selectAll }));
+      const newTotal = updated.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
+      setPosAmountDue(newTotal);
+      setPosAmountPaid(newTotal);
+      return updated;
+    });
+  };
+
+  const handleSelectCompulsoryOnly = () => {
+    setFeeBreakdownItems((prev) => {
+      const updated = prev.map((item) => ({
+        ...item,
+        selected: item.applicability?.toLowerCase() === 'compulsory' || !item.applicability?.toLowerCase().includes('optional'),
+      }));
+      const newTotal = updated.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
+      setPosAmountDue(newTotal);
+      setPosAmountPaid(newTotal);
+      return updated;
+    });
+  };
+
   const handleSelectStudent = (student: PosStudent) => {
     setSelectedStudent(student);
     setReceiptData(null);
     setShowDrawer(true);
+    setDirectRemarks('Received by Mrs. Olufunke Ikang');
 
     const pending = getSortedPendingInvoices(student);
+    let targetSession: string;
+    let targetTerm: string;
+
     if (pending.length > 0) {
       const oldest = pending[0];
       setTargetInvoiceId(oldest.id);
+      targetTerm = oldest.term;
+      targetSession = oldest.session;
       setPosTerm(oldest.term);
       setPosSession(oldest.session);
-      setPosAmountDue(oldest.amountDue);
-      setPosAmountPaid(oldest.balance);
     } else {
       setTargetInvoiceId('new');
-      setPosTerm('First Term');
-      setPosSession(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-      setPosAmountDue(0);
-      setPosAmountPaid(0);
+      targetTerm = posTerm || 'First Term';
+      targetSession = posSession || `${new Date().getFullYear()}/${new Date().getFullYear() + 1}`;
+      setPosTerm(targetTerm);
+      setPosSession(targetSession);
     }
+
+    loadFeeBreakdown(student, targetSession, targetTerm);
   };
 
   const handleSearch = async () => {
@@ -610,12 +744,10 @@ export default function PointOfSale() {
                             if (inv) {
                               setPosTerm(inv.term);
                               setPosSession(inv.session);
-                              setPosAmountDue(inv.amountDue);
-                              setPosAmountPaid(inv.balance);
+                              loadFeeBreakdown(selectedStudent, inv.session, inv.term);
                             }
                           } else {
-                            setPosAmountDue(0);
-                            setPosAmountPaid(0);
+                            loadFeeBreakdown(selectedStudent, posSession, posTerm);
                           }
                         }}
                       >
@@ -637,7 +769,13 @@ export default function PointOfSale() {
                         type="text"
                         className="select-filter-input"
                         value={posSession}
-                        onChange={(e) => setPosSession(e.target.value)}
+                        onChange={(e) => {
+                          const s = e.target.value;
+                          setPosSession(s);
+                          if (selectedStudent) {
+                            loadFeeBreakdown(selectedStudent, s, posTerm);
+                          }
+                        }}
                         required
                         disabled={targetInvoiceId !== 'new'}
                       />
@@ -647,7 +785,13 @@ export default function PointOfSale() {
                       <select
                         className="select-filter-input"
                         value={posTerm}
-                        onChange={(e) => setPosTerm(e.target.value)}
+                        onChange={(e) => {
+                          const t = e.target.value;
+                          setPosTerm(t);
+                          if (selectedStudent) {
+                            loadFeeBreakdown(selectedStudent, posSession, t);
+                          }
+                        }}
                         required
                         disabled={targetInvoiceId !== 'new'}
                       >
@@ -655,6 +799,98 @@ export default function PointOfSale() {
                         <option value="Second Term">Second Term</option>
                         <option value="Third Term">Third Term</option>
                       </select>
+                    </div>
+                  </div>
+
+                  {/* Class Fee Breakdown & Dynamic Selection */}
+                  <div className="pos-fee-breakdown-section">
+                    <div className="pos-fee-breakdown-header">
+                      <div className="pos-fee-breakdown-title">
+                        <Layers size={16} color="#000080" />
+                        <span>Class Fee Breakdown &amp; Dynamic Selection</span>
+                        {loadingFeeTemplate && (
+                          <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 'normal' }}>
+                            (Loading template...)
+                          </span>
+                        )}
+                      </div>
+                      <div className="pos-fee-actions">
+                        <button
+                          type="button"
+                          className="pos-btn-fee-action"
+                          onClick={() => handleSelectAllFeeItems(true)}
+                          title="Select all fee components"
+                        >
+                          Select All
+                        </button>
+                        <button
+                          type="button"
+                          className="pos-btn-fee-action"
+                          onClick={handleSelectCompulsoryOnly}
+                          title="Select compulsory items only"
+                        >
+                          Compulsory Only
+                        </button>
+                        <button
+                          type="button"
+                          className="pos-btn-fee-action"
+                          onClick={() => handleSelectAllFeeItems(false)}
+                          title="Deselect all items"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pos-fee-items-grid">
+                      {feeBreakdownItems.map((item, idx) => {
+                        const appClass = item.applicability?.toLowerCase().includes('optional')
+                          ? 'optional'
+                          : item.applicability?.toLowerCase().includes('sectional')
+                          ? 'sectional'
+                          : 'compulsory';
+
+                        return (
+                          <div
+                            key={item.id || idx}
+                            className={`pos-fee-item-card ${item.selected ? 'selected' : 'unselected'}`}
+                            onClick={() => toggleFeeItem(idx)}
+                          >
+                            <input
+                              type="checkbox"
+                              className="pos-fee-checkbox"
+                              checked={item.selected}
+                              onChange={() => toggleFeeItem(idx)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <div className="pos-fee-item-info">
+                              <div className="pos-fee-item-name" title={item.name}>
+                                {item.name}
+                              </div>
+                              <div className="pos-fee-item-meta">
+                                <span className={`pos-fee-badge ${appClass}`}>
+                                  {item.applicability || 'Compulsory'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="pos-fee-item-amount">
+                              ₦{item.amount.toLocaleString()}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pos-fee-breakdown-summary">
+                      <span>
+                        Selected components:{' '}
+                        <strong>
+                          {feeBreakdownItems.filter((i) => i.selected).length} of {feeBreakdownItems.length}
+                        </strong>
+                      </span>
+                      <span>
+                        Total Fee Due: <strong>₦{posAmountDue.toLocaleString()}</strong>
+                      </span>
                     </div>
                   </div>
 
@@ -667,9 +903,8 @@ export default function PointOfSale() {
                         className="select-filter-input"
                         min="1"
                         value={posAmountDue}
-                        onChange={(e) => setPosAmountDue(Number(e.target.value))}
-                        required
-                        disabled={targetInvoiceId !== 'new'}
+                        readOnly
+                        style={{ backgroundColor: '#F8FAFC', fontWeight: 800, color: '#0F172A', cursor: 'not-allowed' }}
                       />
                     </div>
 
@@ -678,14 +913,24 @@ export default function PointOfSale() {
                       <input
                         type="number"
                         min="1"
-                        max={targetInvoiceId !== 'new' ? posAmountDue : undefined}
                         value={posAmountPaid}
                         onChange={(e) => setPosAmountPaid(Number(e.target.value))}
                         className="select-filter-input"
                         required
+                        style={{ fontWeight: 800, color: '#047857' }}
                       />
                     </div>
                   </div>
+
+                  {posAmountDue > posAmountPaid && posAmountPaid > 0 && (
+                    <div className="pos-part-payment-banner">
+                      <AlertCircle size={16} color="#92400E" style={{ flexShrink: 0 }} />
+                      <span>
+                        <strong>Part-Payment:</strong> Outstanding balance of{' '}
+                        <strong>₦{(posAmountDue - posAmountPaid).toLocaleString()}</strong> will remain open on the student's ledger.
+                      </span>
+                    </div>
+                  )}
 
                   {/* Payment Method */}
                   <div className="pos-form-group">

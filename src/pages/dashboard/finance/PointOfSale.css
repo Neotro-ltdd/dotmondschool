@@ -513,3 +513,233 @@ body[data-theme='dark'] .pos-history-item {
   border-color: #334155 !important;
   color: #f8fafc !important;
 }
+
+/* ════════ POS ITEMIZE FEE BREAKDOWN STYLES ════════ */
+.pos-fee-breakdown-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.pos-fee-breakdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pos-fee-breakdown-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pos-fee-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pos-btn-fee-action {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pos-btn-fee-action:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.pos-btn-fee-action.active {
+  background: #000080;
+  border-color: #000080;
+  color: #ffffff;
+}
+
+.pos-fee-items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+@media (max-width: 600px) {
+  .pos-fee-items-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pos-fee-item-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pos-fee-item-card:hover {
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.pos-fee-item-card.selected {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.pos-fee-item-card.unselected {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  opacity: 0.6;
+}
+
+.pos-fee-checkbox {
+  width: 17px;
+  height: 17px;
+  accent-color: #047857;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.pos-fee-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.pos-fee-item-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pos-fee-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.pos-fee-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.pos-fee-badge.compulsory {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.pos-fee-badge.optional {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pos-fee-badge.sectional {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.pos-fee-item-amount {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #047857;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.pos-fee-item-card.unselected .pos-fee-item-amount {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.pos-fee-breakdown-summary {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #1e40af;
+}
+
+.pos-fee-breakdown-summary strong {
+  color: #000080;
+  font-weight: 800;
+}
+
+.pos-part-payment-banner {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #92400e;
+  margin-top: 0.4rem;
+}
+
+body[data-theme='dark'] .pos-fee-breakdown-section {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body[data-theme='dark'] .pos-fee-item-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body[data-theme='dark'] .pos-fee-item-card.selected {
+  background: #064e3b !important;
+  border-color: #047857 !important;
+}
+
+body[data-theme='dark'] .pos-fee-item-card.unselected {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  opacity: 0.5;
+}
+
+body[data-theme='dark'] .pos-fee-item-name {
+  color: #f8fafc !important;
+}
+
+body[data-theme='dark'] .pos-fee-breakdown-summary {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #93c5fd !important;
+}
+
