@@ -831,7 +831,12 @@ export default function ParentHub() {
                         </div>
                         <div className="bank-info-row">
                           <span className="bank-label">Account Name</span>
-                          <span className="bank-value">DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</span>
+                          <span
+                            className="bank-value"
+                            style={{ fontSize: '0.88rem', textAlign: 'right', maxWidth: '65%', lineHeight: 1.35 }}
+                          >
+                            DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL
+                          </span>
                         </div>
                         <div className="bank-info-row">
                           <span className="bank-label">Account Number</span>
