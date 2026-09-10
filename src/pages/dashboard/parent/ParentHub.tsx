@@ -416,7 +416,7 @@ export default function ParentHub() {
             >
               <p style={{ color: '#64748b' }}>Loading children records...</p>
             </div>
-          ) : kids.length === 0 ? (
+          ) : !kids || kids.length === 0 ? (
             <div
               className="glass-panel"
               style={{
@@ -718,7 +718,7 @@ export default function ParentHub() {
                   className={`parent-sub-tab ${feeSubTab === 'history' ? 'active' : ''}`}
                   onClick={() => setFeeSubTab('history')}
                 >
-                  Payment History & Receipts ({receipts.length})
+                  Payment History & Receipts ({(receipts || []).length})
                 </button>
                 <button
                   className={`parent-sub-tab ${feeSubTab === 'upload' ? 'active' : ''}`}
@@ -802,13 +802,13 @@ export default function ParentHub() {
                   <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
                     Payment Receipts Directory
                   </h3>
-                  {receipts.length === 0 ? (
+                  {!receipts || receipts.length === 0 ? (
                     <p style={{ color: '#64748b', padding: '1.5rem 0' }}>
                       No confirmed payment receipts found.
                     </p>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                      {receipts.map((rec) => (
+                      {(receipts || []).map((rec) => (
                         <div
                           key={rec.id}
                           style={{
@@ -1278,7 +1278,7 @@ export default function ParentHub() {
                     Compare past terminal scores and GPA progression across sessions.
                   </p>
 
-                  {transcripts.length === 0 ? (
+                  {!transcripts || transcripts.length === 0 ? (
                     <p style={{ color: '#64748b' }}>
                       No past academic transcript records available.
                     </p>
@@ -1300,7 +1300,7 @@ export default function ParentHub() {
                           </tr>
                         </thead>
                         <tbody>
-                          {transcripts.map((t, idx) => (
+                          {(transcripts || []).map((t, idx) => (
                             <tr key={idx}>
                               <td style={{ fontWeight: 600, color: '#0f172a' }}>{t.session}</td>
                               <td>{t.term}</td>

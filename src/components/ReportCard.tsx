@@ -64,7 +64,7 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
         api.get(
           `/academics/students/${studentId}/report-card?session=${encodeURIComponent(session)}&term=${encodeURIComponent(term)}`,
         ),
-        api.get('/setup/school/profile').catch(() => ({ logoUrl: null })),
+        api.get('/setup/school-profile').catch(() => api.get('/setup/school/profile')).catch(() => ({ logoUrl: null })),
       ]);
 
       setData(reportRes);
@@ -256,17 +256,17 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
               </tr>
             </thead>
             <tbody>
-              {data.subjects.map((score: any, index: number) => (
+              {(data.subjects || []).map((score: any, index: number) => (
                 <tr key={index}>
                   <td className="subject-name">{score.subjectName}</td>
                   {isSecondary ? (
                     <>
-                      <td>{Math.ceil(score.testScore)}</td>
-                      <td>{Math.ceil(score.examScore)}</td>
-                      <td>{Math.ceil(score.totalScore)}</td>
+                      <td>{Math.ceil(score.testScore ?? 0)}</td>
+                      <td>{Math.ceil(score.examScore ?? 0)}</td>
+                      <td>{Math.ceil(score.totalScore ?? 0)}</td>
                     </>
                   ) : (
-                    <td>{Math.ceil(score.totalScore)}</td>
+                    <td>{Math.ceil(score.totalScore ?? 0)}</td>
                   )}
                   <td>{score.grade}</td>
                   <td>{score.remark}</td>
@@ -282,15 +282,15 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
               <div className="attendance-box custom-box">
                 <h4>ATTENDANCE</h4>
                 <div className="att-row">
-                  <span>Days School Opened:</span> <span className="att-val">118</span>
+                  <span>Days School Opened:</span> <span className="att-val">{data.daysSchoolOpened ?? 118}</span>
                 </div>
                 <div className="att-row">
                   <span>Days Present:</span>{' '}
-                  <span className="att-val">{data.daysStudentPresent}</span>
+                  <span className="att-val">{data.daysStudentPresent ?? 0}</span>
                 </div>
                 <div className="att-row">
                   <span>Days Absent:</span>{' '}
-                  <span className="att-val">{118 - data.daysStudentPresent}</span>
+                  <span className="att-val">{(data.daysSchoolOpened ?? 118) - (data.daysStudentPresent ?? 0)}</span>
                 </div>
               </div>
 
@@ -298,20 +298,20 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
                 <h4>PERFORMANCE SUMMARY</h4>
                 <div className="att-row">
                   <span>Grand Total:</span>{' '}
-                  <span className="att-val">{Math.ceil(data.grandTotal)}</span>
+                  <span className="att-val">{Math.ceil(data.grandTotal ?? 0)}</span>
                 </div>
                 <div className="att-row">
-                  <span>Average:</span> <span className="att-val">{data.average.toFixed(1)}%</span>
+                  <span>Average:</span> <span className="att-val">{(data.average ?? 0).toFixed(1)}%</span>
                 </div>
                 {isSecondary ? (
                   <div className="att-row">
                     <span>Department/Percentage:</span>{' '}
-                    <span className="att-val">{Math.round(data.average)}%</span>
+                    <span className="att-val">{Math.round(data.average ?? 0)}%</span>
                   </div>
                 ) : (
                   <div className="att-row">
                     <span>Grade/Position:</span>{' '}
-                    <span className="att-val">Grade {data.averageGrade}</span>
+                    <span className="att-val">Grade {data.averageGrade || '—'}</span>
                   </div>
                 )}
               </div>

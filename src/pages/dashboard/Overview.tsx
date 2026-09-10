@@ -89,7 +89,12 @@ export default function Overview() {
             ...(pData?.data || pData || {}),
           });
         } else if (userRole === 'Parent') {
-          const res = await api.get('/parents/wards');
+          let res: any = null;
+          try {
+            res = await api.get('/parents/my-kids');
+          } catch {
+            res = await api.get('/parents/wards').catch(() => null);
+          }
           setParentData(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
         } else if (userRole === 'Vendor' || userRole === 'GateSecurity') {
           const res = await api.get('/vendor/dashboard');
