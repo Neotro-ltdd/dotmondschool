@@ -57,14 +57,15 @@ export default function Overview() {
 
   React.useEffect(() => {
     const fetchData = async () => {
+      if (!userRole) return;
       try {
         setLoading(true);
-        if (userRole === 'Accountant') {
+        if (userRole === 'Accountant' || userRole === 'Bursar') {
           const res = await api.get(
             `/finance/dashboard?session=${encodeURIComponent(session || '')}&term=${encodeURIComponent(term || '')}`
           );
           setAccountantData(res?.data || res);
-        } else if (userRole === 'Teacher' || userRole === 'SubjectTeacher') {
+        } else if (userRole === 'Teacher' || userRole === 'SubjectTeacher' || userRole === 'FormMaster') {
           const res = await api.get('/academics/teacher/dashboard');
           setTeacherData(res?.data || res);
         } else if (
@@ -79,7 +80,7 @@ export default function Overview() {
             res = await api.get('/platform/summary').catch(() => null);
           }
           setAdminData(res?.data || res);
-        } else if (userRole === 'Director' || userRole === 'Principal') {
+        } else if (userRole === 'Director' || userRole === 'Principal' || userRole === 'Chairman') {
           const [pData, pSummary] = await Promise.all([
             api.get('/academics/principal/dashboard').catch(() => null),
             api
@@ -190,13 +191,17 @@ export default function Overview() {
           const res = await api.get('/vendor/dashboard');
           setVendorData(res?.data || res);
         } else {
-          let res;
-          try {
-            res = await api.get('/setup/admin/dashboard');
-          } catch {
-            res = await api.get('/platform/summary').catch(() => null);
+          // Only attempt admin endpoints if the user has an Admin role
+          const isAdmin = ['Admin', 'SuperAdmin', 'Superadmin', 'SystemAdmin'].includes(userRole);
+          if (isAdmin) {
+            let res;
+            try {
+              res = await api.get('/setup/admin/dashboard');
+            } catch {
+              res = await api.get('/platform/summary').catch(() => null);
+            }
+            setAdminData(res?.data || res);
           }
-          setAdminData(res?.data || res);
         }
       } catch (err) {
         console.error('Dashboard fetch error:', err);
@@ -223,7 +228,7 @@ export default function Overview() {
 
   return (
     <div className="overview-page-container">
-      {userRole === 'Accountant' ? (
+      {userRole === 'Accountant' || userRole === 'Bursar' ? (
         <AccountantDashboardView
           userName={userName || undefined}
           userTitle={userTitle || undefined}

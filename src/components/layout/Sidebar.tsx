@@ -885,6 +885,14 @@ export default function Sidebar({
                       {isFinanceOpen && (
                         <div className="submenu">
                           <NavLink
+                            to="/dashboard/finance/invoices"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Term Invoices
+                          </NavLink>
+                          <NavLink
                             to="/dashboard/finance/verifications"
                             className={({ isActive }) =>
                               `nav-item submenu-item ${isActive ? 'active' : ''}`
