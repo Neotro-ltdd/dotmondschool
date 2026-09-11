@@ -15,6 +15,9 @@ import {
   X,
   Sparkles,
   RotateCcw,
+  Save,
+  Layers,
+  CheckSquare,
 } from 'lucide-react';
 import { api } from '../../../services/api';
 import { useBranch } from '../../../context/BranchContext';
@@ -92,6 +95,141 @@ export default function TermInvoices() {
   const [classList, setClassList] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceRecord | null>(null);
+
+  // Modal Dynamic Fee Selection State
+  interface ModalFeeItem {
+    id?: string;
+    name: string;
+    amount: number;
+    applicability?: string;
+    selected: boolean;
+  }
+
+  const DEFAULT_CLASS_FEE_ITEMS: ModalFeeItem[] = [
+    { name: 'Registration Form', amount: 5000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Christmas Party', amount: 10000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Uniform Fees', amount: 40000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Notebook', amount: 10000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Sport Wear', amount: 10000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Security ID / Resource Management', amount: 10000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Textbook', amount: 30000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Development Fees', amount: 10000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Tuition Fees', amount: 90000, applicability: 'COMPULSORY', selected: true },
+    { name: 'Lesson Fees', amount: 10000, applicability: 'COMPULSORY', selected: true },
+  ];
+
+  const [modalFeeItems, setModalFeeItems] = useState<ModalFeeItem[]>([]);
+  const [savingSchedule, setSavingSchedule] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (selectedInvoice) {
+      if (selectedInvoice.items && selectedInvoice.items.length > 0) {
+        const hasOnlyGeneric =
+          selectedInvoice.items.length === 1 &&
+          selectedInvoice.items[0].description?.toLowerCase().includes('tuition & general');
+
+        if (!hasOnlyGeneric) {
+          setModalFeeItems(
+            selectedInvoice.items.map((it) => ({
+              id: it.id,
+              name: it.feeCategory || it.description,
+              amount: Number(it.amount) || 0,
+              applicability: 'COMPULSORY',
+              selected: true,
+            }))
+          );
+          return;
+        }
+      }
+
+      if (selectedInvoice.classId) {
+        api
+          .get(`/finance/setup/fee-templates/class/${selectedInvoice.classId}`)
+          .then((res: any) => {
+            if (res && Array.isArray(res.items) && res.items.length > 0) {
+              setModalFeeItems(
+                res.items.map((it: any) => ({
+                  id: it.id,
+                  name: it.name,
+                  amount: Number(it.amount) || 0,
+                  applicability: it.applicability ? it.applicability.toUpperCase() : 'COMPULSORY',
+                  selected: true,
+                }))
+              );
+            } else {
+              setModalFeeItems(DEFAULT_CLASS_FEE_ITEMS.map((item) => ({ ...item })));
+            }
+          })
+          .catch(() => {
+            setModalFeeItems(DEFAULT_CLASS_FEE_ITEMS.map((item) => ({ ...item })));
+          });
+      } else {
+        setModalFeeItems(DEFAULT_CLASS_FEE_ITEMS.map((item) => ({ ...item })));
+      }
+    }
+  }, [selectedInvoice]);
+
+  const toggleModalFeeItem = (index: number) => {
+    setModalFeeItems((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, selected: !item.selected } : item))
+    );
+  };
+
+  const handleModalSelectAll = (selectAll: boolean) => {
+    setModalFeeItems((prev) => prev.map((item) => ({ ...item, selected: selectAll })));
+  };
+
+  const handleModalSelectCompulsory = () => {
+    setModalFeeItems((prev) =>
+      prev.map((item) => ({
+        ...item,
+        selected:
+          item.applicability?.toUpperCase() === 'COMPULSORY' ||
+          !item.applicability?.toLowerCase().includes('optional'),
+      }))
+    );
+  };
+
+  const handleSaveFeeSchedule = async () => {
+    if (!selectedInvoice) return;
+    setSavingSchedule(true);
+    try {
+      const selectedItems = modalFeeItems
+        .filter((i) => i.selected)
+        .map((i) => ({
+          description: i.name,
+          amount: i.amount,
+        }));
+
+      const res = await api.post(`/finance/invoices/${selectedInvoice.id}/update-items`, {
+        items: selectedItems,
+      });
+
+      if (res && res.success) {
+        const updatedInv = {
+          ...selectedInvoice,
+          amountDue: res.amountDue,
+          balance: res.balance,
+          paymentStatus: res.paymentStatus,
+          itemsCount: res.items?.length || 0,
+          items: res.items || [],
+        };
+        setSelectedInvoice(updatedInv);
+
+        setInvoices((prev) =>
+          prev.map((inv) => (inv.id === selectedInvoice.id ? updatedInv : inv))
+        );
+
+        fetchInvoices();
+        alert('Fee schedule saved successfully! Student invoice totals updated.');
+      }
+    } catch (err: any) {
+      console.error('Failed to save fee schedule:', err);
+      alert('Failed to save fee schedule: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setSavingSchedule(false);
+    }
+  };
 
   // Sync active term defaults
   useEffect(() => {
@@ -646,63 +784,165 @@ export default function TermInvoices() {
                 </div>
               </div>
 
-              {/* Items Breakdown Table */}
-              <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-                Itemized Tuition & Fee Schedule
-              </h4>
+              {/* Class Fee Breakdown & Dynamic Selection Component */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.85rem',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Layers size={18} color="#000080" />
+                    <h4
+                      style={{
+                        margin: 0,
+                        fontSize: '0.92rem',
+                        fontWeight: 800,
+                        color: '#0f172a',
+                      }}
+                    >
+                      Class Fee Breakdown &amp; Dynamic Selection
+                    </h4>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                    <button
+                      type="button"
+                      className="pos-btn-fee-action"
+                      onClick={() => handleModalSelectAll(true)}
+                    >
+                      Select All
+                    </button>
+                    <button
+                      type="button"
+                      className="pos-btn-fee-action"
+                      onClick={handleModalSelectCompulsory}
+                    >
+                      Compulsory Only
+                    </button>
+                    <button
+                      type="button"
+                      className="pos-btn-fee-action"
+                      onClick={() => handleModalSelectAll(false)}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
 
-              {selectedInvoice.items && selectedInvoice.items.length > 0 ? (
-                <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', marginBottom: '1.25rem' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                    <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 800 }}>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>Fee Category</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>Description</th>
-                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedInvoice.items.map((item) => (
-                        <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#0f172a' }}>
-                            {item.feeCategory || item.description}
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem', color: '#475569' }}>
-                            {item.description || 'Standard Term Fee'}
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>
-                            ₦{Number(item.amount).toLocaleString()}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', marginBottom: '1.25rem' }}>
-                  Standard Consolidated Term Tuition Invoice
-                </div>
-              )}
-
-              {/* Financial Totals Summary */}
-              <div className="modal-totals-box">
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                  <span style={{ color: '#475569' }}>Total Invoice Amount:</span>
-                  <span style={{ fontWeight: 800, color: '#0f172a' }}>
-                    ₦{Number(selectedInvoice.amountDue).toLocaleString()}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                  <span style={{ color: '#475569' }}>Amount Paid to Date:</span>
-                  <span style={{ fontWeight: 800, color: '#166534' }}>
-                    ₦{Number(selectedInvoice.amountPaid).toLocaleString()}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 900, paddingTop: '0.6rem', borderTop: '1px solid #bfdbfe', color: '#000080' }}>
-                  <span>Outstanding Balance:</span>
-                  <span>₦{Number(selectedInvoice.balance).toLocaleString()}</span>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '0.75rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  {modalFeeItems.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => toggleModalFeeItem(idx)}
+                      style={{
+                        border: item.selected ? '1.5px solid #10b981' : '1.5px solid #cbd5e1',
+                        background: item.selected ? '#f0fdf4' : '#ffffff',
+                        borderRadius: '12px',
+                        padding: '0.85rem 1rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: item.selected ? '0 2px 8px rgba(16, 185, 129, 0.12)' : 'none',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div
+                          style={{
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '4px',
+                            background: item.selected ? '#059669' : '#ffffff',
+                            border: item.selected ? 'none' : '2px solid #cbd5e1',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#ffffff',
+                            fontWeight: 800,
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {item.selected ? '✓' : ''}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.88rem' }}>
+                            {item.name}
+                          </div>
+                          <span
+                            style={{
+                              fontSize: '0.62rem',
+                              fontWeight: 800,
+                              letterSpacing: '0.05em',
+                              background: '#e0e7ff',
+                              color: '#3730a3',
+                              padding: '0.12rem 0.45rem',
+                              borderRadius: '4px',
+                              display: 'inline-block',
+                              marginTop: '0.2rem',
+                            }}
+                          >
+                            {item.applicability || 'COMPULSORY'}
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ fontWeight: 900, color: '#047857', fontSize: '0.92rem' }}>
+                        ₦{item.amount.toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {/* Financial Totals Summary */}
+              {(() => {
+                const modalTotalBilled = modalFeeItems
+                  .filter((i) => i.selected)
+                  .reduce((acc, item) => acc + item.amount, 0);
+                const modalBalance = Math.max(0, modalTotalBilled - selectedInvoice.amountPaid);
+                return (
+                  <div className="modal-totals-box">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                      <span style={{ color: '#475569' }}>Total Selected Invoice Amount:</span>
+                      <span style={{ fontWeight: 800, color: '#0f172a' }}>
+                        ₦{Number(modalTotalBilled).toLocaleString()}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                      <span style={{ color: '#475569' }}>Amount Paid to Date:</span>
+                      <span style={{ fontWeight: 800, color: '#166534' }}>
+                        ₦{Number(selectedInvoice.amountPaid).toLocaleString()}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justify: 'space-between',
+                        fontSize: '1rem',
+                        fontWeight: 900,
+                        paddingTop: '0.6rem',
+                        borderTop: '1px solid #bfdbfe',
+                        color: '#000080',
+                      }}
+                    >
+                      <span>Outstanding Balance:</span>
+                      <span>₦{Number(modalBalance).toLocaleString()}</span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Modal Footer */}
@@ -712,6 +952,14 @@ export default function TermInvoices() {
                 className="btn-table-action"
               >
                 Close
+              </button>
+              <button
+                onClick={handleSaveFeeSchedule}
+                disabled={savingSchedule}
+                className="btn-table-action primary"
+                style={{ background: '#059669', borderColor: '#059669' }}
+              >
+                <Save size={16} /> {savingSchedule ? 'Saving Schedule...' : 'Save Selected Fee Schedule'}
               </button>
               <button
                 onClick={() => {

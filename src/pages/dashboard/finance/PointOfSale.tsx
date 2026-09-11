@@ -115,7 +115,22 @@ export default function PointOfSale() {
     try {
       let items: PosFeeItem[] = [];
 
-      // 1. Try class-specific template endpoint if classId is available
+      // 0. Check if target invoice has custom saved breakdown items from Bursary
+      const targetInv = (student.invoices || []).find((i) => i.session === session && i.term === term) || (student.invoices || [])[0];
+      if (targetInv && Array.isArray(targetInv.items) && targetInv.items.length > 0) {
+        const hasGeneric = targetInv.items.length === 1 && targetInv.items[0].description?.toLowerCase().includes('tuition & general');
+        if (!hasGeneric) {
+          items = targetInv.items.map((it: any) => ({
+            id: it.id,
+            name: it.name || it.description || it.feeCategory || 'Fee Item',
+            amount: Number(it.amount) || 0,
+            applicability: 'Compulsory',
+            selected: true,
+          }));
+        }
+      }
+
+      // 1. Try class-specific template endpoint if classId is available and no custom items saved
       if (student.classId) {
         try {
           const classTemplate = await api.get(
