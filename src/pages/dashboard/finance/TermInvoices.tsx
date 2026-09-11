@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileText,
   CreditCard,
@@ -13,8 +13,8 @@ import {
   AlertCircle,
   Calendar,
   X,
-  ChevronRight,
   Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import { api } from '../../../services/api';
 import { useBranch } from '../../../context/BranchContext';
@@ -64,9 +64,9 @@ interface InvoicesSummary {
 }
 
 export default function TermInvoices() {
-  const { activeBranchId, assignedBranchName, branches } = useBranch();
+  const { activeBranchId, assignedBranchName } = useBranch();
   const { session: activeSession, term: activeTerm } = useActiveTerm();
-  const { schoolName, logoUrl } = useTenant();
+  const { schoolName } = useTenant();
 
   // Filter States
   const [filterSession, setFilterSession] = useState<string>(activeSession || '2026/2027');
@@ -174,15 +174,15 @@ export default function TermInvoices() {
 
   const getStatusBadge = (status: string, isPaid: boolean) => {
     if (status === 'Completed' || isPaid) {
-      return <span className="badge badge-success">✓ Fully Paid</span>;
+      return <span className="status-pill-badge completed">✓ Fully Paid</span>;
     }
     if (status === 'Part-Payment') {
-      return <span className="badge badge-info">⏳ Part-Paid</span>;
+      return <span className="status-pill-badge part-payment">⏳ Part-Paid</span>;
     }
     if (status === 'Pending Verification') {
-      return <span className="badge badge-warning">🔍 Pending Check</span>;
+      return <span className="status-pill-badge pending">🔍 Pending Check</span>;
     }
-    return <span className="badge badge-danger">✕ Unpaid</span>;
+    return <span className="status-pill-badge unpaid">✕ Unpaid</span>;
   };
 
   const handlePrintInvoice = (inv: InvoiceRecord) => {
@@ -194,7 +194,7 @@ export default function TermInvoices() {
         (item, idx) => `
       <tr>
         <td style="padding:10px; border-bottom:1px solid #E2E8F0; text-align:center;">${idx + 1}</td>
-        <td style="padding:10px; border-bottom:1px solid #E2E8F0;"><strong>${item.feeCategory}</strong></td>
+        <td style="padding:10px; border-bottom:1px solid #E2E8F0;"><strong>${item.feeCategory || item.description}</strong></td>
         <td style="padding:10px; border-bottom:1px solid #E2E8F0;">${item.description || 'Term Tuition Fee Item'}</td>
         <td style="padding:10px; border-bottom:1px solid #E2E8F0; text-align:right;">₦${Number(item.amount).toLocaleString()}</td>
       </tr>
@@ -282,29 +282,41 @@ export default function TermInvoices() {
   };
 
   return (
-    <div className="finance-page">
-      {/* ════════ BURSARY HERO BANNER ════════ */}
-      <div className="finance-banner glass-panel">
-        <div className="banner-text">
-          <div className="flex items-center gap-2">
-            <h2>Term Invoices & Fee Roster</h2>
-            <span className="branch-badge">
-              <Building size={14} /> {assignedBranchName}
-            </span>
-          </div>
-          <p>
-            Centralized bursary ledger of all generated term tuition invoices across students,
-            classes, levels, and campus branches. Filter, verify collections, and export individual student receipts.
-          </p>
+    <div className="finance-page-container">
+      {/* ════════ BURSARY COMMAND HERO BANNER ════════ */}
+      <div className="finance-hero-banner">
+        <div className="finance-banner-header">
+          <span className="finance-banner-pill">
+            <Building size={14} /> {assignedBranchName}
+          </span>
+          <span className="finance-banner-pill">
+            <Calendar size={14} /> {filterSession} • {filterTerm}
+          </span>
         </div>
-        <div className="banner-actions">
-          <button onClick={fetchInvoices} className="btn btn-outline flex items-center gap-2">
-            <RefreshCw size={16} className={loading ? 'spin' : ''} /> Refresh Roster
-          </button>
+
+        <div className="finance-banner-content">
+          <div className="finance-banner-text">
+            <h2>
+              Term Invoices & Fee Roster <Sparkles size={22} className="text-yellow-400" />
+            </h2>
+            <p>
+              Centralized bursary ledger of all generated term tuition fee invoices across students,
+              classes, levels, and campus branches. Filter, monitor revenue collections, and inspect individual student invoice items.
+            </p>
+          </div>
+
+          <div className="finance-banner-actions">
+            <button onClick={fetchInvoices} className="btn-banner-action">
+              <RefreshCw size={16} className={loading ? 'spin' : ''} /> Refresh Roster
+            </button>
+            <button onClick={handleResetFilters} className="btn-banner-outline">
+              <RotateCcw size={16} /> Reset Filters
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ════════ EXECUTIVE METRIC CARDS ════════ */}
+      {/* ════════ EXECUTIVE KPI METRIC CARDS ════════ */}
       <div className="stats-grid">
         <StatCard
           label="GENERATED INVOICES"
@@ -329,7 +341,7 @@ export default function TermInvoices() {
         />
 
         <StatCard
-          label="TOTAL COLLECTED (PAID)"
+          label="TOTAL REVENUE COLLECTED"
           value={`₦${summary.totalAmountPaid.toLocaleString()}`}
           icon={CheckCircle}
           topColor="#000080"
@@ -351,49 +363,41 @@ export default function TermInvoices() {
         />
       </div>
 
-      {/* ════════ GRANULAR FILTER CONTROLS BAR ════════ */}
-      <div className="glass-panel p-5 my-6 rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2 font-bold text-slate-800">
-            <Filter size={18} className="text-blue-900" />
+      {/* ════════ GRANULAR INVOICE FILTERS PANEL ════════ */}
+      <div className="filter-card-container">
+        <div className="filter-card-header">
+          <div className="filter-card-title">
+            <Filter size={18} style={{ color: '#000080' }} />
             <span>Granular Invoice Filters</span>
           </div>
-          <button
-            onClick={handleResetFilters}
-            className="text-xs font-semibold text-blue-600 hover:text-blue-800"
-          >
+          <button onClick={handleResetFilters} className="btn-reset-link">
             Reset All Filters
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="filter-controls-grid">
           {/* Search Bar */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">
-              Search Student / Reg No
-            </label>
-            <div className="relative">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-              />
+          <div className="filter-field-group">
+            <label>Search Student / Reg No</label>
+            <div className="search-input-wrapper">
+              <Search size={16} className="search-icon-inside" />
               <input
                 type="text"
                 placeholder="Search name, Reg No, email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none"
+                className="filter-control-input"
               />
             </div>
           </div>
 
           {/* Session Selector */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Academic Session</label>
+          <div className="filter-field-group">
+            <label>Academic Session</label>
             <select
               value={filterSession}
               onChange={(e) => setFilterSession(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none bg-white"
+              className="filter-control-select"
             >
               <option value="2026/2027">2026/2027</option>
               <option value="2025/2026">2025/2026</option>
@@ -402,12 +406,12 @@ export default function TermInvoices() {
           </div>
 
           {/* Term Selector */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Academic Term</label>
+          <div className="filter-field-group">
+            <label>Academic Term</label>
             <select
               value={filterTerm}
               onChange={(e) => setFilterTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none bg-white"
+              className="filter-control-select"
             >
               <option value="First Term">First Term</option>
               <option value="Second Term">Second Term</option>
@@ -416,12 +420,12 @@ export default function TermInvoices() {
           </div>
 
           {/* Level Selector */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Education Level</label>
+          <div className="filter-field-group">
+            <label>Education Level</label>
             <select
               value={filterLevel}
               onChange={(e) => setFilterLevel(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none bg-white"
+              className="filter-control-select"
             >
               <option value="ALL">All Levels</option>
               <option value="Junior">Junior Secondary (JSS)</option>
@@ -432,12 +436,12 @@ export default function TermInvoices() {
           </div>
 
           {/* Class Selector */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Class Name</label>
+          <div className="filter-field-group">
+            <label>Class Name</label>
             <select
               value={filterClassId}
               onChange={(e) => setFilterClassId(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none bg-white"
+              className="filter-control-select"
             >
               <option value="ALL">All Classes</option>
               {classList.map((c) => (
@@ -449,12 +453,12 @@ export default function TermInvoices() {
           </div>
 
           {/* Month Selector */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Due Month</label>
+          <div className="filter-field-group">
+            <label>Due Month</label>
             <select
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none bg-white"
+              className="filter-control-select"
             >
               <option value="ALL">All Months</option>
               <option value="1">January</option>
@@ -473,12 +477,12 @@ export default function TermInvoices() {
           </div>
 
           {/* Payment Status Selector */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Payment Status</label>
+          <div className="filter-field-group">
+            <label>Payment Status</label>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-900 outline-none bg-white"
+              className="filter-control-select"
             >
               <option value="ALL">All Payment Statuses</option>
               <option value="Completed">Fully Paid (Completed)</option>
@@ -488,20 +492,23 @@ export default function TermInvoices() {
             </select>
           </div>
 
-          {/* Active Branch Display */}
-          <div>
-            <label className="text-xs font-bold text-slate-600 mb-1 block">Campus Branch</label>
-            <div className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 font-semibold text-slate-700 flex items-center gap-2">
-              <Building size={16} className="text-blue-900" />
-              <span className="truncate">{assignedBranchName}</span>
+          {/* Campus Branch Display */}
+          <div className="filter-field-group">
+            <label>Campus Branch</label>
+            <div
+              className="filter-control-input"
+              style={{ background: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#334155' }}
+            >
+              <Building size={16} style={{ color: '#000080' }} />
+              <span style={{ fontWeight: 700 }}>{assignedBranchName}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ════════ INVOICES ROSTER TABLE ════════ */}
-      <div className="table-card glass-panel">
-        <div className="table-header">
+      {/* ════════ INVOICES ROSTER DATA TABLE CARD ════════ */}
+      <div className="invoices-table-card">
+        <div className="invoices-table-header">
           <div>
             <h3>Generated Term Invoices Roster</h3>
             <p>
@@ -511,27 +518,28 @@ export default function TermInvoices() {
         </div>
 
         {loading ? (
-          <div className="p-12 text-center text-slate-500">
-            <RefreshCw size={24} className="spin mx-auto mb-2 text-blue-900" />
-            Loading Bursary Invoice Roster...
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+            <RefreshCw size={24} className="spin" style={{ margin: '0 auto 0.5rem auto', color: '#000080' }} />
+            <div>Loading Bursary Invoice Roster...</div>
           </div>
         ) : invoices.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">
-            <FileText size={36} className="mx-auto mb-3 text-slate-300" />
-            <h4 className="font-bold text-slate-700">No Invoices Found</h4>
-            <p className="text-sm text-slate-500 mt-1">
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+            <FileText size={36} style={{ margin: '0 auto 0.75rem auto', color: '#cbd5e1' }} />
+            <h4 style={{ fontWeight: 800, color: '#334155', margin: 0 }}>No Invoices Found</h4>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.35rem' }}>
               No fee invoices match the selected session, term, level, or search query.
             </p>
             <button
               onClick={handleResetFilters}
-              className="btn btn-outline btn-sm mt-4 inline-flex items-center gap-2"
+              className="btn-table-action"
+              style={{ marginTop: '1rem' }}
             >
               Reset Search Filters
             </button>
           </div>
         ) : (
-          <div className="table-responsive">
-            <table className="data-table">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="custom-finance-table">
               <thead>
                 <tr>
                   <th>Student Info</th>
@@ -549,50 +557,60 @@ export default function TermInvoices() {
                 {invoices.map((inv) => (
                   <tr key={inv.id}>
                     <td>
-                      <div className="font-bold text-slate-900">{inv.studentName}</div>
-                      <div className="text-xs font-mono text-slate-500">
+                      <div style={{ fontWeight: 800, color: '#0f172a' }}>{inv.studentName}</div>
+                      <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#64748b' }}>
                         {inv.registrationNumber}
                       </div>
                     </td>
                     <td>
-                      <div className="font-semibold text-slate-800">{inv.className}</div>
-                      <div className="text-xs text-slate-500">{inv.level}</div>
+                      <div style={{ fontWeight: 700, color: '#334155' }}>{inv.className}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{inv.level}</div>
                     </td>
                     <td>
-                      <div className="text-xs font-semibold text-slate-700">{inv.session}</div>
-                      <div className="text-xs text-slate-500">{inv.term}</div>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155' }}>{inv.session}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{inv.term}</div>
                     </td>
-                    <td className="font-bold text-slate-800">
+                    <td style={{ fontWeight: 800, color: '#0f172a' }}>
                       ₦{Number(inv.amountDue).toLocaleString()}
                     </td>
-                    <td className="font-semibold text-emerald-700">
+                    <td style={{ fontWeight: 700, color: '#166534' }}>
                       ₦{Number(inv.amountPaid).toLocaleString()}
                     </td>
                     <td
-                      className={`font-bold ${
-                        inv.balance > 0 ? 'text-red-600' : 'text-slate-500'
-                      }`}
+                      style={{
+                        fontWeight: 800,
+                        color: inv.balance > 0 ? '#dc2626' : '#64748b',
+                      }}
                     >
                       ₦{Number(inv.balance).toLocaleString()}
                     </td>
                     <td>{getStatusBadge(inv.paymentStatus, inv.isPaid)}</td>
                     <td>
-                      <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          color: '#475569',
+                          background: '#f1f5f9',
+                          padding: '0.25rem 0.6rem',
+                          borderRadius: '6px',
+                        }}
+                      >
                         {inv.branchName || assignedBranchName}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <div className="flex items-center justify-end gap-2">
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
                         <button
                           onClick={() => setSelectedInvoice(inv)}
-                          className="btn btn-sm btn-outline flex items-center gap-1"
+                          className="btn-table-action"
                           title="View Invoice Items Breakdown"
                         >
                           <Eye size={14} /> Items ({inv.itemsCount || inv.items?.length || 0})
                         </button>
                         <button
                           onClick={() => handlePrintInvoice(inv)}
-                          className="btn btn-sm btn-primary flex items-center gap-1"
+                          className="btn-table-action primary"
                           title="Print Official Student Invoice"
                         >
                           <Printer size={14} /> Print
@@ -609,77 +627,77 @@ export default function TermInvoices() {
 
       {/* ════════ INVOICE ITEMS BREAKDOWN MODAL ════════ */}
       {selectedInvoice && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-100 animate-in fade-in zoom-in duration-200">
+        <div className="modal-overlay">
+          <div className="modal-content-card">
             {/* Modal Header */}
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+            <div className="modal-header-navy">
               <div>
-                <h3 className="font-bold text-lg flex items-center gap-2">
-                  <FileText size={20} className="text-blue-400" />
+                <h3>
                   Student Term Invoice Breakdown
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Invoice Ref: INV-{selectedInvoice.id.substring(0, 8).toUpperCase()} •{' '}
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                  Ref: INV-{selectedInvoice.id.substring(0, 8).toUpperCase()} •{' '}
                   {selectedInvoice.session} {selectedInvoice.term}
-                </p>
+                </div>
               </div>
               <button
                 onClick={() => setSelectedInvoice(null)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+                className="modal-close-btn"
+                aria-label="Close modal"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 max-h-[75vh] overflow-y-auto">
+            <div className="modal-body-scroll">
               {/* Student Metadata Card */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 grid grid-cols-2 gap-4">
+              <div className="modal-student-info-box">
                 <div>
-                  <div className="text-xs text-slate-500 font-medium">Student Name</div>
-                  <div className="font-bold text-slate-900 text-base">
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Student Name</div>
+                  <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem', marginTop: '0.15rem' }}>
                     {selectedInvoice.studentName}
                   </div>
-                  <div className="text-xs font-mono text-slate-600 mt-0.5">
+                  <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#475569', marginTop: '0.25rem' }}>
                     Reg No: {selectedInvoice.registrationNumber}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500 font-medium">Class & Branch</div>
-                  <div className="font-bold text-slate-800">
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Class & Branch</div>
+                  <div style={{ fontWeight: 800, color: '#1e293b', marginTop: '0.15rem' }}>
                     {selectedInvoice.className} ({selectedInvoice.level})
                   </div>
-                  <div className="text-xs text-slate-600 mt-0.5">
+                  <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '0.25rem' }}>
                     {selectedInvoice.branchName || assignedBranchName}
                   </div>
                 </div>
               </div>
 
               {/* Items Breakdown Table */}
-              <h4 className="font-bold text-slate-800 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
-                <Sparkles size={16} className="text-blue-900" /> Itemized Tuition & Fee Schedule
+              <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+                Itemized Tuition & Fee Schedule
               </h4>
 
               {selectedInvoice.items && selectedInvoice.items.length > 0 ? (
-                <div className="border border-slate-200 rounded-xl overflow-hidden mb-6">
-                  <table className="w-full text-sm">
-                    <thead className="bg-slate-100 text-slate-700 font-bold">
-                      <tr>
-                        <th className="p-3 text-left">Fee Category</th>
-                        <th className="p-3 text-left">Description</th>
-                        <th className="p-3 text-right">Amount</th>
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', marginBottom: '1.25rem' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 800 }}>
+                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>Fee Category</th>
+                        <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>Description</th>
+                        <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Amount</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200">
+                    <tbody>
                       {selectedInvoice.items.map((item) => (
-                        <tr key={item.id}>
-                          <td className="p-3 font-semibold text-slate-800">
-                            {item.feeCategory}
+                        <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#0f172a' }}>
+                            {item.feeCategory || item.description}
                           </td>
-                          <td className="p-3 text-slate-600">
+                          <td style={{ padding: '0.75rem 1rem', color: '#475569' }}>
                             {item.description || 'Standard Term Fee'}
                           </td>
-                          <td className="p-3 text-right font-bold text-slate-900">
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 800, color: '#0f172a' }}>
                             ₦{Number(item.amount).toLocaleString()}
                           </td>
                         </tr>
@@ -688,26 +706,26 @@ export default function TermInvoices() {
                   </table>
                 </div>
               ) : (
-                <div className="p-6 text-center text-slate-500 bg-slate-50 rounded-xl mb-6">
+                <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', background: '#f8fafc', borderRadius: '12px', marginBottom: '1.25rem' }}>
                   Standard Consolidated Term Tuition Invoice
                 </div>
               )}
 
               {/* Financial Totals Summary */}
-              <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Total Invoice Amount:</span>
-                  <span className="font-bold text-slate-900">
+              <div className="modal-totals-box">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                  <span style={{ color: '#475569' }}>Total Invoice Amount:</span>
+                  <span style={{ fontWeight: 800, color: '#0f172a' }}>
                     ₦{Number(selectedInvoice.amountDue).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Amount Paid to Date:</span>
-                  <span className="font-bold text-emerald-700">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                  <span style={{ color: '#475569' }}>Amount Paid to Date:</span>
+                  <span style={{ fontWeight: 800, color: '#166534' }}>
                     ₦{Number(selectedInvoice.amountPaid).toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between text-base font-extrabold pt-2 border-t border-blue-200 text-blue-950">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 900, paddingTop: '0.6rem', borderTop: '1px solid #bfdbfe', color: '#000080' }}>
                   <span>Outstanding Balance:</span>
                   <span>₦{Number(selectedInvoice.balance).toLocaleString()}</span>
                 </div>
@@ -715,10 +733,10 @@ export default function TermInvoices() {
             </div>
 
             {/* Modal Footer */}
-            <div className="bg-slate-50 p-4 border-t border-slate-200 flex justify-end gap-3">
+            <div className="modal-footer-bar">
               <button
                 onClick={() => setSelectedInvoice(null)}
-                className="btn btn-outline text-slate-600 hover:text-slate-800"
+                className="btn-table-action"
               >
                 Close
               </button>
@@ -727,7 +745,7 @@ export default function TermInvoices() {
                   handlePrintInvoice(selectedInvoice);
                   setSelectedInvoice(null);
                 }}
-                className="btn btn-primary flex items-center gap-2"
+                className="btn-table-action primary"
               >
                 <Printer size={16} /> Print Full Invoice
               </button>
