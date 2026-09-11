@@ -360,10 +360,10 @@ export default function TermInvoices() {
       .map(
         (item, idx) => `
       <tr>
-        <td style="padding:10px; border-bottom:1px solid #E2E8F0; text-align:center;">${idx + 1}</td>
-        <td style="padding:10px; border-bottom:1px solid #E2E8F0;"><strong>${item.feeCategory || item.description}</strong></td>
-        <td style="padding:10px; border-bottom:1px solid #E2E8F0;">${item.description || 'Term Tuition Fee Item'}</td>
-        <td style="padding:10px; border-bottom:1px solid #E2E8F0; text-align:right;">₦${Number(item.amount).toLocaleString()}</td>
+        <td style="padding:5px 10px; border-bottom:1px solid #E2E8F0; text-align:center; font-size:11px;">${idx + 1}</td>
+        <td style="padding:5px 10px; border-bottom:1px solid #E2E8F0; font-size:11px;"><strong>${item.feeCategory || item.description}</strong></td>
+        <td style="padding:5px 10px; border-bottom:1px solid #E2E8F0; font-size:11px;">${item.description || 'Term Tuition Fee Item'}</td>
+        <td style="padding:5px 10px; border-bottom:1px solid #E2E8F0; text-align:right; font-size:11px;">₦${Number(item.amount).toLocaleString()}</td>
       </tr>
     `
       )
@@ -375,27 +375,29 @@ export default function TermInvoices() {
         <head>
           <title>Official Bursary Student Fee Breakdown - ${inv.registrationNumber || inv.studentName}</title>
           <style>
-            @page { size: auto; margin: 15mm; }
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #0F172A; }
-            .header-box { text-align: center; border-bottom: 3px solid #000080; padding-bottom: 16px; margin-bottom: 25px; position: relative; }
-            .logo-img { max-height: 80px; object-fit: contain; margin-bottom: 8px; }
-            .school-title { font-size: 24px; font-weight: 800; color: #000080; text-transform: uppercase; margin: 0 0 6px 0; }
-            .heading-title { font-size: 15px; font-weight: 700; color: #1E293B; text-transform: uppercase; margin: 0; letter-spacing: 0.5px; }
-            .status-badge { position: absolute; right: 0; top: 0; background: #000080; color: #fff; padding: 6px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; text-transform: uppercase; }
+            @page { size: A4 portrait; margin: 8mm 10mm; }
+            html, body { height: 100%; max-height: 100vh; overflow: hidden; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 10px 15px; color: #0F172A; }
+            .header-box { text-align: center; border-bottom: 2px solid #000080; padding-bottom: 8px; margin-bottom: 12px; position: relative; }
+            .logo-img { max-height: 55px; object-fit: contain; margin-bottom: 4px; }
+            .school-title { font-size: 20px; font-weight: 800; color: #000080; text-transform: uppercase; margin: 0 0 2px 0; }
+            .heading-title { font-size: 13px; font-weight: 700; color: #1E293B; text-transform: uppercase; margin: 0; letter-spacing: 0.5px; }
+            .status-badge { position: absolute; right: 0; top: 0; background: #000080; color: #fff; padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 11px; text-transform: uppercase; }
             
-            .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #E2E8F0; }
-            .meta-item { font-size: 13px; margin-bottom: 6px; }
+            .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; background: #F8FAFC; padding: 10px 14px; border-radius: 6px; border: 1px solid #E2E8F0; page-break-inside: avoid; }
+            .meta-item { font-size: 12px; margin-bottom: 3px; }
             .meta-item strong { color: #334155; }
             
-            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-            th { background: #000080; color: #fff; padding: 12px; font-size: 13px; text-align: left; text-transform: uppercase; }
-            td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #E2E8F0; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 12px; page-break-inside: avoid; }
+            th { background: #000080; color: #fff; padding: 6px 10px; font-size: 11px; text-align: left; text-transform: uppercase; }
+            td { padding: 5px 10px; font-size: 11px; border-bottom: 1px solid #E2E8F0; }
+            tr { page-break-inside: avoid; }
             
-            .totals { float: right; width: 320px; background: #F1F5F9; padding: 18px; border-radius: 8px; font-size: 14px; }
-            .total-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #CBD5E1; }
-            .total-row.grand { border-bottom: none; font-size: 16px; font-weight: 800; color: #000080; margin-top: 6px; padding-top: 10px; }
+            .totals { float: right; width: 300px; background: #F1F5F9; padding: 10px 14px; border-radius: 6px; font-size: 12px; margin-top: 4px; page-break-inside: avoid; }
+            .total-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #CBD5E1; }
+            .total-row.grand { border-bottom: none; font-size: 14px; font-weight: 800; color: #000080; margin-top: 4px; padding-top: 4px; }
             
-            .footer { clear: both; margin-top: 60px; text-align: center; font-size: 13px; color: #334155; font-weight: 600; border-top: 1px solid #E2E8F0; padding-top: 16px; }
+            .footer { clear: both; margin-top: 15px; text-align: center; font-size: 11px; color: #334155; font-weight: 600; border-top: 1px solid #E2E8F0; padding-top: 8px; page-break-inside: avoid; }
           </style>
         </head>
         <body>
@@ -420,14 +422,14 @@ export default function TermInvoices() {
           <table>
             <thead>
               <tr>
-                <th style="text-align:center; width:50px;">#</th>
+                <th style="text-align:center; width:45px;">#</th>
                 <th>Fee Category</th>
                 <th>Description</th>
                 <th style="text-align:right;">Amount (₦)</th>
               </tr>
             </thead>
             <tbody>
-              ${itemsHtml.length > 0 ? itemsHtml : '<tr><td colspan="4" style="padding:15px; text-align:center; color:#64748B;">Standard Term Tuition Fee Breakdown</td></tr>'}
+              ${itemsHtml.length > 0 ? itemsHtml : '<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748B;">Standard Term Tuition Fee Breakdown</td></tr>'}
             </tbody>
           </table>
 
