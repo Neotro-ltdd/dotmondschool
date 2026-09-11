@@ -69,6 +69,7 @@ export default function PointOfSale() {
   } = useActiveTerm();
   const [posAmountDue, setPosAmountDue] = useState<number>(0);
   const [posAmountPaid, setPosAmountPaid] = useState<number>(0);
+  const [posDiscount, setPosDiscount] = useState<number>(0);
   const [directMethod, setDirectMethod] = useState('Cash');
   const [directRemarks, setDirectRemarks] = useState('Received by Mrs. Olufunke Ikang');
   const [feeBreakdownItems, setFeeBreakdownItems] = useState<PosFeeItem[]>([]);
@@ -197,9 +198,10 @@ export default function PointOfSale() {
       }
 
       setFeeBreakdownItems(items);
-      const totalDue = items.reduce((acc, it) => it.selected ? acc + it.amount : acc, 0);
-      setPosAmountDue(totalDue);
-      setPosAmountPaid(totalDue);
+      setPosDiscount(0);
+      const rawTotal = items.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
+      setPosAmountDue(rawTotal);
+      setPosAmountPaid(rawTotal);
     } catch (err) {
       console.error('Failed to load fee breakdown:', err);
     } finally {
@@ -207,12 +209,25 @@ export default function PointOfSale() {
     }
   };
 
+  const computeNetDue = (items: PosFeeItem[], discountVal: number) => {
+    const rawTotal = items.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
+    return Math.max(0, rawTotal - Math.max(0, discountVal));
+  };
+
+  const handleDiscountChange = (valStr: string) => {
+    const discountVal = Math.max(0, Number(valStr) || 0);
+    setPosDiscount(discountVal);
+    const netDue = computeNetDue(feeBreakdownItems, discountVal);
+    setPosAmountDue(netDue);
+    setPosAmountPaid(netDue);
+  };
+
   const toggleFeeItem = (index: number) => {
     setFeeBreakdownItems((prev) => {
       const updated = prev.map((item, i) => (i === index ? { ...item, selected: !item.selected } : item));
-      const newTotal = updated.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
-      setPosAmountDue(newTotal);
-      setPosAmountPaid((prevPaid) => (prevPaid === posAmountDue || prevPaid > newTotal ? newTotal : prevPaid));
+      const netDue = computeNetDue(updated, posDiscount);
+      setPosAmountDue(netDue);
+      setPosAmountPaid(netDue);
       return updated;
     });
   };
@@ -220,9 +235,9 @@ export default function PointOfSale() {
   const handleSelectAllFeeItems = (selectAll: boolean) => {
     setFeeBreakdownItems((prev) => {
       const updated = prev.map((item) => ({ ...item, selected: selectAll }));
-      const newTotal = updated.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
-      setPosAmountDue(newTotal);
-      setPosAmountPaid(newTotal);
+      const netDue = computeNetDue(updated, posDiscount);
+      setPosAmountDue(netDue);
+      setPosAmountPaid(netDue);
       return updated;
     });
   };
@@ -233,9 +248,9 @@ export default function PointOfSale() {
         ...item,
         selected: item.applicability?.toLowerCase() === 'compulsory' || !item.applicability?.toLowerCase().includes('optional'),
       }));
-      const newTotal = updated.reduce((acc, it) => (it.selected ? acc + it.amount : acc), 0);
-      setPosAmountDue(newTotal);
-      setPosAmountPaid(newTotal);
+      const netDue = computeNetDue(updated, posDiscount);
+      setPosAmountDue(netDue);
+      setPosAmountPaid(netDue);
       return updated;
     });
   };
@@ -930,7 +945,20 @@ export default function PointOfSale() {
                   </div>
 
                   {/* Amounts */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                    <div className="pos-form-group">
+                      <label>Discount Amount (₦)</label>
+                      <input
+                        type="number"
+                        className="select-filter-input"
+                        min="0"
+                        placeholder="0"
+                        value={posDiscount === 0 ? '' : posDiscount}
+                        onChange={(e) => handleDiscountChange(e.target.value)}
+                        style={{ fontWeight: 800, color: '#D97706', borderColor: '#F59E0B' }}
+                      />
+                    </div>
+
                     <div className="pos-form-group">
                       <label>Total Fee Due (₦)</label>
                       <input

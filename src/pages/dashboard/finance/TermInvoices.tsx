@@ -119,18 +119,31 @@ export default function TermInvoices() {
   ];
 
   const [modalFeeItems, setModalFeeItems] = useState<ModalFeeItem[]>([]);
+  const [modalDiscount, setModalDiscount] = useState<number>(0);
   const [savingSchedule, setSavingSchedule] = useState<boolean>(false);
 
   useEffect(() => {
     if (selectedInvoice) {
+      setModalDiscount(0);
       if (selectedInvoice.items && selectedInvoice.items.length > 0) {
-        const hasOnlyGeneric =
-          selectedInvoice.items.length === 1 &&
-          selectedInvoice.items[0].description?.toLowerCase().includes('tuition & general');
+        const discountItem = selectedInvoice.items.find(
+          (it) => it.amount < 0 || it.description?.toLowerCase().includes('discount')
+        );
+        if (discountItem) {
+          setModalDiscount(Math.abs(Number(discountItem.amount)) || 0);
+        }
 
-        if (!hasOnlyGeneric) {
+        const regularItems = selectedInvoice.items.filter(
+          (it) => !(it.amount < 0 || it.description?.toLowerCase().includes('discount'))
+        );
+
+        const hasOnlyGeneric =
+          regularItems.length === 1 &&
+          regularItems[0].description?.toLowerCase().includes('tuition & general');
+
+        if (regularItems.length > 0 && !hasOnlyGeneric) {
           setModalFeeItems(
-            selectedInvoice.items.map((it) => ({
+            regularItems.map((it) => ({
               id: it.id,
               name: it.feeCategory || it.description,
               amount: Number(it.amount) || 0,
@@ -200,6 +213,13 @@ export default function TermInvoices() {
           description: i.name,
           amount: i.amount,
         }));
+
+      if (modalDiscount > 0) {
+        selectedItems.push({
+          description: `Fee Discount / Concession (-₦${modalDiscount.toLocaleString()})`,
+          amount: -modalDiscount,
+        });
+      }
 
       const res = await api.post(`/finance/invoices/${selectedInvoice.id}/update-items`, {
         items: selectedItems,
@@ -906,16 +926,79 @@ export default function TermInvoices() {
                 </div>
               </div>
 
+              {/* Discount / Concession Input Box */}
+              <div
+                style={{
+                  marginBottom: '1.25rem',
+                  background: '#FFFBEB',
+                  border: '1px solid #FCD34D',
+                  padding: '0.85rem 1rem',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '1rem',
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.82rem',
+                      fontWeight: 800,
+                      color: '#92400E',
+                    }}
+                  >
+                    Discount Amount (₦)
+                  </label>
+                  <div style={{ fontSize: '0.72rem', color: '#B45309' }}>
+                    Special concession / fee reduction deducted from total fee due
+                  </div>
+                </div>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={modalDiscount === 0 ? '' : modalDiscount}
+                  onChange={(e) => setModalDiscount(Math.max(0, Number(e.target.value) || 0))}
+                  style={{
+                    width: '180px',
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '8px',
+                    border: '1.5px solid #F59E0B',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    color: '#D97706',
+                    background: '#FFFFFF',
+                  }}
+                />
+              </div>
+
               {/* Financial Totals Summary */}
               {(() => {
-                const modalTotalBilled = modalFeeItems
+                const rawTotal = modalFeeItems
                   .filter((i) => i.selected)
                   .reduce((acc, item) => acc + item.amount, 0);
+                const modalTotalBilled = Math.max(0, rawTotal - modalDiscount);
                 const modalBalance = Math.max(0, modalTotalBilled - selectedInvoice.amountPaid);
                 return (
                   <div className="modal-totals-box">
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                      <span style={{ color: '#475569' }}>Total Selected Invoice Amount:</span>
+                      <span style={{ color: '#475569' }}>Selected Fee Subtotal:</span>
+                      <span style={{ fontWeight: 800, color: '#0f172a' }}>
+                        ₦{Number(rawTotal).toLocaleString()}
+                      </span>
+                    </div>
+                    {modalDiscount > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#D97706' }}>
+                        <span>Fee Discount / Concession (-):</span>
+                        <span style={{ fontWeight: 800 }}>
+                          -₦{Number(modalDiscount).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                      <span style={{ color: '#475569' }}>Net Billed Total Due:</span>
                       <span style={{ fontWeight: 800, color: '#0f172a' }}>
                         ₦{Number(modalTotalBilled).toLocaleString()}
                       </span>
