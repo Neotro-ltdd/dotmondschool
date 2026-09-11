@@ -491,18 +491,6 @@ export default function TermInvoices() {
               <option value="Pending Verification">Pending Verification</option>
             </select>
           </div>
-
-          {/* Campus Branch Display */}
-          <div className="filter-field-group">
-            <label>Campus Branch</label>
-            <div
-              className="filter-control-input"
-              style={{ background: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#334155' }}
-            >
-              <Building size={16} style={{ color: '#000080' }} />
-              <span style={{ fontWeight: 700 }}>{assignedBranchName}</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -549,7 +537,6 @@ export default function TermInvoices() {
                   <th>Amount Paid</th>
                   <th>Outstanding</th>
                   <th>Status</th>
-                  <th>Campus Branch</th>
                   <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
@@ -585,20 +572,6 @@ export default function TermInvoices() {
                       ₦{Number(inv.balance).toLocaleString()}
                     </td>
                     <td>{getStatusBadge(inv.paymentStatus, inv.isPaid)}</td>
-                    <td>
-                      <span
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          color: '#475569',
-                          background: '#f1f5f9',
-                          padding: '0.25rem 0.6rem',
-                          borderRadius: '6px',
-                        }}
-                      >
-                        {inv.branchName || assignedBranchName}
-                      </span>
-                    </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
                         <button
