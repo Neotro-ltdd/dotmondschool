@@ -1012,7 +1012,7 @@ export default function TermInvoices() {
                     <div
                       style={{
                         display: 'flex',
-                        justify: 'space-between',
+                        justifyContent: 'space-between',
                         fontSize: '1rem',
                         fontWeight: 900,
                         paddingTop: '0.6rem',
