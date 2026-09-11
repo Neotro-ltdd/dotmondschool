@@ -69,7 +69,7 @@ interface InvoicesSummary {
 export default function TermInvoices() {
   const { activeBranchId, assignedBranchName } = useBranch();
   const { session: activeSession, term: activeTerm } = useActiveTerm();
-  const { schoolName } = useTenant();
+  const { schoolName, logoUrl } = useTenant();
 
   // Filter States
   const [filterSession, setFilterSession] = useState<string>(activeSession || '2026/2027');
@@ -347,6 +347,15 @@ export default function TermInvoices() {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
+    let resolvedLogo = '';
+    if (logoUrl) {
+      resolvedLogo = logoUrl.startsWith('http')
+        ? logoUrl
+        : window.location.origin + (logoUrl.startsWith('/') ? '' : '/') + logoUrl;
+    } else {
+      resolvedLogo = window.location.origin + '/images/dotmond-logo-1.png';
+    }
+
     const itemsHtml = (inv.items || [])
       .map(
         (item, idx) => `
@@ -364,31 +373,37 @@ export default function TermInvoices() {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Student Fee Invoice - ${inv.registrationNumber || inv.studentName}</title>
+          <title>Official Bursary Student Fee Breakdown - ${inv.registrationNumber || inv.studentName}</title>
           <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #0F172A; }
-            .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #000080; padding-bottom: 20px; margin-bottom: 25px; }
-            .school-title { font-size: 24px; font-weight: 800; color: #000080; text-transform: uppercase; margin: 0; }
-            .school-sub { font-size: 13px; color: #64748B; margin-top: 4px; }
-            .invoice-badge { background: #000080; color: #fff; padding: 6px 16px; border-radius: 6px; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+            @page { size: auto; margin: 15mm; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #0F172A; }
+            .header-box { text-align: center; border-bottom: 3px solid #000080; padding-bottom: 16px; margin-bottom: 25px; position: relative; }
+            .logo-img { max-height: 80px; object-fit: contain; margin-bottom: 8px; }
+            .school-title { font-size: 24px; font-weight: 800; color: #000080; text-transform: uppercase; margin: 0 0 6px 0; }
+            .heading-title { font-size: 15px; font-weight: 700; color: #1E293B; text-transform: uppercase; margin: 0; letter-spacing: 0.5px; }
+            .status-badge { position: absolute; right: 0; top: 0; background: #000080; color: #fff; padding: 6px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; text-transform: uppercase; }
+            
             .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #E2E8F0; }
             .meta-item { font-size: 13px; margin-bottom: 6px; }
             .meta-item strong { color: #334155; }
+            
             table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
             th { background: #000080; color: #fff; padding: 12px; font-size: 13px; text-align: left; text-transform: uppercase; }
+            td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #E2E8F0; }
+            
             .totals { float: right; width: 320px; background: #F1F5F9; padding: 18px; border-radius: 8px; font-size: 14px; }
             .total-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #CBD5E1; }
             .total-row.grand { border-bottom: none; font-size: 16px; font-weight: 800; color: #000080; margin-top: 6px; padding-top: 10px; }
-            .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #94A3B8; border-top: 1px solid #E2E8F0; padding-top: 15px; }
+            
+            .footer { clear: both; margin-top: 60px; text-align: center; font-size: 13px; color: #334155; font-weight: 600; border-top: 1px solid #E2E8F0; padding-top: 16px; }
           </style>
         </head>
         <body>
-          <div class="header">
-            <div>
-              <h1 class="school-title">${schoolName}</h1>
-              <div class="school-sub">${inv.branchName || assignedBranchName || 'Main Campus Branch'} • Official Bursary Student Fee Invoice</div>
-            </div>
-            <div class="invoice-badge">${inv.paymentStatus}</div>
+          <div class="header-box">
+            <div class="status-badge">${inv.paymentStatus}</div>
+            ${resolvedLogo ? `<img src="${resolvedLogo}" alt="${schoolName} Logo" class="logo-img" />` : ''}
+            <h1 class="school-title">${schoolName}</h1>
+            <h2 class="heading-title">OFFICIAL BURSARY STUDENT FEE BREAKDOWN</h2>
           </div>
 
           <div class="meta-grid">
@@ -399,8 +414,6 @@ export default function TermInvoices() {
             </div>
             <div>
               <div class="meta-item"><strong>Session & Term:</strong> ${inv.session} • ${inv.term}</div>
-              <div class="meta-item"><strong>Invoice Reference:</strong> INV-${inv.id.substring(0, 8).toUpperCase()}</div>
-              <div class="meta-item"><strong>Branch Campus:</strong> ${inv.branchName || assignedBranchName}</div>
             </div>
           </div>
 
@@ -427,7 +440,7 @@ export default function TermInvoices() {
           <div style="clear:both;"></div>
 
           <div class="footer">
-            Generated on ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • Computer Generated Student Term Invoice • Bursary Control System
+            Dotmond School Bursary Department @2026
           </div>
 
           <script>
