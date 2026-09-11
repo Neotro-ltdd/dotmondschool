@@ -837,14 +837,6 @@ export default function AdmissionsHub() {
                               👁️ View Form
                             </button>
 
-                            <button
-                              className="act-btn act-btn-edit"
-                              onClick={() => handleOpenEditModal(appItem)}
-                              title="Edit Application & Upload Documents"
-                            >
-                              ✏️ Edit / Upload
-                            </button>
-
                             {/* Lifecycle Stage Action Triggers */}
                             {appItem.status === 'Submitted' && (
                               <button
