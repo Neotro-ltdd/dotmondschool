@@ -99,6 +99,7 @@ interface TranscriptTerm {
   class: string;
   gpa?: number;
   averageScore?: number;
+  isCleared?: boolean;
 }
 
 export default function ParentHub() {
@@ -1257,36 +1258,70 @@ export default function ParentHub() {
                           </tr>
                         </thead>
                         <tbody>
-                          {(transcripts || []).map((t, idx) => (
-                            <tr key={idx}>
-                              <td style={{ fontWeight: 600, color: '#0f172a' }}>{t.session}</td>
-                              <td>{t.term}</td>
-                              <td>
-                                <span
-                                  className="badge"
-                                  style={{
-                                    background: '#e0f2fe',
-                                    color: '#0369a1',
-                                    padding: '0.3rem 0.6rem',
-                                    borderRadius: '6px',
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {t.class}
-                                </span>
-                              </td>
-                              <td>
-                                <button
-                                  className="btn btn-secondary btn-sm"
-                                  onClick={() =>
-                                    setSelectedReportCard({ session: t.session, term: t.term })
-                                  }
-                                >
-                                  View Past Report
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
+                          {(transcripts || []).map((t, idx) => {
+                            const isTermLocked = t.isCleared === false;
+                            return (
+                              <tr key={idx}>
+                                <td style={{ fontWeight: 600, color: '#0f172a' }}>{t.session}</td>
+                                <td>{t.term}</td>
+                                <td>
+                                  {isTermLocked ? (
+                                    <span
+                                      className="badge"
+                                      style={{
+                                        background: '#fef3c7',
+                                        color: '#92400e',
+                                        padding: '0.3rem 0.6rem',
+                                        borderRadius: '6px',
+                                        fontWeight: 600,
+                                        border: '1px solid #fde68a',
+                                      }}
+                                    >
+                                      Locked (Fees Pending)
+                                    </span>
+                                  ) : (
+                                    <span
+                                      className="badge"
+                                      style={{
+                                        background: '#e0f2fe',
+                                        color: '#0369a1',
+                                        padding: '0.3rem 0.6rem',
+                                        borderRadius: '6px',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {t.class}
+                                    </span>
+                                  )}
+                                </td>
+                                <td>
+                                  {isTermLocked ? (
+                                    <button
+                                      className="btn btn-warning btn-sm"
+                                      style={{
+                                        background: '#d97706',
+                                        borderColor: '#d97706',
+                                        color: '#fff',
+                                        fontWeight: 600,
+                                      }}
+                                      onClick={() => setActiveTab('fees')}
+                                    >
+                                      Clear Fees to Unlock
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="btn btn-secondary btn-sm"
+                                      onClick={() =>
+                                        setSelectedReportCard({ session: t.session, term: t.term })
+                                      }
+                                    >
+                                      View Past Report
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
