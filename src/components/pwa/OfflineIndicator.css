@@ -1,0 +1,39 @@
+/* Offline Status Bar Styles */
+.offline-status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: offlineSlideDown 0.3s ease-out;
+}
+
+.offline-status-bar.is-offline {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-bottom: 1px solid #fecaca;
+}
+
+.offline-status-bar.is-reconnected {
+  background: #f0fdf4;
+  color: #15803d;
+  border-bottom: 1px solid #bbf7d0;
+}
+
+@keyframes offlineSlideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

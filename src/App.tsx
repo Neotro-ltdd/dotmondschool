@@ -64,11 +64,14 @@ import PublicAdmissionForm from './pages/public/PublicAdmissionForm';
 import PublicScheduleVisitForm from './pages/public/PublicScheduleVisitForm';
 import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
+import { OfflineIndicator } from './components/pwa/OfflineIndicator';
+import { InstallAppPrompt } from './components/pwa/InstallAppPrompt';
 import './App.css';
 
 function App() {
   return (
     <ThemeProvider>
+      <OfflineIndicator />
       <TenantProvider>
         <AuthProvider>
           <BranchProvider>
@@ -163,6 +166,7 @@ function App() {
           </BranchProvider>
         </AuthProvider>
       </TenantProvider>
+      <InstallAppPrompt />
     </ThemeProvider>
   );
 }
