@@ -405,7 +405,9 @@ export default function ParentHub() {
   const selectedTermInvoice = invoices.find(
     (inv) => inv.session === filterSession && inv.term === filterTerm,
   );
-  const hasOutstandingFees = selectedTermInvoice
+  const hasOutstandingFees = selectedKid?.isCleared
+    ? false
+    : selectedTermInvoice
     ? selectedTermInvoice.status !== 'Completed' &&
       selectedTermInvoice.status !== 'Verified' &&
       selectedTermInvoice.status !== 'Paid'
@@ -1415,7 +1417,7 @@ export default function ParentHub() {
       )}
 
       {/* Modal for Report Card Preview */}
-      {selectedReportCard && selectedKid && (
+      {selectedReportCard && selectedKid && activeTab !== 'results' && (
         <ReportCard
           studentId={selectedKid.id}
           session={selectedReportCard.session}
