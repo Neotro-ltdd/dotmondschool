@@ -6,6 +6,7 @@ import { LogOut, Sun, Moon } from 'lucide-react';
 import { API_ROOT } from '../../services/api';
 import { formatDisplayName } from '../../utils/nameFormatter';
 import { BranchSwitcher } from './BranchSwitcher';
+import { ManualInstallButton } from '../pwa/ManualInstallButton';
 import './Layout.css';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
@@ -58,6 +59,8 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
       </div>
 
       <div className="header-actions">
+        {/* Manual PWA Install Button (Auto-hides in standalone mode) */}
+        <ManualInstallButton variant="badge" />
         {/* Multi-Branch Context Switcher Toggle */}
         <BranchSwitcher />
         {/* Developer / SuperAdmin Role Switcher Dropdown - Only Visible to SuperAdmin */}

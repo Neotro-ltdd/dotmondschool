@@ -66,13 +66,15 @@ import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import { OfflineIndicator } from './components/pwa/OfflineIndicator';
 import { InstallAppPrompt } from './components/pwa/InstallAppPrompt';
+import { PWAProvider } from './context/PWAContext';
 import './App.css';
 
 function App() {
   return (
-    <ThemeProvider>
-      <OfflineIndicator />
-      <TenantProvider>
+    <PWAProvider>
+      <ThemeProvider>
+        <OfflineIndicator />
+        <TenantProvider>
         <AuthProvider>
           <BranchProvider>
             <DialogProvider>
@@ -168,6 +170,7 @@ function App() {
       </TenantProvider>
       <InstallAppPrompt />
     </ThemeProvider>
+    </PWAProvider>
   );
 }
 

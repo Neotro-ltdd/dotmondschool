@@ -1,0 +1,88 @@
+/* Manual Install Button Styles */
+.pwa-manual-standard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(49, 46, 129, 0.2);
+  transition: all 0.2s ease;
+}
+
+.pwa-manual-standard-btn:hover {
+  background: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
+  transform: translateY(-1px);
+}
+
+.pwa-manual-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwa-manual-badge-btn:hover {
+  background: #e2e8f0;
+  color: #2563eb;
+  border-color: #93c5fd;
+}
+
+.pwa-manual-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwa-manual-icon-btn:hover {
+  background: #e2e8f0;
+  color: #2563eb;
+}
+
+.pwa-manual-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: rgba(241, 245, 249, 0.7);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #1e293b;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.pwa-manual-menu-item:hover {
+  background: #e0e7ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+}
+
+.pwa-menu-icon {
+  color: #4f46e5;
+}
