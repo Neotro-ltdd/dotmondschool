@@ -71,6 +71,14 @@ async function handleResponse(response: Response) {
       }
     }
 
+    if (response.status === 409) {
+      const conflictMsg =
+        message || 'This score was recently modified by another user. Please refresh and try again.';
+      window.dispatchEvent(
+        new CustomEvent('srms_conflict_error', { detail: { message: conflictMsg } })
+      );
+    }
+
     if (response.status === 401) {
       localStorage.removeItem('srms_token');
       localStorage.removeItem('srms_user');
