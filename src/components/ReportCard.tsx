@@ -115,143 +115,106 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
   const isSecondary = data.className?.includes('JSS') || data.className?.includes('SS');
 
   const sheetContent = (
-    <div
-      className="result-sheet-container"
-      style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}
-    >
-      <div
-        className="no-print actions-bar"
-        style={{
-          padding: '15px',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '10px',
-          background: '#f8f9fa',
-          borderBottom: '1px solid #ddd',
-        }}
-      >
+    <div className="result-sheet-container">
+      <div className="no-print actions-bar">
         {onClose && (
-          <button className="btn btn-secondary" onClick={onClose}>
+          <button
+            className="btn btn-secondary"
+            onClick={onClose}
+            style={{ padding: '6px 16px', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#334155', color: '#fff', cursor: 'pointer' }}
+          >
             Close
           </button>
         )}
-        <button className="btn btn-primary" onClick={() => window.print()}>
+        <button
+          className="btn btn-primary"
+          onClick={() => window.print()}
+          style={{ padding: '6px 16px', background: '#2f6fb0', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
+        >
           🖨️ Print Result Sheet
         </button>
       </div>
 
-      <div
-        className="result-sheet-paper flex flex-col min-h-[297mm]"
-        style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box' }}
-      >
-        {/* Watermark */}
+      <div className="sheet">
         {data.schoolLogoUrl && (
           <div className="watermark-container">
-            <img
-              src={getFullUrl(data.schoolLogoUrl)}
-              alt="Watermark"
-              className="watermark-image"
-            />
+            <img src={getFullUrl(data.schoolLogoUrl)} alt="Watermark" className="watermark-image" />
           </div>
         )}
 
-        {/* Header section */}
-        <div className="result-header">
-          <div className="school-logo-placeholder">
+        <div className="header">
+          <div className="logo-box">
             {data.schoolLogoUrl ? (
-              <img
-                src={getFullUrl(data.schoolLogoUrl)}
-                alt="School Logo"
-                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-              />
+              <img src={getFullUrl(data.schoolLogoUrl)} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             ) : (
-              'LOGO'
+              data.schoolName?.substring(0, 7).toUpperCase() || 'DOTMOND'
             )}
           </div>
           <div className="school-info">
-            <h1>{data.schoolName?.toUpperCase()}</h1>
-            <p>{data.schoolAddress}</p>
-            <p>Motto: {data.schoolMotto}</p>
-            <h2>STUDENT'S TERMINAL REPORT</h2>
+            <h1>{data.schoolName || 'Dotmond School'}</h1>
+            <div className="address">{data.schoolAddress || 'Happyland Estate, Ajah, Lagos State, Nigeria'}</div>
+            <div className="motto">Motto: {data.schoolMotto || 'Steady Progress, Brighter Future'}</div>
           </div>
-          <div className="student-photo-placeholder">
+          <div className="photo-box">
             {data.studentPassportUrl ? (
-              <img
-                src={getFullUrl(data.studentPassportUrl)}
-                alt="Student Photo"
-                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }}
-              />
+              <img src={getFullUrl(data.studentPassportUrl)} alt="Student Photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               'PHOTO'
             )}
           </div>
         </div>
 
-        <div className="divider" />
+        <div className="report-title">STUDENT'S TERMINAL REPORT</div>
+        <hr className="top-rule" />
 
-        {/* Bio Data Section */}
-        <div className="bio-data-grid">
-          <div className="bio-item">
-            <strong>Name:</strong> {data.studentName}
+        <div className="info-grid">
+          <div>
+            <span className="label">Name:</span> <span className="value">{data.studentName}</span>
           </div>
-          <div className="bio-item">
-            <strong>Reg No:</strong> {data.registrationNumber}
+          <div>
+            <span className="label">Reg No:</span> <span className="value">{data.registrationNumber || '—'}</span>
           </div>
-          <div className="bio-item">
-            <strong>Class:</strong> {data.className}
+          <div>
+            <span className="label">Class:</span> <span className="value">{data.className}</span>
           </div>
-          <div className="bio-item">
-            <strong>Parent:</strong> {data.parentName}
+
+          <div>
+            <span className="label">Parent:</span> <span className="value">{data.parentName || '—'}</span>
           </div>
-          <div className="bio-item">
-            <strong>Term:</strong> {data.term}
+          <div>
+            <span className="label">Term:</span> <span className="value">{data.term}</span>
           </div>
-          <div className="bio-item">
-            <strong>Session:</strong> {data.session}
+          <div>
+            <span className="label">Session:</span> <span className="value">{data.session}</span>
           </div>
-          <div className="bio-item">
-            <strong>Date Processed:</strong> {data.dateProcessed}
+
+          <div>
+            <span className="label">Date Processed:</span>{' '}
+            <span className="value">{data.dateProcessed || data.dateOfResult || '—'}</span>
           </div>
         </div>
 
-        {/* Scores Table */}
-        <table className="result-table">
+        <table>
           <thead>
             <tr>
               <th>SUBJECTS</th>
               {isSecondary ? (
                 <>
-                  <th>
-                    Total CA
-                    <br />
-                    (40)
-                  </th>
-                  <th>
-                    Exam
-                    <br />
-                    (60)
-                  </th>
-                  <th>
-                    Total
-                    <br />
-                    (100)
-                  </th>
+                  <th>Total CA (40)</th>
+                  <th>Exam (60)</th>
+                  <th>Total (100)</th>
                 </>
               ) : (
-                <th>
-                  Mark
-                  <br />
-                  (100)
-                </th>
+                <th>MARK (100)</th>
               )}
-              <th>Grade</th>
-              <th>Remark</th>
+              <th>GRADE</th>
+              <th>REMARK</th>
             </tr>
           </thead>
           <tbody>
             {(data.subjects || []).map((score: any, index: number) => (
               <tr key={index}>
-                <td className="subject-name">{score.subjectName}</td>
+                <td>{score.subjectName}</td>
                 {isSecondary ? (
                   <>
                     <td>{Math.ceil(score.testScore ?? 0)}</td>
@@ -261,109 +224,107 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
                 ) : (
                   <td>{Math.ceil(score.totalScore ?? 0)}</td>
                 )}
-                <td>{score.grade}</td>
-                <td>{score.remark}</td>
+                <td className="grade">{score.grade}</td>
+                <td className="remark">{score.remark}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* Bottom Section Wrapper - Anchored to A4 Page Bottom via mt-auto */}
-        <div className="result-bottom-section mt-auto w-full flex flex-col">
-          {/* Summary & Attendance Grid */}
-          <div className="summary-grid">
-            <div className="attendance-box custom-box">
-              <h4>ATTENDANCE</h4>
-              <div className="att-row">
-                <span>Days School Opened:</span> <span className="att-val">{data.daysSchoolOpened ?? 118}</span>
-              </div>
-              <div className="att-row">
-                <span>Days Present:</span>{' '}
-                <span className="att-val">{data.daysStudentPresent ?? 0}</span>
-              </div>
-              <div className="att-row">
-                <span>Days Absent:</span>{' '}
-                <span className="att-val">{(data.daysSchoolOpened ?? 118) - (data.daysStudentPresent ?? 0)}</span>
-              </div>
+        <div className="panels">
+          <div className="panel">
+            <h3>ATTENDANCE</h3>
+            <div className="row">
+              <span>Days School Opened:</span>
+              <span className="val">{data.daysSchoolOpened ?? 118}</span>
             </div>
+            <div className="row">
+              <span>Days Present:</span>
+              <span className="val">{data.daysStudentPresent ?? 0}</span>
+            </div>
+            <div className="row">
+              <span>Days Absent:</span>
+              <span className="val">
+                {(data.daysSchoolOpened ?? 118) - (data.daysStudentPresent ?? 0)}
+              </span>
+            </div>
+          </div>
 
-            <div className="performance-box custom-box">
-              <h4>PERFORMANCE SUMMARY</h4>
-              <div className="att-row">
-                <span>Grand Total:</span>{' '}
-                <span className="att-val">{Math.ceil(data.grandTotal ?? 0)}</span>
+          <div className="panel">
+            <h3>PERFORMANCE SUMMARY</h3>
+            <div className="row">
+              <span>Grand Total:</span>
+              <span className="val">{Math.ceil(data.grandTotal ?? 0)}</span>
+            </div>
+            <div className="row">
+              <span>Average:</span>
+              <span className="val">{(data.average ?? 0).toFixed(1)}%</span>
+            </div>
+            {isSecondary ? (
+              <div className="row">
+                <span>Department/Percentage:</span>
+                <span className="val">{Math.round(data.average ?? 0)}%</span>
               </div>
-              <div className="att-row">
-                <span>Average:</span> <span className="att-val">{(data.average ?? 0).toFixed(1)}%</span>
+            ) : (
+              <div className="row">
+                <span>Grade/Position:</span>
+                <span className="val">Grade {data.averageGrade || 'A'}</span>
               </div>
-              {isSecondary ? (
-                <div className="att-row">
-                  <span>Department/Percentage:</span>{' '}
-                  <span className="att-val">{Math.round(data.average ?? 0)}%</span>
-                </div>
+            )}
+          </div>
+        </div>
+
+        <div className="remarks-panel">
+          <div className="remark-row">
+            <span className="remark-label">Class Teacher's Remark:</span>
+            <span className="remark-text">{data.teacherComment || 'Excellent Result, Keep up the good work'}</span>
+            <div className="signature">
+              {data.teacherSignatureUrl ? (
+                <img src={getFullUrl(data.teacherSignatureUrl)} alt="Signature" style={{ maxHeight: '30px', objectFit: 'contain' }} />
               ) : (
-                <div className="att-row">
-                  <span>Grade/Position:</span>{' '}
-                  <span className="att-val">Grade {data.averageGrade || '—'}</span>
-                </div>
+                ' '
               )}
             </div>
           </div>
 
-          {/* Remarks & Signatures */}
-          <div className="signatures-section custom-box">
-            <div className="remark-row">
-              <span className="remark-label">Class Teacher's Remark:</span>
-              <span className="remark-text">{data.teacherComment}</span>
-              <div className="signature-area">
-                {data.teacherSignatureUrl ? (
-                  <img src={getFullUrl(data.teacherSignatureUrl)} alt="Teacher Signature" />
-                ) : (
-                  <span>_________________</span>
-                )}
+          <div className="remark-row">
+            <span className="remark-label">Principal's Remark:</span>
+            <span className="remark-text">{data.principalComment || 'Very good Result, Keep going'}</span>
+            {data.principalSignatureUrl && (
+              <div className="signature">
+                <img src={getFullUrl(data.principalSignatureUrl)} alt="Signature" style={{ maxHeight: '30px', objectFit: 'contain' }} />
               </div>
-            </div>
-
-            <div className="remark-row">
-              <span className="remark-label">Principal's Remark:</span>
-              <span className="remark-text">{data.principalComment}</span>
-              <div className="signature-area">
-                {data.principalSignatureUrl ? (
-                  <img src={getFullUrl(data.principalSignatureUrl)} alt="Principal Signature" />
-                ) : (
-                  <span>_________________</span>
-                )}
-              </div>
-            </div>
+            )}
           </div>
-
-          <div className="footer-section">
-            <strong>Next Term Resumes:</strong> {data.resumptionDate}
-          </div>
-
-          {/* Unpaid Fees Warning Banner */}
-          {data.hasUnpaidFees && (
-            <div
-              className="no-print"
-              style={{
-                marginTop: '20px',
-                padding: '10px 15px',
-                backgroundColor: '#fee2e2',
-                border: '1px solid #fecaca',
-                borderRadius: '6px',
-                color: '#991b1b',
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              ⚠️ <strong>Notice:</strong> This student has unpaid fees for this term/session.
-            </div>
-          )}
         </div>
+
+        <div className="next-term">
+          Next Term Resumes: {data.resumptionDate || '—'}
+        </div>
+
+        {/* Unpaid Fees Warning Banner */}
+        {data.hasUnpaidFees && (
+          <div
+            className="no-print"
+            style={{
+              marginTop: '20px',
+              padding: '10px 15px',
+              backgroundColor: '#fee2e2',
+              border: '1px solid #fecaca',
+              borderRadius: '6px',
+              color: '#991b1b',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            ⚠️ <strong>Notice:</strong> This student has unpaid fees for this term/session.
+          </div>
+        )}
       </div>
     </div>
+  );/div>
   );
 
   if (isInline) {
