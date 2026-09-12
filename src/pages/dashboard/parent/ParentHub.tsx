@@ -1219,7 +1219,7 @@ export default function ParentHub() {
                       studentId={selectedKid.id}
                       session={filterSession}
                       term={filterTerm}
-                      onClose={() => {}}
+                      isInline={true}
                     />
                   )}
                 </div>

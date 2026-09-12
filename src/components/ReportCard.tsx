@@ -7,7 +7,8 @@ interface ReportCardProps {
   studentId: string;
   session: string;
   term: string;
-  onClose: () => void;
+  onClose?: () => void;
+  isInline?: boolean;
 }
 
 interface ReportCardData {
@@ -47,7 +48,7 @@ interface ReportCardData {
   }>;
 }
 
-export default function ReportCard({ studentId, session, term, onClose }: ReportCardProps) {
+export default function ReportCard({ studentId, session, term, onClose, isInline }: ReportCardProps) {
   const [data, setData] = useState<ReportCardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -113,6 +114,262 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
 
   const isSecondary = data.className?.includes('JSS') || data.className?.includes('SS');
 
+  const sheetContent = (
+    <div
+      className="result-sheet-container"
+      style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}
+    >
+      <div
+        className="no-print actions-bar"
+        style={{
+          padding: '15px',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '10px',
+          background: '#f8f9fa',
+          borderBottom: '1px solid #ddd',
+        }}
+      >
+        {onClose && (
+          <button className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
+        )}
+        <button className="btn btn-primary" onClick={() => window.print()}>
+          🖨️ Print Result Sheet
+        </button>
+      </div>
+
+      <div
+        className="result-sheet-paper flex flex-col min-h-[297mm]"
+        style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box' }}
+      >
+        {/* Watermark */}
+        {data.schoolLogoUrl && (
+          <div className="watermark-container">
+            <img
+              src={getFullUrl(data.schoolLogoUrl)}
+              alt="Watermark"
+              className="watermark-image"
+            />
+          </div>
+        )}
+
+        {/* Header section */}
+        <div className="result-header">
+          <div className="school-logo-placeholder">
+            {data.schoolLogoUrl ? (
+              <img
+                src={getFullUrl(data.schoolLogoUrl)}
+                alt="School Logo"
+                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+              />
+            ) : (
+              'LOGO'
+            )}
+          </div>
+          <div className="school-info">
+            <h1>{data.schoolName?.toUpperCase()}</h1>
+            <p>{data.schoolAddress}</p>
+            <p>Motto: {data.schoolMotto}</p>
+            <h2>STUDENT'S TERMINAL REPORT</h2>
+          </div>
+          <div className="student-photo-placeholder">
+            {data.studentPassportUrl ? (
+              <img
+                src={getFullUrl(data.studentPassportUrl)}
+                alt="Student Photo"
+                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              'PHOTO'
+            )}
+          </div>
+        </div>
+
+        <div className="divider" />
+
+        {/* Bio Data Section */}
+        <div className="bio-data-grid">
+          <div className="bio-item">
+            <strong>Name:</strong> {data.studentName}
+          </div>
+          <div className="bio-item">
+            <strong>Reg No:</strong> {data.registrationNumber}
+          </div>
+          <div className="bio-item">
+            <strong>Class:</strong> {data.className}
+          </div>
+          <div className="bio-item">
+            <strong>Parent:</strong> {data.parentName}
+          </div>
+          <div className="bio-item">
+            <strong>Term:</strong> {data.term}
+          </div>
+          <div className="bio-item">
+            <strong>Session:</strong> {data.session}
+          </div>
+          <div className="bio-item">
+            <strong>Date Processed:</strong> {data.dateProcessed}
+          </div>
+        </div>
+
+        {/* Scores Table */}
+        <table className="result-table">
+          <thead>
+            <tr>
+              <th>SUBJECTS</th>
+              {isSecondary ? (
+                <>
+                  <th>
+                    Total CA
+                    <br />
+                    (40)
+                  </th>
+                  <th>
+                    Exam
+                    <br />
+                    (60)
+                  </th>
+                  <th>
+                    Total
+                    <br />
+                    (100)
+                  </th>
+                </>
+              ) : (
+                <th>
+                  Mark
+                  <br />
+                  (100)
+                </th>
+              )}
+              <th>Grade</th>
+              <th>Remark</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data.subjects || []).map((score: any, index: number) => (
+              <tr key={index}>
+                <td className="subject-name">{score.subjectName}</td>
+                {isSecondary ? (
+                  <>
+                    <td>{Math.ceil(score.testScore ?? 0)}</td>
+                    <td>{Math.ceil(score.examScore ?? 0)}</td>
+                    <td>{Math.ceil(score.totalScore ?? 0)}</td>
+                  </>
+                ) : (
+                  <td>{Math.ceil(score.totalScore ?? 0)}</td>
+                )}
+                <td>{score.grade}</td>
+                <td>{score.remark}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Bottom Section Wrapper - Anchored to A4 Page Bottom via mt-auto */}
+        <div className="result-bottom-section mt-auto w-full flex flex-col">
+          {/* Summary & Attendance Grid */}
+          <div className="summary-grid">
+            <div className="attendance-box custom-box">
+              <h4>ATTENDANCE</h4>
+              <div className="att-row">
+                <span>Days School Opened:</span> <span className="att-val">{data.daysSchoolOpened ?? 118}</span>
+              </div>
+              <div className="att-row">
+                <span>Days Present:</span>{' '}
+                <span className="att-val">{data.daysStudentPresent ?? 0}</span>
+              </div>
+              <div className="att-row">
+                <span>Days Absent:</span>{' '}
+                <span className="att-val">{(data.daysSchoolOpened ?? 118) - (data.daysStudentPresent ?? 0)}</span>
+              </div>
+            </div>
+
+            <div className="performance-box custom-box">
+              <h4>PERFORMANCE SUMMARY</h4>
+              <div className="att-row">
+                <span>Grand Total:</span>{' '}
+                <span className="att-val">{Math.ceil(data.grandTotal ?? 0)}</span>
+              </div>
+              <div className="att-row">
+                <span>Average:</span> <span className="att-val">{(data.average ?? 0).toFixed(1)}%</span>
+              </div>
+              {isSecondary ? (
+                <div className="att-row">
+                  <span>Department/Percentage:</span>{' '}
+                  <span className="att-val">{Math.round(data.average ?? 0)}%</span>
+                </div>
+              ) : (
+                <div className="att-row">
+                  <span>Grade/Position:</span>{' '}
+                  <span className="att-val">Grade {data.averageGrade || '—'}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Remarks & Signatures */}
+          <div className="signatures-section custom-box">
+            <div className="remark-row">
+              <span className="remark-label">Class Teacher's Remark:</span>
+              <span className="remark-text">{data.teacherComment}</span>
+              <div className="signature-area">
+                {data.teacherSignatureUrl ? (
+                  <img src={getFullUrl(data.teacherSignatureUrl)} alt="Teacher Signature" />
+                ) : (
+                  <span>_________________</span>
+                )}
+              </div>
+            </div>
+
+            <div className="remark-row">
+              <span className="remark-label">Principal's Remark:</span>
+              <span className="remark-text">{data.principalComment}</span>
+              <div className="signature-area">
+                {data.principalSignatureUrl ? (
+                  <img src={getFullUrl(data.principalSignatureUrl)} alt="Principal Signature" />
+                ) : (
+                  <span>_________________</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="footer-section">
+            <strong>Next Term Resumes:</strong> {data.resumptionDate}
+          </div>
+
+          {/* Unpaid Fees Warning Banner */}
+          {data.hasUnpaidFees && (
+            <div
+              className="no-print"
+              style={{
+                marginTop: '20px',
+                padding: '10px 15px',
+                backgroundColor: '#fee2e2',
+                border: '1px solid #fecaca',
+                borderRadius: '6px',
+                color: '#991b1b',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              ⚠️ <strong>Notice:</strong> This student has unpaid fees for this term/session.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isInline) {
+    return sheetContent;
+  }
+
   return (
     <div
       style={{
@@ -124,235 +381,7 @@ export default function ReportCard({ studentId, session, term, onClose }: Report
         padding: '20px',
       }}
     >
-      <div
-        className="result-sheet-container"
-        style={{ margin: '0 auto', maxWidth: '800px', background: '#fff', position: 'relative' }}
-      >
-        <div
-          className="no-print actions-bar"
-          style={{
-            padding: '15px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '10px',
-            background: '#f8f9fa',
-            borderBottom: '1px solid #ddd',
-          }}
-        >
-          <button className="btn btn-secondary" onClick={onClose}>
-            Close
-          </button>
-          <button className="btn btn-primary" onClick={() => window.print()}>
-            🖨️ Print Result
-          </button>
-        </div>
-
-        <div
-          className="result-sheet-paper flex flex-col min-h-[297mm]"
-          style={{ position: 'relative', padding: '35px 40px', boxSizing: 'border-box' }}
-        >
-          {/* Watermark */}
-          {data.schoolLogoUrl && (
-            <div className="watermark-container">
-              <img
-                src={getFullUrl(data.schoolLogoUrl)}
-                alt="Watermark"
-                className="watermark-image"
-              />
-            </div>
-          )}
-
-          {/* Header section */}
-          <div className="result-header">
-            <div className="school-logo-placeholder">
-              {data.schoolLogoUrl ? (
-                <img
-                  src={getFullUrl(data.schoolLogoUrl)}
-                  alt="School Logo"
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                />
-              ) : (
-                'LOGO'
-              )}
-            </div>
-            <div className="school-info">
-              <h1>{data.schoolName?.toUpperCase()}</h1>
-              <p>{data.schoolAddress}</p>
-              <p>Motto: {data.schoolMotto}</p>
-              <h2>STUDENT'S TERMINAL REPORT</h2>
-            </div>
-            <div className="student-photo-placeholder">
-              {data.studentPassportUrl ? (
-                <img
-                  src={getFullUrl(data.studentPassportUrl)}
-                  alt="Student Photo"
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                'PHOTO'
-              )}
-            </div>
-          </div>
-
-          <div className="divider" />
-
-          {/* Bio Data Section */}
-          <div className="bio-data-grid">
-            <div className="bio-item">
-              <strong>Name:</strong> {data.studentName}
-            </div>
-            <div className="bio-item">
-              <strong>Reg No:</strong> {data.registrationNumber}
-            </div>
-            <div className="bio-item">
-              <strong>Class:</strong> {data.className}
-            </div>
-            <div className="bio-item">
-              <strong>Parent:</strong> {data.parentName}
-            </div>
-            <div className="bio-item">
-              <strong>Term:</strong> {data.term}
-            </div>
-            <div className="bio-item">
-              <strong>Session:</strong> {data.session}
-            </div>
-            <div className="bio-item">
-              <strong>Date Processed:</strong> {data.dateProcessed}
-            </div>
-          </div>
-
-          {/* Scores Table */}
-          <table className="result-table">
-            <thead>
-              <tr>
-                <th>SUBJECTS</th>
-                {isSecondary ? (
-                  <>
-                    <th>
-                      Total CA
-                      <br />
-                      (40)
-                    </th>
-                    <th>
-                      Exam
-                      <br />
-                      (60)
-                    </th>
-                    <th>
-                      Total
-                      <br />
-                      (100)
-                    </th>
-                  </>
-                ) : (
-                  <th>
-                    Mark
-                    <br />
-                    (100)
-                  </th>
-                )}
-                <th>Grade</th>
-                <th>Remark</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data.subjects || []).map((score: any, index: number) => (
-                <tr key={index}>
-                  <td className="subject-name">{score.subjectName}</td>
-                  {isSecondary ? (
-                    <>
-                      <td>{Math.ceil(score.testScore ?? 0)}</td>
-                      <td>{Math.ceil(score.examScore ?? 0)}</td>
-                      <td>{Math.ceil(score.totalScore ?? 0)}</td>
-                    </>
-                  ) : (
-                    <td>{Math.ceil(score.totalScore ?? 0)}</td>
-                  )}
-                  <td>{score.grade}</td>
-                  <td>{score.remark}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Bottom Section Wrapper - Anchored to A4 Page Bottom via mt-auto */}
-          <div className="result-bottom-section mt-auto w-full flex flex-col">
-            {/* Summary & Attendance Grid */}
-            <div className="summary-grid">
-              <div className="attendance-box custom-box">
-                <h4>ATTENDANCE</h4>
-                <div className="att-row">
-                  <span>Days School Opened:</span> <span className="att-val">{data.daysSchoolOpened ?? 118}</span>
-                </div>
-                <div className="att-row">
-                  <span>Days Present:</span>{' '}
-                  <span className="att-val">{data.daysStudentPresent ?? 0}</span>
-                </div>
-                <div className="att-row">
-                  <span>Days Absent:</span>{' '}
-                  <span className="att-val">{(data.daysSchoolOpened ?? 118) - (data.daysStudentPresent ?? 0)}</span>
-                </div>
-              </div>
-
-              <div className="performance-box custom-box">
-                <h4>PERFORMANCE SUMMARY</h4>
-                <div className="att-row">
-                  <span>Grand Total:</span>{' '}
-                  <span className="att-val">{Math.ceil(data.grandTotal ?? 0)}</span>
-                </div>
-                <div className="att-row">
-                  <span>Average:</span> <span className="att-val">{(data.average ?? 0).toFixed(1)}%</span>
-                </div>
-                {isSecondary ? (
-                  <div className="att-row">
-                    <span>Department/Percentage:</span>{' '}
-                    <span className="att-val">{Math.round(data.average ?? 0)}%</span>
-                  </div>
-                ) : (
-                  <div className="att-row">
-                    <span>Grade/Position:</span>{' '}
-                    <span className="att-val">Grade {data.averageGrade || '—'}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Remarks & Signatures */}
-            <div className="signatures-section custom-box">
-              <div className="remark-row">
-                <span className="remark-label">Class Teacher's Remark:</span>
-                <span className="remark-text">{data.teacherComment}</span>
-                <div className="signature-area">
-                  {data.teacherSignatureUrl ? (
-                    <img src={getFullUrl(data.teacherSignatureUrl)} alt="Teacher Signature" />
-                  ) : (
-                    <span>_________________</span>
-                  )}
-                </div>
-              </div>
-
-              <div className="remark-row">
-                <span className="remark-label">Principal's Remark:</span>
-                <span className="remark-text">{data.principalComment}</span>
-                <div className="signature-area">
-                  {data.principalSignatureUrl ? (
-                    <img src={getFullUrl(data.principalSignatureUrl)} alt="Principal Signature" />
-                  ) : (
-                    <span>_________________</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="footer-section">
-              <strong>Next Term Resumes:</strong>{' '}
-              {data.resumptionDate
-                ? new Date(data.resumptionDate).toLocaleDateString()
-                : 'To Be Announced'}
-            </div>
-          </div>
-        </div>
-      </div>
+      {sheetContent}
     </div>
   );
 }
