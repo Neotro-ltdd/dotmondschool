@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { api, API_ROOT } from '../../../services/api';
+import { api, API_ROOT, downloadReportCardPdf } from '../../../services/api';
 import './ResultSheet.css';
 
 interface StudentScore {
@@ -43,10 +43,27 @@ const ResultSheetViewer: React.FC = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const getFullUrl = (url: string): string => {
     if (url.startsWith('http')) return url;
     return `${API_ROOT}${url}`;
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!studentId) return;
+    try {
+      setDownloadingPdf(true);
+      await downloadReportCardPdf(
+        studentId,
+        { batchId },
+        `Report_Card_${result?.registrationNumber || 'Student'}_${result?.session || ''}_${result?.term || ''}.pdf`
+      );
+    } catch (err: any) {
+      alert(err?.message || 'Could not download PDF report card. Please ensure your fee clearance is up to date.');
+    } finally {
+      setDownloadingPdf(false);
+    }
   };
 
   useEffect(() => {
@@ -82,12 +99,20 @@ const ResultSheetViewer: React.FC = () => {
 
   return (
     <div className="result-sheet-container">
-      <div className="no-print actions-bar">
+      <div className="no-print actions-bar" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
         <button className="btn btn-secondary" onClick={() => navigate(-1)}>
           ⬅ Back
         </button>
         <button className="btn btn-primary" onClick={() => window.print()}>
           🖨️ Print Result Sheet
+        </button>
+        <button
+          className="btn btn-primary"
+          style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', border: 'none' }}
+          onClick={handleDownloadPdf}
+          disabled={downloadingPdf}
+        >
+          {downloadingPdf ? '⏳ Generating PDF...' : '📥 Download Official PDF'}
         </button>
       </div>
 

@@ -246,3 +246,27 @@ export const api = {
     return await response.blob();
   },
 };
+
+export async function downloadReportCardPdf(
+  studentId: string,
+  options?: { batchId?: string; session?: string; term?: string },
+  defaultFileName = 'Report_Card.pdf'
+) {
+  const params = new URLSearchParams();
+  if (options?.batchId) params.append('batchId', options.batchId);
+  if (options?.session) params.append('session', options.session);
+  if (options?.term) params.append('term', options.term);
+
+  const queryString = params.toString();
+  const endpoint = `/academics/students/${studentId}/report-card/pdf${queryString ? `?${queryString}` : ''}`;
+  const blob = await api.download(endpoint);
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = defaultFileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
