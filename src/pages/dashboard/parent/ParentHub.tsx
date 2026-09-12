@@ -122,7 +122,7 @@ export default function ParentHub() {
       .join(' ');
   };
 
-  const handleSelectKid = (kid: Kid, tab: 'fees' | 'report' = 'fees') => {
+  const handleSelectKid = (kid: Kid, tab: 'fees' | 'academics' | 'attendance' = 'fees') => {
     setSelectedKid(kid);
     setActiveTab(tab);
   };
@@ -132,10 +132,10 @@ export default function ParentHub() {
   const [filterTerm, setFilterTerm] = useState<string>(currentTerm);
 
   // Tab States
-  const [activeTab, setActiveTab] = useState<'fees' | 'report'>('fees');
+  const [activeTab, setActiveTab] = useState<'fees' | 'academics' | 'attendance'>('fees');
   const [feeSubTab, setFeeSubTab] = useState<'breakdown' | 'history' | 'upload'>('breakdown');
-  const [reportSubTab, setReportSubTab] = useState<
-    'terminal_report' | 'attendance' | 'academic_trend' | 'academic_analysis'
+  const [academicSubTab, setAcademicSubTab] = useState<
+    'terminal_report' | 'academic_trend' | 'academic_analysis'
   >('terminal_report');
 
   // Data States
@@ -172,15 +172,15 @@ export default function ParentHub() {
   useEffect(() => {
     if (selectedKid) {
       fetchInvoices(selectedKid.id);
-      if (activeTab === 'report') {
-        if (reportSubTab === 'attendance') {
-          fetchAttendance(selectedKid.id, filterSession, filterTerm);
-        } else if (reportSubTab === 'academic_trend' || reportSubTab === 'terminal_report') {
+      if (activeTab === 'academics') {
+        if (academicSubTab === 'terminal_report' || academicSubTab === 'academic_trend') {
           fetchTranscripts(selectedKid.id);
         }
+      } else if (activeTab === 'attendance') {
+        fetchAttendance(selectedKid.id, filterSession, filterTerm);
       }
     }
-  }, [selectedKid, activeTab, feeSubTab, reportSubTab, filterSession, filterTerm]);
+  }, [selectedKid, activeTab, feeSubTab, academicSubTab, filterSession, filterTerm]);
 
   const fetchMyKids = async () => {
     try {
@@ -689,10 +689,16 @@ export default function ParentHub() {
               <CreditCard size={18} /> Fees & Receipts
             </button>
             <button
-              className={`parent-nav-tab ${activeTab === 'report' ? 'active' : ''}`}
-              onClick={() => setActiveTab('report')}
+              className={`parent-nav-tab ${activeTab === 'academics' ? 'active' : ''}`}
+              onClick={() => setActiveTab('academics')}
             >
-              <Calendar size={18} /> Attendance & Academic Reports
+              <Award size={18} /> Academic Reports
+            </button>
+            <button
+              className={`parent-nav-tab ${activeTab === 'attendance' ? 'active' : ''}`}
+              onClick={() => setActiveTab('attendance')}
+            >
+              <Calendar size={18} /> Attendance Report
             </button>
           </div>
 
@@ -1129,41 +1135,35 @@ export default function ParentHub() {
             </div>
           )}
 
-          {/* TAB 3: ATTENDANCE & ACADEMIC REPORTS */}
-          {activeTab === 'report' && (
+          {/* TAB 2: ACADEMIC REPORTS */}
+          {activeTab === 'academics' && (
             <div>
-              {/* Report Sub-Tabs */}
+              {/* Academic Sub-Tabs */}
               <div className="parent-sub-tabs">
                 <button
-                  className={`parent-sub-tab ${reportSubTab === 'terminal_report' ? 'active' : ''}`}
-                  onClick={() => setReportSubTab('terminal_report')}
+                  className={`parent-sub-tab ${academicSubTab === 'terminal_report' ? 'active' : ''}`}
+                  onClick={() => setAcademicSubTab('terminal_report')}
                 >
                   <Award size={15} style={{ display: 'inline', marginRight: '0.35rem' }} />
                   Terminal Report Card
                 </button>
                 <button
-                  className={`parent-sub-tab ${reportSubTab === 'attendance' ? 'active' : ''}`}
-                  onClick={() => setReportSubTab('attendance')}
-                >
-                  Gate & Class Attendance Log
-                </button>
-                <button
-                  className={`parent-sub-tab ${reportSubTab === 'academic_trend' ? 'active' : ''}`}
-                  onClick={() => setReportSubTab('academic_trend')}
+                  className={`parent-sub-tab ${academicSubTab === 'academic_trend' ? 'active' : ''}`}
+                  onClick={() => setAcademicSubTab('academic_trend')}
                 >
                   Academic History & Performance Compare
                 </button>
                 <button
-                  className={`parent-sub-tab ${reportSubTab === 'academic_analysis' ? 'active' : ''}`}
-                  onClick={() => setReportSubTab('academic_analysis')}
+                  className={`parent-sub-tab ${academicSubTab === 'academic_analysis' ? 'active' : ''}`}
+                  onClick={() => setAcademicSubTab('academic_analysis')}
                 >
                   <TrendingUp size={15} style={{ display: 'inline', marginRight: '0.35rem' }} />
                   Academic Analysis & Subject Progression
                 </button>
               </div>
 
-              {/* Sub-Tab 0: Terminal Report Card */}
-              {reportSubTab === 'terminal_report' && (
+              {/* Sub-Tab 1: Terminal Report Card */}
+              {academicSubTab === 'terminal_report' && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
                   <div
                     style={{
@@ -1225,121 +1225,8 @@ export default function ParentHub() {
                 </div>
               )}
 
-              {/* Sub-Tab 1: Attendance Log */}
-              {reportSubTab === 'attendance' && (
-                <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-                  <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
-                    Gate Attendance & Time In / Time Out Log
-                  </h3>
-
-                  {attendanceData && (
-                    <div
-                      className="stats-grid"
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '1rem',
-                        marginBottom: '1.5rem',
-                      }}
-                    >
-                      <div className="stat-card">
-                        <p className="stat-label">Total School Days</p>
-                        <h3 className="stat-value">{attendanceData.totalSchoolDays}</h3>
-                      </div>
-                      <div className="stat-card">
-                        <p className="stat-label">Days Present</p>
-                        <h3 className="stat-value" style={{ color: '#16a34a' }}>
-                          {attendanceData.daysPresent}
-                        </h3>
-                      </div>
-                      <div className="stat-card">
-                        <p className="stat-label">Days Absent</p>
-                        <h3 className="stat-value" style={{ color: '#dc2626' }}>
-                          {attendanceData.daysAbsent}
-                        </h3>
-                      </div>
-                      <div className="stat-card">
-                        <p className="stat-label">Punctuality Rate</p>
-                        <h3 className="stat-value" style={{ color: '#4f46e5' }}>
-                          {attendanceData.attendanceRatePercentage}%
-                        </h3>
-                      </div>
-                    </div>
-                  )}
-
-                  {loadingTab ? (
-                    <p style={{ color: '#64748b' }}>Loading gate attendance logs...</p>
-                  ) : !attendanceData || !attendanceData.logs || attendanceData.logs.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#64748b' }}>
-                      <Clock size={40} style={{ margin: '0 auto 0.5rem', color: '#94a3b8' }} />
-                      <p>No daily gate attendance logs recorded for this term selection.</p>
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        overflow: 'hidden',
-                        borderRadius: '12px',
-                        border: '1px solid #e2e8f0',
-                      }}
-                    >
-                      <table className="attendance-table">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Day</th>
-                            <th>Time In</th>
-                            <th>Time Out</th>
-                            <th>Status</th>
-                            <th>Remarks</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {(attendanceData.logs || []).map((log, idx) => (
-                            <tr key={idx}>
-                              <td style={{ fontWeight: 600, color: '#0f172a' }}>
-                                {log.formattedDate}
-                              </td>
-                              <td>{log.dayName}</td>
-                              <td style={{ fontWeight: 600, color: '#16a34a' }}>{log.timeIn}</td>
-                              <td style={{ fontWeight: 600, color: '#4338ca' }}>{log.timeOut}</td>
-                              <td>
-                                <span
-                                  style={{
-                                    padding: '0.25rem 0.6rem',
-                                    borderRadius: '12px',
-                                    fontSize: '0.78rem',
-                                    fontWeight: 600,
-                                    background:
-                                      log.status === 'Present'
-                                        ? '#dcfce7'
-                                        : log.status === 'Late'
-                                          ? '#fef9c3'
-                                          : '#fee2e2',
-                                    color:
-                                      log.status === 'Present'
-                                        ? '#15803d'
-                                        : log.status === 'Late'
-                                          ? '#854d0e'
-                                          : '#b91c1c',
-                                  }}
-                                >
-                                  {log.status}
-                                </span>
-                              </td>
-                              <td style={{ color: '#64748b', fontSize: '0.84rem' }}>
-                                {log.remarks}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
-
               {/* Sub-Tab 2: Academic Performance Comparison */}
-              {reportSubTab === 'academic_trend' && (
+              {academicSubTab === 'academic_trend' && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
                   <h3 style={{ margin: '0 0 0.5rem', color: '#0f172a' }}>
                     Academic Progress & Performance Comparison
@@ -1408,13 +1295,126 @@ export default function ParentHub() {
               )}
 
               {/* Sub-Tab 3: Academic Analysis & Subject Progression */}
-              {reportSubTab === 'academic_analysis' && selectedKid && (
+              {academicSubTab === 'academic_analysis' && selectedKid && (
                 <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
                   <AcademicAnalysisView
                     isParentView={true}
                     initialStudentId={selectedKid.id}
                     selectedKid={selectedKid}
                   />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: ATTENDANCE REPORT */}
+          {activeTab === 'attendance' && (
+            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
+              <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
+                Gate Attendance & Time In / Time Out Log
+              </h3>
+
+              {attendanceData && (
+                <div
+                  className="stats-grid"
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '1rem',
+                    marginBottom: '1.5rem',
+                  }}
+                >
+                  <div className="stat-card">
+                    <p className="stat-label">Total School Days</p>
+                    <h3 className="stat-value">{attendanceData.totalSchoolDays}</h3>
+                  </div>
+                  <div className="stat-card">
+                    <p className="stat-label">Days Present</p>
+                    <h3 className="stat-value" style={{ color: '#16a34a' }}>
+                      {attendanceData.daysPresent}
+                    </h3>
+                  </div>
+                  <div className="stat-card">
+                    <p className="stat-label">Days Absent</p>
+                    <h3 className="stat-value" style={{ color: '#dc2626' }}>
+                      {attendanceData.daysAbsent}
+                    </h3>
+                  </div>
+                  <div className="stat-card">
+                    <p className="stat-label">Punctuality Rate</p>
+                    <h3 className="stat-value" style={{ color: '#4f46e5' }}>
+                      {attendanceData.attendanceRatePercentage}%
+                    </h3>
+                  </div>
+                </div>
+              )}
+
+              {loadingTab ? (
+                <p style={{ color: '#64748b' }}>Loading gate attendance logs...</p>
+              ) : !attendanceData || !attendanceData.logs || attendanceData.logs.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#64748b' }}>
+                  <Clock size={40} style={{ margin: '0 auto 0.5rem', color: '#94a3b8' }} />
+                  <p>No daily gate attendance logs recorded for this term selection.</p>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    overflow: 'hidden',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                  }}
+                >
+                  <table className="attendance-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(attendanceData.logs || []).map((log, idx) => (
+                        <tr key={idx}>
+                          <td style={{ fontWeight: 600, color: '#0f172a' }}>
+                            {log.formattedDate}
+                          </td>
+                          <td>{log.dayName}</td>
+                          <td style={{ fontWeight: 600, color: '#16a34a' }}>{log.timeIn}</td>
+                          <td style={{ fontWeight: 600, color: '#4338ca' }}>{log.timeOut}</td>
+                          <td>
+                            <span
+                              style={{
+                                padding: '0.25rem 0.6rem',
+                                borderRadius: '12px',
+                                fontSize: '0.78rem',
+                                fontWeight: 600,
+                                background:
+                                  log.status === 'Present'
+                                    ? '#dcfce7'
+                                    : log.status === 'Late'
+                                      ? '#fef9c3'
+                                      : '#fee2e2',
+                                color:
+                                  log.status === 'Present'
+                                    ? '#15803d'
+                                    : log.status === 'Late'
+                                      ? '#854d0e'
+                                      : '#b91c1c',
+                              }}
+                            >
+                              {log.status}
+                            </span>
+                          </td>
+                          <td style={{ color: '#64748b', fontSize: '0.84rem' }}>
+                            {log.remarks}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
