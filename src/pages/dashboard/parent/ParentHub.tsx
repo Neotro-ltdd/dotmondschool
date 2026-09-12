@@ -558,37 +558,6 @@ export default function ParentHub() {
                           </span>
                         </div>
                       </div>
-
-                      {/* Interactive Quick-Jump Shortcuts */}
-                      <div className="child-quick-shortcuts">
-                        <button
-                          type="button"
-                          className="child-shortcut-btn"
-                          onClick={() => handleSelectKid(kid, 'results')}
-                          title="View terminal results & report cards"
-                        >
-                          <Award size={14} className="shortcut-icon" />
-                          <span>Results</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="child-shortcut-btn"
-                          onClick={() => handleSelectKid(kid, 'fees')}
-                          title="View invoices & tuition receipts"
-                        >
-                          <CreditCard size={14} className="shortcut-icon" />
-                          <span>Tuition</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="child-shortcut-btn"
-                          onClick={() => handleSelectKid(kid, 'report')}
-                          title="View gate attendance logs & academic trend"
-                        >
-                          <Calendar size={14} className="shortcut-icon" />
-                          <span>Attendance</span>
-                        </button>
-                      </div>
                     </div>
 
                     {/* Card Footer with Primary CTA */}
