@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
-import { getSessionOptions } from '../../../utils/sessionOptions';
+import { getSessionOptions, getTermOptions } from '../../../utils/sessionOptions';
 import { useDialog } from '../../../context/DialogContext';
 import ReportCard from '../../../components/ReportCard';
 import { AcademicAnalysisView } from '../../../components/dashboard/reports/AcademicAnalysisView';
@@ -652,7 +652,14 @@ export default function ParentHub() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <select
                 value={filterSession}
-                onChange={(e) => setFilterSession(e.target.value)}
+                onChange={(e) => {
+                  const s = e.target.value;
+                  setFilterSession(s);
+                  const validTerms = getTermOptions(s);
+                  if (!validTerms.includes(filterTerm)) {
+                    setFilterTerm(validTerms[0]);
+                  }
+                }}
                 className="filter-select"
                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
               >
@@ -668,9 +675,11 @@ export default function ParentHub() {
                 className="filter-select"
                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
               >
-                <option value="First Term">First Term</option>
-                <option value="Second Term">Second Term</option>
-                <option value="Third Term">Third Term</option>
+                {getTermOptions(filterSession).map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
