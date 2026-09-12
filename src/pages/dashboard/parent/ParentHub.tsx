@@ -122,7 +122,7 @@ export default function ParentHub() {
       .join(' ');
   };
 
-  const handleSelectKid = (kid: Kid, tab: 'results' | 'fees' | 'report' = 'results') => {
+  const handleSelectKid = (kid: Kid, tab: 'fees' | 'report' = 'fees') => {
     setSelectedKid(kid);
     setActiveTab(tab);
   };
@@ -132,11 +132,11 @@ export default function ParentHub() {
   const [filterTerm, setFilterTerm] = useState<string>(currentTerm);
 
   // Tab States
-  const [activeTab, setActiveTab] = useState<'results' | 'fees' | 'report'>('results');
+  const [activeTab, setActiveTab] = useState<'fees' | 'report'>('fees');
   const [feeSubTab, setFeeSubTab] = useState<'breakdown' | 'history' | 'upload'>('breakdown');
   const [reportSubTab, setReportSubTab] = useState<
-    'attendance' | 'academic_trend' | 'academic_analysis'
-  >('attendance');
+    'terminal_report' | 'attendance' | 'academic_trend' | 'academic_analysis'
+  >('terminal_report');
 
   // Data States
   const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
@@ -171,15 +171,11 @@ export default function ParentHub() {
 
   useEffect(() => {
     if (selectedKid) {
-      if (activeTab === 'results') {
-        fetchTranscripts(selectedKid.id);
-        fetchInvoices(selectedKid.id);
-      } else if (activeTab === 'fees') {
-        fetchInvoices(selectedKid.id);
-      } else if (activeTab === 'report') {
+      fetchInvoices(selectedKid.id);
+      if (activeTab === 'report') {
         if (reportSubTab === 'attendance') {
           fetchAttendance(selectedKid.id, filterSession, filterTerm);
-        } else {
+        } else if (reportSubTab === 'academic_trend' || reportSubTab === 'terminal_report') {
           fetchTranscripts(selectedKid.id);
         }
       }
@@ -572,7 +568,7 @@ export default function ParentHub() {
                       <button
                         type="button"
                         className="btn-open-portal"
-                        onClick={() => handleSelectKid(kid, 'results')}
+                        onClick={() => handleSelectKid(kid, 'fees')}
                       >
                         <span>Open Student Portal</span>
                         <ArrowRight size={15} />
@@ -687,12 +683,6 @@ export default function ParentHub() {
           {/* Main Navigation Tabs */}
           <div className="parent-nav-tabs">
             <button
-              className={`parent-nav-tab ${activeTab === 'results' ? 'active' : ''}`}
-              onClick={() => setActiveTab('results')}
-            >
-              <Award size={18} /> Results & Report Cards
-            </button>
-            <button
               className={`parent-nav-tab ${activeTab === 'fees' ? 'active' : ''}`}
               onClick={() => setActiveTab('fees')}
             >
@@ -705,69 +695,6 @@ export default function ParentHub() {
               <Calendar size={18} /> Attendance & Academic Reports
             </button>
           </div>
-
-          {/* TAB 1: RESULTS */}
-          {activeTab === 'results' && (
-            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <div>
-                  <h3 style={{ margin: 0, color: '#0f172a' }}>Academic Result Sheet</h3>
-                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                    Viewing approved terminal result for {filterSession} ({filterTerm})
-                  </p>
-                </div>
-              </div>
-
-              {hasOutstandingFees ? (
-                <div
-                  style={{
-                    background: '#fffbeb',
-                    border: '1px solid #fde68a',
-                    borderRadius: '12px',
-                    padding: '1.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    marginBottom: '1.5rem',
-                  }}
-                >
-                  <AlertCircle size={28} style={{ color: '#d97706', flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>
-                    <strong style={{ display: 'block', color: '#92400e', fontSize: '1rem' }}>
-                      Pending Tuition Clearance Required
-                    </strong>
-                    <span style={{ fontSize: '0.88rem', color: '#b45309' }}>
-                      Terminal result viewing for {selectedKid.firstName} for {filterSession} (
-                      {filterTerm}) requires cleared tuition fees. Please resolve pending invoices
-                      to access the complete report sheet.
-                    </span>
-                  </div>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    style={{ background: '#d97706', borderColor: '#d97706' }}
-                    onClick={() => setActiveTab('fees')}
-                  >
-                    Clear Fees Now
-                  </button>
-                </div>
-              ) : (
-                /* Interactive Report Card Component */
-                <ReportCard
-                  studentId={selectedKid.id}
-                  session={filterSession}
-                  term={filterTerm}
-                  onClose={() => {}}
-                />
-              )}
-            </div>
-          )}
 
           {/* TAB 2: FEES & BILLING */}
           {activeTab === 'fees' && (
@@ -1208,6 +1135,13 @@ export default function ParentHub() {
               {/* Report Sub-Tabs */}
               <div className="parent-sub-tabs">
                 <button
+                  className={`parent-sub-tab ${reportSubTab === 'terminal_report' ? 'active' : ''}`}
+                  onClick={() => setReportSubTab('terminal_report')}
+                >
+                  <Award size={15} style={{ display: 'inline', marginRight: '0.35rem' }} />
+                  Terminal Report Card
+                </button>
+                <button
                   className={`parent-sub-tab ${reportSubTab === 'attendance' ? 'active' : ''}`}
                   onClick={() => setReportSubTab('attendance')}
                 >
@@ -1227,6 +1161,69 @@ export default function ParentHub() {
                   Academic Analysis & Subject Progression
                 </button>
               </div>
+
+              {/* Sub-Tab 0: Terminal Report Card */}
+              {reportSubTab === 'terminal_report' && (
+                <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '1.25rem',
+                    }}
+                  >
+                    <div>
+                      <h3 style={{ margin: 0, color: '#0f172a' }}>Academic Result Sheet</h3>
+                      <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                        Viewing approved terminal result for {filterSession} ({filterTerm})
+                      </p>
+                    </div>
+                  </div>
+
+                  {hasOutstandingFees ? (
+                    <div
+                      style={{
+                        background: '#fffbeb',
+                        border: '1px solid #fde68a',
+                        borderRadius: '12px',
+                        padding: '1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        marginBottom: '1.5rem',
+                      }}
+                    >
+                      <AlertCircle size={28} style={{ color: '#d97706', flexShrink: 0 }} />
+                      <div style={{ flex: 1 }}>
+                        <strong style={{ display: 'block', color: '#92400e', fontSize: '1rem' }}>
+                          Pending Tuition Clearance Required
+                        </strong>
+                        <span style={{ fontSize: '0.88rem', color: '#b45309' }}>
+                          Terminal result viewing for {selectedKid.firstName} for {filterSession} (
+                          {filterTerm}) requires cleared tuition fees. Please resolve pending invoices
+                          to access the complete report sheet.
+                        </span>
+                      </div>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        style={{ background: '#d97706', borderColor: '#d97706' }}
+                        onClick={() => setActiveTab('fees')}
+                      >
+                        Clear Fees Now
+                      </button>
+                    </div>
+                  ) : (
+                    /* Interactive Report Card Component */
+                    <ReportCard
+                      studentId={selectedKid.id}
+                      session={filterSession}
+                      term={filterTerm}
+                      onClose={() => {}}
+                    />
+                  )}
+                </div>
+              )}
 
               {/* Sub-Tab 1: Attendance Log */}
               {reportSubTab === 'attendance' && (
@@ -1426,7 +1423,7 @@ export default function ParentHub() {
       )}
 
       {/* Modal for Report Card Preview */}
-      {selectedReportCard && selectedKid && activeTab !== 'results' && (
+      {selectedReportCard && selectedKid && (
         <ReportCard
           studentId={selectedKid.id}
           session={selectedReportCard.session}
