@@ -494,28 +494,8 @@ export default function ParentHub() {
 
                 return (
                   <div key={kid.id} className="child-card">
-                    {/* Top Decorative Banner & Status Ribbon */}
-                    <div className="child-card-banner">
-                      <div className="child-card-banner-left">
-                        <span className="child-level-pill">
-                          <GraduationCap size={13} />
-                          {kid.level || 'Junior Secondary'}
-                        </span>
-                      </div>
-                      <div className="child-card-banner-right">
-                        <span className={`child-clearance-pill ${isCleared ? 'cleared' : 'pending'}`}>
-                          {isCleared ? (
-                            <>
-                              <CheckCircle2 size={13} /> Tuition Cleared
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle size={13} /> Clearance Pending
-                            </>
-                          )}
-                        </span>
-                      </div>
-                    </div>
+                    {/* Top Contrast Header Banner */}
+                    <div className="child-card-banner" />
 
                     {/* Student Identity Section */}
                     <div className="child-card-body">
@@ -526,7 +506,6 @@ export default function ParentHub() {
                           ) : (
                             <div className="child-avatar-initials">{initials}</div>
                           )}
-                          <span className="child-avatar-dot" title="Active Enrolled Student"></span>
                         </div>
 
                         <div className="child-info">
@@ -540,6 +519,10 @@ export default function ParentHub() {
                             <span className="child-reg-badge">
                               <Hash size={12} /> {kid.registrationNumber}
                             </span>
+                            <span className="active-student-dot-tag" title="Active Enrolled Student">
+                              <span className="pulse-indicator"></span>
+                              <span>Active</span>
+                            </span>
                             {kid.departmentTrack && kid.departmentTrack !== 'General' && (
                               <span className="child-track-badge">{kid.departmentTrack}</span>
                             )}
@@ -547,16 +530,20 @@ export default function ParentHub() {
                         </div>
                       </div>
 
-                      {/* 3-Column Micro Snapshot Dashboard */}
+                      {/* Streamlined Status & Clearance Section (No nested box border) */}
                       <div className="child-metrics-snapshot">
                         <div className="child-metric-box">
-                          <span className="metric-box-label">Academic Arm</span>
-                          <span className="metric-box-val">{kid.className?.split(' ')?.[0] || 'Basic'}</span>
-                        </div>
-                        <div className="child-metric-box">
-                          <span className="metric-box-label">Daily Gate</span>
-                          <span className="metric-box-val metric-green">
-                            <CheckCircle2 size={12} /> Active
+                          <span className="metric-box-label">Tuition Clearance</span>
+                          <span className={`child-clearance-pill ${isCleared ? 'cleared' : 'pending'}`}>
+                            {isCleared ? (
+                              <>
+                                <CheckCircle2 size={12} /> Cleared
+                              </>
+                            ) : (
+                              <>
+                                <AlertCircle size={12} /> Pending
+                              </>
+                            )}
                           </span>
                         </div>
                         <div className="child-metric-box">
@@ -567,7 +554,7 @@ export default function ParentHub() {
                         </div>
                       </div>
 
-                      {/* Quick-Jump Shortcuts */}
+                      {/* Lightweight Borderless Quick Shortcuts */}
                       <div className="child-quick-shortcuts">
                         <button
                           type="button"
@@ -575,7 +562,7 @@ export default function ParentHub() {
                           onClick={() => handleSelectKid(kid, 'fees')}
                           title="View Tuition Fees & Receipts"
                         >
-                          <CreditCard size={13} className="shortcut-icon" />
+                          <CreditCard size={14} className="shortcut-icon" />
                           <span>Fees</span>
                         </button>
                         <button
@@ -584,7 +571,7 @@ export default function ParentHub() {
                           onClick={() => handleSelectKid(kid, 'academics')}
                           title="View Academic Terminal Reports"
                         >
-                          <Award size={13} className="shortcut-icon" />
+                          <Award size={14} className="shortcut-icon" />
                           <span>Reports</span>
                         </button>
                         <button
@@ -593,19 +580,14 @@ export default function ParentHub() {
                           onClick={() => handleSelectKid(kid, 'attendance')}
                           title="View Daily Gate Attendance Logs"
                         >
-                          <Calendar size={13} className="shortcut-icon" />
+                          <Calendar size={14} className="shortcut-icon" />
                           <span>Attendance</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* Card Footer with Primary CTA */}
+                    {/* Card Footer with Full-Width Primary CTA */}
                     <div className="child-card-footer">
-                      <div className="child-status-tag">
-                        <span className="pulse-indicator"></span>
-                        <span>Active Student</span>
-                      </div>
-
                       <button
                         type="button"
                         className="btn-open-portal"
