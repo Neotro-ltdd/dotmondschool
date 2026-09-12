@@ -324,7 +324,6 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
         )}
       </div>
     </div>
-  );/div>
   );
 
   if (isInline) {
