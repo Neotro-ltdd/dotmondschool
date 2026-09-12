@@ -410,6 +410,13 @@ export default function ParentHub() {
       selectedTermInvoice.status !== 'Paid'
     : false;
 
+  const getTimeGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
     <div className="parent-hub-page">
       {/* Hero Banner Header */}
@@ -423,7 +430,9 @@ export default function ParentHub() {
                   <span>PARENT & GUARDIAN PORTAL</span>
                 </div>
                 <h1 className="parent-hero-title">
-                  {resolvedParentGreeting ? `Welcome, ${resolvedParentGreeting}` : 'Parent Academic & Financial Portal'}
+                  {resolvedParentGreeting
+                    ? `${getTimeGreeting()}, ${resolvedParentGreeting}`
+                    : `${getTimeGreeting()}, Parent Portal`}
                 </h1>
                 <p className="parent-hero-subtitle">
                   Review your children's real-time continuous assessment scores, terminal broadsheets,
@@ -556,6 +565,37 @@ export default function ParentHub() {
                             {isCleared ? 'Available' : 'Restricted'}
                           </span>
                         </div>
+                      </div>
+
+                      {/* Quick-Jump Shortcuts */}
+                      <div className="child-quick-shortcuts">
+                        <button
+                          type="button"
+                          className="child-shortcut-btn"
+                          onClick={() => handleSelectKid(kid, 'fees')}
+                          title="View Tuition Fees & Receipts"
+                        >
+                          <CreditCard size={13} className="shortcut-icon" />
+                          <span>Fees</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="child-shortcut-btn"
+                          onClick={() => handleSelectKid(kid, 'academics')}
+                          title="View Academic Terminal Reports"
+                        >
+                          <Award size={13} className="shortcut-icon" />
+                          <span>Reports</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="child-shortcut-btn"
+                          onClick={() => handleSelectKid(kid, 'attendance')}
+                          title="View Daily Gate Attendance Logs"
+                        >
+                          <Calendar size={13} className="shortcut-icon" />
+                          <span>Attendance</span>
+                        </button>
                       </div>
                     </div>
 
