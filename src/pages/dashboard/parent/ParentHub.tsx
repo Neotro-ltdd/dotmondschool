@@ -7,6 +7,7 @@ import ReportCard from '../../../components/ReportCard';
 import { AcademicAnalysisView } from '../../../components/dashboard/reports/AcademicAnalysisView';
 import { useAuth } from '../../../context/AuthContext';
 import { getParentDisplayName } from '../../../utils/nameFormatter';
+import { PushNotificationToggle } from '../../../components/pwa/PushNotificationToggle';
 import {
   Users,
   GraduationCap,
@@ -455,6 +456,10 @@ export default function ParentHub() {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <PushNotificationToggle />
           </div>
 
           {loadingKids ? (
