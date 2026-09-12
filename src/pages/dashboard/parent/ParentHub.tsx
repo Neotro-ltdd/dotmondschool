@@ -685,19 +685,28 @@ export default function ParentHub() {
           <div className="parent-nav-tabs">
             <button
               className={`parent-nav-tab ${activeTab === 'fees' ? 'active' : ''}`}
-              onClick={() => setActiveTab('fees')}
+              onClick={() => {
+                setActiveTab('fees');
+                setSelectedReportCard(null);
+              }}
             >
               <CreditCard size={18} /> Fees & Receipts
             </button>
             <button
               className={`parent-nav-tab ${activeTab === 'academics' ? 'active' : ''}`}
-              onClick={() => setActiveTab('academics')}
+              onClick={() => {
+                setActiveTab('academics');
+                setSelectedReportCard(null);
+              }}
             >
               <Award size={18} /> Academic Reports
             </button>
             <button
               className={`parent-nav-tab ${activeTab === 'attendance' ? 'active' : ''}`}
-              onClick={() => setActiveTab('attendance')}
+              onClick={() => {
+                setActiveTab('attendance');
+                setSelectedReportCard(null);
+              }}
             >
               <Calendar size={18} /> Attendance Report
             </button>

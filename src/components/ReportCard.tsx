@@ -86,22 +86,64 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
       </div>
     );
   if (error) {
-    return (
+    const errorCard = (
       <div
         style={{
           textAlign: 'center',
           padding: '3rem 2rem',
-          background: '#f8fafc',
+          background: '#ffffff',
           border: '1px solid #e2e8f0',
           borderRadius: '12px',
           margin: '1rem 0',
+          position: 'relative',
+          boxShadow: isInline ? 'none' : '0 10px 25px rgba(0,0,0,0.15)',
         }}
       >
+        {onClose && (
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              background: '#f1f5f9',
+              border: '1px solid #cbd5e1',
+              borderRadius: '50%',
+              width: '28px',
+              height: '28px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              color: '#64748b',
+            }}
+            title="Close Notice"
+          >
+            ✕
+          </button>
+        )}
         <BookOpen size={40} style={{ color: '#94a3b8', margin: '0 auto 0.75rem' }} />
         <h4 style={{ color: '#1e293b', margin: '0 0 0.25rem', fontSize: '1.1rem' }}>
           Terminal Result Notice
         </h4>
         <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>{error}</p>
+      </div>
+    );
+
+    if (isInline) return errorCard;
+
+    return (
+      <div
+        style={{
+          background: 'rgba(0,0,0,0.7)',
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}
+      >
+        <div style={{ maxWidth: '520px', width: '100%' }}>{errorCard}</div>
       </div>
     );
   }
