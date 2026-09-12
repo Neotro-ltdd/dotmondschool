@@ -685,7 +685,7 @@ export default function ParentHub() {
               className={`parent-nav-tab ${activeTab === 'fees' ? 'active' : ''}`}
               onClick={() => setActiveTab('fees')}
             >
-              <CreditCard size={18} /> Tuition Fees & Receipts
+              <CreditCard size={18} /> Fees & Receipts
             </button>
             <button
               className={`parent-nav-tab ${activeTab === 'report' ? 'active' : ''}`}
