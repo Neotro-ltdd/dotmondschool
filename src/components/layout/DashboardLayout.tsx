@@ -64,26 +64,27 @@ export default function DashboardLayout() {
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
       <div className="dashboard-main" style={{ position: 'relative' }}>
-        {logoUrl && (
-          <div
-            className="dashboard-watermark"
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '50vw',
-              height: '50vh',
-              backgroundImage: `url(${logoUrl})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              backgroundSize: 'contain',
-              opacity: 0.05,
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-          />
-        )}
+        <img
+          src={logoUrl || '/images/dotmond-logo-1.png'}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="dashboard-watermark"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            maxWidth: '50vw',
+            maxHeight: '50vh',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'contain',
+            opacity: 0.05,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         <main className="dashboard-content" style={{ position: 'relative', zIndex: 1 }}>
           <Outlet />
