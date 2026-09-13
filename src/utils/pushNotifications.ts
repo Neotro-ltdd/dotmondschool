@@ -87,6 +87,10 @@ export async function subscribeUserToPush(): Promise<{
       endpoint,
       p256dh,
       auth,
+      keys: {
+        p256dh,
+        auth,
+      },
     });
 
     if (apiRes && apiRes.success === false) {
