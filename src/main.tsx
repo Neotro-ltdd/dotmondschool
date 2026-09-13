@@ -6,10 +6,17 @@ import './index.css';
 import App from './App.tsx';
 
 // Explicitly register service worker for auto-update & offline readiness
-registerSW({
+const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
-    console.log('[PWA] New portal version available. Reloading service worker...');
+    console.log('[PWA] A new version of the Dotmond Portal is available.');
+    window.dispatchEvent(
+      new CustomEvent('srms_pwa_need_refresh', {
+        detail: {
+          updateServiceWorker: () => updateSW(true),
+        },
+      }),
+    );
   },
   onOfflineReady() {
     console.log('[PWA] Dotmond School Portal is ready for offline use.');

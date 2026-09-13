@@ -66,6 +66,7 @@ import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import { OfflineIndicator } from './components/pwa/OfflineIndicator';
 import { InstallAppPrompt } from './components/pwa/InstallAppPrompt';
+import { PwaUpdateBanner } from './components/pwa/PwaUpdateBanner';
 import { PWAProvider } from './context/PWAContext';
 import './App.css';
 
@@ -74,6 +75,7 @@ function App() {
     <PWAProvider>
       <ThemeProvider>
         <OfflineIndicator />
+        <PwaUpdateBanner />
         <TenantProvider>
         <AuthProvider>
           <BranchProvider>
