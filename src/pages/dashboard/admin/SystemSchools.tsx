@@ -283,50 +283,59 @@ export default function SystemSchools() {
         </table>
       </div>
 
-      {/* Dark Provisioning Modal */}
+      {/* Scoped Dark Glassmorphism Provisioning Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header-bar">
-              <h2>
-                <PlusCircle size={22} style={{ color: '#38bdf8' }} />
-                <span>Provision New School Tenant</span>
-              </h2>
-              <button onClick={() => setShowModal(false)} className="btn-close-modal" title="Close modal">
+        <div className="provision-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="provision-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="provision-modal-header">
+              <div className="provision-header-title-wrap">
+                <div className="provision-header-icon">
+                  <PlusCircle size={22} />
+                </div>
+                <div className="provision-header-text">
+                  <h2>Provision New School Tenant</h2>
+                  <p>Setup tenant database schema & superadmin access credentials</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn-close-provision"
+                title="Close modal"
+              >
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleProvision}>
-              <div className="form-group">
+              <div className="provision-form-group">
                 <label>
                   <Sparkles size={14} />
-                  Tenant Short Code ID
+                  Tenant ID (Short Code)
                 </label>
                 <input
                   type="text"
                   required
                   value={tenantId}
                   onChange={(e) => setTenantId(e.target.value)}
-                  placeholder="e.g. dotmond"
+                  placeholder="e.g. mps"
                 />
               </div>
 
-              <div className="form-group">
+              <div className="provision-form-group">
                 <label>
                   <Building2 size={14} />
-                  Full Institution / School Name
+                  Full School Name
                 </label>
                 <input
                   type="text"
                   required
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  placeholder="e.g. Dotmond International School"
+                  placeholder="e.g. Modern Primary School"
                 />
               </div>
 
-              <div className="form-group">
+              <div className="provision-form-group">
                 <label>
                   <Mail size={14} />
                   Director / Admin Email
@@ -336,11 +345,11 @@ export default function SystemSchools() {
                   required
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  placeholder="director@dotmond.sch.ng"
+                  placeholder="director@mps.com"
                 />
               </div>
 
-              <div className="form-group">
+              <div className="provision-form-group">
                 <label>
                   <Lock size={14} />
                   Director / Admin Password
@@ -353,40 +362,40 @@ export default function SystemSchools() {
                 />
               </div>
 
-              <div
-                className="form-group"
-                style={{
-                  marginTop: '1.25rem',
-                  paddingTop: '1rem',
-                  borderTop: '1px dashed rgba(56, 189, 248, 0.25)',
-                }}
-              >
-                <label className="accent-label">
+              <div className="provision-superadmin-box">
+                <div className="superadmin-box-badge">
                   <ShieldCheck size={14} />
-                  Developer SuperAdmin Email (Optional)
-                </label>
-                <input
-                  type="email"
-                  value={superAdminEmail}
-                  onChange={(e) => setSuperAdminEmail(e.target.value)}
-                  placeholder="superadmin@dotmond.sch.ng (Hidden from Staff table)"
-                />
+                  Developer SuperAdmin (Optional)
+                </div>
+
+                <div className="provision-form-group">
+                  <label className="accent-label">
+                    <Mail size={14} />
+                    Developer SuperAdmin Email
+                  </label>
+                  <input
+                    type="email"
+                    value={superAdminEmail}
+                    onChange={(e) => setSuperAdminEmail(e.target.value)}
+                    placeholder="superadmin@mps.com (Not in Staff table)"
+                  />
+                </div>
+
+                <div className="provision-form-group" style={{ marginBottom: 0 }}>
+                  <label className="accent-label">
+                    <Lock size={14} />
+                    Developer SuperAdmin Password
+                  </label>
+                  <input
+                    type="text"
+                    value={superAdminPassword}
+                    onChange={(e) => setSuperAdminPassword(e.target.value)}
+                    placeholder="SuperAdmin123!"
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="accent-label">
-                  <Lock size={14} />
-                  Developer SuperAdmin Password (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={superAdminPassword}
-                  onChange={(e) => setSuperAdminPassword(e.target.value)}
-                  placeholder="SuperAdmin123!"
-                />
-              </div>
-
-              <div className="modal-actions">
+              <div className="provision-modal-actions">
                 <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">
                   Cancel
                 </button>
@@ -397,7 +406,7 @@ export default function SystemSchools() {
                   style={{ opacity: provisioning ? 0.6 : 1 }}
                 >
                   <PlusCircle size={16} />
-                  <span>{provisioning ? 'Provisioning Tenant...' : 'Provision School Tenant'}</span>
+                  <span>{provisioning ? 'Provisioning School...' : 'Provision School'}</span>
                 </button>
               </div>
             </form>
