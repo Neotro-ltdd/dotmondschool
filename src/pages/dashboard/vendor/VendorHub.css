@@ -69,15 +69,27 @@
 }
 
 /* Executive Stats Grid */
-.stats-grid {
+.vendor-hub-stats-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 1fr;
   gap: 1.25rem;
   margin-bottom: 1.75rem;
 }
 
-.stats-grid.grid-cols-3 {
-  grid-template-columns: repeat(3, 1fr);
+@media (min-width: 640px) {
+  .vendor-hub-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vendor-hub-stats-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .vendor-hub-stats-grid.grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .stat-card {
