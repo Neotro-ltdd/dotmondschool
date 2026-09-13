@@ -149,7 +149,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       </div>
 
       {/* ════════ EXECUTIVE STAT CARDS GRID ════════ */}
-      <div className="stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="TOTAL ACTIVE STUDENTS"
           value={totalStudents}

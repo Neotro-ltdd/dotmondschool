@@ -222,8 +222,15 @@
 /* ════════ STATS GRID REVAMP ════════ */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -235,12 +242,12 @@
 
 .stat-card-executive {
   background: #ffffff;
-  padding: 1.5rem;
+  padding: 1.15rem 1.25rem;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1.25rem;
+  gap: 1rem;
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.03),
     0 1px 3px rgba(0, 0, 0, 0.02);
@@ -248,6 +255,13 @@
   position: relative;
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+  .stat-card-executive {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
 }
 
 .stat-card-executive:hover {
@@ -268,6 +282,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 0.75rem;
 }
 
 .stat-label-text {
@@ -275,22 +290,29 @@
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   margin: 0 0 0.4rem 0;
+  line-height: 1.3;
 }
 
 .stat-main-value {
-  font-size: 2.2rem;
+  font-size: 1.85rem;
   font-weight: 900;
   color: #0f172a;
   margin: 0;
-  line-height: 1;
+  line-height: 1.1;
   letter-spacing: -0.03em;
 }
 
+@media (min-width: 640px) {
+  .stat-main-value {
+    font-size: 2.2rem;
+  }
+}
+
 .stat-icon-badge {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -299,23 +321,33 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+@media (min-width: 640px) {
+  .stat-icon-badge {
+    width: 48px;
+    height: 48px;
+  }
+}
+
 .stat-footer-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding-top: 0.75rem;
   border-top: 1px solid #f1f5f9;
   margin-top: 0.25rem;
 }
 
 .stat-trend-tag {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 3px 10px;
   border-radius: 14px;
+  white-space: nowrap;
 }
 
 .stat-trend-tag.positive {

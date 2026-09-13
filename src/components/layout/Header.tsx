@@ -155,7 +155,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
                   {initial}
                 </div>
               )}
-              <div className="user-info">
+              <div className="user-info hidden md:flex">
                 <span className="user-name">{displayUserName}</span>
                 <span className="user-role">{displayRole}</span>
               </div>

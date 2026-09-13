@@ -417,6 +417,10 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
 .user-name {
   font-weight: 600;
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .user-role {
@@ -605,7 +609,7 @@ body[data-theme='dark'] .theme-toggle-btn:hover {
   }
 
   .user-info {
-    display: none;
+    display: none !important;
   }
 }
 
