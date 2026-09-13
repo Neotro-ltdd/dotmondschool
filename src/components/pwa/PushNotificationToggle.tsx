@@ -4,7 +4,6 @@ import {
   getCurrentPushSubscription,
   subscribeUserToPush,
   unsubscribeUserFromPush,
-  sendTestPushNotification,
 } from '../../utils/pushNotifications';
 import './PushNotificationToggle.css';
 
@@ -12,7 +11,6 @@ export const PushNotificationToggle: React.FC = () => {
   const [supported, setSupported] = useState<boolean>(true);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sendingTest, setSendingTest] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
@@ -55,20 +53,6 @@ export const PushNotificationToggle: React.FC = () => {
     }
 
     setLoading(false);
-  };
-
-  const handleTestPush = async () => {
-    setSendingTest(true);
-    setFeedback(null);
-
-    const res = await sendTestPushNotification();
-    if (res.success) {
-      setFeedback({ message: 'Test push notification dispatched! Check your system notification tray.', type: 'success' });
-    } else {
-      setFeedback({ message: res.message || 'Failed to dispatch test push notification.', type: 'error' });
-    }
-
-    setSendingTest(false);
   };
 
   if (!supported) {
@@ -141,26 +125,6 @@ export const PushNotificationToggle: React.FC = () => {
             </>
           )}
         </button>
-
-        {isSubscribed && (
-          <button
-            onClick={handleTestPush}
-            disabled={sendingTest}
-            className="push-btn-secondary"
-            aria-label="Send Test Push Notification"
-          >
-            {sendingTest ? (
-              'Sending...'
-            ) : (
-              <>
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-                Send Test Alert
-              </>
-            )}
-          </button>
-        )}
       </div>
 
       {feedback && (
