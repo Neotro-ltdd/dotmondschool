@@ -259,7 +259,7 @@ export default function ProfileSettings() {
 
       {/* ════════ TAB CONTENT 1: BIO-DATA ════════ */}
       {activeTab === 'biodata' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '1.5rem' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
           <PersonalOverviewSidebar
             email={profile.email}
             phoneNumber={phoneNumber || profile.phoneNumber}

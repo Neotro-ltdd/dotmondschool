@@ -42,14 +42,15 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
       {/* Banner header background - School Primary Navy matching Dashboard Banner */}
       <div
         style={{
-          height: '160px',
-          background: 'var(--primary-color, #000080)',
+          height: '140px',
+          background: 'linear-gradient(135deg, #061127 0%, #000080 50%, #1e3a8a 100%)',
           position: 'relative',
-          padding: '0 2rem',
+          padding: '1rem 1.5rem',
         }}
       >
-        {/* User Name in Crisp White Ink sitting directly inside the blue banner */}
+        {/* Desktop User Name inside the blue banner */}
         <div
+          className="hidden md:block"
           style={{
             position: 'absolute',
             bottom: '1rem',
@@ -74,19 +75,19 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
       </div>
 
       {/* Profile Card Main Info Row */}
-      <div style={{ padding: '0 2rem 1.25rem 2rem', position: 'relative' }}>
+      <div style={{ padding: '0 1.25rem 1.25rem 1.25rem', position: 'relative' }}>
         <div className="flex flex-col items-center text-center md:flex-row md:items-center md:justify-between md:text-left gap-4">
-          {/* Left: Avatar + Badges */}
-          <div className="flex flex-col items-center text-center md:flex-row md:text-left gap-4 md:gap-6">
+          {/* Left: Avatar + Badges + Mobile Name */}
+          <div className="flex flex-col items-center text-center md:flex-row md:text-left gap-3 md:gap-6 w-full md:w-auto">
             {/* Overlapping Circle Avatar */}
             <div
               style={{
-                width: '140px',
-                height: '140px',
+                width: '130px',
+                height: '130px',
                 borderRadius: '50%',
                 border: '4px solid #ffffff',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                marginTop: '-70px',
+                marginTop: '-65px',
                 position: 'relative',
                 zIndex: 3,
                 backgroundColor: '#0F172A',
@@ -148,17 +149,32 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
               </button>
             </div>
 
+            {/* Mobile User Name (Centered under avatar) */}
+            <h1
+              className="block md:hidden"
+              style={{
+                margin: '0.25rem 0 0 0',
+                fontSize: '1.45rem',
+                fontWeight: 900,
+                color: '#0F172A',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {fullName}
+            </h1>
+
             {/* Badges & Joined Meta */}
             <div
               style={{
-                paddingTop: '0.75rem',
                 display: 'flex',
                 flexDirection: 'column',
+                alignItems: 'center',
                 gap: '0.4rem',
               }}
+              className="md:items-start"
             >
               <div
-                style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}
               >
                 <span
                   style={{
@@ -198,7 +214,7 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
           </div>
 
           {/* Right: Account Verification Status */}
-          <div style={{ paddingTop: '0.75rem' }}>
+          <div style={{ paddingTop: '0.25rem' }}>
             <span
               style={{
                 background: '#F0FDF4',
@@ -222,13 +238,14 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
         {/* Nav Tabs Row inside Hero Box */}
         <div
           style={{
-            marginTop: '1.5rem',
-            paddingTop: '1.25rem',
+            marginTop: '1.25rem',
+            paddingTop: '1rem',
             borderTop: '1px solid #F1F5F9',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.75rem',
-            flexWrap: 'wrap',
+            gap: '0.5rem',
+            overflowX: 'auto',
+            paddingBottom: '0.25rem',
           }}
         >
           <button

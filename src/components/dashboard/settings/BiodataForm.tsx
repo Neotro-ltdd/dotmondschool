@@ -90,7 +90,7 @@ export const BiodataForm: React.FC<BiodataFormProps> = ({
       </div>
 
       {/* Form Fields Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label
             style={{
