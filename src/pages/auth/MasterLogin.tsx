@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import './Login.css';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Mail, Lock, Server, ArrowRight, AlertCircle } from 'lucide-react';
+import './MasterLogin.css';
 
 const MasterLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -40,49 +40,74 @@ const MasterLogin: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-panel glass-panel" style={{ maxWidth: '400px' }}>
-        <div className="login-header">
-          <div
-            className="school-logo-placeholder"
-            style={{ background: '#1e293b', color: '#38bdf8' }}
-          >
-            NA
+    <div className="master-login-wrapper">
+      <div className="master-bg-grid"></div>
+      <div className="master-orb master-orb-1"></div>
+      <div className="master-orb master-orb-2"></div>
+
+      <div className="master-login-card">
+        <div className="master-card-header">
+          <div className="master-shield-badge">
+            <ShieldCheck size={32} />
           </div>
-          <h1>Platform Admin</h1>
-          <p>Secure System Management</p>
+          <div className="master-pill-tag">
+            <Server size={12} />
+            Neotro Platform Control
+          </div>
+          <h1 className="master-card-title">System Master Portal</h1>
+          <p className="master-card-subtitle">
+            Enter superadmin credentials to access multi-tenant administration & school management.
+          </p>
         </div>
 
-        {error && <div className="alert-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email-address">Master Email</label>
-            <input
-              id="email-address"
-              name="email"
-              type="email"
-              required
-              placeholder="admin@neotro.local"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+        {error && (
+          <div className="master-error-banner" role="alert">
+            <AlertCircle size={18} />
+            <span>{error}</span>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Master Password</label>
-            <div className="password-input-wrapper">
+        )}
+
+        <form onSubmit={handleSubmit} className="master-form">
+          <div className="master-input-group">
+            <label htmlFor="master-email" className="master-input-label">
+              Master Admin Email
+            </label>
+            <div className="master-input-wrapper">
+              <Mail className="master-input-icon" size={18} />
               <input
-                id="password"
+                id="master-email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="admin@neotro.local"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="master-input"
+              />
+            </div>
+          </div>
+
+          <div className="master-input-group">
+            <label htmlFor="master-password" className="master-input-label">
+              Master Security Key / Password
+            </label>
+            <div className="master-input-wrapper">
+              <Lock className="master-input-icon" size={18} />
+              <input
+                id="master-password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 required
-                placeholder="••••••••"
+                autoComplete="current-password"
+                placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="master-input"
               />
               <button
                 type="button"
-                className="password-toggle-btn"
+                className="master-toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 title={showPassword ? 'Hide password' : 'Show password'}
@@ -92,12 +117,25 @@ const MasterLogin: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-actions" style={{ marginTop: '2rem' }}>
-            <button type="submit" disabled={loading} className="btn btn-primary btn-full">
-              {loading ? 'Authenticating...' : 'Sign in securely'}
-            </button>
-          </div>
+          <button type="submit" disabled={loading} className="master-submit-btn">
+            {loading ? (
+              <>
+                <div className="master-spinner" />
+                Authenticating Master Access...
+              </>
+            ) : (
+              <>
+                Sign In to Control Center
+                <ArrowRight size={18} />
+              </>
+            )}
+          </button>
         </form>
+
+        <div className="master-card-footer">
+          <ShieldCheck size={14} className="master-footer-icon" />
+          <span>Encrypted 256-bit TLS Session · IP & Audit Monitored</span>
+        </div>
       </div>
     </div>
   );
