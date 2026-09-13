@@ -145,7 +145,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
           const distinctClassesCount = new Set(allocationsList.map((a: any) => a.className)).size;
 
           return (
-            <div className="stats-grid">
+            <div className="stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4">
               <StatCard
                 label="ASSIGNED SUBJECTS"
                 value={totalAllocations}
@@ -200,7 +200,7 @@ export const TeacherDashboardView: React.FC<TeacherDashboardViewProps> = ({
         const pendingRemarks = teacherData?.classTeacherMetrics?.pendingRemarks ?? 0;
 
         return (
-          <div className="stats-grid">
+          <div className="stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatCard
               label="ASSIGNED CLASS"
               value={assignedClass}

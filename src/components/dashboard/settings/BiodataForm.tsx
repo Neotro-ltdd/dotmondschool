@@ -200,7 +200,7 @@ export const BiodataForm: React.FC<BiodataFormProps> = ({
               justifyContent: 'space-between',
             }}
           >
-            <span>{email}</span>
+            <span className="truncate block flex-1 mr-2">{email}</span>
             <Lock size={14} style={{ color: '#94A3B8' }} />
           </div>
         </div>

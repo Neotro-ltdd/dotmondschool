@@ -75,17 +75,9 @@ export const ProfileHeroHeader: React.FC<ProfileHeroHeaderProps> = ({
 
       {/* Profile Card Main Info Row */}
       <div style={{ padding: '0 2rem 1.25rem 2rem', position: 'relative' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
+        <div className="flex flex-col items-center text-center md:flex-row md:items-center md:justify-between md:text-left gap-4">
           {/* Left: Avatar + Badges */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div className="flex flex-col items-center text-center md:flex-row md:text-left gap-4 md:gap-6">
             {/* Overlapping Circle Avatar */}
             <div
               style={{

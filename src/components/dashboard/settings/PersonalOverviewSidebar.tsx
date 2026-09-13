@@ -68,11 +68,11 @@ export const PersonalOverviewSidebar: React.FC<PersonalOverviewSidebarProps> = (
               EMAIL
             </span>
             <span
+              className="truncate block w-full"
               style={{
                 fontSize: '0.88rem',
                 fontWeight: 600,
                 color: '#0F172A',
-                wordBreak: 'break-all',
               }}
             >
               {email || 'N/A'}

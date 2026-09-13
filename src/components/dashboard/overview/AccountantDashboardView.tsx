@@ -144,7 +144,7 @@ export const AccountantDashboardView: React.FC<AccountantDashboardViewProps> = (
       </div>
 
       {/* ════════ EXECUTIVE STAT CARDS GRID ════════ */}
-      <div className="stats-grid">
+      <div className="stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="TOTAL REVENUE COLLECTED"
           value={`₦${totalCollected.toLocaleString()}`}

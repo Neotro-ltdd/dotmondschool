@@ -133,7 +133,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
       </div>
 
       {/* ════════ EXECUTIVE STAT CARDS GRID ════════ */}
-      <div className="stats-grid">
+      <div className="stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="LINKED WARDS"
           value={wardCount}
