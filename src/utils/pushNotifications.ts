@@ -56,11 +56,14 @@ export async function subscribeUserToPush(): Promise<{
   try {
     // 1. Fetch public VAPID key from backend
     const res = await api.get('/notifications/vapid-public-key');
-    if (!res?.success || !res?.data?.publicKey) {
-      return { success: false, message: 'Failed to retrieve VAPID public key from server.' };
+    const publicKey = res?.data?.publicKey || res?.publicKey || res?.PublicKey;
+    if (!publicKey) {
+      return {
+        success: false,
+        message: res?.message || 'Failed to retrieve VAPID public key from server. Ensure backend deployment is active.',
+      };
     }
 
-    const publicKey = res.data.publicKey;
     const applicationServerKey = urlBase64ToUint8Array(publicKey);
 
     // 2. Subscribe browser push manager
@@ -86,7 +89,7 @@ export async function subscribeUserToPush(): Promise<{
       auth,
     });
 
-    if (!apiRes?.success) {
+    if (apiRes && apiRes.success === false) {
       return {
         success: false,
         message: apiRes?.message || 'Failed to register subscription on server.',
