@@ -505,7 +505,7 @@ export default function AdmissionsHub() {
           <button
             type="button"
             onClick={() => handleOpenLinkModal('Schedule a School Visit Link', '/schedule-visit')}
-            className="btn btn-secondary"
+            className="public-schedule-link-btn"
           >
             📅 Public Schedule Visit Link
           </button>
@@ -579,7 +579,7 @@ export default function AdmissionsHub() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="form-control search-input"
               />
-              <button type="submit" className="btn btn-secondary">
+              <button type="submit" className="search-btn">
                 🔍 Search
               </button>
             </form>
@@ -776,7 +776,7 @@ export default function AdmissionsHub() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button type="submit" className="btn btn-secondary">
+              <button type="submit" className="search-btn">
                 🔍 Search
               </button>
             </form>
