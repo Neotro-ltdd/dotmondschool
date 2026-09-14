@@ -636,3 +636,46 @@
     transform: translateY(0);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   DARK THEME HIGH CONTRAST OVERRIDES FOR CHARTS & WIDGETS
+══════════════════════════════════════════════════════════════════ */
+body[data-theme='dark'] .chart-card,
+body.dark-theme .chart-card {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body[data-theme='dark'] .chart-card-header,
+body.dark-theme .chart-card-header {
+  border-bottom-color: #334155 !important;
+}
+
+body[data-theme='dark'] .chart-card-header h3,
+body.dark-theme .chart-card-header h3 {
+  color: #f8fafc !important;
+}
+
+body[data-theme='dark'] .chart-card-header span,
+body.dark-theme .chart-card-header span {
+  color: #94a3b8 !important;
+}
+
+body[data-theme='dark'] .chart-pill-item,
+body.dark-theme .chart-pill-item {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body[data-theme='dark'] .donut-center-number,
+body.dark-theme .donut-center-number {
+  color: #f8fafc !important;
+}
+
+body[data-theme='dark'] .donut-center-label,
+body.dark-theme .donut-center-label {
+  color: #cbd5e1 !important;
+}
+

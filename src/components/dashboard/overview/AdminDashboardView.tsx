@@ -329,10 +329,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               }}
             >
               <span
+                className="donut-center-number"
                 style={{
                   fontSize: '1.65rem',
                   fontWeight: 900,
-                  color: '#0F172A',
                   display: 'block',
                   lineHeight: 1,
                   letterSpacing: '-0.02em',
@@ -341,10 +341,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {totalStudents + totalStaff}
               </span>
               <span
+                className="donut-center-label"
                 style={{
                   fontSize: '0.7rem',
                   fontWeight: 800,
-                  color: '#64748B',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
                 }}
@@ -387,18 +387,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 ]}
                 margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.25)" />
+                <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} />
+                <YAxis stroke="#94A3B8" fontSize={12} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#0F172A',
-                    border: 'none',
+                    border: '1px solid #334155',
                     borderRadius: '12px',
                     color: '#fff',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
                   }}
-                  cursor={{ fill: 'rgba(0,0,128,0.04)' }}
+                  cursor={{ fill: 'rgba(59, 130, 246, 0.08)' }}
                 />
                 <Bar dataKey="Classes" fill="#000080" radius={[8, 8, 0, 0]} barSize={55} />
                 <Bar dataKey="Subjects" fill="#F59E0B" radius={[8, 8, 0, 0]} barSize={55} />
