@@ -66,11 +66,15 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
         const details = await getPublicTenantDetails(tenantId);
         if (details) {
           if (details.schoolName) setSchoolName(details.schoolName);
-          // Override backend logo with system logo
-          setLogoUrl('/images/dotmond-logo-1.png');
+          if (details.logoUrl) {
+            const fullLogo = details.logoUrl.startsWith('http') ? details.logoUrl : `${API_ROOT}${details.logoUrl}`;
+            setLogoUrl(fullLogo);
+          } else {
+            setLogoUrl('/images/dotmond-logo-1.png');
+          }
           
-          const activePrimary = details.primaryColor || (isNeotro ? '#1B5E4B' : '#007bff');
-          const activeSecondary = details.secondaryColor || (isNeotro ? '#B2CEB6' : '#cfecf7');
+          const activePrimary = details.primaryColor || (isNeotro ? '#1B5E4B' : '#000080');
+          const activeSecondary = details.secondaryColor || (isNeotro ? '#B2CEB6' : '#f0a93b');
           
           setPrimaryColor(activePrimary);
           document.documentElement.style.setProperty('--primary-color', activePrimary);
