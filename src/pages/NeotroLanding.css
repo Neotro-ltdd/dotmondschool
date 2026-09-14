@@ -1,17 +1,18 @@
-/* Neotro Academic System (NAS) Neutral White-Label Theme */
+/* Neotro Academic System (NAS) St. Patrick's Classic Green Theme */
 
 .neotro-lp-container {
-  --nas-primary: #0284C7;
-  --nas-primary-hover: #0369A1;
-  --nas-primary-dark: #0F1F5C;
-  --nas-accent: #38BDF8;
-  --nas-bg-main: #F8FAFC;
+  --nas-primary: #1B5E4B;
+  --nas-primary-hover: #144839;
+  --nas-primary-dark: #113C30;
+  --nas-accent: #B2CEB6;
+  --nas-accent-hover: #9EBEA3;
+  --nas-bg-main: #F7FAF7;
   --nas-bg-card: #FFFFFF;
-  --nas-bg-dark: #0F172A;
-  --nas-text-main: #1E293B;
-  --nas-text-muted: #64748B;
-  --nas-text-light: #94A3B8;
-  --nas-border: #E2E8F0;
+  --nas-bg-dark: #112E25;
+  --nas-text-main: #17483B;
+  --nas-text-muted: #3A564F;
+  --nas-text-light: #678279;
+  --nas-border: #D4E3D6;
 
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--nas-text-main);
@@ -33,14 +34,14 @@
   width: 100%;
 }
 
-/* Header & Nav */
+/* Header & Nav (Dark Forest Green like St. Patrick's Header) */
 .nas-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--nas-border);
+  background: #1B5E4B;
+  border-bottom: 1px solid #144839;
+  box-shadow: 0 4px 20px rgba(17, 46, 37, 0.15);
 }
 
 .nas-header-content {
@@ -60,20 +61,20 @@
 .nas-logo-icon {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--nas-primary-dark) 0%, var(--nas-primary) 100%);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
 .nas-brand-title {
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--nas-primary-dark);
+  color: #FFFFFF;
   line-height: 1.1;
 }
 
@@ -82,7 +83,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--nas-primary);
+  color: #B2CEB6;
   display: block;
 }
 
@@ -95,13 +96,49 @@
 .nas-nav a {
   text-decoration: none;
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--nas-text-muted);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
 
 .nas-nav a:hover {
-  color: var(--nas-primary);
+  color: #B2CEB6;
+}
+
+/* Quick Action Strip (Sage Green Bar like St. Patrick's Bar) */
+.nas-quick-bar {
+  background-color: #B2CEB6;
+  border-bottom: 1px solid #9EBEA3;
+}
+
+.nas-quick-bar-content {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  padding: 0.85rem 1.5rem;
+  text-align: center;
+}
+
+.nas-quick-item {
+  color: #17483B;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s ease;
+}
+
+.nas-quick-item:hover {
+  opacity: 0.8;
+}
+
+.nas-quick-divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(23, 72, 59, 0.25);
 }
 
 .nas-btn {
@@ -120,32 +157,32 @@
 }
 
 .nas-btn-primary {
-  background-color: var(--nas-primary);
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+  background-color: #B2CEB6;
+  color: #17483B;
+  box-shadow: 0 4px 14px rgba(17, 46, 37, 0.15);
 }
 
 .nas-btn-primary:hover {
-  background-color: var(--nas-primary-hover);
+  background-color: #9EBEA3;
   transform: translateY(-1px);
 }
 
 .nas-btn-outline {
   background: transparent;
-  color: var(--nas-primary-dark);
-  border: 1px solid var(--nas-border);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .nas-btn-outline:hover {
-  background-color: #F1F5F9;
-  border-color: var(--nas-primary);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #FFFFFF;
 }
 
 /* Hero Section */
 .nas-hero {
   padding: 5rem 0 4rem;
-  background: radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-              radial-gradient(circle at 20% 80%, rgba(15, 31, 92, 0.05) 0%, transparent 50%);
+  background: radial-gradient(circle at 80% 20%, rgba(178, 206, 182, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(27, 94, 75, 0.06) 0%, transparent 50%);
 }
 
 .nas-hero-grid {
@@ -161,8 +198,9 @@
   gap: 0.5rem;
   padding: 0.4rem 1rem;
   border-radius: 9999px;
-  background-color: #E0F2FE;
-  color: #0369A1;
+  background-color: #E6F0E8;
+  color: #1B5E4B;
+  border: 1px solid #B2CEB6;
   font-size: 0.8125rem;
   font-weight: 700;
   margin-bottom: 1.25rem;
@@ -172,13 +210,14 @@
   font-size: 3.25rem;
   font-weight: 800;
   line-height: 1.15;
-  color: var(--nas-primary-dark);
+  color: #17483B;
   margin-bottom: 1.25rem;
   letter-spacing: -0.03em;
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
 .nas-hero-title span {
-  color: var(--nas-primary);
+  color: #1B5E4B;
 }
 
 .nas-hero-desc {

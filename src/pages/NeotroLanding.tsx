@@ -34,6 +34,17 @@ export default function NeotroLanding() {
         </div>
       </header>
 
+      {/* Quick Action Bar (Sage Accent) */}
+      <div className="nas-quick-bar">
+        <div className="nas-inner nas-quick-bar-content">
+          <a href="/apply-admission" className="nas-quick-item">Inquire</a>
+          <div className="nas-quick-divider"></div>
+          <a href="#features" className="nas-quick-item">Schedule Demo</a>
+          <div className="nas-quick-divider"></div>
+          <a href="/apply-admission" className="nas-quick-item">Online Admission</a>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="nas-hero">
         <div className="nas-inner nas-hero-grid">
