@@ -330,7 +330,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justify-content: 'center',
+                justifyContent: 'center',
                 gap: '2px',
                 width: '100px',
               }}
