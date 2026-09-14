@@ -9,7 +9,7 @@
 
 /* ════════ EXECUTIVE DASHBOARD HERO BANNER (INSTITUTIONAL COMMAND HUB) ════════ */
 .dashboard-banner {
-  background: linear-gradient(135deg, #061127 0%, #000080 50%, #1e3a8a 100%);
+  background: linear-gradient(135deg, var(--nas-emerald-dark, #0D3328) 0%, var(--primary-color, #1B5E4B) 50%, var(--nas-emerald-dark, #113C30) 100%);
   border-radius: 20px;
   padding: 2.25rem;
   color: white;
@@ -17,11 +17,11 @@
   flex-direction: column;
   gap: 1.5rem;
   box-shadow:
-    0 16px 36px rgba(0, 0, 128, 0.2),
+    0 16px 36px rgba(27, 94, 75, 0.25),
     0 4px 12px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .dashboard-banner::before {
@@ -152,7 +152,7 @@
 .banner-btn-primary {
   background: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.95);
-  color: #000080;
+  color: var(--primary-color, #1B5E4B);
   font-weight: 800;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
@@ -161,7 +161,7 @@
   background: #f8fafc;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
-  color: #000080;
+  color: var(--primary-color, #1B5E4B);
 }
 
 /* ════════ INTEGRATED OPERATIONAL BANNER ════════ */
@@ -426,9 +426,9 @@
 
 .shortcut-card:hover {
   background: #ffffff;
-  border-color: #000080;
+  border-color: var(--primary-color, #1B5E4B);
   transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(0, 0, 128, 0.08);
+  box-shadow: 0 10px 24px rgba(27, 94, 75, 0.12);
 }
 
 .shortcut-card-left {
@@ -441,13 +441,13 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #000080;
+  background: var(--primary-color, #1B5E4B);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 128, 0.15);
+  box-shadow: 0 4px 12px rgba(27, 94, 75, 0.2);
   transition: transform 0.2s ease;
 }
 

@@ -154,9 +154,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           label="TOTAL ACTIVE STUDENTS"
           value={totalStudents}
           icon={GraduationCap}
-          topColor="#000080"
-          iconBg="#EFF6FF"
-          iconColor="#000080"
+          topColor="var(--primary-color, #1B5E4B)"
+          iconBg="var(--color-secondary-light, #E6F0E8)"
+          iconColor="var(--primary-color, #1B5E4B)"
           trendTag={{ type: 'positive', text: '+12.4% vs last term' }}
           subText="Active Portal Records"
         />
