@@ -118,7 +118,7 @@ export default function SystemOverview() {
             <span>Refresh</span>
           </button>
           <button
-            onClick={() => navigate('/system-admin/schools')}
+            onClick={() => navigate('/system-admin/schools?provision=true', { state: { openProvisionModal: true } })}
             className="btn-primary-action"
           >
             <PlusCircle size={16} />

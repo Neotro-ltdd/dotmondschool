@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './SystemSchools.css';
 import { useDialog } from '../../../context/DialogContext';
 import {
@@ -43,6 +43,16 @@ export default function SystemSchools() {
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (
+      location.state?.openProvisionModal ||
+      new URLSearchParams(location.search).get('provision') === 'true'
+    ) {
+      setShowModal(true);
+    }
+  }, [location]);
 
   // New School Provision Form State
   const [tenantId, setTenantId] = useState('');

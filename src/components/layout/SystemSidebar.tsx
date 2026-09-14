@@ -78,7 +78,7 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
         <button
           onClick={() => {
             if (closeMobile) closeMobile();
-            navigate('/system-admin/schools');
+            navigate('/system-admin/schools?provision=true', { state: { openProvisionModal: true } });
           }}
           className="nav-action-btn"
         >
