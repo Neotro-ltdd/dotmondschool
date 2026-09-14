@@ -699,7 +699,7 @@ export default function SchoolManagement() {
                     type="email"
                     value={superAdminEmailState}
                     onChange={(e) => setSuperAdminEmailState(e.target.value)}
-                    placeholder="superadmin@dotmond.sch.ng (Saved in System DB)"
+                    placeholder="superadmin@neotro.ng (Saved in System DB)"
                   />
                   <div className="superadmin-badge-note">
                     Saved in System DB (dbo). Hidden from school Staff table.
