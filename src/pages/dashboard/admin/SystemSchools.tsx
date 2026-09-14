@@ -33,6 +33,7 @@ interface School {
   sizeMB: number;
   customSenderName?: string;
   isSmsEnabled: boolean;
+  subscriptionTier?: string;
 }
 
 export default function SystemSchools() {
@@ -61,6 +62,7 @@ export default function SystemSchools() {
   const [adminPassword, setAdminPassword] = useState('Admin123!');
   const [superAdminEmail, setSuperAdminEmail] = useState('');
   const [superAdminPassword, setSuperAdminPassword] = useState('SuperAdmin123!');
+  const [subscriptionTier, setSubscriptionTier] = useState('EnterpriseSuite');
   const [provisioning, setProvisioning] = useState(false);
 
   const fetchSchools = async () => {
@@ -91,10 +93,11 @@ export default function SystemSchools() {
         adminPassword,
         superAdminEmail: superAdminEmail.trim() || undefined,
         superAdminPassword: superAdminPassword.trim() || undefined,
+        subscriptionTier,
       });
 
       setShowModal(false);
-      showAlert(`School tenant "${schoolName}" provisioned successfully!`);
+      showAlert(`School tenant "${schoolName}" provisioned successfully under ${subscriptionTier} plan!`);
       fetchSchools();
       setTenantId('');
       setSchoolName('');
@@ -370,6 +373,32 @@ export default function SystemSchools() {
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
                 />
+              </div>
+
+              <div className="provision-form-group">
+                <label className="accent-label">
+                  <Sparkles size={14} />
+                  Commercial SaaS Package Tier
+                </label>
+                <select
+                  value={subscriptionTier}
+                  onChange={(e) => setSubscriptionTier(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    background: 'rgba(15, 23, 42, 0.7)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    borderRadius: '10px',
+                    color: '#f8fafc',
+                    fontSize: '0.925rem',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="EnterpriseSuite">🚀 Full Enterprise Suite (All Modules Enabled)</option>
+                  <option value="AcademicHub">🎓 Academic Hub Tier (Results + Attendance + Report Cards)</option>
+                  <option value="AttendanceOnly">🛡️ Security & Gate Only (QR Attendance + Gate Logs)</option>
+                  <option value="FinanceAcademics">💼 Finance & Academics Tier (Invoices + Results + Gate)</option>
+                </select>
               </div>
 
               <div className="provision-superadmin-box">
