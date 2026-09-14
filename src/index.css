@@ -179,9 +179,11 @@ body[data-theme='dark'] .executive-review-table th,
 body[data-theme='dark'] .executive-clearance-table th,
 body[data-theme='dark'] .executive-gate-table th,
 body[data-theme='dark'] .executive-grading-table th,
-body[data-theme='dark'] .executive-promo-table th {
-  background-color: #0f172a !important;
-  color: #94a3b8 !important;
+body[data-theme='dark'] .executive-promo-table th,
+body[data-theme='dark'] .executive-table th,
+body.dark-theme .executive-table th {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
   border-bottom-color: #334155 !important;
 }
 
@@ -190,7 +192,9 @@ body[data-theme='dark'] .executive-subject-alloc-table td,
 body[data-theme='dark'] .executive-review-table td,
 body[data-theme='dark'] .executive-clearance-table td,
 body[data-theme='dark'] .executive-gate-table td,
-body[data-theme='dark'] .executive-grading-table td {
+body[data-theme='dark'] .executive-grading-table td,
+body[data-theme='dark'] .executive-table td,
+body.dark-theme .executive-table td {
   border-bottom-color: #334155 !important;
   color: #e2e8f0 !important;
 }
