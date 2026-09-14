@@ -67,7 +67,7 @@ export default defineConfig({
             handler: 'NetworkOnly',
             options: {
               backgroundSync: {
-                name: 'srms-mutation-queue',
+                name: 'srms-post-mutation-queue',
                 options: {
                   maxRetentionTime: 24 * 60
                 }
@@ -80,7 +80,7 @@ export default defineConfig({
             handler: 'NetworkOnly',
             options: {
               backgroundSync: {
-                name: 'srms-mutation-queue',
+                name: 'srms-put-mutation-queue',
                 options: {
                   maxRetentionTime: 24 * 60
                 }
