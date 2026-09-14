@@ -181,12 +181,14 @@
 .table-container {
   overflow-x: auto;
   width: 100%;
+  background-color: #ffffff;
 }
 
 .executive-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  background-color: #ffffff;
 }
 
 .executive-table thead {
@@ -201,11 +203,13 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #64748b;
+  background-color: #f8fafc;
   white-space: nowrap;
 }
 
 .executive-table tbody tr {
   border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff;
   transition: background-color 0.15s ease;
 }
 
@@ -217,6 +221,8 @@
   padding: 1rem 1.5rem;
   vertical-align: middle;
   font-size: 0.9rem;
+  background-color: #ffffff;
+  color: #0f172a;
 }
 
 .staff-profile-cell {

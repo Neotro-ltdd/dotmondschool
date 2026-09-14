@@ -559,7 +559,7 @@ export default function Teachers() {
                       <td>
                         <div className="contact-cell">
                           <div className="contact-row">
-                            <Mail size={13} color="#64748B" />
+                            <Mail size={13} />
                             <span>{teacher.email || 'No email specified'}</span>
                           </div>
                           <div className="contact-row phone-row">
