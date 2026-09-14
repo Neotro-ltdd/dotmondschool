@@ -70,6 +70,7 @@ interface ReportData {
     promotableCount: number;
     heldBackCount: number;
     graduatingCount: number;
+    exemptCount?: number;
     overridesCount: number;
   };
   records: StudentRecord[];
@@ -468,7 +469,11 @@ export default function PromotionManagement() {
     const matchesSearch =
       r.studentName.toLowerCase().includes(reportSearchQuery.toLowerCase()) ||
       r.registrationNumber.toLowerCase().includes(reportSearchQuery.toLowerCase());
-    const matchesStatus = reportStatusFilter === 'All' || r.finalDecision === reportStatusFilter;
+    const matchesStatus =
+      reportStatusFilter === 'All' ||
+      (reportStatusFilter === 'Exempt'
+        ? r.finalDecision?.startsWith('Exempt')
+        : r.finalDecision === reportStatusFilter);
     return matchesSearch && matchesStatus;
   });
 
@@ -804,14 +809,14 @@ export default function PromotionManagement() {
                           </td>
                           <td>
                             <span
-                              className={`status-pill ${rec.systemRecommendation === 'Promotable' ? 'active' : rec.systemRecommendation === 'Graduating' ? 'info' : 'inactive'}`}
+                              className={`status-pill ${rec.systemRecommendation === 'Promotable' ? 'active' : rec.systemRecommendation === 'Graduating' ? 'info' : rec.systemRecommendation?.startsWith('Exempt') ? 'pending' : 'inactive'}`}
                             >
                               {rec.systemRecommendation}
                             </span>
                           </td>
                           <td>
                             <span
-                              className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : 'inactive'}`}
+                              className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : rec.finalDecision?.startsWith('Exempt') ? 'pending' : 'inactive'}`}
                             >
                               {rec.finalDecision}
                             </span>
@@ -888,7 +893,7 @@ export default function PromotionManagement() {
                           <div className="card-metric-col">
                             <span className="card-metric-lbl">Final Decision</span>
                             <span
-                              className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : 'inactive'}`}
+                              className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : rec.finalDecision?.startsWith('Exempt') ? 'pending' : 'inactive'}`}
                             >
                               {rec.finalDecision}
                             </span>
@@ -993,6 +998,7 @@ export default function PromotionManagement() {
                     <option value="All">All Decisions</option>
                     <option value="Promotable">Promotable</option>
                     <option value="Repeat">Repeat / Hold Back</option>
+                    <option value="Exempt">Exempt (New Intake)</option>
                   </select>
                 </div>
               </div>
@@ -1083,10 +1089,10 @@ export default function PromotionManagement() {
                             <strong>{rec.annualAverage.toFixed(2)}%</strong>
                           </td>
                           <td>
-                            <span className="status-pill active">{rec.systemRecommendation}</span>
+                            <span className={`status-pill ${rec.systemRecommendation === 'Promotable' ? 'active' : rec.systemRecommendation === 'Graduating' ? 'info' : rec.systemRecommendation?.startsWith('Exempt') ? 'pending' : 'inactive'}`}>{rec.systemRecommendation}</span>
                           </td>
                           <td>
-                            <span className="status-pill active">{rec.finalDecision}</span>
+                            <span className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : rec.finalDecision?.startsWith('Exempt') ? 'pending' : 'inactive'}`}>{rec.finalDecision}</span>
                           </td>
                         </tr>
                       ))
@@ -1122,7 +1128,7 @@ export default function PromotionManagement() {
                           </div>
                           <div className="card-metric-col">
                             <span className="card-metric-lbl">Final Decision</span>
-                            <span className="status-pill active">{rec.finalDecision}</span>
+                            <span className={`status-pill ${rec.finalDecision === 'Promotable' ? 'active' : rec.finalDecision === 'Graduating' ? 'info' : rec.finalDecision?.startsWith('Exempt') ? 'pending' : 'inactive'}`}>{rec.finalDecision}</span>
                           </div>
                         </div>
                       </div>
