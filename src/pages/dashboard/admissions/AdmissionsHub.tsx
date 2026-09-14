@@ -627,7 +627,7 @@ export default function AdmissionsHub() {
                           <div>
                             <strong>{visit.childName || 'Child Tour'}</strong>
                           </div>
-                          <small style={{ color: '#000080', fontWeight: 600 }}>
+                          <small style={{ color: 'var(--primary-color, #1b5e4b)', fontWeight: 700 }}>
                             {visit.classLevelInterested}
                           </small>
                         </td>
@@ -1532,7 +1532,7 @@ export default function AdmissionsHub() {
                   <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
                     CLASS INTERESTED IN
                   </label>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#000080' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--primary-color, #1b5e4b)' }}>
                     {viewVisit.classLevelInterested}
                   </div>
                 </div>
@@ -1566,7 +1566,7 @@ export default function AdmissionsHub() {
                     background: '#f8fafc',
                     padding: '12px',
                     borderRadius: '8px',
-                    borderLeft: '4px solid #000080',
+                    borderLeft: '4px solid var(--primary-color, #1b5e4b)',
                   }}
                 >
                   <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
@@ -1707,7 +1707,7 @@ export default function AdmissionsHub() {
                   <span>✏️</span> Edit Application &amp; Upload Documents
                 </h2>
                 <p>
-                  Applicant: <strong style={{ color: '#000080' }}>{editApp.fullName}</strong>
+                  Applicant: <strong style={{ color: 'var(--primary-color, #1b5e4b)' }}>{editApp.fullName}</strong>
                   {editApp.assignedRegistrationNumber && (
                     <span
                       style={{
@@ -1741,7 +1741,7 @@ export default function AdmissionsHub() {
               <div className="edit-form-scrollable">
                 {/* SECTION 1: DOCUMENT UPLOADS & STATUS BADGES */}
                 <div className="edit-section-box" style={{ background: '#f8fafc', borderColor: '#cbd5e1' }}>
-                  <div className="edit-section-header" style={{ color: '#000080', borderBottomColor: '#cbd5e1' }}>
+                  <div className="edit-section-header" style={{ color: 'var(--primary-color, #1b5e4b)', borderBottomColor: '#cbd5e1' }}>
                     <span>📂</span> Required Documents &amp; Verification Files
                     <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b', marginLeft: 'auto' }}>
                       (Upload files when received from parents to enable student ID card and admission validation)
