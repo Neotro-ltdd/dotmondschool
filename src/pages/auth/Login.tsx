@@ -30,8 +30,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isNeotroBranding = (import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro';
-  const [schoolName, setSchoolName] = useState(isNeotroBranding ? 'Neotro Academic System' : 'Neotro SMS');
+  const [schoolName, setSchoolName] = useState('Neotro SMS');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,9 +57,15 @@ export default function Login() {
         if (details) {
           if (details.schoolName) setSchoolName(details.schoolName);
           if (details.logoUrl) setLogoUrl(details.logoUrl);
+          if (details.primaryColor) {
+            document.documentElement.style.setProperty('--primary-color', details.primaryColor);
+          }
+          if (details.secondaryColor) {
+            document.documentElement.style.setProperty('--secondary-color', details.secondaryColor);
+          }
         }
       } else {
-        setSchoolName(isNeotroBranding ? 'Neotro Academic System' : 'Neotro SMS');
+        setSchoolName('Neotro SMS');
         setLogoUrl(null);
       }
     };
@@ -71,7 +76,7 @@ export default function Login() {
       }, 500);
       return () => clearTimeout(timer);
     } else if (!schoolCode) {
-      setSchoolName(isNeotroBranding ? 'Neotro Academic System' : 'Neotro SMS');
+      setSchoolName('Neotro SMS');
       setLogoUrl(null);
     }
   }, [schoolCode]);
@@ -192,43 +197,61 @@ export default function Login() {
     }
   };
 
-  const defaultLogo = isNeotroBranding ? '/logo192.png' : '/images/dotmond-logo-1.png';
-
   const logoSrc = logoUrl
     ? logoUrl.startsWith('http')
       ? logoUrl
       : `${API_ROOT}${logoUrl}`
-    : defaultLogo;
+    : '/images/dotmond-logo-1.png';
 
   return (
     <div className="login-container">
       <div className="split">
         <div className="panel-brand">
           <div className="ribbon-decor" aria-hidden="true">
-            <svg className="rd-1" viewBox="0 0 400 120">
-              <path d="M-50,60 C100,10 250,110 450,30" stroke="#B2CEB6" strokeWidth="3" fill="none" opacity="0.3" />
+            <svg className="rd-1" viewBox="0 0 200 60">
+              <path
+                d="M2 40 Q30 10 55 35 T110 30 T170 15"
+                stroke="#F0A93B"
+                strokeWidth="10"
+                fill="none"
+                strokeLinecap="round"
+              />
             </svg>
-            <svg className="rd-2" viewBox="0 0 400 120">
-              <path d="M-20,30 C120,90 280,10 420,80" stroke="#B2CEB6" strokeWidth="2.5" fill="none" opacity="0.2" />
+            <svg className="rd-2" viewBox="0 0 200 60">
+              <path
+                d="M2 20 Q30 50 55 25 T110 30 T170 45"
+                stroke="#7FA6E0"
+                strokeWidth="9"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+            <svg className="rd-3" viewBox="0 0 200 60">
+              <path
+                d="M2 30 Q30 5 55 30 T110 25 T170 40"
+                stroke="#F0A93B"
+                strokeWidth="8"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+            <svg className="rd-4" viewBox="0 0 200 60">
+              <path
+                d="M2 45 Q30 15 55 40 T110 20 T170 35"
+                stroke="#7FA6E0"
+                strokeWidth="10"
+                fill="none"
+                strokeLinecap="round"
+              />
             </svg>
           </div>
-
-          <div className="brand-hero-content">
-            <div className="brand-logo-card">
-              <img
-                className="brand-logo-img"
-                src={logoSrc}
-                alt={`${schoolName} Logo`}
-              />
-            </div>
-            
-            <h1 className="brand-system-title">{schoolName.toUpperCase()}</h1>
-            <p className="brand-system-subtitle">Enterprise Education Management Platform</p>
-
-            <div className="brand-trust-pills">
-              <span className="trust-pill">✓ Bank-Grade Schema Isolation</span>
-              <span className="trust-pill">✓ Realtime Gate & Results Engine</span>
-            </div>
+          <div className="crest-motion-wrap">
+            <div className="crest-glow-big" aria-hidden="true"></div>
+            <img
+              className="crest-motion"
+              src="/images/dotmond-logo-1.png"
+              alt={`${schoolName} Logo`}
+            />
           </div>
         </div>
 
