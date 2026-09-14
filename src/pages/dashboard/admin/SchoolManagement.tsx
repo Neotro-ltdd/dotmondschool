@@ -532,6 +532,7 @@ export default function SchoolManagement() {
                     />
                     <span className="slider"></span>
                   </label>
+                </div>
               </div>
             </form>
           </div>
