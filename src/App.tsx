@@ -7,6 +7,7 @@ import { BranchProvider } from './context/BranchContext';
 import { ThemeProvider } from './context/ThemeContext';
 
 import LandingPage from './pages/LandingPage';
+import NeotroLanding from './pages/NeotroLanding';
 import Login from './pages/auth/Login';
 import ChangePassword from './pages/auth/ChangePassword';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -82,7 +83,10 @@ function App() {
             <DialogProvider>
               <BrowserRouter>
                 <Routes>
-                  <Route path="/" element={<LandingPage />} />
+                  <Route 
+                    path="/" 
+                    element={(import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro' ? <NeotroLanding /> : <LandingPage />} 
+                  />
                   <Route path="/login" element={<Login />} />
                   <Route path="/apply-admission" element={<PublicAdmissionForm />} />
                   <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />

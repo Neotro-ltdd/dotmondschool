@@ -1,0 +1,378 @@
+/* Neotro Academic System (NAS) Neutral White-Label Theme */
+
+.neotro-lp-container {
+  --nas-primary: #0284C7;
+  --nas-primary-hover: #0369A1;
+  --nas-primary-dark: #0F1F5C;
+  --nas-accent: #38BDF8;
+  --nas-bg-main: #F8FAFC;
+  --nas-bg-card: #FFFFFF;
+  --nas-bg-dark: #0F172A;
+  --nas-text-main: #1E293B;
+  --nas-text-muted: #64748B;
+  --nas-text-light: #94A3B8;
+  --nas-border: #E2E8F0;
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--nas-text-main);
+  background-color: var(--nas-bg-main);
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.neotro-lp-container * {
+  box-sizing: border-box;
+}
+
+.nas-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+/* Header & Nav */
+.nas-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--nas-border);
+}
+
+.nas-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.nas-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  text-decoration: none;
+}
+
+.nas-logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--nas-primary-dark) 0%, var(--nas-primary) 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.nas-brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--nas-primary-dark);
+  line-height: 1.1;
+}
+
+.nas-brand-subtitle {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--nas-primary);
+  display: block;
+}
+
+.nas-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nas-nav a {
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--nas-text-muted);
+  transition: color 0.2s ease;
+}
+
+.nas-nav a:hover {
+  color: var(--nas-primary);
+}
+
+.nas-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.nas-btn-primary {
+  background-color: var(--nas-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+}
+
+.nas-btn-primary:hover {
+  background-color: var(--nas-primary-hover);
+  transform: translateY(-1px);
+}
+
+.nas-btn-outline {
+  background: transparent;
+  color: var(--nas-primary-dark);
+  border: 1px solid var(--nas-border);
+}
+
+.nas-btn-outline:hover {
+  background-color: #F1F5F9;
+  border-color: var(--nas-primary);
+}
+
+/* Hero Section */
+.nas-hero {
+  padding: 5rem 0 4rem;
+  background: radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(15, 31, 92, 0.05) 0%, transparent 50%);
+}
+
+.nas-hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.nas-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  background-color: #E0F2FE;
+  color: #0369A1;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.nas-hero-title {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--nas-primary-dark);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+}
+
+.nas-hero-title span {
+  color: var(--nas-primary);
+}
+
+.nas-hero-desc {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--nas-text-muted);
+  margin-bottom: 2rem;
+  max-width: 580px;
+}
+
+.nas-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.nas-stats-row {
+  display: flex;
+  gap: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--nas-border);
+}
+
+.nas-stat-num {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--nas-primary-dark);
+  line-height: 1;
+}
+
+.nas-stat-label {
+  font-size: 0.8125rem;
+  color: var(--nas-text-muted);
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.nas-hero-preview {
+  position: relative;
+  border-radius: 20px;
+  background-color: var(--nas-bg-card);
+  padding: 1.25rem;
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.12),
+              0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+.nas-preview-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--nas-border);
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 1.5rem;
+}
+
+.nas-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #334155;
+}
+
+.nas-preview-dot-group {
+  display: flex;
+  gap: 6px;
+}
+
+.nas-preview-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #334155;
+}
+
+/* Feature Grid */
+.nas-features {
+  padding: 5rem 0;
+  background-color: #FFFFFF;
+}
+
+.nas-section-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3.5rem;
+}
+
+.nas-section-subtitle {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--nas-primary);
+  margin-bottom: 0.5rem;
+}
+
+.nas-section-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--nas-primary-dark);
+  line-height: 1.2;
+}
+
+.nas-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.nas-feature-card {
+  background-color: var(--nas-bg-main);
+  border: 1px solid var(--nas-border);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.25 ease;
+}
+
+.nas-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+  border-color: #CBD5E1;
+}
+
+.nas-feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #E0F2FE;
+  color: var(--nas-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.nas-feature-title {
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: var(--nas-primary-dark);
+  margin-bottom: 0.625rem;
+}
+
+.nas-feature-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--nas-text-muted);
+}
+
+/* Footer */
+.nas-footer {
+  background-color: var(--nas-bg-dark);
+  color: #94A3B8;
+  padding: 4rem 0 2rem;
+  margin-top: auto;
+}
+
+.nas-footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.nas-footer-brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 0.75rem;
+}
+
+.nas-footer-copy {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid #1E293B;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 992px) {
+  .nas-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .nas-feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .nas-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .nas-hero-title {
+    font-size: 2.25rem;
+  }
+}

@@ -30,7 +30,8 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [schoolName, setSchoolName] = useState('Neotro SMS');
+  const isNeotroBranding = (import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro';
+  const [schoolName, setSchoolName] = useState(isNeotroBranding ? 'Neotro Academic System' : 'Neotro SMS');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function Login() {
           if (details.logoUrl) setLogoUrl(details.logoUrl);
         }
       } else {
-        setSchoolName('Neotro SMS');
+        setSchoolName(isNeotroBranding ? 'Neotro Academic System' : 'Neotro SMS');
         setLogoUrl(null);
       }
     };
@@ -70,7 +71,7 @@ export default function Login() {
       }, 500);
       return () => clearTimeout(timer);
     } else if (!schoolCode) {
-      setSchoolName('Neotro SMS');
+      setSchoolName(isNeotroBranding ? 'Neotro Academic System' : 'Neotro SMS');
       setLogoUrl(null);
     }
   }, [schoolCode]);
@@ -191,11 +192,13 @@ export default function Login() {
     }
   };
 
+  const defaultLogo = isNeotroBranding ? '/logo192.png' : '/images/dotmond-logo-1.png';
+
   const logoSrc = logoUrl
     ? logoUrl.startsWith('http')
       ? logoUrl
       : `${API_ROOT}${logoUrl}`
-    : '/images/dotmond-logo-1.png';
+    : defaultLogo;
 
   return (
     <div className="login-container">
@@ -243,7 +246,7 @@ export default function Login() {
             <div className="crest-glow-big" aria-hidden="true"></div>
             <img
               className="crest-motion"
-              src="/images/dotmond-logo-1.png"
+              src={logoSrc}
               alt={`${schoolName} Logo`}
             />
           </div>
