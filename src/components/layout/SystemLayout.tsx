@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import SystemSidebar from './SystemSidebar';
-import { ShieldCheck, Plus, Menu, X, Bell, ChevronRight, User } from 'lucide-react';
+import { ShieldCheck, Menu, X, ChevronRight } from 'lucide-react';
 import './SystemLayout.css';
 
 export default function SystemLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
 
   const getBreadcrumb = () => {
@@ -45,14 +44,6 @@ export default function SystemLayout() {
           </div>
 
           <div className="header-right">
-            <button
-              onClick={() => navigate('/system-admin/schools')}
-              className="header-provision-btn"
-            >
-              <Plus size={16} />
-              <span className="btn-text">Provision School</span>
-            </button>
-
             <div className="user-profile-badge">
               <div className="avatar-circle">
                 <ShieldCheck size={18} />
