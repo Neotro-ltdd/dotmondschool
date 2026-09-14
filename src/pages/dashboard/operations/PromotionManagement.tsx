@@ -397,7 +397,7 @@ export default function PromotionManagement() {
   const openOverrideModal = (recId: string, currentDecision: string) => {
     setOverrideRecId(recId);
     const defaultTargetDecision =
-      currentDecision === 'Held Back' || currentDecision === 'Repeat' ? 'Promotable' : 'Held Back';
+      currentDecision === 'Held Back' || currentDecision === 'Repeat' || currentDecision?.startsWith('Exempt') ? 'Promotable' : 'Held Back';
     setOverrideDecision(defaultTargetDecision);
     setOverrideReason('');
     setShowOverrideModal(true);
@@ -1303,6 +1303,7 @@ export default function PromotionManagement() {
                   >
                     <option value="Promotable">Promotable (Promote to Next Class)</option>
                     <option value="Held Back">Held Back (Repeat Current Class)</option>
+                    <option value="Exempt (New Intake)">Exempt (New Intake / Skip Promotion Email)</option>
                     <option value="Graduating">Graduating</option>
                     <option value="Withdrawn">Withdrawn</option>
                   </select>
