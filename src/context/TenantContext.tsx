@@ -43,6 +43,7 @@ const TenantContext = createContext<TenantContextType>({
   updateFeatures: () => {},
 });
 
+export const TenantProvider = ({ children }: { children: ReactNode }) => {
   const isNeotroBranding = (import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro';
   const defaultPrimary = isNeotroBranding ? '#1B5E4B' : '#007bff';
   const defaultSecondary = isNeotroBranding ? '#B2CEB6' : '#cfecf7';
@@ -86,16 +87,6 @@ const TenantContext = createContext<TenantContextType>({
           document.documentElement.style.setProperty('--secondary-color', '#B2CEB6');
           document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
         }
-      } catch (err) {
-        console.error('Failed to load tenant details', err);
-      }
-    } else if (isNeotro) {
-      document.documentElement.style.setProperty('--primary-color', '#1B5E4B');
-      document.documentElement.style.setProperty('--color-primary', '#1B5E4B');
-      document.documentElement.style.setProperty('--secondary-color', '#B2CEB6');
-      document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
-    }
-  };
 
         // If authenticated, fetch profile to get actual tenant features
         const token = localStorage.getItem('srms_token');
@@ -121,6 +112,11 @@ const TenantContext = createContext<TenantContextType>({
       } catch (err) {
         console.error('Failed to load tenant details', err);
       }
+    } else if (isNeotro) {
+      document.documentElement.style.setProperty('--primary-color', '#1B5E4B');
+      document.documentElement.style.setProperty('--color-primary', '#1B5E4B');
+      document.documentElement.style.setProperty('--secondary-color', '#B2CEB6');
+      document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
     }
   };
 
