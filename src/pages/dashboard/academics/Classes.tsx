@@ -47,6 +47,7 @@ export default function Classes() {
   // Filters & Controls
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('All');
+  const [selectedClassFilter, setSelectedClassFilter] = useState('All');
   const [selectedSessionFilter, setSelectedSessionFilter] = useState('All');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
@@ -240,7 +241,8 @@ export default function Classes() {
     const matchesSearch = fullClassText.includes(searchTerm.toLowerCase());
     const matchesLevel = selectedLevel === 'All' || cls.level === selectedLevel;
     const matchesSession = selectedSessionFilter === 'All' || cls.session === selectedSessionFilter;
-    return matchesSearch && matchesLevel && matchesSession;
+    const matchesClass = selectedClassFilter === 'All' || cls.name === selectedClassFilter;
+    return matchesSearch && matchesLevel && matchesSession && matchesClass;
   });
 
   // Metrics
@@ -250,6 +252,7 @@ export default function Classes() {
   const uniqueLevels = Array.from(new Set(classes.map((c) => c.level))).length;
 
   const availableSessions = Array.from(new Set(classes.map((c) => c.session))).filter(Boolean);
+  const availableClassNames = Array.from(new Set(classes.map((c) => c.name))).filter(Boolean);
 
   return (
     <div className="classes-page-container">
@@ -339,6 +342,21 @@ export default function Classes() {
             <option value="Nursery 1">Nursery 1</option>
             <option value="Kindergarten">Kindergarten</option>
           </select>
+
+          {availableClassNames.length > 0 && (
+            <select
+              className="select-filter-input"
+              value={selectedClassFilter}
+              onChange={(e) => setSelectedClassFilter(e.target.value)}
+            >
+              <option value="All">All Specific Classes</option>
+              {availableClassNames.map((className) => (
+                <option key={className} value={className}>
+                  Class {className}
+                </option>
+              ))}
+            </select>
+          )}
 
           {availableSessions.length > 0 && (
             <select

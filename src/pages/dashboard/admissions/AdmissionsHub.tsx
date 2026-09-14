@@ -102,6 +102,7 @@ export default function AdmissionsHub() {
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [classFilter, setClassFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Active Primary Tab: applications | visits
@@ -753,6 +754,21 @@ export default function AdmissionsHub() {
             </div>
 
             <form onSubmit={handleSearchSubmit} className="search-form-row">
+              {classesList.length > 0 && (
+                <select
+                  className="form-control"
+                  style={{ width: 'auto', minWidth: '160px', fontWeight: 600, fontSize: '0.85rem' }}
+                  value={classFilter}
+                  onChange={(e) => setClassFilter(e.target.value)}
+                >
+                  <option value="All">All Classes</option>
+                  {classesList.map((cls) => (
+                    <option key={cls.id} value={cls.name}>
+                      Class: {cls.name} {cls.section ? `(${cls.section})` : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
               <input
                 type="text"
                 className="form-control search-input"
@@ -788,14 +804,16 @@ export default function AdmissionsHub() {
                         Loading admission applications...
                       </td>
                     </tr>
-                  ) : applications.length === 0 ? (
+                  ) : applications.filter((a) => classFilter === 'All' || a.targetClassName === classFilter || a.targetClassId === classFilter).length === 0 ? (
                     <tr>
                       <td colSpan={7} className="text-center py-4">
                         No admission applications found matching the selected filter.
                       </td>
                     </tr>
                   ) : (
-                    applications.map((appItem) => (
+                    applications
+                      .filter((a) => classFilter === 'All' || a.targetClassName === classFilter || a.targetClassId === classFilter)
+                      .map((appItem) => (
                       <tr key={appItem.id}>
                         <td>
                           <div className="applicant-name-block">
