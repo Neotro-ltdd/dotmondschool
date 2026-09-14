@@ -349,7 +349,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {totalStudents + totalStaff}
               </span>
               <span
-                className="donut-center-label"
+                className="donut-center-subtitle"
                 style={{
                   fontSize: '0.68rem',
                   fontWeight: 800,
@@ -358,6 +358,8 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   display: 'block',
                   lineHeight: '1.1',
                   margin: 0,
+                  position: 'static',
+                  transform: 'none',
                 }}
               >
                 Total Users

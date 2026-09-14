@@ -551,10 +551,14 @@
 
 .donut-center-number {
   color: #0f172a;
+  position: static !important;
+  transform: none !important;
 }
 
-.donut-center-label {
+.donut-center-subtitle {
   color: #64748b;
+  position: static !important;
+  transform: none !important;
 }
 
 .chart-pill-dot {
@@ -682,8 +686,8 @@ body.dark-theme .donut-center-number {
   color: #f8fafc !important;
 }
 
-body[data-theme='dark'] .donut-center-label,
-body.dark-theme .donut-center-label {
+body[data-theme='dark'] .donut-center-subtitle,
+body.dark-theme .donut-center-subtitle {
   color: #cbd5e1 !important;
 }
 
