@@ -490,7 +490,7 @@
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: #ffffff !important;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   border: 1px solid #e2e8f0;
@@ -547,6 +547,14 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: #0f172a;
+}
+
+.donut-center-number {
+  color: #0f172a;
+}
+
+.donut-center-label {
+  color: #64748b;
 }
 
 .chart-pill-dot {

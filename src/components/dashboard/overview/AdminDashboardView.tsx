@@ -319,6 +319,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
             {/* Donut Center Count Overlay */}
             <div
+              className="donut-center-box"
               style={{
                 position: 'absolute',
                 top: '50%',
@@ -326,16 +327,23 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 transform: 'translate(-50%, -50%)',
                 textAlign: 'center',
                 pointerEvents: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justify-content: 'center',
+                gap: '2px',
+                width: '100px',
               }}
             >
               <span
                 className="donut-center-number"
                 style={{
-                  fontSize: '1.65rem',
+                  fontSize: '1.75rem',
                   fontWeight: 900,
                   display: 'block',
-                  lineHeight: 1,
+                  lineHeight: '1.1',
                   letterSpacing: '-0.02em',
+                  margin: 0,
                 }}
               >
                 {totalStudents + totalStaff}
@@ -343,10 +351,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <span
                 className="donut-center-label"
                 style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.68rem',
                   fontWeight: 800,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  letterSpacing: '0.06em',
+                  display: 'block',
+                  lineHeight: '1.1',
+                  margin: 0,
                 }}
               >
                 Total Users
