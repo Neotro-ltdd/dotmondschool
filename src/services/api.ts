@@ -79,6 +79,17 @@ async function handleResponse(response: Response) {
       );
     }
 
+    if (response.status === 403 && data?.errorCode === 'UPGRADE_REQUIRED') {
+      window.dispatchEvent(
+        new CustomEvent('srms_upgrade_required', {
+          detail: {
+            message: message || 'Your school subscription plan does not include access to this module.',
+            requiredFeature: data.requiredFeature || 'Module',
+          },
+        })
+      );
+    }
+
     if (response.status === 401) {
       localStorage.removeItem('srms_token');
       localStorage.removeItem('srms_user');

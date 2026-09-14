@@ -38,7 +38,7 @@ export default function Sidebar({
   setIsSidebarOpen?: (open: boolean) => void;
 }) {
   const { logout, userRole, userName } = useAuth();
-  const { schoolName, logoUrl } = useTenant();
+  const { schoolName, logoUrl, features } = useTenant();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,27 +71,30 @@ export default function Sidebar({
   };
 
   const canAccessFinance =
-    userRole === 'Accountant' ||
-    isSuperAdmin ||
-    (userRole !== 'Chairman' &&
-      (userPermissions.includes('finance.overview') ||
-        userPermissions.includes('finance.billing') ||
-        userPermissions.includes('finance.pos') ||
-        userPermissions.includes('finance.ledger')));
+    features.finance &&
+    (userRole === 'Accountant' ||
+      isSuperAdmin ||
+      (userRole !== 'Chairman' &&
+        (userPermissions.includes('finance.overview') ||
+          userPermissions.includes('finance.billing') ||
+          userPermissions.includes('finance.pos') ||
+          userPermissions.includes('finance.ledger'))));
   const canAccessFinancialReports =
-    isSuperAdmin ||
-    userRole === 'Accountant' ||
-    userPermissions.includes('reports.finance');
+    features.finance &&
+    (isSuperAdmin ||
+      userRole === 'Accountant' ||
+      userPermissions.includes('reports.finance'));
 
   const canViewAcademicAnalysis =
-    isSuperAdmin ||
-    hasPermission('reports.academic_analysis') ||
-    userRole === 'Teacher' ||
-    userRole === 'SubjectTeacher' ||
-    userRole === 'Principal' ||
-    userRole === 'Director' ||
-    userRole === 'Chairman' ||
-    userRole === 'Admin';
+    features.academics &&
+    (isSuperAdmin ||
+      hasPermission('reports.academic_analysis') ||
+      userRole === 'Teacher' ||
+      userRole === 'SubjectTeacher' ||
+      userRole === 'Principal' ||
+      userRole === 'Director' ||
+      userRole === 'Chairman' ||
+      userRole === 'Admin');
 
   const canAccessSettings =
     userRole === 'Director' ||
@@ -457,7 +460,7 @@ export default function Sidebar({
               <>
                 <div className="sidebar-section-header">MANAGEMENT MODULES</div>
 
-                {(hasPermission('admissions.view') || hasPermission('admissions.manage')) && userRole !== 'Chairman' && (
+                {features.admissions && (hasPermission('admissions.view') || hasPermission('admissions.manage')) && userRole !== 'Chairman' && (
                   <NavLink
                     to="/dashboard/admissions"
                     className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -512,7 +515,7 @@ export default function Sidebar({
                 )}
 
                 {/* 2. CLASS & STUDENT MANAGEMENT */}
-                {(hasPermission('classes.view') || hasPermission('classes.manage') || hasPermission('allocations.class') || hasPermission('promotions.view')) && userRole !== 'Accountant' && userRole !== 'Principal' && (
+                {features.academics && (hasPermission('classes.view') || hasPermission('classes.manage') || hasPermission('allocations.class') || hasPermission('promotions.view')) && userRole !== 'Accountant' && userRole !== 'Principal' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isClassStudentOpen ? 'open' : ''}`}
@@ -578,7 +581,7 @@ export default function Sidebar({
                 )}
 
                 {/* 3. SUBJECT MANAGEMENT */}
-                {(hasPermission('subjects.view') || hasPermission('subjects.manage') || hasPermission('allocations.subject')) && userRole !== 'Accountant' && userRole !== 'Principal' && (
+                {features.academics && (hasPermission('subjects.view') || hasPermission('subjects.manage') || hasPermission('allocations.subject')) && userRole !== 'Accountant' && userRole !== 'Principal' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isSubjectOpen ? 'open' : ''}`}
@@ -620,7 +623,7 @@ export default function Sidebar({
                 )}
 
                 {/* 4. RESULT MANAGEMENT */}
-                {(hasPermission('results.entry') || hasPermission('results.compile') || hasPermission('results.approve') || hasPermission('results.unlock')) && userRole !== 'Accountant' && userRole !== 'Parent' && (
+                {features.academics && (hasPermission('results.entry') || hasPermission('results.compile') || hasPermission('results.approve') || hasPermission('results.unlock')) && userRole !== 'Accountant' && userRole !== 'Parent' && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isResultMgmtOpen ? 'open' : ''}`}
@@ -662,7 +665,7 @@ export default function Sidebar({
                 )}
 
                 {/* 5. APPROVAL MANAGEMENT (PRINCIPAL / SUPERADMIN) */}
-                {(hasPermission('results.approve') || hasPermission('promotions.approve')) && (
+                {features.academics && (hasPermission('results.approve') || hasPermission('promotions.approve')) && (
                   <div className="nav-group">
                     <button
                       className={`nav-item dropdown-toggle ${isApprovalMgmtOpen ? 'open' : ''}`}
@@ -780,7 +783,7 @@ export default function Sidebar({
                 )}
 
                 {/* 6. ATTENDANCE MANAGEMENT */}
-                {(hasPermission('attendance.student.view') ||
+                {features.attendance && (hasPermission('attendance.student.view') ||
                   hasPermission('attendance.staff.view') ||
                   hasPermission('attendance.view') ||
                   hasPermission('attendance.scan')) && (

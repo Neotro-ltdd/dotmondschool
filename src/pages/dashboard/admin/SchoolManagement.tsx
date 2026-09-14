@@ -35,6 +35,14 @@ interface SchoolDetail {
   sizeMB: number;
   customSenderName?: string;
   isSmsEnabled: boolean;
+  subscriptionTier?: string;
+  isAcademicsEnabled?: boolean;
+  isFinanceEnabled?: boolean;
+  isAttendanceEnabled?: boolean;
+  isAdmissionsEnabled?: boolean;
+  isPushNotificationsEnabled?: boolean;
+  maxBranchCount?: number;
+  maxStudentCount?: number;
 }
 
 export default function SchoolManagement() {
@@ -57,6 +65,17 @@ export default function SchoolManagement() {
   const [isSmsEnabled, setIsSmsEnabled] = useState(true);
   const [savingSms, setSavingSms] = useState(false);
 
+  // Subscription Licensing & Feature Flags State
+  const [subscriptionTier, setSubscriptionTier] = useState('EnterpriseSuite');
+  const [isAcademicsEnabled, setIsAcademicsEnabled] = useState(true);
+  const [isFinanceEnabled, setIsFinanceEnabled] = useState(true);
+  const [isAttendanceEnabled, setIsAttendanceEnabled] = useState(true);
+  const [isAdmissionsEnabled, setIsAdmissionsEnabled] = useState(true);
+  const [isPushNotificationsEnabled, setIsPushNotificationsEnabled] = useState(true);
+  const [maxBranchCount, setMaxBranchCount] = useState(-1);
+  const [maxStudentCount, setMaxStudentCount] = useState(-1);
+  const [savingSubscription, setSavingSubscription] = useState(false);
+
   useEffect(() => {
     fetchSchool();
   }, [id]);
@@ -70,11 +89,53 @@ export default function SchoolManagement() {
       setSuperAdminEmailState(res.superAdminEmail || '');
       setCustomSenderName(res.customSenderName || '');
       setIsSmsEnabled(res.isSmsEnabled ?? true);
+      setSubscriptionTier(res.subscriptionTier || 'EnterpriseSuite');
+      setIsAcademicsEnabled(res.isAcademicsEnabled ?? true);
+      setIsFinanceEnabled(res.isFinanceEnabled ?? true);
+      setIsAttendanceEnabled(res.isAttendanceEnabled ?? true);
+      setIsAdmissionsEnabled(res.isAdmissionsEnabled ?? true);
+      setIsPushNotificationsEnabled(res.isPushNotificationsEnabled ?? true);
+      setMaxBranchCount(res.maxBranchCount ?? -1);
+      setMaxStudentCount(res.maxStudentCount ?? -1);
     } catch (err) {
       console.error(err);
       showAlert('Failed to load school details');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const applyPreset = (tier: string) => {
+    setSubscriptionTier(tier);
+    switch (tier) {
+      case 'AttendanceOnly':
+        setIsAcademicsEnabled(false);
+        setIsFinanceEnabled(false);
+        setIsAttendanceEnabled(true);
+        setIsAdmissionsEnabled(false);
+        setIsPushNotificationsEnabled(true);
+        break;
+      case 'AcademicHub':
+        setIsAcademicsEnabled(true);
+        setIsFinanceEnabled(false);
+        setIsAttendanceEnabled(true);
+        setIsAdmissionsEnabled(false);
+        setIsPushNotificationsEnabled(true);
+        break;
+      case 'FinanceAcademics':
+        setIsAcademicsEnabled(true);
+        setIsFinanceEnabled(true);
+        setIsAttendanceEnabled(false);
+        setIsAdmissionsEnabled(false);
+        setIsPushNotificationsEnabled(true);
+        break;
+      case 'EnterpriseSuite':
+        setIsAcademicsEnabled(true);
+        setIsFinanceEnabled(true);
+        setIsAttendanceEnabled(true);
+        setIsAdmissionsEnabled(true);
+        setIsPushNotificationsEnabled(true);
+        break;
     }
   };
 
@@ -129,6 +190,31 @@ export default function SchoolManagement() {
       showAlert(err.message || 'Failed to update SMS config');
     } finally {
       setSavingSms(false);
+    }
+  };
+
+  const handleSubscriptionSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!school) return;
+    setSavingSubscription(true);
+    try {
+      await api.put(`/system/schools/${school.id}/subscription`, {
+        subscriptionTier,
+        isAcademicsEnabled,
+        isFinanceEnabled,
+        isAttendanceEnabled,
+        isAdmissionsEnabled,
+        isPushNotificationsEnabled,
+        maxBranchCount,
+        maxStudentCount,
+      });
+      showAlert('Tenant subscription tier and feature flags updated successfully.');
+      fetchSchool();
+    } catch (err: any) {
+      console.error(err);
+      showAlert(err.message || 'Failed to update subscription');
+    } finally {
+      setSavingSubscription(false);
     }
   };
 
@@ -219,6 +305,7 @@ export default function SchoolManagement() {
             <h1>
               <span>{school.schoolName}</span>
               <span className="tenant-pill-badge">{school.tenantId}</span>
+              <span className="tenant-tier-badge">{subscriptionTier}</span>
               <span className={`status-badge-pill ${school.isSuspended ? 'suspended' : 'active'}`}>
                 <span className="status-dot" />
                 {school.isSuspended ? 'Suspended' : 'Active'}
@@ -303,7 +390,189 @@ export default function SchoolManagement() {
           </div>
         </div>
 
-        {/* Card 2: Edit School Credentials & SuperAdmin Setup */}
+        {/* Card 2: Subscription Licensing & Feature Flag Manager */}
+        <div className="settings-card">
+          <div className="settings-card-header subscription">
+            <div className="icon-wrap">
+              <Sparkles size={20} />
+            </div>
+            <div className="settings-card-header-text">
+              <h3>Subscription Tier & Feature Flags</h3>
+              <p>Modular SaaS licensing & global feature gates</p>
+            </div>
+          </div>
+          <div className="settings-card-body">
+            <form id="subscription-form" onSubmit={handleSubscriptionSave}>
+              <div className="form-group-vertical">
+                <label className="accent-label">
+                  Commercial Package Presets
+                </label>
+                <div className="preset-grid">
+                  <button
+                    type="button"
+                    className={`preset-btn ${subscriptionTier === 'AttendanceOnly' ? 'active' : ''}`}
+                    onClick={() => applyPreset('AttendanceOnly')}
+                  >
+                    🛡️ Security & Gate Only
+                  </button>
+                  <button
+                    type="button"
+                    className={`preset-btn ${subscriptionTier === 'AcademicHub' ? 'active' : ''}`}
+                    onClick={() => applyPreset('AcademicHub')}
+                  >
+                    🎓 Academic Hub Tier
+                  </button>
+                  <button
+                    type="button"
+                    className={`preset-btn ${subscriptionTier === 'FinanceAcademics' ? 'active' : ''}`}
+                    onClick={() => applyPreset('FinanceAcademics')}
+                  >
+                    💼 Finance & Academics
+                  </button>
+                  <button
+                    type="button"
+                    className={`preset-btn ${subscriptionTier === 'EnterpriseSuite' ? 'active' : ''}`}
+                    onClick={() => applyPreset('EnterpriseSuite')}
+                  >
+                    🚀 Full Enterprise Suite
+                  </button>
+                </div>
+              </div>
+
+              <div className="feature-toggles-section">
+                <label className="setting-info-label" style={{ marginBottom: '0.75rem' }}>
+                  Licensed Feature Modules
+                </label>
+                
+                <div className="feature-toggle-row">
+                  <div>
+                    <span className="feature-toggle-title">Academic Hub (Results, Broadsheets & Scores)</span>
+                    <p className="setting-info-subtext">Compute term results, CA templates, report cards & broadsheets</p>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isAcademicsEnabled}
+                      onChange={(e) => {
+                        setIsAcademicsEnabled(e.target.checked);
+                        setSubscriptionTier('Custom');
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+
+                <div className="feature-toggle-row">
+                  <div>
+                    <span className="feature-toggle-title">Finance & Fee Billing Module</span>
+                    <p className="setting-info-subtext">School invoices, POS, online payment verification & fee templates</p>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isFinanceEnabled}
+                      onChange={(e) => {
+                        setIsFinanceEnabled(e.target.checked);
+                        setSubscriptionTier('Custom');
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+
+                <div className="feature-toggle-row">
+                  <div>
+                    <span className="feature-toggle-title">Attendance & Gate Scanner Module</span>
+                    <p className="setting-info-subtext">QR code student/staff gate logging & real-time absentee alerts</p>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isAttendanceEnabled}
+                      onChange={(e) => {
+                        setIsAttendanceEnabled(e.target.checked);
+                        setSubscriptionTier('Custom');
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+
+                <div className="feature-toggle-row">
+                  <div>
+                    <span className="feature-toggle-title">Online Admissions Portal</span>
+                    <p className="setting-info-subtext">Public student applications, entrance assessment & enrollment</p>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isAdmissionsEnabled}
+                      onChange={(e) => {
+                        setIsAdmissionsEnabled(e.target.checked);
+                        setSubscriptionTier('Custom');
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+
+                <div className="feature-toggle-row">
+                  <div>
+                    <span className="feature-toggle-title">Push Notification Alerts</span>
+                    <p className="setting-info-subtext">Automated PWA push alerts to staff, parents and administrators</p>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isPushNotificationsEnabled}
+                      onChange={(e) => {
+                        setIsPushNotificationsEnabled(e.target.checked);
+                        setSubscriptionTier('Custom');
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="limits-grid" style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group-vertical">
+                  <label>Max Campus Branches</label>
+                  <input
+                    type="number"
+                    value={maxBranchCount}
+                    onChange={(e) => setMaxBranchCount(parseInt(e.target.value) || -1)}
+                    placeholder="-1 for Unlimited"
+                  />
+                  <small>-1 = Unlimited branches</small>
+                </div>
+                <div className="form-group-vertical">
+                  <label>Max Enrolled Students</label>
+                  <input
+                    type="number"
+                    value={maxStudentCount}
+                    onChange={(e) => setMaxStudentCount(parseInt(e.target.value) || -1)}
+                    placeholder="-1 for Unlimited"
+                  />
+                  <small>-1 = Unlimited students</small>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div className="settings-card-footer">
+            <button
+              type="submit"
+              form="subscription-form"
+              disabled={savingSubscription}
+              className="btn-save"
+            >
+              <Save size={16} />
+              <span>{savingSubscription ? 'Updating Subscription...' : 'Save Subscription & Feature Flags'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Card 3: Edit School Credentials & SuperAdmin Setup */}
         <div className="settings-card">
           <div className="settings-card-header account">
             <div className="icon-wrap">
@@ -402,7 +671,7 @@ export default function SchoolManagement() {
           </div>
         </div>
 
-        {/* Card 3: Notification Settings */}
+        {/* Card 4: Notification Settings */}
         <div className="settings-card">
           <div className="settings-card-header notification">
             <div className="icon-wrap">
@@ -459,7 +728,7 @@ export default function SchoolManagement() {
           </div>
         </div>
 
-        {/* Card 4: Database & Maintenance */}
+        {/* Card 5: Database & Maintenance */}
         <div className="settings-card">
           <div className="settings-card-header database">
             <div className="icon-wrap">
