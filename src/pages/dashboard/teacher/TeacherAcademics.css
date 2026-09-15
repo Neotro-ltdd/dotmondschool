@@ -40,14 +40,14 @@
 
 /* CA & ATTENDANCE HERO BANNER */
 .ca-hero-banner {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%);
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, color-mix(in srgb, var(--primary-color, #000080) 70%, black) 50%, color-mix(in srgb, var(--primary-color, #000080) 40%, black) 100%);
   border-radius: 20px;
   padding: 2rem;
   color: #ffffff;
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 10px 25px -5px color-mix(in srgb, var(--primary-color, #000080) 30%, transparent);
 }
 
 .ca-hero-banner::before {
@@ -57,7 +57,7 @@
   right: -10%;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--primary-color, #000080) 30%, transparent) 0%, rgba(0, 0, 0, 0) 70%);
   border-radius: 50%;
   pointer-events: none;
 }

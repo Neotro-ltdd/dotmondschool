@@ -12,7 +12,7 @@
 
 /* Hero Banner Header */
 .finance-hero-banner {
-  background: linear-gradient(135deg, #061127 0%, #000080 50%, #1e3a8a 100%);
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, color-mix(in srgb, var(--primary-color, #000080) 70%, black) 50%, color-mix(in srgb, var(--primary-color, #000080) 40%, black) 100%);
   border-radius: 20px;
   padding: 2.25rem;
   color: #ffffff;
@@ -20,7 +20,7 @@
   flex-direction: column;
   gap: 1.5rem;
   box-shadow:
-    0 16px 36px rgba(0, 0, 128, 0.22),
+    0 16px 36px color-mix(in srgb, var(--primary-color, #000080) 25%, transparent),
     0 4px 12px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
