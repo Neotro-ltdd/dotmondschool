@@ -3,6 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { QrCode, Search } from 'lucide-react';
 import { api, getTenantId } from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
+import './GateScanner.css';
 
 interface ScanResult {
   message: string;
@@ -321,17 +322,17 @@ const GateScanner: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-gray-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 flex flex-col items-center relative">
+    <div className="gate-scanner-page fade-in">
+      <div className="scanner-main-card">
         {offlineQueue.length > 0 && (
-          <div className="absolute top-6 right-6 flex items-center gap-1.5 z-20">
-            <span className="bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-300 shadow-sm animate-pulse">
+          <div className="offline-queue-badge">
+            <span className="offline-badge-pill">
               {offlineQueue.length} Offline Scan(s)
             </span>
             <button
               type="button"
               onClick={clearOfflineQueue}
-              className="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-bold transition-colors shadow-xs"
+              className="offline-clear-btn"
               title="Clear saved offline queue"
             >
               Clear
@@ -339,38 +340,44 @@ const GateScanner: React.FC = () => {
           </div>
         )}
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Gate Scanner</h2>
+        <h2 className="scanner-header-title">
+          <QrCode size={26} style={{ color: 'var(--primary-color, #000080)' }} />
+          Gate Scanner
+        </h2>
 
-        {/* Small Screen viewport */}
-        <div
-          className={`w-full max-w-[350px] mx-auto relative rounded-lg overflow-hidden border-2 ${isProcessing ? 'border-blue-400 opacity-80' : 'border-gray-200'} bg-black transition-all`}
-          style={{ minHeight: '250px' }}
-        >
+        {/* Camera Viewport Frame */}
+        <div className="camera-viewport-frame">
           <style>
             {`
-                #qr-reader {
-                  width: 100% !important;
-                }
-              `}
+              #qr-reader {
+                width: 100% !important;
+              }
+            `}
           </style>
           <div id="qr-reader"></div>
           {isProcessing && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-20">
-              <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', zIndex: 20 }}>
+              <div style={{ width: '32px', height: '32px', border: '3px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div>
             </div>
           )}
 
           {/* OVERLAYS */}
           {scanResult && !isProcessing && (
             <div
-              className={`absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in ${scanResult.status === 'Offline' ? 'bg-orange-500 bg-opacity-95' : scanResult.status === 'AlreadyClockedIn' ? 'bg-amber-500 bg-opacity-95' : 'bg-green-500 bg-opacity-95'}`}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 30,
+                background: scanResult.status === 'Offline' ? 'rgba(234, 88, 12, 0.95)' : scanResult.status === 'AlreadyClockedIn' ? 'rgba(217, 119, 6, 0.95)' : 'rgba(5, 150, 105, 0.95)',
+                color: '#fff',
+                padding: '1rem',
+              }}
             >
-              <svg
-                className="w-16 h-16 text-white mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="w-12 h-12 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -382,97 +389,62 @@ const GateScanner: React.FC = () => {
                   }
                 />
               </svg>
-              <p className="text-white font-bold text-xl text-center px-4">
+              <p style={{ fontWeight: 800, fontSize: '1.2rem', textAlign: 'center', margin: 0 }}>
                 {scanResult.studentName || scanResult.staffName || 'Attendance Logged'}
               </p>
-              <p className="text-white text-md text-center font-medium mt-1">
+              <p style={{ fontSize: '0.9rem', textAlign: 'center', margin: '4px 0 0 0', opacity: 0.9 }}>
                 {scanResult.message}
               </p>
             </div>
           )}
+
           {error && !isProcessing && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in bg-red-500 bg-opacity-95">
-              <svg
-                className="w-16 h-16 text-white mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 30, background: 'rgba(220, 38, 38, 0.95)', color: '#fff', padding: '1rem' }}>
+              <svg className="w-12 h-12 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <p className="text-white font-bold text-xl text-center">Error</p>
-              <p className="text-white text-md text-center px-4 font-medium mt-1">{error}</p>
+              <p style={{ fontWeight: 800, fontSize: '1.1rem', margin: 0 }}>Verification Failed</p>
+              <p style={{ fontSize: '0.85rem', textAlign: 'center', margin: '4px 0 0 0', opacity: 0.9 }}>{error}</p>
             </div>
           )}
         </div>
 
-        {/* EXECUTIVE ENTERPRISE ATTENDANCE CARD */}
+        {/* VERIFICATION NOTIFICATION CARD */}
         {scanResult && (
           <div
-            className="mt-4 w-full max-w-[360px] rounded-2xl p-4 sm:p-5 shadow-2xl border flex flex-col items-center text-center transition-all animate-bounce-once relative overflow-hidden"
             style={{
+              marginTop: '1.25rem',
+              width: '100%',
+              maxWidth: '440px',
+              borderRadius: '16px',
+              padding: '1rem 1.25rem',
               background:
                 scanResult.status === 'AlreadyClockedIn'
                   ? 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)'
                   : scanResult.status === 'Offline'
                     ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
                     : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-              borderColor:
-                scanResult.status === 'AlreadyClockedIn'
-                  ? '#f97316'
-                  : scanResult.status === 'Offline'
-                    ? '#f59e0b'
-                    : '#10b981',
               color: '#ffffff',
+              textAlign: 'center',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
             }}
           >
-            {/* Top Status Header Pill */}
-            <div className="flex items-center gap-1.5 mb-2.5">
-              <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border border-white/30 flex items-center gap-1 shadow-xs">
-                {scanResult.status === 'AlreadyClockedIn'
-                  ? 'ℹ️ ALREADY CLOCKED IN TODAY'
-                  : scanResult.status === 'Offline'
-                    ? '⏳ SAVED OFFLINE'
-                    : '✓ ATTENDANCE RECORDED'}
-              </span>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem', opacity: 0.9 }}>
+              {scanResult.status === 'AlreadyClockedIn'
+                ? 'ℹ️ ALREADY CLOCKED IN TODAY'
+                : scanResult.status === 'Offline'
+                  ? '⏳ SAVED OFFLINE'
+                  : '✓ ATTENDANCE RECORDED'}
             </div>
-
-            {/* Profile Avatar & Name */}
-            <div className="flex items-center justify-center gap-3 my-1 w-full">
-              {(scanResult.staffName || scanResult.studentName) && (
-                <div className="w-11 h-11 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white font-black text-sm shadow-inner shrink-0">
-                  {getInitials(scanResult.staffName || scanResult.studentName || '')}
-                </div>
-              )}
-              <div className="text-left">
-                <h3 className="text-lg sm:text-xl font-black text-white leading-tight">
-                  {scanResult.staffName || scanResult.studentName || 'Attendance Logged'}
-                </h3>
-                {(scanResult.staffCategory || scanResult.designation) && (
-                  <span className="inline-block mt-0.5 text-[11px] font-bold text-white/95 bg-white/20 px-2 py-0.5 rounded border border-white/25">
-                    {scanResult.staffCategory
-                      ? `${scanResult.staffCategory} Staff`
-                      : scanResult.designation}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Professional Verified Status Text */}
-            <p className="text-xs sm:text-sm font-medium text-white/95 mt-2.5 px-2.5 leading-relaxed bg-black/15 py-2 rounded-xl w-full border border-white/10">
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 0.25rem 0' }}>
+              {scanResult.staffName || scanResult.studentName || 'Attendance Logged'}
+            </h3>
+            <p style={{ fontSize: '0.85rem', margin: 0, opacity: 0.95 }}>
               {getCleanMessage(scanResult)}
             </p>
-
-            {/* Timestamp Badge */}
             {scanResult.time && (
-              <div className="mt-3 inline-flex items-center gap-1.5 bg-black/30 px-3.5 py-1 rounded-full text-xs font-bold text-white border border-white/25 shadow-xs">
-                <span>🕒</span>
-                <span>Clocked in at {formatTime(scanResult.time)}</span>
+              <div style={{ marginTop: '0.65rem', fontSize: '0.75rem', fontWeight: 700, background: 'rgba(0,0,0,0.25)', padding: '0.25rem 0.75rem', borderRadius: '20px', display: 'inline-block' }}>
+                Clocked in at {formatTime(scanResult.time)}
               </div>
             )}
           </div>
@@ -481,49 +453,43 @@ const GateScanner: React.FC = () => {
         {/* ERROR NOTIFICATION CARD */}
         {error && (
           <div
-            className="mt-4 w-full max-w-[360px] rounded-2xl p-4 sm:p-5 shadow-2xl border flex flex-col items-center text-center transition-all animate-shake relative overflow-hidden"
             style={{
+              marginTop: '1.25rem',
+              width: '100%',
+              maxWidth: '440px',
+              borderRadius: '16px',
+              padding: '1rem 1.25rem',
               background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-              borderColor: '#ef4444',
               color: '#ffffff',
+              textAlign: 'center',
+              boxShadow: '0 10px 25px rgba(220, 38, 38, 0.25)',
             }}
           >
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border border-white/30 flex items-center gap-1">
-                ✕ COULD NOT BE CAPTURED
-              </span>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem', opacity: 0.9 }}>
+              ✕ IDENTITY VERIFICATION FAILED
             </div>
-            <h3 className="text-base font-black text-white leading-snug my-1 px-1">
-              Identity Verification Failed
-            </h3>
-            <p className="text-xs sm:text-sm font-medium text-white/95 px-2 leading-relaxed bg-black/15 py-2 rounded-xl w-full border border-white/10 mt-1">
-              {error}
-            </p>
+            <p style={{ fontSize: '0.85rem', margin: 0, opacity: 0.95 }}>{error}</p>
           </div>
         )}
 
-        {/* Manual ID Entry & Scan Input Card */}
-        <div
-          className="mt-6 w-full max-w-[460px] bg-white rounded-2xl p-4 sm:p-5 border shadow-lg transition-all"
-          style={{
-            borderColor: 'color-mix(in srgb, var(--primary-color, #000080) 20%, #e2e8f0)',
-          }}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-              <Search size={14} style={{ color: 'var(--primary-color, #000080)' }} />
+        {/* MANUAL ID ENTRY & VERIFICATION CARD */}
+        <div className="manual-verification-card">
+          <div className="manual-verification-header">
+            <span className="manual-verification-title">
+              <Search size={15} />
               Manual ID Verification
             </span>
-            <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-              Student / Staff
+            <span className="manual-verification-badge">
+              Student / Staff ID
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2.5">
-            <div className="relative flex-1">
+          <div className="manual-input-row">
+            <div className="manual-input-wrapper">
+              <Search size={16} className="manual-input-icon" />
               <input
                 type="text"
-                placeholder="Search staff or student ID, phone, email..."
+                placeholder="Enter Student or Staff ID, Reg No, Phone or Email..."
                 value={manualPayload}
                 onChange={(e) => setManualPayload(e.target.value)}
                 onKeyDown={(e) => {
@@ -532,7 +498,7 @@ const GateScanner: React.FC = () => {
                     setManualPayload('');
                   }
                 }}
-                className="w-full pl-3.5 pr-3 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm bg-slate-50 text-slate-800 font-medium focus:outline-none focus:bg-white focus:border-indigo-600 transition-all shadow-xs"
+                className="manual-id-input"
               />
             </div>
 
@@ -545,10 +511,7 @@ const GateScanner: React.FC = () => {
                 }
               }}
               disabled={!manualPayload.trim() || isProcessing}
-              className="px-5 py-2.5 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shrink-0 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
-              style={{
-                background: 'var(--primary-color, #000080)',
-              }}
+              className="manual-submit-btn"
             >
               <QrCode size={16} />
               <span>{isProcessing ? 'Verifying...' : 'Submit Scan'}</span>
@@ -556,7 +519,7 @@ const GateScanner: React.FC = () => {
           </div>
 
           {!scanResult && !error && (
-            <p className="mt-3 text-xs text-slate-500 text-center font-medium leading-relaxed">
+            <p className="manual-hint-text">
               {isProcessing
                 ? 'Processing attendance verification...'
                 : 'Align a Student or Staff ID card within the scanning frame above or enter ID details manually.'}
