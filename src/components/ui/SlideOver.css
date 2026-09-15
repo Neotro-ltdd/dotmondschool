@@ -229,8 +229,8 @@
 }
 
 .stepper-step.active {
-  color: #10203f;
-  background-color: rgba(16, 32, 63, 0.08);
+  color: var(--primary-color, #10203f);
+  background-color: color-mix(in srgb, var(--primary-color, #000080) 10%, transparent);
   font-weight: 700;
 }
 
@@ -252,7 +252,7 @@
 }
 
 .stepper-step.active .stepper-circle {
-  background-color: #10203f;
+  background-color: var(--primary-color, #10203f);
   color: #ffffff;
 }
 

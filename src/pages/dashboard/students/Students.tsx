@@ -100,6 +100,7 @@ export default function Students() {
 
   // Modals
   const [showModal, setShowModal] = useState(false);
+  const [admitStep, setAdmitStep] = useState<number>(1);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
   const [printStudentId, setPrintStudentId] = useState<string | null>(null);
@@ -195,6 +196,7 @@ export default function Students() {
       classId: '',
       departmentTrack: 'General',
     });
+    setAdmitStep(1);
     setShowModal(true);
   };
 
@@ -1256,7 +1258,7 @@ export default function Students() {
               <div>
                 <h2 className="student-slideover-title">Admit New Student</h2>
                 <p className="student-slideover-subtitle">
-                  Fill in student bio-data and parent contact information
+                  Step {admitStep} of 3: {admitStep === 1 ? 'Academic Placement' : admitStep === 2 ? 'Student Bio-Data' : 'Parent Contact'}
                 </p>
               </div>
               <button className="btn-close-slideover" onClick={() => setShowModal(false)}>
@@ -1264,174 +1266,321 @@ export default function Students() {
               </button>
             </div>
 
+            {/* Stepper Navigation Header (Horizontal Bar) */}
+            <div className="slideover-stepper">
+              <div
+                className={`stepper-step ${admitStep === 1 ? 'active' : admitStep > 1 ? 'completed' : ''}`}
+                onClick={() => setAdmitStep(1)}
+                style={{ cursor: 'pointer' }}
+              >
+                <span className="stepper-circle">{admitStep > 1 ? '✓' : '1'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <GraduationCap size={14} /> Placement
+                </span>
+              </div>
+              <div className="stepper-divider"></div>
+              <div
+                className={`stepper-step ${admitStep === 2 ? 'active' : admitStep > 2 ? 'completed' : ''}`}
+                onClick={() => {
+                  if (!formData.classId || !formData.gender) {
+                    showAlert('Please complete Academic Placement first.');
+                    return;
+                  }
+                  setAdmitStep(2);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <span className="stepper-circle">{admitStep > 2 ? '✓' : '2'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <UserCheck size={14} /> Biodata
+                </span>
+              </div>
+              <div className="stepper-divider"></div>
+              <div
+                className={`stepper-step ${admitStep === 3 ? 'active' : ''}`}
+                onClick={() => {
+                  if (!formData.classId || !formData.gender) {
+                    showAlert('Please complete Academic Placement first.');
+                    return;
+                  }
+                  if (!formData.firstName.trim() || !formData.surname.trim()) {
+                    showAlert('Please complete Student Bio-Data first.');
+                    return;
+                  }
+                  setAdmitStep(3);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <span className="stepper-circle">3</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Phone size={14} /> Parent Contact
+                </span>
+              </div>
+            </div>
+
             <form
               onSubmit={handleCreate}
               style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
             >
               <div className="student-slideover-body">
-                {/* Section 01: Academic Placement */}
-                <div className="drawer-form-section">
-                  <div className="drawer-section-header">
-                    <span className="drawer-section-num">01</span>
-                    <span className="drawer-section-title">Academic Placement</span>
-                  </div>
+                {/* Step 1: Academic Placement */}
+                {admitStep === 1 && (
+                  <div className="drawer-form-section" style={{ animation: 'stageSlideIn 0.25s ease forwards' }}>
+                    <div className="drawer-section-header">
+                      <span className="drawer-section-num">01</span>
+                      <span className="drawer-section-title">Academic Placement</span>
+                    </div>
 
-                  <div className="drawer-form-group">
-                    <label className="drawer-form-label">
-                      Assign to Class <span style={{ color: '#E11D48' }}>*</span>
-                    </label>
-                    <select
-                      name="classId"
-                      value={formData.classId}
-                      onChange={handleInputChange}
-                      required
-                      className="drawer-form-select"
-                    >
-                      <option value="">-- Select Class --</option>
-                      {classes.map((cls) => (
-                        <option
-                          key={cls.id}
-                          value={cls.id}
-                        >{`${cls.level} ${cls.name} ${cls.section}`}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="drawer-form-group">
-                    <label className="drawer-form-label">
-                      Gender <span style={{ color: '#E11D48' }}>*</span>
-                    </label>
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleInputChange}
-                      required
-                      className="drawer-form-select"
-                    >
-                      <option value="">-- Select Gender --</option>
-                      <option value="Female">Female</option>
-                      <option value="Male">Male</option>
-                    </select>
-                  </div>
-
-                  <div className="drawer-form-group">
-                    <label className="drawer-form-label">
-                      Department / Track (For Senior Secondary)
-                    </label>
-                    <select
-                      name="departmentTrack"
-                      value={formData.departmentTrack}
-                      onChange={handleInputChange}
-                      className="drawer-form-select"
-                    >
-                      <option value="General">General (Junior / Primary / Nursery)</option>
-                      <option value="Science">Science</option>
-                      <option value="Arts">Arts</option>
-                      <option value="Commercial">Commercial</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Section 02: Bio Data */}
-                <div className="drawer-form-section">
-                  <div className="drawer-section-header">
-                    <span className="drawer-section-num">02</span>
-                    <span className="drawer-section-title">Student Bio-Data</span>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
                     <div className="drawer-form-group">
                       <label className="drawer-form-label">
-                        First Name <span style={{ color: '#E11D48' }}>*</span>
+                        Assign to Class <span style={{ color: '#E11D48' }}>*</span>
                       </label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
+                      <select
+                        name="classId"
+                        value={formData.classId}
                         onChange={handleInputChange}
                         required
-                        placeholder="e.g. Olufunke"
+                        className="drawer-form-select"
+                      >
+                        <option value="">-- Select Class --</option>
+                        {classes.map((cls) => (
+                          <option
+                            key={cls.id}
+                            value={cls.id}
+                          >{`${cls.level} ${cls.name} ${cls.section}`}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="drawer-form-group">
+                      <label className="drawer-form-label">
+                        Gender <span style={{ color: '#E11D48' }}>*</span>
+                      </label>
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleInputChange}
+                        required
+                        className="drawer-form-select"
+                      >
+                        <option value="">-- Select Gender --</option>
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                      </select>
+                    </div>
+
+                    <div className="drawer-form-group">
+                      <label className="drawer-form-label">
+                        Department / Track (For Senior Secondary)
+                      </label>
+                      <select
+                        name="departmentTrack"
+                        value={formData.departmentTrack}
+                        onChange={handleInputChange}
+                        className="drawer-form-select"
+                      >
+                        <option value="General">General (Junior / Primary / Nursery)</option>
+                        <option value="Science">Science</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Commercial">Commercial</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2: Student Bio-Data */}
+                {admitStep === 2 && (
+                  <div className="drawer-form-section" style={{ animation: 'stageSlideIn 0.25s ease forwards' }}>
+                    <div className="drawer-section-header">
+                      <span className="drawer-section-num">02</span>
+                      <span className="drawer-section-title">Student Bio-Data</span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                      <div className="drawer-form-group">
+                        <label className="drawer-form-label">
+                          First Name <span style={{ color: '#E11D48' }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="e.g. Olufunke"
+                          className="drawer-form-input"
+                        />
+                      </div>
+
+                      <div className="drawer-form-group">
+                        <label className="drawer-form-label">
+                          Surname <span style={{ color: '#E11D48' }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="surname"
+                          value={formData.surname}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="e.g. Ikang"
+                          className="drawer-form-input"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="drawer-form-group">
+                      <label className="drawer-form-label">Other Names</label>
+                      <input
+                        type="text"
+                        name="otherNames"
+                        value={formData.otherNames}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Elizabeth"
+                        className="drawer-form-input"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Parent / Guardian Contact */}
+                {admitStep === 3 && (
+                  <div className="drawer-form-section" style={{ animation: 'stageSlideIn 0.25s ease forwards' }}>
+                    <div className="drawer-section-header">
+                      <span className="drawer-section-num">03</span>
+                      <span className="drawer-section-title">Parent / Guardian Contact</span>
+                    </div>
+
+                    <div className="drawer-form-group">
+                      <label className="drawer-form-label">
+                        Parent Phone Number <span style={{ color: '#E11D48' }}>*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        name="parentPhoneNumber"
+                        value={formData.parentPhoneNumber}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="08012345678"
                         className="drawer-form-input"
                       />
                     </div>
 
                     <div className="drawer-form-group">
-                      <label className="drawer-form-label">
-                        Surname <span style={{ color: '#E11D48' }}>*</span>
-                      </label>
+                      <label className="drawer-form-label">Parent Email Address (Optional)</label>
                       <input
-                        type="text"
-                        name="surname"
-                        value={formData.surname}
+                        type="email"
+                        name="parentEmail"
+                        value={formData.parentEmail}
                         onChange={handleInputChange}
-                        required
-                        placeholder="e.g. Ikang"
+                        placeholder="parent@example.com"
                         className="drawer-form-input"
                       />
                     </div>
-                  </div>
 
-                  <div className="drawer-form-group">
-                    <label className="drawer-form-label">Other Names</label>
-                    <input
-                      type="text"
-                      name="otherNames"
-                      value={formData.otherNames}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Elizabeth"
-                      className="drawer-form-input"
-                    />
+                    {/* Quick Admission Preview Card */}
+                    <div
+                      style={{
+                        marginTop: '0.25rem',
+                        padding: '0.85rem 1rem',
+                        background: '#ffffff',
+                        borderRadius: '12px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.84rem',
+                        color: '#334155',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.25rem',
+                      }}
+                    >
+                      <div style={{ fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.04em' }}>
+                        Admission Summary
+                      </div>
+                      <div>
+                        Candidate: <strong>{formData.firstName || '—'} {formData.surname || '—'}</strong> ({formData.gender || 'N/A'})
+                      </div>
+                      <div>
+                        Target Class: <strong>{classes.find((c) => c.id === formData.classId)?.name || 'Selected Class'}</strong>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                {/* Section 03: Parent / Guardian Contact */}
-                <div className="drawer-form-section">
-                  <div className="drawer-section-header">
-                    <span className="drawer-section-num">03</span>
-                    <span className="drawer-section-title">Parent / Guardian Contact</span>
-                  </div>
-
-                  <div className="drawer-form-group">
-                    <label className="drawer-form-label">
-                      Parent Phone Number <span style={{ color: '#E11D48' }}>*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="parentPhoneNumber"
-                      value={formData.parentPhoneNumber}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="08012345678"
-                      className="drawer-form-input"
-                    />
-                  </div>
-
-                  <div className="drawer-form-group">
-                    <label className="drawer-form-label">Parent Email Address (Optional)</label>
-                    <input
-                      type="email"
-                      name="parentEmail"
-                      value={formData.parentEmail}
-                      onChange={handleInputChange}
-                      placeholder="parent@example.com"
-                      className="drawer-form-input"
-                    />
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="student-slideover-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                  disabled={submitting}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? 'Admitting...' : 'Admit Student'}
-                </button>
+                {admitStep === 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowModal(false)}
+                      disabled={submitting}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => {
+                        if (!formData.classId) {
+                          showAlert('Please select a class for academic placement.');
+                          return;
+                        }
+                        if (!formData.gender) {
+                          showAlert('Please select student gender.');
+                          return;
+                        }
+                        setAdmitStep(2);
+                      }}
+                    >
+                      Next: Biodata &rarr;
+                    </button>
+                  </>
+                )}
+
+                {admitStep === 2 && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setAdmitStep(1)}
+                    >
+                      &larr; Back
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => {
+                        if (!formData.firstName.trim()) {
+                          showAlert("Please enter the student's first name.");
+                          return;
+                        }
+                        if (!formData.surname.trim()) {
+                          showAlert("Please enter the student's surname.");
+                          return;
+                        }
+                        setAdmitStep(3);
+                      }}
+                    >
+                      Next: Parent Contact &rarr;
+                    </button>
+                  </>
+                )}
+
+                {admitStep === 3 && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setAdmitStep(2)}
+                      disabled={submitting}
+                    >
+                      &larr; Back
+                    </button>
+                    <button type="submit" className="btn btn-primary" disabled={submitting}>
+                      {submitting ? 'Admitting...' : 'Admit Student'}
+                    </button>
+                  </>
+                )}
               </div>
             </form>
           </div>
