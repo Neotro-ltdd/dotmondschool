@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useReactToPrint } from 'react-to-print';
+import { useTenant } from '../../../context/TenantContext';
 import '../students/IdCardPrintModal.css';
 
 interface StaffIdCardPrintModalProps {
@@ -36,6 +37,7 @@ interface SchoolProfile {
 }
 
 export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardPrintModalProps) {
+  const { idCardTemplate: tenantIdCardTemplate } = useTenant();
   const [loading, setLoading] = useState(true);
   const [idCardData, setIdCardData] = useState<StaffIdCardData | null>(null);
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
@@ -183,7 +185,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
-  const rawTemplate = schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || 'Vertical CR80';
+  const rawTemplate = tenantIdCardTemplate || schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || 'Vertical CR80';
   const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
   const isSquare = rawTemplate.toLowerCase().includes('square');
 

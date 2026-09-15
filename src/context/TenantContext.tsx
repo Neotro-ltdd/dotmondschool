@@ -17,6 +17,7 @@ interface TenantContextType {
   logoUrl: string | null;
   primaryColor: string;
   secondaryColor: string;
+  idCardTemplate: string;
   features: TenantFeatures;
   refreshTenantDetails: () => Promise<void>;
   updateFeatures: (newFeatures: Partial<TenantFeatures>) => void;
@@ -38,6 +39,7 @@ const TenantContext = createContext<TenantContextType>({
   logoUrl: '/images/dotmond-logo-1.png',
   primaryColor: '#007bff',
   secondaryColor: '#cfecf7',
+  idCardTemplate: 'Vertical CR80',
   features: defaultFeatures,
   refreshTenantDetails: async () => {},
   updateFeatures: () => {},
@@ -52,6 +54,7 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
   const [logoUrl, setLogoUrl] = useState<string | null>('/images/dotmond-logo-1.png');
   const [primaryColor, setPrimaryColor] = useState(defaultPrimary);
   const [secondaryColor, setSecondaryColor] = useState(defaultSecondary);
+  const [idCardTemplate, setIdCardTemplate] = useState('Vertical CR80');
   const [features, setFeatures] = useState<TenantFeatures>(defaultFeatures);
 
   const updateFeatures = (newFeatures: Partial<TenantFeatures>) => {
@@ -92,7 +95,7 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
           document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
         }
 
-        // If authenticated, fetch profile to get actual tenant features & school branding
+        // If authenticated, fetch profile to get actual tenant features & school branding & ID Card template
         const token = localStorage.getItem('srms_token');
         if (token) {
           try {
@@ -121,6 +124,11 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
                 document.documentElement.style.setProperty('--color-secondary', sColor);
                 document.documentElement.style.setProperty('--color-accent', sColor);
                 document.documentElement.style.setProperty('--accent-color', sColor);
+              }
+
+              const template = profile.idCardTemplate || profile.IdCardTemplate;
+              if (template) {
+                setIdCardTemplate(template);
               }
 
               if (profile.features) {
@@ -161,7 +169,7 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <TenantContext.Provider
-      value={{ schoolName, logoUrl, primaryColor, secondaryColor, features, refreshTenantDetails, updateFeatures }}
+      value={{ schoolName, logoUrl, primaryColor, secondaryColor, idCardTemplate, features, refreshTenantDetails, updateFeatures }}
     >
       {children}
     </TenantContext.Provider>

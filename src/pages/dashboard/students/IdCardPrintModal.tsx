@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api, API_ROOT } from '../../../services/api';
 import { useReactToPrint } from 'react-to-print';
+import { useTenant } from '../../../context/TenantContext';
 import './IdCardPrintModal.css';
 import '../vendor/VendorHub.css';
 
@@ -34,6 +35,7 @@ interface SchoolProfile {
 }
 
 export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModalProps) {
+  const { idCardTemplate: tenantIdCardTemplate } = useTenant();
   const [loading, setLoading] = useState(true);
   const [idCardData, setIdCardData] = useState<IdCardData | null>(null);
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
@@ -197,7 +199,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return trimmedClass;
   };
 
-  const rawTemplate = schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || 'Vertical CR80';
+  const rawTemplate = tenantIdCardTemplate || schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || 'Vertical CR80';
   const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
   const isSquare = rawTemplate.toLowerCase().includes('square');
 
