@@ -1005,7 +1005,7 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   SQUARE BADGE (2.5in W × 2.5in H)
+   SQUARE BADGE (3in W × 3in H)
    ══════════════════════════════════════════════════════════════════ */
 .id-card-wrapper .card.square,
 .id-card-wrapper .card.staff-card.square,
@@ -1013,8 +1013,10 @@
 .staff-card.square,
 .card.square,
 .square {
-  width: 2.5in !important;
-  height: 2.5in !important;
+  width: 3in !important;
+  height: 3in !important;
+  min-width: 3in !important;
+  min-height: 3in !important;
   display: flex !important;
   flex-direction: column !important;
   box-sizing: border-box !important;
@@ -1028,42 +1030,68 @@
 
 /* Front Side Square adjustments */
 .card.square .card-header,
-.card.square.staff-card .card-header {
-  height: 0.42in !important;
-  padding: 0.04in 0.08in 0.02in !important;
+.card.square.staff-card .card-header,
+.card.square .head,
+.card.square.staff-card .head {
+  height: 0.44in !important;
+  padding: 0.04in 0.1in 0.02in !important;
+  margin-bottom: 2px !important;
 }
 
 .card.square .card-header img,
-.card.square.staff-card .card-header img {
-  width: 0.32in !important;
+.card.square.staff-card .card-header img,
+.card.square .mark-cell img,
+.card.square .mark-cell svg {
+  width: 0.34in !important;
 }
 
 .card.square .card-header .school-name,
-.card.square.staff-card .card-header .school-name {
-  font-size: 10px !important;
+.card.square.staff-card .card-header .school-name,
+.card.square .word-dotmond {
+  font-size: 11px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  width: 100% !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  padding: 0 0.1in !important;
+  box-sizing: border-box !important;
 }
 
 .card.square .id-tag,
 .card.square.staff-card .id-tag {
-  font-size: 6.8px !important;
-  padding: 1px 0.08in 0 !important;
+  font-size: 7px !important;
+  padding: 1px 0.1in 0 !important;
+  margin: 1px 0 2px !important;
+  text-align: center !important;
+  width: 100% !important;
 }
 
 .card.square .large-photo-box,
 .card.square.staff-card .large-photo-box {
   height: 1.15in !important;
-  width: 1.05in !important;
-  margin: 2px auto !important;
+  width: 1.1in !important;
+  margin: 2px auto 3px !important;
 }
 
 .card.square .name-block,
 .card.square.staff-card .name-block {
-  padding: 0 0.06in 0.04in !important;
+  padding: 0 0.1in 0.04in !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  margin-top: 2px !important;
 }
 
 .card.square .name-block .name,
 .card.square.staff-card .name-block .name {
-  font-size: 9.5px !important;
+  font-size: 11px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  width: 100% !important;
+  padding: 0 0.05in !important;
 }
 
 .card.square .name-underline,
@@ -1073,112 +1101,144 @@
 
 .card.square .meta-row,
 .card.square.staff-card .meta-row {
-  font-size: 7.5px !important;
-  margin-bottom: 1px !important;
+  font-size: 8px !important;
+  margin-bottom: 2px !important;
+  text-align: center !important;
+  width: 100% !important;
 }
 
 .card.square .bottom-school-watermark,
 .card.square.staff-card .bottom-school-watermark {
-  font-size: 5px !important;
-  margin-top: 1px !important;
+  font-size: 5.5px !important;
+  margin-top: 2px !important;
+  text-align: center !important;
 }
 
 /* Student Slanted Name Band inside Square */
 .card.square .slanted-name-band {
-  bottom: 0.18in !important;
-  height: 0.62in !important;
-  padding: 0.08in 0.08in 0.02in !important;
+  bottom: 0.2in !important;
+  height: 0.7in !important;
+  padding: 0.06in 0.1in 0.02in !important;
+  text-align: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .card.square .slanted-name-band .name {
-  font-size: 10px !important;
-  margin-bottom: 1px !important;
+  font-size: 10.5px !important;
+  margin-bottom: 2px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  text-align: center !important;
+  width: 100% !important;
 }
 
 .card.square .slanted-name-band .field {
   font-size: 7.5px !important;
+  text-align: center !important;
 }
 
 .card.square .red-accent-line {
-  bottom: 0.18in !important;
+  bottom: 0.2in !important;
 }
 
 .card.square .foot-strip {
-  height: 0.18in !important;
-  font-size: 6.5px !important;
+  height: 0.2in !important;
+  font-size: 7px !important;
 }
 
 /* Back Side Square adjustments */
 .card.square .back-body,
 .card.square.staff-card .back-body {
-  padding: 2px 0.08in 0 !important;
+  padding: 4px 0.1in 0 !important;
+  text-align: center !important;
 }
 
 .card.square .owner-text,
 .card.square.staff-card .owner-text,
 .card.square .notice {
-  font-size: 5.8px !important;
+  font-size: 6.5px !important;
   line-height: 1.25 !important;
-  margin: 1px 0 !important;
+  margin: 2px 0 3px !important;
+  text-align: center !important;
+  padding: 0 0.1in !important;
 }
 
 .card.square .scan-label,
-.card.square.staff-card .scan-label {
-  font-size: 6.8px !important;
-  margin: 2px 0 0 !important;
+.card.square.staff-card .scan-label,
+.card.square .scan-block .scan-label {
+  font-size: 7.5px !important;
+  margin: 3px 0 2px !important;
+  text-align: center !important;
 }
 
 .card.square .qr-wrap,
-.card.square.staff-card .qr-wrap {
-  margin: 0 0 2px !important;
+.card.square.staff-card .qr-wrap,
+.card.square .scan-block .qr-wrap {
+  margin: 0 auto 2px !important;
 }
 
+/* Reduced QR code size for square (w-24 h-24 / 0.85in ~ 24px scaling) */
 .card.square .qr-box,
-.card.square.staff-card .qr-box {
-  width: 0.92in !important;
-  height: 0.92in !important;
+.card.square.staff-card .qr-box,
+.card.square .scan-block .qr-wrap .cell img,
+.card.square .qr-wrap img,
+.card.square .qr-box img {
+  width: 0.85in !important;
+  height: 0.85in !important;
+  max-width: 0.85in !important;
+  max-height: 0.85in !important;
   margin: 0 auto !important;
+  object-fit: contain !important;
 }
 
 .card.square .qr-wrap .cell {
   width: 100% !important;
   height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 .card.square .encoded-id,
 .card.square.staff-card .encoded-id,
 .card.square .encoded-pill {
-  font-size: 6.8px !important;
-  margin-top: 1px !important;
-  padding: 1px 6px !important;
+  font-size: 7.5px !important;
+  margin-top: 2px !important;
+  padding: 2px 8px !important;
+  text-align: center !important;
 }
 
+/* Increased margin above signature line on back of square card */
 .card.square .sig-block,
 .card.square.staff-card .sig-block {
   position: relative !important;
   bottom: auto !important;
-  margin-top: 2px !important;
+  margin-top: 16px !important;
   padding: 0 !important;
+  text-align: center !important;
 }
 
 .card.square .sig-img,
 .card.square.staff-card .sig-img {
-  height: 0.18in !important;
+  height: 0.22in !important;
   margin: 0 auto -2px !important;
 }
 
 .card.square .sig-line-text,
 .card.square.staff-card .sig-line-text {
-  font-size: 6.5px !important;
-  padding-top: 1px !important;
-  width: 1.1in !important;
+  font-size: 7px !important;
+  padding-top: 2px !important;
+  width: 1.25in !important;
+  margin: 0 auto !important;
 }
 
 .card.square .back-footer,
 .card.square.staff-card .back-footer,
 .card.square .compact-back-footer {
-  height: 0.18in !important;
-  font-size: 5.8px !important;
-  padding: 2px 0 !important;
+  height: 0.2in !important;
+  font-size: 6.5px !important;
+  padding: 3px 0 !important;
+  text-align: center !important;
 }
 

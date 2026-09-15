@@ -226,7 +226,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   const wrapperStyle = isLandscape
     ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' }
     : isSquare
-    ? { width: '2.5in', height: '2.5in', minWidth: '2.5in', minHeight: '2.5in' }
+    ? { width: '3in', height: '3in', minWidth: '3in', minHeight: '3in', overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }
     : undefined;
 
   const cardStyle = isLandscape
@@ -245,10 +245,10 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
       }
     : isSquare
     ? {
-        width: '2.5in',
-        height: '2.5in',
-        minWidth: '2.5in',
-        minHeight: '2.5in',
+        width: '3in',
+        height: '3in',
+        minWidth: '3in',
+        minHeight: '3in',
         display: 'flex',
         flexDirection: 'column' as const,
         overflow: 'hidden',
