@@ -14,7 +14,7 @@ import {
   PublicScheduleVisitForm, 
   NeotroScheduleVisitForm 
 } from './pages/public';
-import { DotmondLogin as Login, NeotroLogin, DotmondChangePassword as ChangePassword, MasterLogin } from './pages/auth';
+import { DotmondLogin as Login, NeotroLogin, DotmondChangePassword as ChangePassword, NeotroChangePassword, MasterLogin } from './pages/auth';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Overview from './pages/dashboard/Overview';
 import SchoolConfig from './pages/dashboard/settings/SchoolConfig';
@@ -107,7 +107,11 @@ function App() {
                   <Route path="/neotro-landing" element={<NeotroLanding />} />
                   <Route path="/neotro-admission" element={<NeotroAdmissionForm />} />
                   <Route path="/neotro-schedule-visit" element={<NeotroScheduleVisitForm />} />
-                  <Route path="/change-password" element={<ChangePassword />} />
+                  <Route 
+                    path="/change-password" 
+                    element={isNeotro ? <NeotroChangePassword /> : <ChangePassword />} 
+                  />
+                  <Route path="/neotro-change-password" element={<NeotroChangePassword />} />
                   <Route path="/master-login" element={<MasterLogin />} />
 
                   <Route path="/system-admin" element={<SystemLayout />}>
