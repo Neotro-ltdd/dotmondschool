@@ -30,6 +30,7 @@ interface SchoolProfile {
   primaryColor: string;
   secondaryColor: string;
   currentSession: string;
+  idCardTemplate?: string;
   principalSignatureUrl?: string;
   signatureUrl?: string;
 }
@@ -182,6 +183,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
+  const rawTemplate = schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || 'Vertical CR80';
+  const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
+  const isSquare = rawTemplate.toLowerCase().includes('square');
+
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
@@ -218,141 +223,247 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
         <div className="id-card-preview-area" ref={printRef}>
           {/* ================= FRONT SIDE ================= */}
           <div className="id-card-wrapper">
-            <div className="card staff-card front">
-              <div className="card-header">
-                {schoolProfile?.logoUrl ? (
-                  <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
-                ) : (
-                  <svg
-                    viewBox="0 0 500 660"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ width: '32px' }}
-                  >
-                    <path
-                      d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
-                      fill="#FFFFFF"
-                      stroke="#0B2545"
-                      strokeWidth="10"
-                    />
-                    <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545">
-                      <text x="250" y="182" textAnchor="middle">
-                        RMS
-                      </text>
-                    </g>
-                  </svg>
-                )}
-                <div>
-                  <div className="school-name">{fullSchoolTitle}</div>
-                </div>
-              </div>
+            <div className={`card staff-card front ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}>
+              {isLandscape ? (
+                <>
+                  <div className="landscape-left-col">
+                    <div className="landscape-photo-box">
+                      {idCardData.passportUrl ? (
+                        <img
+                          src={getFullUrl(idCardData.passportUrl)}
+                          alt={idCardData.fullName}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = getAvatarFallback(idCardData.fullName);
+                          }}
+                        />
+                      ) : (
+                        <img src={getAvatarFallback(idCardData.fullName)} alt={idCardData.fullName} />
+                      )}
+                    </div>
+                    <div className="landscape-id-pill">STAFF ID</div>
+                  </div>
 
-              <div className="accent-rule"></div>
-              <div className="id-tag">STAFF IDENTIFICATION</div>
+                  <div className="landscape-right-col">
+                    <div className="landscape-header">
+                      {schoolProfile?.logoUrl ? (
+                        <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                      ) : (
+                        <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '24px' }}>
+                          <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10" />
+                          <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
+                            <text x="250" y="182" textAnchor="middle">RMS</text>
+                          </g>
+                        </svg>
+                      )}
+                      <div>
+                        <div className="landscape-school-name">{fullSchoolTitle}</div>
+                        <div className="landscape-school-addr">{renderSchoolAddress(schoolAddress)}</div>
+                      </div>
+                    </div>
 
-              <div className="large-photo-box">
-                {idCardData.passportUrl ? (
-                  <img
-                    src={getFullUrl(idCardData.passportUrl)}
-                    alt={idCardData.fullName}
-                    className="student-photo-img"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = getAvatarFallback(idCardData.fullName);
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={getAvatarFallback(idCardData.fullName)}
-                    alt={idCardData.fullName}
-                    className="student-photo-img"
-                  />
-                )}
-              </div>
+                    <div className="landscape-name">{formatDisplayName(idCardData.fullName)}</div>
+                    <div className="landscape-rule"></div>
 
-              <div className="name-block">
-                <div className="name">{formatDisplayName(idCardData.fullName)}</div>
-                <div className="name-underline"></div>
-                <div className="meta-row">
-                  <span className="lbl">ROLE:</span>
-                  {(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}
-                </div>
-                <div className="meta-row">
-                  <span className="lbl">STAFF ID:</span>
-                  {idCardData.formattedStaffCode}
-                </div>
-                <div className="bottom-accent-rule"></div>
-                <div className="bottom-school-watermark">{fullSchoolTitle}</div>
-              </div>
+                    <div className="landscape-meta-row">
+                      <span className="lbl">ROLE:</span> {(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}
+                    </div>
+                    <div className="landscape-meta-row">
+                      <span className="lbl">STAFF ID:</span> {idCardData.formattedStaffCode}
+                    </div>
+
+                    <div className="landscape-foot-strip">
+                      <span>OFFICIAL BADGE</span>
+                      <b>{fullSchoolTitle}</b>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="card-header">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                    ) : (
+                      <svg
+                        viewBox="0 0 500 660"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ width: '32px' }}
+                      >
+                        <path
+                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                          fill="#FFFFFF"
+                          stroke="#0B2545"
+                          strokeWidth="10"
+                        />
+                        <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
+                          <text x="250" y="182" textAnchor="middle">
+                            RMS
+                          </text>
+                        </g>
+                      </svg>
+                    )}
+                    <div>
+                      <div className="school-name">{fullSchoolTitle}</div>
+                    </div>
+                  </div>
+
+                  <div className="accent-rule"></div>
+                  <div className="id-tag">STAFF IDENTIFICATION</div>
+
+                  <div className="large-photo-box">
+                    {idCardData.passportUrl ? (
+                      <img
+                        src={getFullUrl(idCardData.passportUrl)}
+                        alt={idCardData.fullName}
+                        className="student-photo-img"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = getAvatarFallback(idCardData.fullName);
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={getAvatarFallback(idCardData.fullName)}
+                        alt={idCardData.fullName}
+                        className="student-photo-img"
+                      />
+                    )}
+                  </div>
+
+                  <div className="name-block">
+                    <div className="name">{formatDisplayName(idCardData.fullName)}</div>
+                    <div className="name-underline"></div>
+                    <div className="meta-row">
+                      <span className="lbl">ROLE:</span>
+                      {(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}
+                    </div>
+                    <div className="meta-row">
+                      <span className="lbl">STAFF ID:</span>
+                      {idCardData.formattedStaffCode}
+                    </div>
+                    <div className="bottom-accent-rule"></div>
+                    <div className="bottom-school-watermark">{fullSchoolTitle}</div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
           {/* ================= BACK SIDE ================= */}
           <div className="id-card-wrapper">
-            <div className="card staff-card back">
-              <div className="card-header">
-                {schoolProfile?.logoUrl ? (
-                  <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
-                ) : (
-                  <svg
-                    viewBox="0 0 500 660"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ width: '32px' }}
-                  >
-                    <path
-                      d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
-                      fill="#FFFFFF"
-                      stroke="#0B2545"
-                      strokeWidth="10"
-                    />
-                    <g font-family="Georgia,serif" font-weight="700" font-size="40" fill="#0B2545">
-                      <text x="250" y="182" textAnchor="middle">
-                        RMS
-                      </text>
-                    </g>
-                  </svg>
-                )}
-                <div>
-                  <div className="school-name">{fullSchoolTitle}</div>
-                  <div className="school-addr">{renderSchoolAddress(schoolAddress)}</div>
-                </div>
-              </div>
+            <div className={`card staff-card back ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}>
+              {isLandscape ? (
+                <>
+                  <div className="landscape-left-col-back">
+                    <div className="landscape-header">
+                      {schoolProfile?.logoUrl ? (
+                        <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                      ) : (
+                        <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '20px' }}>
+                          <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10" />
+                          <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
+                            <text x="250" y="182" textAnchor="middle">RMS</text>
+                          </g>
+                        </svg>
+                      )}
+                      <div className="landscape-school-name">{fullSchoolTitle}</div>
+                    </div>
 
-              <div className="accent-rule"></div>
+                    <p className="landscape-owner-text">
+                      This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                    </p>
 
-              <div className="back-body">
-                <p className="owner-text">
-                  This card is the property of {fullSchoolTitle}. If found, please return to the
-                  school office. Unauthorised use of this card is strictly prohibited.
-                </p>
-              </div>
+                    <div className="landscape-sig-block">
+                      {principalSig && (
+                        <img src={getFullUrl(principalSig)} alt="Signature" className="landscape-sig-img" />
+                      )}
+                      <div className="landscape-sig-text">Authorised Signature</div>
+                    </div>
+                  </div>
 
-              <div className="scan-label">SCAN TO CLOCK IN</div>
-              <div className="qr-wrap">
-                <div className="qr-box">
-                  {idCardData.qrCodeSvg && (
-                    <img
-                      src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
-                      alt="Staff Gate Scan QR Code"
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="encoded-id">
-                ID: <b>{idCardData.formattedStaffCode}</b>
-              </div>
+                  <div className="landscape-right-col-back">
+                    <div className="landscape-scan-label">SCAN TO CLOCK IN</div>
+                    <div className="landscape-qr-box">
+                      {idCardData.qrCodeSvg && (
+                        <img
+                          src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
+                          alt="Staff Gate Scan QR Code"
+                        />
+                      )}
+                    </div>
+                    <div className="landscape-encoded-id">
+                      ID: <b>{idCardData.formattedStaffCode}</b>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="card-header">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                    ) : (
+                      <svg
+                        viewBox="0 0 500 660"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ width: '32px' }}
+                      >
+                        <path
+                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                          fill="#FFFFFF"
+                          stroke="#0B2545"
+                          strokeWidth="10"
+                        />
+                        <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
+                          <text x="250" y="182" textAnchor="middle">
+                            RMS
+                          </text>
+                        </g>
+                      </svg>
+                    )}
+                    <div>
+                      <div className="school-name">{fullSchoolTitle}</div>
+                      <div className="school-addr">{renderSchoolAddress(schoolAddress)}</div>
+                    </div>
+                  </div>
 
-              <div className="sig-block">
-                {principalSig && (
-                  <img
-                    src={getFullUrl(principalSig)}
-                    alt="Principal Signature"
-                    className="sig-img"
-                  />
-                )}
-                <div className="sig-line-text">Authorised Signature</div>
-              </div>
+                  <div className="accent-rule"></div>
 
-              <div className="back-footer">POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
+                  <div className="back-body">
+                    <p className="owner-text">
+                      This card is the property of {fullSchoolTitle}. If found, please return to the
+                      school office. Unauthorised use of this card is strictly prohibited.
+                    </p>
+                  </div>
+
+                  <div className="scan-label">SCAN TO CLOCK IN</div>
+                  <div className="qr-wrap">
+                    <div className="qr-box">
+                      {idCardData.qrCodeSvg && (
+                        <img
+                          src={`data:image/svg+xml;base64,${idCardData.qrCodeSvg}`}
+                          alt="Staff Gate Scan QR Code"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <div className="encoded-id">
+                    ID: <b>{idCardData.formattedStaffCode}</b>
+                  </div>
+
+                  <div className="sig-block">
+                    {principalSig && (
+                      <img
+                        src={getFullUrl(principalSig)}
+                        alt="Principal Signature"
+                        className="sig-img"
+                      />
+                    )}
+                    <div className="sig-line-text">Authorised Signature</div>
+                  </div>
+
+                  <div className="back-footer">POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -360,3 +471,4 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     </div>
   );
 }
+

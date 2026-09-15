@@ -732,7 +732,7 @@
     padding: 0.35in 0 0 !important;
     width: 100% !important;
     page-break-inside: avoid !important;
-    transform: scale(1.48) !important;
+    transform: scale(1.35) !important;
     transform-origin: top center !important;
   }
 
@@ -750,3 +750,264 @@
     overflow: hidden !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   LANDSCAPE ID CARD (CR80 Horizontal: 3.375in W × 2.125in H)
+   ══════════════════════════════════════════════════════════════════ */
+.id-card-wrapper .card.landscape {
+  width: 3.375in !important;
+  height: 2.125in !important;
+  display: flex !important;
+  flex-direction: row !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 0.12in !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(11, 37, 69, 0.2) !important;
+}
+
+/* Front Side Landscape */
+.card.landscape.front .landscape-left-col {
+  width: 1.25in;
+  background: #0b2545;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.08in;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+
+.card.landscape.front .landscape-photo-box {
+  width: 1.05in;
+  height: 1.32in;
+  border: 1.8px solid #9f1d2c;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.landscape.front .landscape-photo-box img,
+.card.landscape.front .landscape-photo-box svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card.landscape.front .landscape-id-pill {
+  margin-top: 5px;
+  background: #9f1d2c;
+  color: #ffffff;
+  font-size: 6.8px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 8px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.card.landscape.front .landscape-right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.08in 0.1in;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.card.landscape.front .landscape-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card.landscape.front .landscape-header img {
+  width: 0.35in;
+  height: auto;
+  object-fit: contain;
+}
+
+.card.landscape.front .landscape-school-name {
+  font-size: 10.5px;
+  font-weight: 900;
+  color: #0b2545;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 1.7in;
+}
+
+.card.landscape.front .landscape-school-addr {
+  font-size: 6.2px;
+  color: #475569;
+  font-weight: 600;
+  margin-top: 1px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 1.7in;
+}
+
+.card.landscape.front .landscape-name {
+  font-size: 11px;
+  font-weight: 900;
+  color: #0b2545;
+  letter-spacing: 0.2px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card.landscape.front .landscape-rule {
+  height: 1.8px;
+  background: #9f1d2c;
+  width: 24px;
+  margin: 2px 0 4px;
+}
+
+.card.landscape.front .landscape-meta-row {
+  font-size: 7.8px;
+  color: #1e293b;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.card.landscape.front .landscape-meta-row span.lbl {
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.card.landscape.front .landscape-foot-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 3px;
+  margin-top: auto;
+  font-size: 6.5px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.card.landscape.front .landscape-foot-strip b {
+  color: #0b2545;
+}
+
+/* Back Side Landscape */
+.card.landscape.back .landscape-left-col-back {
+  flex: 1.1;
+  padding: 0.08in 0.08in 0.08in 0.1in;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.card.landscape.back .landscape-owner-text {
+  font-size: 6.2px;
+  line-height: 1.25;
+  color: #334155;
+  font-weight: 500;
+  margin: 3px 0 0;
+}
+
+.card.landscape.back .landscape-sig-block {
+  margin-top: auto;
+  text-align: center;
+}
+
+.card.landscape.back .landscape-sig-img {
+  height: 0.22in;
+  width: auto;
+  max-width: 1.2in;
+  display: block;
+  margin: 0 auto -2px;
+  object-fit: contain;
+}
+
+.card.landscape.back .landscape-sig-text {
+  font-size: 7px;
+  color: #0b2545;
+  font-weight: 800;
+  border-top: 1.5px solid #0b2545;
+  padding-top: 2px;
+  display: inline-block;
+  width: 1.2in;
+}
+
+.card.landscape.back .landscape-right-col-back {
+  width: 1.25in;
+  background: #f8fafc;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.08in;
+  box-sizing: border-box;
+}
+
+.card.landscape.back .landscape-scan-label {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #0b2545;
+  margin-bottom: 3px;
+  text-align: center;
+}
+
+.card.landscape.back .landscape-qr-box {
+  width: 1.05in;
+  height: 1.05in;
+  background: #ffffff;
+  padding: 3px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.landscape.back .landscape-qr-box img,
+.card.landscape.back .landscape-qr-box svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.card.landscape.back .landscape-encoded-id {
+  font-size: 7px;
+  font-weight: 800;
+  color: #0b2545;
+  margin-top: 3px;
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SQUARE BADGE (2.5in W × 2.5in H)
+   ══════════════════════════════════════════════════════════════════ */
+.id-card-wrapper .card.square {
+  width: 2.5in !important;
+  height: 2.5in !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 0.12in !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(11, 37, 69, 0.2) !important;
+}
+
