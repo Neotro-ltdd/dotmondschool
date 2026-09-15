@@ -301,3 +301,51 @@ body.dark-theme .dropdown-action-item:hover {
   background: #334155 !important;
   color: #60a5fa !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   DYNAMIC TENANT BRANDING ENGINE
+   Enforces tenant-selected primary and secondary colors across dashboard controls
+══════════════════════════════════════════════════════════════════ */
+.btn-primary,
+button.btn-primary,
+.button-primary,
+.bg-primary,
+.btn-submit,
+button[type='submit'].btn-primary {
+  background-color: var(--primary-color, #000080) !important;
+  border-color: var(--primary-color, #000080) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover,
+button.btn-primary:hover,
+.button-primary:hover,
+.btn-submit:hover {
+  filter: brightness(0.92);
+  background-color: var(--primary-color, #000080) !important;
+}
+
+.btn-secondary,
+button.btn-secondary {
+  background-color: var(--secondary-color, #f0a93b) !important;
+  border-color: var(--secondary-color, #f0a93b) !important;
+  color: #0f172a !important;
+}
+
+.btn-secondary:hover,
+button.btn-secondary:hover {
+  filter: brightness(0.92);
+}
+
+.text-tenant-primary,
+.text-primary-brand {
+  color: var(--primary-color, #000080) !important;
+}
+
+.bg-tenant-primary {
+  background-color: var(--primary-color, #000080) !important;
+}
+
+.border-tenant-primary {
+  border-color: var(--primary-color, #000080) !important;
+}

@@ -80,19 +80,23 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
           const activeSecondary = details.secondaryColor || (isNeotro ? '#B2CEB6' : '#f0a93b');
           
           setPrimaryColor(activePrimary);
+          setSecondaryColor(activeSecondary);
+
           document.documentElement.style.setProperty('--primary-color', activePrimary);
           document.documentElement.style.setProperty('--color-primary', activePrimary);
-          
-          setSecondaryColor(activeSecondary);
           document.documentElement.style.setProperty('--secondary-color', activeSecondary);
           document.documentElement.style.setProperty('--color-secondary', activeSecondary);
           document.documentElement.style.setProperty('--color-accent', activeSecondary);
           document.documentElement.style.setProperty('--accent-color', activeSecondary);
         } else if (isNeotro) {
+          setPrimaryColor('#1B5E4B');
+          setSecondaryColor('#B2CEB6');
           document.documentElement.style.setProperty('--primary-color', '#1B5E4B');
           document.documentElement.style.setProperty('--color-primary', '#1B5E4B');
           document.documentElement.style.setProperty('--secondary-color', '#B2CEB6');
           document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
+          document.documentElement.style.setProperty('--color-accent', '#B2CEB6');
+          document.documentElement.style.setProperty('--accent-color', '#B2CEB6');
         }
 
         // If authenticated, fetch profile to get actual tenant features & school branding & ID Card template
@@ -152,20 +156,27 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
         console.error('Failed to load tenant details', err);
       }
     } else if (isNeotro) {
+      setPrimaryColor('#1B5E4B');
+      setSecondaryColor('#B2CEB6');
       document.documentElement.style.setProperty('--primary-color', '#1B5E4B');
       document.documentElement.style.setProperty('--color-primary', '#1B5E4B');
       document.documentElement.style.setProperty('--secondary-color', '#B2CEB6');
       document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
+      document.documentElement.style.setProperty('--color-accent', '#B2CEB6');
+      document.documentElement.style.setProperty('--accent-color', '#B2CEB6');
     }
   };
 
   const token = localStorage.getItem('srms_token');
   useEffect(() => {
     document.documentElement.style.setProperty('--primary-color', primaryColor);
+    document.documentElement.style.setProperty('--color-primary', primaryColor);
     document.documentElement.style.setProperty('--secondary-color', secondaryColor);
     document.documentElement.style.setProperty('--color-secondary', secondaryColor);
+    document.documentElement.style.setProperty('--color-accent', secondaryColor);
+    document.documentElement.style.setProperty('--accent-color', secondaryColor);
     refreshTenantDetails();
-  }, [token]);
+  }, [token, primaryColor, secondaryColor]);
 
   return (
     <TenantContext.Provider
