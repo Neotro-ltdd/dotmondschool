@@ -11,7 +11,7 @@ export default function Login() {
 
   const navigate = useNavigate();
   const { login } = useAuth();
-
+  
   const initialTenant = getTenantId();
   const [schoolCode, setSchoolCode] = useState(initialTenant === 'dbo' ? '' : initialTenant);
   const [email, setEmail] = useState('');
@@ -19,18 +19,18 @@ export default function Login() {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
   const [forgotPasswordStep, setForgotPasswordStep] = useState<1 | 2>(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [schoolName, setSchoolName] = useState('Dotmond School');
+  const [schoolName, setSchoolName] = useState("Dotmond School");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,27 +57,21 @@ export default function Login() {
         if (details) {
           if (details.schoolName) setSchoolName(details.schoolName);
           if (details.logoUrl) setLogoUrl(details.logoUrl);
-          if (details.primaryColor) {
-            document.documentElement.style.setProperty('--primary-color', details.primaryColor);
-          }
-          if (details.secondaryColor) {
-            document.documentElement.style.setProperty('--secondary-color', details.secondaryColor);
-          }
         }
       } else {
-        setSchoolName('Dotmond School');
+        setSchoolName("Dotmond School");
         setLogoUrl(null);
       }
     };
-
+    
     if (schoolCode && schoolCode.length > 2) {
-      const timer = setTimeout(() => {
-        fetchTenantDetails();
-      }, 500);
-      return () => clearTimeout(timer);
+        const timer = setTimeout(() => {
+            fetchTenantDetails();
+        }, 500);
+        return () => clearTimeout(timer);
     } else if (!schoolCode) {
-      setSchoolName('Dotmond School');
-      setLogoUrl(null);
+        setSchoolName("Dotmond School");
+        setLogoUrl(null);
     }
   }, [schoolCode]);
 
@@ -87,9 +81,9 @@ export default function Login() {
     setLoading(true);
 
     if (!schoolCode) {
-      setError('Please enter your School Code.');
-      setLoading(false);
-      return;
+        setError("Please enter your School Code.");
+        setLoading(false);
+        return;
     }
 
     localStorage.setItem('srms_tenantId', schoolCode.toLowerCase().trim());
@@ -100,54 +94,59 @@ export default function Login() {
       if (response.requiresPasswordChange) {
         navigate('/change-password');
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard'); 
       }
     } catch (err: any) {
-      console.error('Login error details:', err);
-      if (err instanceof ApiError) {
-        if (err.data?.requiresOtp) {
-          setIsOtpMode(true);
-          setError(err.message || 'OTP verification required. Check your email for code.');
-        } else {
-          setError(err.message);
-        }
+      if (err instanceof ApiError && err.message.includes('Account not verified')) {
+        setIsOtpMode(true);
+        setError("Account not verified. Please check your email for the OTP.");
       } else {
-        setError(err.message || 'An error occurred during login.');
+        setError(err.message || "Failed to log in.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOtpVerify = async (e: React.FormEvent) => {
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    try {
-      const response = await api.post('/auth/verify-otp', { email, code: otp });
-      showAlert('Account verified successfully! You can now log in.');
-      setIsOtpMode(false);
-      setOtp('');
-    } catch (err: any) {
-      setError(err.message || 'OTP Verification failed.');
-    } finally {
-      setLoading(false);
+    if (!schoolCode) {
+        setError("Please enter your School Code.");
+        setLoading(false);
+        return;
     }
-  };
 
-  const handleResendOtp = async () => {
-    if (!email) {
-      setError('Please enter your email address to resend OTP.');
+    localStorage.setItem('srms_tenantId', schoolCode.toLowerCase().trim());
+
+    if (newPassword && newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
       return;
     }
-    setError(null);
-    setLoading(true);
+
     try {
-      await api.post('/auth/resend-otp', { email });
-      showAlert('A new verification OTP code has been sent to your email.');
+      await api.post('/auth/verify-account', { email, otp, newPassword });
+      
+      const loginPassword = newPassword || password;
+      if (!loginPassword) {
+        setIsOtpMode(false);
+        setOtp('');
+        showAlert("Account verified successfully! Please enter your password to log in.");
+        return;
+      }
+      
+      const response = await api.post('/auth/login', { email, password: loginPassword });
+      login(response.token);
+      if (response.requiresPasswordChange) {
+        navigate('/change-password');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
-      setError(err.message || 'Failed to resend OTP.');
+      setError(err.message || "Failed to verify OTP.");
     } finally {
       setLoading(false);
     }
@@ -158,67 +157,73 @@ export default function Login() {
     setError(null);
     setLoading(true);
 
+    if (!schoolCode) {
+        setError("Please enter your School Code.");
+        setLoading(false);
+        return;
+    }
+
+    localStorage.setItem('srms_tenantId', schoolCode.toLowerCase().trim());
+
     try {
       if (forgotPasswordStep === 1) {
-        await api.post('/identity/forgot-password/request', { email });
-        showAlert('OTP reset code sent to your email.');
+        await api.post('/auth/forgot-password', { email });
         setForgotPasswordStep(2);
+        showAlert("A 6-digit reset code has been sent to your email.");
       } else {
         if (newPassword !== confirmPassword) {
-          setError('Passwords do not match.');
+          setError("Passwords do not match.");
           setLoading(false);
           return;
         }
-        await api.post('/identity/forgot-password/reset', { email, otp, newPassword });
-        showAlert('Password reset successful! Please login with your new password.');
+        await api.post('/auth/reset-password', { email, token: otp, newPassword });
         setIsForgotPasswordMode(false);
         setForgotPasswordStep(1);
         setOtp('');
         setNewPassword('');
         setConfirmPassword('');
+        showAlert("Password reset successfully! You can now log in.");
       }
     } catch (err: any) {
-      setError(err.message || 'Password reset request failed.');
+      setError(err.message || "Failed to process request.");
     } finally {
       setLoading(false);
     }
   };
 
-  const logoSrc = logoUrl
-    ? logoUrl.startsWith('http')
-      ? logoUrl
-      : `${API_ROOT}${logoUrl.startsWith('/') ? '' : '/'}${logoUrl}`
-    : '/images/dotmond-logo-1.png';
+  const logoSrc = logoUrl 
+    ? (logoUrl.startsWith('http') ? logoUrl : `${API_ROOT}${logoUrl}`) 
+    : "/images/dotmond-logo-1.png";
 
   return (
     <div className="login-container">
       <div className="split">
-        {/* LEFT BRAND PANEL WITH MOTION LOGO */}
+        {/* LEFT BRAND PANEL WITH MOTION LOGO & GOLD/NAVY RIBBONS */}
         <div className="panel-brand">
           <div className="ribbon-decor" aria-hidden="true">
             <svg className="rd-1" viewBox="0 0 200 60">
               <path
-                d="M5 25 Q 40 5, 80 30 T 170 15"
+                d="M2 40 Q30 10 55 35 T110 30 T170 15"
+                stroke="#F0A93B"
+                strokeWidth="10"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+            <svg className="rd-2" viewBox="0 0 200 60">
+              <path
+                d="M2 20 Q30 50 55 25 T110 30 T170 45"
+                stroke="#7FA6E0"
+                strokeWidth="9"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+            <svg className="rd-3" viewBox="0 0 200 60">
+              <path
+                d="M2 30 Q30 5 55 30 T110 25 T170 40"
                 stroke="#F0A93B"
                 strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-              />
-            </svg>
-            <svg className="rd-2" viewBox="0 0 160 50">
-              <path
-                d="M10 40 Q 50 10, 90 35 T 150 20"
-                stroke="#7FA6E0"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-              />
-            </svg>
-            <svg className="rd-3" viewBox="0 0 180 50">
-              <path
-                d="M5 15 Q 45 40, 95 15 T 175 30"
-                stroke="#F0A93B"
-                strokeWidth="7"
                 fill="none"
                 strokeLinecap="round"
               />
@@ -235,7 +240,11 @@ export default function Login() {
           </div>
           <div className="crest-motion-wrap">
             <div className="crest-glow-big" aria-hidden="true"></div>
-            <img className="crest-motion" src={logoSrc} alt={`${schoolName} Logo`} />
+            <img
+              className="crest-motion"
+              src={logoSrc}
+              alt={`${schoolName} Logo`}
+            />
           </div>
         </div>
 
@@ -245,233 +254,283 @@ export default function Login() {
             <div className="form-card">
               <div className="form-glow"></div>
 
-              <img className="crest-steady" src={logoSrc} alt={`${schoolName} Logo`} />
+              <img
+                className="crest-steady"
+                src={logoSrc}
+                alt={`${schoolName} Logo`}
+              />
+
+              <h1 className="title">
+                {isForgotPasswordMode 
+                  ? "Reset Password" 
+                  : isOtpMode 
+                  ? "Verify Account" 
+                  : "Welcome Back"}
+              </h1>
+              <p className="subtitle">
+                {isForgotPasswordMode 
+                  ? (forgotPasswordStep === 1 ? "Enter your registered email to receive an OTP code." : "Enter the 6-digit OTP sent to your email and your new password.")
+                  : isOtpMode 
+                  ? "Enter the OTP sent to your email to complete registration." 
+                  : "Please enter your school details to log in."}
+              </p>
+
+              {error && <div className="alert-error">{error}</div>}
 
               {isForgotPasswordMode ? (
-                <>
-                  <h1 className="title">Reset Password</h1>
-                  <p className="subtitle">
-                    {forgotPasswordStep === 1
-                      ? 'Enter your registered email to receive an OTP code.'
-                      : 'Enter the OTP sent to your email along with your new password.'}
-                  </p>
+                <form className="login-form" onSubmit={handleForgotPasswordSubmit}>
+                  <div className="field">
+                    <label htmlFor="schoolCode">School Code / Tenant ID</label>
+                    <input
+                      type="text"
+                      id="schoolCode"
+                      value={schoolCode}
+                      onChange={(e) => setSchoolCode(e.target.value)}
+                      placeholder="e.g. dotmond"
+                      required
+                      disabled={forgotPasswordStep === 2}
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="email">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@school.edu"
+                      required
+                      disabled={forgotPasswordStep === 2}
+                    />
+                  </div>
 
-                  {error && <div className="alert-error">{error}</div>}
-
-                  <form onSubmit={handleForgotPasswordSubmit} className="login-form">
-                    {forgotPasswordStep === 1 ? (
+                  {forgotPasswordStep === 2 && (
+                    <>
                       <div className="field">
-                        <label htmlFor="reset-email">Email Address</label>
+                        <label htmlFor="otp">6-Digit Reset Code (OTP)</label>
                         <input
-                          type="email"
-                          id="reset-email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="your.email@school.com"
+                          type="text"
+                          id="otp"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                          placeholder="123456"
+                          maxLength={6}
                           required
+                          className="otp-input"
                         />
                       </div>
-                    ) : (
-                      <>
-                        <div className="field">
-                          <label htmlFor="otp-code">6-Digit OTP Code</label>
+
+                      <div className="field">
+                        <label htmlFor="newPassword">New Password</label>
+                        <div className="password-input-wrapper">
                           <input
-                            type="text"
-                            id="otp-code"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            placeholder="123456"
-                            maxLength={6}
+                            type={showNewPassword ? "text" : "password"}
+                            id="newPassword"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            placeholder="Enter new password"
                             required
+                            disabled={otp.length !== 6}
                           />
+                          <button
+                            type="button"
+                            className="password-toggle-btn"
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                            aria-label={showNewPassword ? "Hide password" : "Show password"}
+                            title={showNewPassword ? "Hide password" : "Show password"}
+                          >
+                            {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
                         </div>
+                      </div>
 
-                        <div className="field">
-                          <label htmlFor="new-password">New Password</label>
-                          <div className="password-input-wrapper">
-                            <input
-                              type={showNewPassword ? 'text' : 'password'}
-                              id="new-password"
-                              value={newPassword}
-                              onChange={(e) => setNewPassword(e.target.value)}
-                              placeholder="••••••••"
-                              required
-                            />
-                            <button
-                              type="button"
-                              className="password-toggle-btn"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                              aria-label={showNewPassword ? 'Hide password' : 'Show password'}
-                              title={showNewPassword ? 'Hide password' : 'Show password'}
-                            >
-                              {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                          </div>
+                      <div className="field">
+                        <label htmlFor="confirmPassword">Confirm New Password</label>
+                        <div className="password-input-wrapper">
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm new password"
+                            required
+                            disabled={otp.length !== 6}
+                          />
+                          <button
+                            type="button"
+                            className="password-toggle-btn"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                            title={showConfirmPassword ? "Hide password" : "Show password"}
+                          >
+                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
                         </div>
-
-                        <div className="field">
-                          <label htmlFor="confirm-password">Confirm New Password</label>
-                          <div className="password-input-wrapper">
-                            <input
-                              type={showConfirmPassword ? 'text' : 'password'}
-                              id="confirm-password"
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                              placeholder="••••••••"
-                              required
-                            />
-                            <button
-                              type="button"
-                              className="password-toggle-btn"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                              title={showConfirmPassword ? 'Hide password' : 'Show password'}
-                            >
-                              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    <button type="submit" className="signin" disabled={loading}>
-                      {loading
-                        ? 'Processing...'
-                        : forgotPasswordStep === 1
-                        ? 'Send OTP Code'
-                        : 'Reset Password'}
+                      </div>
+                    </>
+                  )}
+                  
+                  <button type="submit" className="signin" disabled={loading}>
+                    {loading ? "Processing..." : (forgotPasswordStep === 1 ? "Send OTP Code" : "Reset Password")}
+                  </button>
+                  
+                  <div className="bottom-links">
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setIsForgotPasswordMode(false);
+                        setForgotPasswordStep(1);
+                        setOtp('');
+                        setNewPassword('');
+                        setConfirmPassword('');
+                      }}
+                    >
+                      Back to Login
                     </button>
+                  </div>
+                </form>
+              ) : isOtpMode ? (
+                <form className="login-form" onSubmit={handleOtpSubmit}>
+                  <div className="field">
+                    <label htmlFor="otp">One-Time Password (OTP)</label>
+                    <input 
+                      type="text" 
+                      id="otp" 
+                      placeholder="123456" 
+                      maxLength={6}
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      required 
+                      className="otp-input"
+                    />
+                  </div>
 
-                    <div className="bottom-links">
+                  <div className="field">
+                    <label htmlFor="newPassword">New Permanent Password</label>
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        id="newPassword"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        required
+                      />
                       <button
                         type="button"
-                        onClick={() => {
-                          setIsForgotPasswordMode(false);
-                          setForgotPasswordStep(1);
-                        }}
+                        className="password-toggle-btn"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        aria-label={showNewPassword ? "Hide password" : "Show password"}
+                        title={showNewPassword ? "Hide password" : "Show password"}
                       >
-                        Back to Login
+                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
-                  </form>
-                </>
-              ) : isOtpMode ? (
-                <>
-                  <h1 className="title">Verify Account</h1>
-                  <p className="subtitle">Enter the 6-digit OTP code sent to your email.</p>
-
-                  {error && <div className="alert-error">{error}</div>}
-
-                  <form onSubmit={handleOtpVerify} className="login-form">
-                    <div className="field">
-                      <label htmlFor="verify-email">Email Address</label>
+                  </div>
+                  
+                  <div className="field">
+                    <label htmlFor="confirmPassword">Confirm New Password</label>
+                    <div className="password-input-wrapper">
                       <input
-                        type="email"
-                        id="verify-email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your.email@school.com"
+                        type={showConfirmPassword ? "text" : "password"}
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm new password"
                         required
                       />
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                        title={showConfirmPassword ? "Hide password" : "Show password"}
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
-
-                    <div className="field">
-                      <label htmlFor="otp">6-Digit OTP Code</label>
-                      <input
-                        type="text"
-                        id="otp"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        placeholder="123456"
-                        maxLength={6}
-                        required
-                      />
-                    </div>
-
-                    <button type="submit" className="signin" disabled={loading}>
-                      {loading ? 'Verifying...' : 'Verify OTP'}
+                  </div>
+                  
+                  <button type="submit" className="signin" disabled={loading}>
+                    {loading ? "Verifying..." : "Verify & Login"}
+                  </button>
+                  
+                  <div className="bottom-links">
+                    <button type="button" onClick={() => setIsOtpMode(false)}>
+                      Back to Login
                     </button>
-
-                    <div className="bottom-links">
-                      <button type="button" onClick={handleResendOtp} disabled={loading}>
-                        Resend OTP
-                      </button>
-                      <button type="button" onClick={() => setIsOtpMode(false)}>
-                        Back to Login
-                      </button>
-                    </div>
-                  </form>
-                </>
+                  </div>
+                </form>
               ) : (
-                <>
-                  <h1 className="title">Welcome Back</h1>
-                  <p className="subtitle">Please enter your school details to log in.</p>
-
-                  {error && <div className="alert-error">{error}</div>}
-
-                  <form onSubmit={handleLoginSubmit} className="login-form">
-                    <div className="field">
-                      <label htmlFor="schoolCode">School Code / Tenant ID</label>
+                <form onSubmit={handleLoginSubmit} className="login-form">
+                  <div className="field">
+                    <label htmlFor="schoolCode">School Code / Tenant ID</label>
+                    <input
+                      type="text"
+                      id="schoolCode"
+                      value={schoolCode}
+                      onChange={(e) => setSchoolCode(e.target.value)}
+                      placeholder="e.g. dotmond"
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="email">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@school.edu"
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="password">Password</label>
+                    <div className="password-input-wrapper">
                       <input
-                        type="text"
-                        id="schoolCode"
-                        value={schoolCode}
-                        onChange={(e) => setSchoolCode(e.target.value)}
-                        placeholder="e.g. dotmond"
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
                         required
                       />
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        title={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
-
-                    <div className="field">
-                      <label htmlFor="email">Email Address</label>
-                      <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your.email@school.com"
-                        required
-                      />
-                    </div>
-
-                    <div className="field">
-                      <div className="label-with-link">
-                        <label htmlFor="password">Password</label>
-                        <button
-                          type="button"
-                          className="text-btn"
-                          onClick={() => setIsForgotPasswordMode(true)}
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                      <div className="password-input-wrapper">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          id="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="••••••••"
-                          required
-                        />
-                        <button
-                          type="button"
-                          className="password-toggle-btn"
-                          onClick={() => setShowPassword(!showPassword)}
-                          aria-label={showPassword ? 'Hide password' : 'Show password'}
-                          title={showPassword ? 'Hide password' : 'Show password'}
-                        >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <button type="submit" className="signin" disabled={loading}>
-                      {loading ? 'Authenticating...' : 'Sign In'}
+                  </div>
+                  <div className="row-between">
+                    <button 
+                      type="button" 
+                      className="link" 
+                      onClick={() => setIsForgotPasswordMode(true)}
+                    >
+                      Forgot Password?
                     </button>
-                  </form>
-                </>
+                  </div>
+                  
+                  <button type="submit" className="signin" disabled={loading}>
+                    {loading ? "Logging in..." : "Sign In"}
+                  </button>
+                </form>
               )}
+
+              {!isOtpMode && !isForgotPasswordMode && (
+                <div className="bottom-links">
+                  <button onClick={() => navigate('/')}>
+                    Back to Home
+                  </button>
+                </div>
+              )}
+              
             </div>
           </div>
         </div>
