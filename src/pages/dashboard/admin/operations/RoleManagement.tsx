@@ -3,6 +3,7 @@ import { api } from '../../../../services/api';
 import './RoleManagement.css';
 import { useDialog } from '../../../../context/DialogContext';
 import { useAuth } from '../../../../context/AuthContext';
+import { useTenant } from '../../../../context/TenantContext';
 import {
   Shield,
   ShieldCheck,
@@ -128,6 +129,8 @@ const AVAILABLE_ROLES = [
 export default function RoleManagement() {
   const { showAlert, showConfirm } = useDialog();
   const { userRole } = useAuth();
+  const { primaryColor } = useTenant();
+  const brandPrimary = primaryColor || 'var(--primary-color, #000080)';
 
   if (userRole === 'Chairman') {
     return (
@@ -551,9 +554,9 @@ export default function RoleManagement() {
               alignItems: 'center',
               gap: '0.45rem',
               transition: 'all 0.2s ease',
-              background: activeTab === 'roles' ? '#000080' : 'transparent',
+              background: activeTab === 'roles' ? brandPrimary : 'transparent',
               color: activeTab === 'roles' ? '#FFFFFF' : '#64748B',
-              boxShadow: activeTab === 'roles' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
+              boxShadow: activeTab === 'roles' ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
             }}
           >
             <Shield size={16} />
@@ -576,9 +579,9 @@ export default function RoleManagement() {
               alignItems: 'center',
               gap: '0.45rem',
               transition: 'all 0.2s ease',
-              background: activeTab === 'permissions' ? '#000080' : 'transparent',
+              background: activeTab === 'permissions' ? brandPrimary : 'transparent',
               color: activeTab === 'permissions' ? '#FFFFFF' : '#64748B',
-              boxShadow: activeTab === 'permissions' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
+              boxShadow: activeTab === 'permissions' ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
             }}
           >
             <Sliders size={16} />
@@ -598,9 +601,9 @@ export default function RoleManagement() {
               alignItems: 'center',
               gap: '0.45rem',
               transition: 'all 0.2s ease',
-              background: activeTab === 'email-requests' ? '#000080' : 'transparent',
+              background: activeTab === 'email-requests' ? brandPrimary : 'transparent',
               color: activeTab === 'email-requests' ? '#FFFFFF' : '#64748B',
-              boxShadow: activeTab === 'email-requests' ? '0 2px 8px rgba(0,0,128,0.2)' : 'none',
+              boxShadow: activeTab === 'email-requests' ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
               position: 'relative',
             }}
           >
@@ -752,7 +755,7 @@ export default function RoleManagement() {
                   gap: '0.65rem',
                 }}
               >
-                <Info size={18} style={{ color: '#000080', flexShrink: 0, marginTop: '2px' }} />
+                <Info size={18} style={{ color: brandPrimary, flexShrink: 0, marginTop: '2px' }} />
                 <div>
                   <span
                     style={{
@@ -779,7 +782,7 @@ export default function RoleManagement() {
                     flex: 1,
                     padding: '0.75rem',
                     fontWeight: 700,
-                    background: '#000080',
+                    background: brandPrimary,
                     color: '#FFFFFF',
                     display: 'inline-flex',
                     alignItems: 'center',

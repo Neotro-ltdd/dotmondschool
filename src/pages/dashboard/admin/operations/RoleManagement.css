@@ -241,10 +241,10 @@
 }
 
 .permission-role-chip.active {
-  background: #000080;
-  color: #ffffff;
-  border-color: #000080;
-  box-shadow: 0 4px 12px rgba(0, 0, 128, 0.2);
+  background: var(--primary-color, #000080) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color, #000080) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
 }
 
 .permission-card-header {
@@ -478,7 +478,7 @@
 }
 
 .btn-module-bulk-toggle.select {
-  color: #000080;
+  color: var(--primary-color, #000080) !important;
   background: #eef2ff;
 }
 
