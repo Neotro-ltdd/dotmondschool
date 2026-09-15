@@ -92,22 +92,49 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
           document.documentElement.style.setProperty('--color-secondary', '#B2CEB6');
         }
 
-        // If authenticated, fetch profile to get actual tenant features
+        // If authenticated, fetch profile to get actual tenant features & school branding
         const token = localStorage.getItem('srms_token');
         if (token) {
           try {
             const profile = await api.get('/setup/school-profile');
-            if (profile?.features) {
-              setFeatures({
-                subscriptionTier: profile.features.subscriptionTier || 'EnterpriseSuite',
-                academics: profile.features.academics ?? true,
-                finance: profile.features.finance ?? true,
-                attendance: profile.features.attendance ?? true,
-                admissions: profile.features.admissions ?? true,
-                pushNotifications: profile.features.pushNotifications ?? true,
-                maxBranchCount: profile.features.maxBranchCount ?? -1,
-                maxStudentCount: profile.features.maxStudentCount ?? -1,
-              });
+            if (profile) {
+              const name = profile.schoolName || profile.SchoolName;
+              if (name) setSchoolName(name);
+
+              const logo = profile.logoUrl || profile.LogoUrl;
+              if (logo) {
+                const fullLogo = logo.startsWith('http') ? logo : `${API_ROOT}${logo}`;
+                setLogoUrl(fullLogo);
+              }
+
+              const pColor = profile.primaryColor || profile.PrimaryColor;
+              if (pColor) {
+                setPrimaryColor(pColor);
+                document.documentElement.style.setProperty('--primary-color', pColor);
+                document.documentElement.style.setProperty('--color-primary', pColor);
+              }
+
+              const sColor = profile.secondaryColor || profile.SecondaryColor;
+              if (sColor) {
+                setSecondaryColor(sColor);
+                document.documentElement.style.setProperty('--secondary-color', sColor);
+                document.documentElement.style.setProperty('--color-secondary', sColor);
+                document.documentElement.style.setProperty('--color-accent', sColor);
+                document.documentElement.style.setProperty('--accent-color', sColor);
+              }
+
+              if (profile.features) {
+                setFeatures({
+                  subscriptionTier: profile.features.subscriptionTier || 'EnterpriseSuite',
+                  academics: profile.features.academics ?? true,
+                  finance: profile.features.finance ?? true,
+                  attendance: profile.features.attendance ?? true,
+                  admissions: profile.features.admissions ?? true,
+                  pushNotifications: profile.features.pushNotifications ?? true,
+                  maxBranchCount: profile.features.maxBranchCount ?? -1,
+                  maxStudentCount: profile.features.maxStudentCount ?? -1,
+                });
+              }
             }
           } catch {
             // Ignore if profile fetch fails
@@ -124,12 +151,13 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const token = localStorage.getItem('srms_token');
   useEffect(() => {
     document.documentElement.style.setProperty('--primary-color', primaryColor);
     document.documentElement.style.setProperty('--secondary-color', secondaryColor);
     document.documentElement.style.setProperty('--color-secondary', secondaryColor);
     refreshTenantDetails();
-  }, []);
+  }, [token]);
 
   return (
     <TenantContext.Provider

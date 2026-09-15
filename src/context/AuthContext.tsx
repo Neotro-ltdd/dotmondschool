@@ -63,6 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('srms_token', token);
       const decoded = parseJwt(token);
       if (decoded) {
+        if (decoded['tenant_id']) {
+          localStorage.setItem('srms_tenantId', decoded['tenant_id']);
+        }
         const roleClaim = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         if (roleClaim) {
           const roles = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
@@ -221,8 +224,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (decoded && decoded['branch_id']) {
         localStorage.setItem('srms_activeBranchId', decoded['branch_id']);
       }
+      if (decoded && decoded['tenant_id']) {
+        localStorage.setItem('srms_tenantId', decoded['tenant_id']);
+      }
     } catch (e) {
-      console.warn('Failed to parse branch_id from token on login', e);
+      console.warn('Failed to parse branch_id/tenant_id from token on login', e);
     }
 
     localStorage.setItem('srms_token', newToken);
@@ -231,6 +237,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem('srms_token');
+    localStorage.removeItem('srms_tenantId');
     localStorage.removeItem('srms_override_avatar');
     localStorage.removeItem('srms_override_name');
     localStorage.removeItem('srms_override_title');
