@@ -103,7 +103,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'warning':
         return <AlertTriangle size={26} style={{ color: '#F59E0B' }} />;
       default:
-        return <Info size={26} style={{ color: '#000080' }} />;
+        return <Info size={26} style={{ color: 'var(--primary-color, #000080)' }} />;
     }
   };
 
@@ -117,7 +117,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'warning':
         return 'linear-gradient(90deg, #F59E0B 0%, #D97706 100%)';
       default:
-        return 'linear-gradient(90deg, #000080 0%, #3B82F6 100%)';
+        return 'linear-gradient(90deg, var(--primary-color, #000080) 0%, var(--primary-color, #000080) 100%)';
     }
   };
 
@@ -131,7 +131,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'warning':
         return '#FFFBEB';
       default:
-        return '#EFF6FF';
+        return 'color-mix(in srgb, var(--primary-color, #000080) 12%, white)';
     }
   };
 
@@ -145,7 +145,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'warning':
         return '#F59E0B';
       default:
-        return '#000080';
+        return 'var(--primary-color, #000080)';
     }
   };
 
@@ -178,7 +178,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               maxWidth: '480px',
               width: '100%',
               boxShadow:
-                '0 25px 50px -12px rgba(0, 0, 128, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8)',
+                '0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8)',
               overflow: 'hidden',
               position: 'relative',
               animation: 'slideUp 0.2s ease-out',
@@ -284,8 +284,8 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                       color: '#0F172A',
                     }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = '#000080';
-                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 0, 128, 0.12)';
+                      e.currentTarget.style.borderColor = 'var(--primary-color, #000080)';
+                      e.currentTarget.style.boxShadow = '0 0 0 3px color-mix(in srgb, var(--primary-color, #000080) 18%, transparent)';
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = '#CBD5E1';
