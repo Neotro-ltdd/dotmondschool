@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { QrCode, Search } from 'lucide-react';
 import { api, getTenantId } from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -13,12 +14,6 @@ interface ScanResult {
   designation?: string;
 }
 
-interface StaffOption {
-  staffId: string;
-  fullName: string;
-  designation: string;
-}
-
 const GateScanner: React.FC = () => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,53 +21,11 @@ const GateScanner: React.FC = () => {
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
   const [manualPayload, setManualPayload] = useState('');
   const [cameraError, setCameraError] = useState<boolean>(false);
-  const [staffList, setStaffList] = useState<StaffOption[]>([]);
-  const [selectedStaffId, setSelectedStaffId] = useState<string>('');
   const { userName } = useAuth();
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isProcessingRef = useRef(false);
-
-  const [loadingStaff, setLoadingStaff] = useState(true);
-
-  // Load staff list for quick test dropdown
-  useEffect(() => {
-    const fetchStaff = async () => {
-      try {
-        setLoadingStaff(true);
-        let list: StaffOption[] = [];
-        try {
-          const res = await api.get('/setup/staff');
-          if (Array.isArray(res)) {
-            list = res.map((s: any) => ({
-              staffId: s.id,
-              fullName:
-                `${s.surname || ''} ${s.firstName || ''}`.trim() || s.fullName || 'Staff Member',
-              designation: s.designation || s.staffCategory || 'Staff',
-            }));
-          }
-        } catch {
-          // Fallback to staff report
-          const todayStr = new Date().toISOString().split('T')[0];
-          const res = await api.get(`/attendance/staff-report?date=${todayStr}`);
-          if (res && Array.isArray(res.staffAttendanceList)) {
-            list = res.staffAttendanceList.map((s: any) => ({
-              staffId: s.staffId,
-              fullName: s.fullName,
-              designation: s.designation || 'Staff',
-            }));
-          }
-        }
-        setStaffList(list);
-      } catch (e) {
-        console.error('Failed to load staff list for gate scanner', e);
-      } finally {
-        setLoadingStaff(false);
-      }
-    };
-    fetchStaff();
-  }, []);
 
   // Load offline queue on mount
   useEffect(() => {
@@ -549,22 +502,40 @@ const GateScanner: React.FC = () => {
           </div>
         )}
 
-        {/* Manual Test Input for Rapid Admin Testing (Mobile Responsive) */}
-        <div className="mt-6 w-full max-w-[360px]">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              placeholder="Search staff email, phone, or ID..."
-              value={manualPayload}
-              onChange={(e) => setManualPayload(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && manualPayload.trim()) {
-                  onScanSuccess(manualPayload.trim());
-                  setManualPayload('');
-                }
-              }}
-              className="w-full sm:flex-1 px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white text-slate-800 font-medium shadow-xs"
-            />
+        {/* Manual ID Entry & Scan Input Card */}
+        <div
+          className="mt-6 w-full max-w-[460px] bg-white rounded-2xl p-4 sm:p-5 border shadow-lg transition-all"
+          style={{
+            borderColor: 'color-mix(in srgb, var(--primary-color, #000080) 20%, #e2e8f0)',
+          }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+              <Search size={14} style={{ color: 'var(--primary-color, #000080)' }} />
+              Manual ID Verification
+            </span>
+            <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+              Student / Staff
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search staff or student ID, phone, email..."
+                value={manualPayload}
+                onChange={(e) => setManualPayload(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && manualPayload.trim()) {
+                    onScanSuccess(manualPayload.trim());
+                    setManualPayload('');
+                  }
+                }}
+                className="w-full pl-3.5 pr-3 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm bg-slate-50 text-slate-800 font-medium focus:outline-none focus:bg-white focus:border-indigo-600 transition-all shadow-xs"
+              />
+            </div>
+
             <button
               type="button"
               onClick={() => {
@@ -573,60 +544,22 @@ const GateScanner: React.FC = () => {
                   setManualPayload('');
                 }
               }}
-              className="w-full sm:w-auto px-4 py-2.5 bg-blue-900 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-colors shadow-sm shrink-0"
+              disabled={!manualPayload.trim() || isProcessing}
+              className="px-5 py-2.5 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md shrink-0 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              style={{
+                background: 'var(--primary-color, #000080)',
+              }}
             >
-              Test Scan
+              <QrCode size={16} />
+              <span>{isProcessing ? 'Verifying...' : 'Submit Scan'}</span>
             </button>
           </div>
 
-          {/* Quick Staff Select Dropdown for Instant 1-Click Testing */}
-          <div className="mt-3.5 w-full bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-xs">
-            <label className="block text-[11px] font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
-              ⚡ Quick Staff Tap-In Test Dropdown:
-            </label>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <select
-                value={selectedStaffId}
-                onChange={(e) => setSelectedStaffId(e.target.value)}
-                disabled={loadingStaff}
-                className="w-full sm:flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
-              >
-                <option value="">
-                  {loadingStaff
-                    ? '-- Loading Staff Roster... --'
-                    : staffList.length === 0
-                      ? '-- No Staff Members Found --'
-                      : '-- Select Staff Member to Test --'}
-                </option>
-                {staffList.map((s) => (
-                  <option key={s.staffId} value={s.staffId}>
-                    {s.fullName} ({s.designation})
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                disabled={!selectedStaffId || loadingStaff}
-                onClick={() => {
-                  if (selectedStaffId) {
-                    onScanSuccess(selectedStaffId);
-                    setSelectedStaffId('');
-                  }
-                }}
-                className="w-full sm:w-auto px-4 py-2 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 shadow-sm shrink-0"
-              >
-                Tap-In
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 w-full flex flex-col items-center justify-center">
           {!scanResult && !error && (
-            <p className="text-gray-500 text-sm text-center px-4">
+            <p className="mt-3 text-xs text-slate-500 text-center font-medium leading-relaxed">
               {isProcessing
-                ? 'Processing scan...'
-                : 'Align a Student or Staff ID card within the scanning frame above or use the test box.'}
+                ? 'Processing attendance verification...'
+                : 'Align a Student or Staff ID card within the scanning frame above or enter ID details manually.'}
             </p>
           )}
         </div>
