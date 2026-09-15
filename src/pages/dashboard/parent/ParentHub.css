@@ -738,7 +738,7 @@
   gap: 0.6rem;
   box-shadow: 0 8px 20px -4px color-mix(in srgb, var(--primary-color, #000080) 30%, transparent);
   transition: all 0.25s ease;
-}  margin-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .parent-submit-btn:hover {
