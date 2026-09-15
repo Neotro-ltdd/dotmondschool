@@ -610,7 +610,7 @@ export default function ParentHub() {
                     width: '44px',
                     height: '44px',
                     borderRadius: '50%',
-                    background: '#e0e7ff',
+                    background: 'color-mix(in srgb, var(--primary-color, #000080) 12%, white)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -901,7 +901,7 @@ export default function ParentHub() {
                             marginBottom: '1.25rem',
                           }}
                         >
-                          <Building size={24} style={{ color: '#818cf8' }} />
+                          <Building size={24} style={{ color: '#ffffff' }} />
                           <h3
                             style={{
                               margin: 0,
@@ -965,7 +965,7 @@ export default function ParentHub() {
                           <span className="bank-label">Student Reg Ref</span>
                           <span
                             className="bank-value"
-                            style={{ color: '#38bdf8', fontFamily: 'monospace' }}
+                            style={{ color: '#ffffff', fontWeight: 700, fontFamily: 'monospace' }}
                           >
                             {selectedKid.registrationNumber}
                           </span>
@@ -1104,7 +1104,7 @@ export default function ParentHub() {
                               <div>
                                 <UploadCloud
                                   size={38}
-                                  style={{ color: '#818cf8', margin: '0 auto 0.5rem' }}
+                                  style={{ color: 'var(--primary-color, #000080)', margin: '0 auto 0.5rem' }}
                                 />
                                 <strong
                                   style={{
