@@ -754,7 +754,10 @@
 /* ══════════════════════════════════════════════════════════════════
    LANDSCAPE ID CARD (CR80 Horizontal: 3.375in W × 2.125in H)
    ══════════════════════════════════════════════════════════════════ */
-.id-card-wrapper .card.landscape {
+.id-card-wrapper .card.landscape,
+.id-card-wrapper .card.staff-card.landscape,
+.card.staff-card.landscape,
+.staff-card.landscape {
   width: 3.375in !important;
   height: 2.125in !important;
   display: flex !important;
@@ -765,6 +768,7 @@
   border-radius: 0.12in !important;
   background: #ffffff !important;
   box-shadow: 0 10px 24px rgba(11, 37, 69, 0.2) !important;
+  padding: 0 !important;
 }
 
 /* Front Side Landscape */
