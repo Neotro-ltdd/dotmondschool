@@ -369,7 +369,7 @@
 
 .slideover-panel {
   width: 100%;
-  max-width: 560px;
+  max-width: 640px;
   height: calc(100vh - 72px);
   max-height: calc(100vh - 72px);
   background: #ffffff;

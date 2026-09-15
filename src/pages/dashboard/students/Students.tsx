@@ -1379,7 +1379,7 @@ export default function Students() {
                         onChange={handleInputChange}
                         className="drawer-form-select"
                       >
-                        <option value="General">General (Junior / Primary / Nursery)</option>
+                        <option value="General">General (Cross-Cutting / All Tracks)</option>
                         <option value="Science">Science</option>
                         <option value="Arts">Arts</option>
                         <option value="Commercial">Commercial</option>
