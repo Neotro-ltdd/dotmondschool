@@ -8,9 +8,7 @@ import { ThemeProvider } from './context/ThemeContext';
 
 import LandingPage from './pages/LandingPage';
 import NeotroLanding from './pages/NeotroLanding';
-import Login from './pages/auth/Login';
-import NeotroLogin from './pages/auth/NeotroLogin';
-import ChangePassword from './pages/auth/ChangePassword';
+import { DotmondLogin as Login, NeotroLogin, DotmondChangePassword as ChangePassword, MasterLogin } from './pages/auth';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Overview from './pages/dashboard/Overview';
 import SchoolConfig from './pages/dashboard/settings/SchoolConfig';
@@ -46,7 +44,6 @@ import GradingRules from './pages/dashboard/admin/operations/GradingRules';
 import GateScanner from './pages/dashboard/admin/GateScanner';
 import GateAttendanceLog from './pages/dashboard/admin/GateAttendanceLog';
 import ManualClearance from './pages/dashboard/admin/ManualClearance';
-import MasterLogin from './pages/auth/MasterLogin';
 import SystemLayout from './components/layout/SystemLayout';
 import SystemOverview from './pages/dashboard/admin/SystemOverview';
 import SystemSchools from './pages/dashboard/admin/SystemSchools';

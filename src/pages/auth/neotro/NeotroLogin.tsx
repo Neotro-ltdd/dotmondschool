@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { api, getTenantId, getPublicTenantDetails, API_ROOT } from '../../services/api';
+import { useAuth } from '../../../context/AuthContext';
+import { api, getTenantId, getPublicTenantDetails, API_ROOT } from '../../../services/api';
 import { Eye, EyeOff, Shield, Mail, Lock, ArrowRight, AlertCircle, Building2, KeyRound } from 'lucide-react';
 import './NeotroLogin.css';
 

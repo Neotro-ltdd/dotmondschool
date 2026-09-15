@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { api, getTenantId, getPublicTenantDetails, API_ROOT } from '../../services/api';
+import { useAuth } from '../../../context/AuthContext';
+import { api, getTenantId, getPublicTenantDetails, API_ROOT } from '../../../services/api';
 import './Login.css';
-import { useDialog } from '../../context/DialogContext';
+import { useDialog } from '../../../context/DialogContext';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function ChangePassword() {
@@ -22,7 +22,7 @@ export default function ChangePassword() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [schoolName, setSchoolName] = useState('Neotro SMS');
+  const [schoolName, setSchoolName] = useState('Dotmond School');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
