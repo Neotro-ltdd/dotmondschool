@@ -6,6 +6,7 @@ import { useDialog } from '../../../context/DialogContext';
 import ReportCard from '../../../components/ReportCard';
 import { AcademicAnalysisView } from '../../../components/dashboard/reports/AcademicAnalysisView';
 import { useAuth } from '../../../context/AuthContext';
+import { useTenant } from '../../../context/TenantContext';
 import { getParentDisplayName } from '../../../utils/nameFormatter';
 import { PushNotificationToggle } from '../../../components/pwa/PushNotificationToggle';
 import {
@@ -107,6 +108,7 @@ export default function ParentHub() {
   const { showAlert } = useDialog();
   const { session: currentSession, term: currentTerm } = useActiveTerm();
   const { userName } = useAuth();
+  const { schoolName } = useTenant();
 
   const [kids, setKids] = useState<Kid[]>([]);
   const [selectedKid, setSelectedKid] = useState<Kid | null>(null);
@@ -935,7 +937,7 @@ export default function ParentHub() {
                             className="bank-value"
                             style={{ fontSize: '0.88rem', textAlign: 'right', maxWidth: '65%', lineHeight: 1.35 }}
                           >
-                            DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL
+                            {(schoolName || 'Neotro Academy').toUpperCase()}
                           </span>
                         </div>
                         <div className="bank-info-row">
