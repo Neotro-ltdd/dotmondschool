@@ -619,7 +619,7 @@
 
 .student-slideover-panel {
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   height: calc(100vh - 72px);
   max-height: calc(100vh - 72px);
   background: #ffffff;

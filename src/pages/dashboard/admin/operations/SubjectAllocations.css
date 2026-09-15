@@ -239,7 +239,7 @@
 
 .subject-alloc-slideover-panel {
   width: 100%;
-  max-width: 460px;
+  max-width: 560px;
   height: calc(100vh - 72px);
   max-height: calc(100vh - 72px);
   background: #ffffff;
