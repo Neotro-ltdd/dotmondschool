@@ -247,10 +247,29 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           </div>
         </div>
 
-        <div className="id-card-preview-area" ref={printRef}>
+        <div className="id-card-preview-area flex flex-col md:flex-row gap-8 justify-center items-center" ref={printRef}>
           {/* ================= FRONT SIDE ================= */}
-          <div className="id-card-wrapper">
-            <div className={`card staff-card front ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}>
+          <div className="id-card-wrapper" style={isLandscape ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' } : undefined}>
+            <div
+              className={`card staff-card front ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}
+              style={
+                isLandscape
+                  ? {
+                      width: '3.375in',
+                      height: '2.125in',
+                      minWidth: '3.375in',
+                      minHeight: '2.125in',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                      borderRadius: '0.12in',
+                      background: '#ffffff',
+                      boxShadow: '0 10px 24px rgba(11, 37, 69, 0.2)',
+                    }
+                  : undefined
+              }
+            >
               {isLandscape ? (
                 <>
                   <div className="landscape-left-col" style={{ backgroundColor: activePrimary }}>
@@ -348,8 +367,27 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           </div>
 
           {/* ================= BACK SIDE ================= */}
-          <div className="id-card-wrapper">
-            <div className={`card staff-card back ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}>
+          <div className="id-card-wrapper" style={isLandscape ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' } : undefined}>
+            <div
+              className={`card staff-card back ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}
+              style={
+                isLandscape
+                  ? {
+                      width: '3.375in',
+                      height: '2.125in',
+                      minWidth: '3.375in',
+                      minHeight: '2.125in',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                      borderRadius: '0.12in',
+                      background: '#ffffff',
+                      boxShadow: '0 10px 24px rgba(11, 37, 69, 0.2)',
+                    }
+                  : undefined
+              }
+            >
               {isLandscape ? (
                 <>
                   <div className="landscape-left-col-back">

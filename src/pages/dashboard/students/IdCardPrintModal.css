@@ -437,7 +437,7 @@
 /* ══════════════════════════════
    SIMPLIFIED CLEAN STAFF ID CARD DESIGN (CR80 Compliant)
 ══════════════════════════════ */
-.staff-card {
+.staff-card:not(.landscape) {
   display: flex !important;
   flex-direction: column !important;
   background: #ffffff !important;
