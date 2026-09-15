@@ -49,6 +49,9 @@
 .id-card-wrapper {
   background: transparent;
   padding: 0;
+  width: auto;
+  height: auto;
+  display: inline-block;
 }
 
 /* Exact CR80 Card Dimensions: 2.125in x 3.375in */
@@ -757,7 +760,9 @@
 .id-card-wrapper .card.landscape,
 .id-card-wrapper .card.staff-card.landscape,
 .card.staff-card.landscape,
-.staff-card.landscape {
+.staff-card.landscape,
+.card.landscape,
+.landscape {
   width: 3.375in !important;
   height: 2.125in !important;
   display: flex !important;

@@ -37,7 +37,14 @@ interface SchoolProfile {
 }
 
 export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardPrintModalProps) {
-  const { idCardTemplate: tenantIdCardTemplate } = useTenant();
+  const {
+    schoolName: tenantSchoolName,
+    logoUrl: tenantLogoUrl,
+    primaryColor: tenantPrimaryColor,
+    secondaryColor: tenantSecondaryColor,
+    idCardTemplate: tenantIdCardTemplate,
+  } = useTenant();
+
   const [loading, setLoading] = useState(true);
   const [idCardData, setIdCardData] = useState<StaffIdCardData | null>(null);
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
@@ -63,11 +70,11 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           setSchoolProfile(profile);
         } catch {
           setSchoolProfile({
-            schoolName: 'DOTMOND SCHOOL',
+            schoolName: tenantSchoolName || 'RMS SCHOOL',
             address: 'Happyland Estate, Ajah, Lagos State, Nigeria',
-            logoUrl: '',
-            primaryColor: '#000080',
-            secondaryColor: '#C4293A',
+            logoUrl: tenantLogoUrl || '',
+            primaryColor: tenantPrimaryColor || '#0b2545',
+            secondaryColor: tenantSecondaryColor || '#9f1d2c',
             currentSession: '2026/2027',
           });
         }
@@ -78,7 +85,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
       }
     };
     fetchData();
-  }, [staffId]);
+  }, [staffId, tenantSchoolName, tenantLogoUrl, tenantPrimaryColor, tenantSecondaryColor]);
 
   if (loading) {
     return (
@@ -110,12 +117,30 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return fullUrl.includes('?') ? `${fullUrl}&t=${Date.now()}` : `${fullUrl}?t=${Date.now()}`;
   };
 
-  const rawSchoolName = schoolProfile?.schoolName || 'DOTMOND SCHOOL';
+  const rawSchoolName = tenantSchoolName || schoolProfile?.schoolName || 'RMS SCHOOL';
   const fullSchoolTitle = rawSchoolName.toUpperCase();
   const schoolAddress =
     idCardData?.branchAddress ||
     schoolProfile?.address ||
     'Happyland Estate, Ajah, Lagos State, Nigeria';
+
+  const activePrimary = tenantPrimaryColor || schoolProfile?.primaryColor || '#0b2545';
+  const activeSecondary = tenantSecondaryColor || schoolProfile?.secondaryColor || '#9f1d2c';
+  const activeLogoUrl = tenantLogoUrl || schoolProfile?.logoUrl || '';
+
+  const renderLogo = (size: string = '0.42in') => {
+    if (activeLogoUrl) {
+      return <img src={getFullUrl(activeLogoUrl)} alt="School Logo" style={{ width: size, height: 'auto', objectFit: 'contain' }} />;
+    }
+    return (
+      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: size }}>
+        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke={activePrimary} strokeWidth="10" />
+        <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill={activePrimary}>
+          <text x="250" y="182" textAnchor="middle">RMS</text>
+        </g>
+      </svg>
+    );
+  };
 
   // Avatar Fallback URL generator
   const getAvatarFallback = (name: string) => {
@@ -203,7 +228,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           className="no-print"
         >
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#000080' }}>
+            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: activePrimary }}>
               Print Staff ID Card
             </h2>
           </div>
@@ -215,7 +240,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
             <button
               className="btn btn-primary"
               onClick={() => handlePrint()}
-              style={{ fontWeight: 700, background: '#000080', border: 'none' }}
+              style={{ fontWeight: 700, background: activePrimary, border: 'none' }}
             >
               🖨️ Print Card
             </button>
@@ -228,8 +253,8 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
             <div className={`card staff-card front ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}>
               {isLandscape ? (
                 <>
-                  <div className="landscape-left-col">
-                    <div className="landscape-photo-box">
+                  <div className="landscape-left-col" style={{ backgroundColor: activePrimary }}>
+                    <div className="landscape-photo-box" style={{ borderColor: activeSecondary }}>
                       {idCardData.passportUrl ? (
                         <img
                           src={getFullUrl(idCardData.passportUrl)}
@@ -243,29 +268,20 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                         <img src={getAvatarFallback(idCardData.fullName)} alt={idCardData.fullName} />
                       )}
                     </div>
-                    <div className="landscape-id-pill">STAFF ID</div>
+                    <div className="landscape-id-pill" style={{ backgroundColor: activeSecondary }}>STAFF ID</div>
                   </div>
 
                   <div className="landscape-right-col">
                     <div className="landscape-header">
-                      {schoolProfile?.logoUrl ? (
-                        <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
-                      ) : (
-                        <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '24px' }}>
-                          <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10" />
-                          <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
-                            <text x="250" y="182" textAnchor="middle">RMS</text>
-                          </g>
-                        </svg>
-                      )}
+                      {renderLogo('0.35in')}
                       <div>
-                        <div className="landscape-school-name">{fullSchoolTitle}</div>
+                        <div className="landscape-school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
                         <div className="landscape-school-addr">{renderSchoolAddress(schoolAddress)}</div>
                       </div>
                     </div>
 
-                    <div className="landscape-name">{formatDisplayName(idCardData.fullName)}</div>
-                    <div className="landscape-rule"></div>
+                    <div className="landscape-name" style={{ color: activePrimary }}>{formatDisplayName(idCardData.fullName)}</div>
+                    <div className="landscape-rule" style={{ backgroundColor: activeSecondary }}></div>
 
                     <div className="landscape-meta-row">
                       <span className="lbl">ROLE:</span> {(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}
@@ -276,43 +292,23 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
                     <div className="landscape-foot-strip">
                       <span>OFFICIAL BADGE</span>
-                      <b>{fullSchoolTitle}</b>
+                      <b style={{ color: activePrimary }}>{fullSchoolTitle}</b>
                     </div>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="card-header">
-                    {schoolProfile?.logoUrl ? (
-                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
-                    ) : (
-                      <svg
-                        viewBox="0 0 500 660"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{ width: '32px' }}
-                      >
-                        <path
-                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
-                          fill="#FFFFFF"
-                          stroke="#0B2545"
-                          strokeWidth="10"
-                        />
-                        <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
-                          <text x="250" y="182" textAnchor="middle">
-                            RMS
-                          </text>
-                        </g>
-                      </svg>
-                    )}
+                    {renderLogo('0.42in')}
                     <div>
-                      <div className="school-name">{fullSchoolTitle}</div>
+                      <div className="school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
                     </div>
                   </div>
 
-                  <div className="accent-rule"></div>
-                  <div className="id-tag">STAFF IDENTIFICATION</div>
+                  <div className="accent-rule" style={{ backgroundColor: activeSecondary }}></div>
+                  <div className="id-tag" style={{ color: activePrimary }}>STAFF IDENTIFICATION</div>
 
-                  <div className="large-photo-box">
+                  <div className="large-photo-box" style={{ borderColor: activeSecondary }}>
                     {idCardData.passportUrl ? (
                       <img
                         src={getFullUrl(idCardData.passportUrl)}
@@ -333,18 +329,18 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                   </div>
 
                   <div className="name-block">
-                    <div className="name">{formatDisplayName(idCardData.fullName)}</div>
-                    <div className="name-underline"></div>
-                    <div className="meta-row">
-                      <span className="lbl">ROLE:</span>
+                    <div className="name" style={{ color: activePrimary }}>{formatDisplayName(idCardData.fullName)}</div>
+                    <div className="name-underline" style={{ backgroundColor: activeSecondary }}></div>
+                    <div className="meta-row" style={{ color: activePrimary }}>
+                      <span className="lbl" style={{ color: activePrimary }}>ROLE:</span>
                       {(idCardData.designation || idCardData.role || 'Teacher').toUpperCase()}
                     </div>
-                    <div className="meta-row">
-                      <span className="lbl">STAFF ID:</span>
+                    <div className="meta-row" style={{ color: activePrimary }}>
+                      <span className="lbl" style={{ color: activePrimary }}>STAFF ID:</span>
                       {idCardData.formattedStaffCode}
                     </div>
-                    <div className="bottom-accent-rule"></div>
-                    <div className="bottom-school-watermark">{fullSchoolTitle}</div>
+                    <div className="bottom-accent-rule" style={{ backgroundColor: activeSecondary }}></div>
+                    <div className="bottom-school-watermark" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
                   </div>
                 </>
               )}
@@ -358,17 +354,8 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 <>
                   <div className="landscape-left-col-back">
                     <div className="landscape-header">
-                      {schoolProfile?.logoUrl ? (
-                        <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
-                      ) : (
-                        <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '20px' }}>
-                          <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#0B2545" strokeWidth="10" />
-                          <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
-                            <text x="250" y="182" textAnchor="middle">RMS</text>
-                          </g>
-                        </svg>
-                      )}
-                      <div className="landscape-school-name">{fullSchoolTitle}</div>
+                      {renderLogo('0.25in')}
+                      <div className="landscape-school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
                     </div>
 
                     <p className="landscape-owner-text">
@@ -379,12 +366,12 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                       {principalSig && (
                         <img src={getFullUrl(principalSig)} alt="Signature" className="landscape-sig-img" />
                       )}
-                      <div className="landscape-sig-text">Authorised Signature</div>
+                      <div className="landscape-sig-text" style={{ color: activePrimary, borderColor: activePrimary }}>Authorised Signature</div>
                     </div>
                   </div>
 
                   <div className="landscape-right-col-back">
-                    <div className="landscape-scan-label">SCAN TO CLOCK IN</div>
+                    <div className="landscape-scan-label" style={{ color: activePrimary }}>SCAN TO CLOCK IN</div>
                     <div className="landscape-qr-box">
                       {idCardData.qrCodeSvg && (
                         <img
@@ -393,7 +380,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                         />
                       )}
                     </div>
-                    <div className="landscape-encoded-id">
+                    <div className="landscape-encoded-id" style={{ color: activePrimary }}>
                       ID: <b>{idCardData.formattedStaffCode}</b>
                     </div>
                   </div>
@@ -401,43 +388,23 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
               ) : (
                 <>
                   <div className="card-header">
-                    {schoolProfile?.logoUrl ? (
-                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
-                    ) : (
-                      <svg
-                        viewBox="0 0 500 660"
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{ width: '32px' }}
-                      >
-                        <path
-                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
-                          fill="#FFFFFF"
-                          stroke="#0B2545"
-                          strokeWidth="10"
-                        />
-                        <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#0B2545">
-                          <text x="250" y="182" textAnchor="middle">
-                            RMS
-                          </text>
-                        </g>
-                      </svg>
-                    )}
+                    {renderLogo('0.42in')}
                     <div>
-                      <div className="school-name">{fullSchoolTitle}</div>
-                      <div className="school-addr">{renderSchoolAddress(schoolAddress)}</div>
+                      <div className="school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
+                      <div className="school-addr" style={{ color: activePrimary }}>{renderSchoolAddress(schoolAddress)}</div>
                     </div>
                   </div>
 
-                  <div className="accent-rule"></div>
+                  <div className="accent-rule" style={{ backgroundColor: activeSecondary }}></div>
 
                   <div className="back-body">
-                    <p className="owner-text">
+                    <p className="owner-text" style={{ color: activePrimary }}>
                       This card is the property of {fullSchoolTitle}. If found, please return to the
                       school office. Unauthorised use of this card is strictly prohibited.
                     </p>
                   </div>
 
-                  <div className="scan-label">SCAN TO CLOCK IN</div>
+                  <div className="scan-label" style={{ color: activePrimary }}>SCAN TO CLOCK IN</div>
                   <div className="qr-wrap">
                     <div className="qr-box">
                       {idCardData.qrCodeSvg && (
@@ -448,7 +415,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                       )}
                     </div>
                   </div>
-                  <div className="encoded-id">
+                  <div className="encoded-id" style={{ color: activePrimary }}>
                     ID: <b>{idCardData.formattedStaffCode}</b>
                   </div>
 
@@ -460,10 +427,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                         className="sig-img"
                       />
                     )}
-                    <div className="sig-line-text">Authorised Signature</div>
+                    <div className="sig-line-text" style={{ color: activePrimary, borderColor: activePrimary }}>Authorised Signature</div>
                   </div>
 
-                  <div className="back-footer">POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
+                  <div className="back-footer" style={{ borderTopColor: activeSecondary, color: activePrimary }}>POWERED BY NEOTRO ATTENDANCE SYSTEM</div>
                 </>
               )}
             </div>

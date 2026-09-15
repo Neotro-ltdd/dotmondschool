@@ -35,7 +35,14 @@ interface SchoolProfile {
 }
 
 export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModalProps) {
-  const { idCardTemplate: tenantIdCardTemplate } = useTenant();
+  const {
+    schoolName: tenantSchoolName,
+    logoUrl: tenantLogoUrl,
+    primaryColor: tenantPrimaryColor,
+    secondaryColor: tenantSecondaryColor,
+    idCardTemplate: tenantIdCardTemplate,
+  } = useTenant();
+
   const [loading, setLoading] = useState(true);
   const [idCardData, setIdCardData] = useState<IdCardData | null>(null);
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
@@ -61,11 +68,11 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           setSchoolProfile(profile);
         } catch (profileErr) {
           setSchoolProfile({
-            schoolName: 'DOTMOND SCHOOL',
+            schoolName: tenantSchoolName || 'RMS SCHOOL',
             address: 'Happyland Estate, Ajah, Lagos State, Nigeria',
-            logoUrl: '',
-            primaryColor: '#12386E',
-            secondaryColor: '#C4293A',
+            logoUrl: tenantLogoUrl || '',
+            primaryColor: tenantPrimaryColor || '#12386E',
+            secondaryColor: tenantSecondaryColor || '#C4293A',
             currentSession: '2026/2027',
           });
         }
@@ -76,7 +83,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
       }
     };
     fetchData();
-  }, [studentId]);
+  }, [studentId, tenantSchoolName, tenantLogoUrl, tenantPrimaryColor, tenantSecondaryColor]);
 
   if (loading) {
     return (
@@ -107,19 +114,33 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return url.startsWith('/') ? `${API_ROOT}${url}` : url;
   };
 
-  // 1. School Name Single Line Display ("DOTMOND SCHOOL")
-  const rawSchoolName = schoolProfile?.schoolName || 'DOTMOND SCHOOL';
+  const rawSchoolName = tenantSchoolName || schoolProfile?.schoolName || 'RMS SCHOOL';
   const fullSchoolTitle = rawSchoolName.toUpperCase();
   const schoolAddress =
     idCardData?.branchAddress ||
     schoolProfile?.address ||
     'Happyland Estate, Ajah, Lagos State, Nigeria';
 
-  // 2. Active System Academic Session / Calculated Validity Period (e.g. "2026/2027 - 2028/2029")
   const activeSession = idCardData.validPeriod || schoolProfile?.currentSession || '2026/2027';
-
-  // 3. Principal Signature Check
   const principalSig = schoolProfile?.principalSignatureUrl || schoolProfile?.signatureUrl;
+
+  const activePrimary = tenantPrimaryColor || schoolProfile?.primaryColor || '#12386E';
+  const activeSecondary = tenantSecondaryColor || schoolProfile?.secondaryColor || '#C4293A';
+  const activeLogoUrl = tenantLogoUrl || schoolProfile?.logoUrl || '';
+
+  const renderLogo = (size: string = '0.38in') => {
+    if (activeLogoUrl) {
+      return <img src={getFullUrl(activeLogoUrl)} alt="School Logo" style={{ width: size, height: 'auto', objectFit: 'contain' }} />;
+    }
+    return (
+      <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: size }}>
+        <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke={activePrimary} strokeWidth="10" />
+        <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill={activePrimary}>
+          <text x="250" y="182" textAnchor="middle">RMS</text>
+        </g>
+      </svg>
+    );
+  };
 
   const formatStudentDisplayName = (rawName: string | undefined | null) => {
     if (!rawName) return 'STUDENT';
@@ -158,7 +179,6 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
-  // Helper to calculate Class range based on validity period years (e.g., "JSS 2" + 2 years -> "JSS 2 - JSS 3")
   const calculateClassRange = (rawClass: string | undefined | null, validPeriodStr: string) => {
     if (!rawClass) return '';
     const trimmedClass = rawClass.trim();
@@ -217,7 +237,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
           className="no-print"
         >
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#12386E' }}>
+            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: activePrimary }}>
               Print Student ID Card
             </h2>
           </div>
@@ -229,7 +249,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
             <button
               className="btn btn-primary"
               onClick={handlePrint}
-              style={{ fontWeight: 700, background: '#12386E', border: 'none' }}
+              style={{ fontWeight: 700, background: activePrimary, border: 'none' }}
             >
               🖨️ Print Card
             </button>
@@ -242,8 +262,8 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
             <div className={`card front ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}>
               {isLandscape ? (
                 <>
-                  <div className="landscape-left-col">
-                    <div className="landscape-photo-box">
+                  <div className="landscape-left-col" style={{ backgroundColor: activePrimary }}>
+                    <div className="landscape-photo-box" style={{ borderColor: activeSecondary }}>
                       {idCardData.passportUrl ? (
                         <img src={getFullUrl(idCardData.passportUrl)} alt="Student" />
                       ) : (
@@ -253,29 +273,20 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                         </svg>
                       )}
                     </div>
-                    <span className="landscape-id-pill">STUDENT ID</span>
+                    <span className="landscape-id-pill" style={{ backgroundColor: activeSecondary }}>STUDENT ID</span>
                   </div>
 
                   <div className="landscape-right-col">
                     <div className="landscape-header">
-                      {schoolProfile?.logoUrl ? (
-                        <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" />
-                      ) : (
-                        <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '24px' }}>
-                          <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10" />
-                          <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#12386E">
-                            <text x="250" y="182" textAnchor="middle">RMS</text>
-                          </g>
-                        </svg>
-                      )}
+                      {renderLogo('0.24in')}
                       <div>
-                        <div className="landscape-school-name">{fullSchoolTitle}</div>
+                        <div className="landscape-school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
                         <div className="landscape-school-addr">{schoolAddress}</div>
                       </div>
                     </div>
 
-                    <div className="landscape-name">{formatStudentDisplayName(idCardData.fullName)}</div>
-                    <div className="landscape-rule"></div>
+                    <div className="landscape-name" style={{ color: activePrimary }}>{formatStudentDisplayName(idCardData.fullName)}</div>
+                    <div className="landscape-rule" style={{ backgroundColor: activeSecondary }}></div>
 
                     <div className="landscape-meta-row">
                       <span className="lbl">STUDENT NO:</span> {idCardData.registrationNumber}
@@ -288,7 +299,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
 
                     <div className="landscape-foot-strip">
                       <span>VALID</span>
-                      <b>{activeSession}</b>
+                      <b style={{ color: activePrimary }}>{activeSession}</b>
                     </div>
                   </div>
                 </>
@@ -298,175 +309,22 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   <div className="head">
                     <div className="head-row">
                       <div className="mark-cell">
-                        {schoolProfile?.logoUrl ? (
-                          <img
-                            src={getFullUrl(schoolProfile.logoUrl)}
-                            alt="Logo"
-                            style={{ width: '0.38in', height: 'auto', display: 'block' }}
-                          />
-                        ) : (
-                          <svg
-                            viewBox="0 0 500 660"
-                            xmlns="http://www.w3.org/2000/svg"
-                            style={{ width: '0.38in' }}
-                          >
-                            <defs>
-                              <linearGradient id="fFlame1" x1="0%" y1="100%" x2="0%" y2="0%">
-                                <stop offset="0%" stopColor="#E63946" />
-                                <stop offset="100%" stopColor="#F4B740" />
-                              </linearGradient>
-                              <linearGradient id="fRibbon1" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#C4293A" />
-                                <stop offset="50%" stopColor="#E63946" />
-                                <stop offset="100%" stopColor="#C4293A" />
-                              </linearGradient>
-                            </defs>
-                            <path
-                              d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
-                              fill="#FFFFFF"
-                              stroke="#12386E"
-                              strokeWidth="10"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M250,80 L400,133 L400,298 C400,412 330,472 250,510 C170,472 100,412 100,298 L100,133 Z"
-                              fill="none"
-                              stroke="#F4B740"
-                              strokeWidth="4"
-                            />
-                            <g
-                              fontFamily="Georgia,'Times New Roman',serif"
-                              fontWeight="700"
-                              fontSize="40"
-                              fill="#12386E"
-                            >
-                              <text
-                                x="136.7"
-                                y="239.7"
-                                transform="rotate(-54.0 136.7 239.7)"
-                                textAnchor="middle"
-                              >
-                                D
-                              </text>
-                              <text
-                                x="167.7"
-                                y="208.7"
-                                transform="rotate(-36.0 167.7 208.7)"
-                                textAnchor="middle"
-                              >
-                                O
-                              </text>
-                              <text
-                                x="206.7"
-                                y="188.9"
-                                transform="rotate(-18.0 206.7 188.9)"
-                                textAnchor="middle"
-                              >
-                                T
-                              </text>
-                              <text x="250.0" y="182.0" textAnchor="middle">
-                                M
-                              </text>
-                              <text
-                                x="293.3"
-                                y="188.9"
-                                transform="rotate(18.0 293.3 188.9)"
-                                textAnchor="middle"
-                              >
-                                O
-                              </text>
-                              <text
-                                x="332.3"
-                                y="208.7"
-                                transform="rotate(36.0 332.3 208.7)"
-                                textAnchor="middle"
-                              >
-                                N
-                              </text>
-                              <text
-                                x="363.3"
-                                y="239.7"
-                                transform="rotate(54.0 363.3 239.7)"
-                                textAnchor="middle"
-                              >
-                                D
-                              </text>
-                            </g>
-                            <path
-                              d="M188,233 Q250,243 312,233"
-                              fill="none"
-                              stroke="#F4B740"
-                              strokeWidth="3"
-                            />
-                            <line
-                              x1="250"
-                              y1="300"
-                              x2="250"
-                              y2="365"
-                              stroke="#12386E"
-                              strokeWidth="4"
-                            />
-                            <path
-                              d="M250,308 C215,290 175,294 152,312 C150,313 150,315 150,317 L150,352 C150,354 152,355 154,354 C177,340 215,338 250,354 Z"
-                              fill="#12386E"
-                            />
-                            <path
-                              d="M250,308 C285,290 325,294 348,312 C350,313 350,315 350,317 L350,352 C350,354 348,355 346,354 C323,340 285,338 250,354 Z"
-                              fill="#12386E"
-                            />
-                            <path
-                              d="M250,204 C238,222 226,238 226,254 C226,272 237,284 250,284 C263,284 274,272 274,254 C274,238 262,222 250,204 Z"
-                              fill="url(#fFlame1)"
-                            />
-                            <text
-                              x="250"
-                              y="420"
-                              textAnchor="middle"
-                              fontFamily="Arial,sans-serif"
-                              fontWeight="700"
-                              fontSize="23"
-                              letterSpacing="5"
-                              fill="#12386E"
-                            >
-                              SCHOOL
-                            </text>
-                            <g>
-                              <path d="M40,555 L100,540 L100,600 L40,615 L64,578 Z" fill="#9F1D2C" />
-                              <path d="M460,555 L400,540 L400,600 L460,615 L436,578 Z" fill="#9F1D2C" />
-                              <path
-                                d="M95,538 Q250,518 405,538 L405,602 Q250,584 95,602 Z"
-                                fill="url(#fRibbon1)"
-                              />
-                              <text
-                                x="250"
-                                y="576"
-                                textAnchor="middle"
-                                fontFamily="Arial,sans-serif"
-                                fontWeight="700"
-                                fontSize="16"
-                                letterSpacing="0.5"
-                                fill="#FFFFFF"
-                              >
-                                STEADY PROGRESS, BRIGHTER FUTURE
-                              </text>
-                            </g>
-                          </svg>
-                        )}
+                        {renderLogo('0.38in')}
                       </div>
                       <div className="text-cell">
-                        <div className="word-dotmond">{fullSchoolTitle}</div>
-                        <div className="subline-addr">{schoolAddress}</div>
+                        <div className="word-dotmond" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
+                        <div className="subline-addr" style={{ color: activePrimary }}>{schoolAddress}</div>
                       </div>
                     </div>
                   </div>
 
                   <div className="top-divider-row">
                     <div className="divider-line"></div>
-                    <span className="id-pill">STUDENT ID</span>
+                    <span className="id-pill" style={{ backgroundColor: activePrimary }}>STUDENT ID</span>
                   </div>
 
                   {/* Large Passport Box */}
-                  <div className="large-photo-box">
+                  <div className="large-photo-box" style={{ borderColor: activeSecondary }}>
                     {idCardData.passportUrl ? (
                       <img
                         src={getFullUrl(idCardData.passportUrl)}
@@ -481,8 +339,8 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
 
-                  {/* Slanted Navy Student Name Band */}
-                  <div className="slanted-name-band">
+                  {/* Slanted Student Name Band */}
+                  <div className="slanted-name-band" style={{ backgroundColor: activePrimary }}>
                     <div className="name">{formatStudentDisplayName(idCardData.fullName)}</div>
                     <div className="field">
                       <b>Student No:</b> {idCardData.registrationNumber}
@@ -494,10 +352,10 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
 
-                  <div className="red-accent-line"></div>
+                  <div className="red-accent-line" style={{ backgroundColor: activeSecondary }}></div>
 
-                  {/* Red Bordered Footer Strip */}
-                  <div className="foot-strip">
+                  {/* Footer Strip */}
+                  <div className="foot-strip" style={{ backgroundColor: activePrimary }}>
                     <div>VALID</div>
                     <div>{activeSession}</div>
                   </div>
@@ -513,17 +371,8 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                 <>
                   <div className="landscape-left-col-back">
                     <div className="landscape-header">
-                      {schoolProfile?.logoUrl ? (
-                        <img src={getFullUrl(schoolProfile.logoUrl)} alt="Logo" />
-                      ) : (
-                        <svg viewBox="0 0 500 660" xmlns="http://www.w3.org/2000/svg" style={{ width: '20px' }}>
-                          <path d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z" fill="#FFFFFF" stroke="#12386E" strokeWidth="10" />
-                          <g fontFamily="Georgia,serif" fontWeight="700" fontSize="40" fill="#12386E">
-                            <text x="250" y="182" textAnchor="middle">RMS</text>
-                          </g>
-                        </svg>
-                      )}
-                      <div className="landscape-school-name">{fullSchoolTitle}</div>
+                      {renderLogo('0.20in')}
+                      <div className="landscape-school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
                     </div>
 
                     <p className="landscape-owner-text">
@@ -534,12 +383,12 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                       {principalSig && (
                         <img src={getFullUrl(principalSig)} alt="Signature" className="landscape-sig-img" />
                       )}
-                      <div className="landscape-sig-text">Principal Signature</div>
+                      <div className="landscape-sig-text" style={{ color: activePrimary, borderColor: activePrimary }}>Principal Signature</div>
                     </div>
                   </div>
 
                   <div className="landscape-right-col-back">
-                    <div className="landscape-scan-label">ATTENDANCE QR</div>
+                    <div className="landscape-scan-label" style={{ color: activePrimary }}>ATTENDANCE QR</div>
                     <div className="landscape-qr-box">
                       {idCardData.qrCodeSvg && (
                         <img
@@ -548,7 +397,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                         />
                       )}
                     </div>
-                    <div className="landscape-encoded-id">
+                    <div className="landscape-encoded-id" style={{ color: activePrimary }}>
                       REG: <b>{idCardData.registrationNumber}</b>
                     </div>
                   </div>
@@ -559,169 +408,16 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   <div className="head">
                     <div className="head-row">
                       <div className="mark-cell">
-                        {schoolProfile?.logoUrl ? (
-                          <img
-                            src={getFullUrl(schoolProfile.logoUrl)}
-                            alt="Logo"
-                            style={{ width: '0.38in', height: 'auto', display: 'block' }}
-                          />
-                        ) : (
-                          <svg
-                            viewBox="0 0 500 660"
-                            xmlns="http://www.w3.org/2000/svg"
-                            style={{ width: '0.38in' }}
-                          >
-                            <defs>
-                              <linearGradient id="fFlame2" x1="0%" y1="100%" x2="0%" y2="0%">
-                                <stop offset="0%" stopColor="#E63946" />
-                                <stop offset="100%" stopColor="#F4B740" />
-                              </linearGradient>
-                              <linearGradient id="fRibbon2" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#C4293A" />
-                                <stop offset="50%" stopColor="#E63946" />
-                                <stop offset="100%" stopColor="#C4293A" />
-                              </linearGradient>
-                            </defs>
-                            <path
-                              d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
-                              fill="#FFFFFF"
-                              stroke="#12386E"
-                              strokeWidth="10"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M250,80 L400,133 L400,298 C400,412 330,472 250,510 C170,472 100,412 100,298 L100,133 Z"
-                              fill="none"
-                              stroke="#F4B740"
-                              strokeWidth="4"
-                            />
-                            <g
-                              fontFamily="Georgia,'Times New Roman',serif"
-                              fontWeight="700"
-                              fontSize="40"
-                              fill="#12386E"
-                            >
-                              <text
-                                x="136.7"
-                                y="239.7"
-                                transform="rotate(-54.0 136.7 239.7)"
-                                textAnchor="middle"
-                              >
-                                D
-                              </text>
-                              <text
-                                x="167.7"
-                                y="208.7"
-                                transform="rotate(-36.0 167.7 208.7)"
-                                textAnchor="middle"
-                              >
-                                O
-                              </text>
-                              <text
-                                x="206.7"
-                                y="188.9"
-                                transform="rotate(-18.0 206.7 188.9)"
-                                textAnchor="middle"
-                              >
-                                T
-                              </text>
-                              <text x="250.0" y="182.0" textAnchor="middle">
-                                M
-                              </text>
-                              <text
-                                x="293.3"
-                                y="188.9"
-                                transform="rotate(18.0 293.3 188.9)"
-                                textAnchor="middle"
-                              >
-                                O
-                              </text>
-                              <text
-                                x="332.3"
-                                y="208.7"
-                                transform="rotate(36.0 332.3 208.7)"
-                                textAnchor="middle"
-                              >
-                                N
-                              </text>
-                              <text
-                                x="363.3"
-                                y="239.7"
-                                transform="rotate(54.0 363.3 239.7)"
-                                textAnchor="middle"
-                              >
-                                D
-                              </text>
-                            </g>
-                            <path
-                              d="M188,233 Q250,243 312,233"
-                              fill="none"
-                              stroke="#F4B740"
-                              strokeWidth="3"
-                            />
-                            <line
-                              x1="250"
-                              y1="300"
-                              x2="250"
-                              y2="365"
-                              stroke="#12386E"
-                              strokeWidth="4"
-                            />
-                            <path
-                              d="M250,308 C215,290 175,294 152,312 C150,313 150,315 150,317 L150,352 C150,354 152,355 154,354 C177,340 215,338 250,354 Z"
-                              fill="#12386E"
-                            />
-                            <path
-                              d="M250,308 C285,290 325,294 348,312 C350,313 350,315 350,317 L350,352 C350,354 348,355 346,354 C323,340 285,338 250,354 Z"
-                              fill="#12386E"
-                            />
-                            <path
-                              d="M250,204 C238,222 226,238 226,254 C226,272 237,284 250,284 C263,284 274,272 274,254 C274,238 262,222 250,204 Z"
-                              fill="url(#fFlame2)"
-                            />
-                            <text
-                              x="250"
-                              y="420"
-                              textAnchor="middle"
-                              fontFamily="Arial,sans-serif"
-                              fontWeight="700"
-                              fontSize="23"
-                              letterSpacing="5"
-                              fill="#12386E"
-                            >
-                              SCHOOL
-                            </text>
-                            <g>
-                              <path d="M40,555 L100,540 L100,600 L40,615 L64,578 Z" fill="#9F1D2C" />
-                              <path d="M460,555 L400,540 L400,600 L460,615 L436,578 Z" fill="#9F1D2C" />
-                              <path
-                                d="M95,538 Q250,518 405,538 L405,602 Q250,584 95,602 Z"
-                                fill="url(#fRibbon2)"
-                              />
-                              <text
-                                x="250"
-                                y="576"
-                                textAnchor="middle"
-                                fontFamily="Arial,sans-serif"
-                                fontWeight="700"
-                                fontSize="16"
-                                letterSpacing="0.5"
-                                fill="#FFFFFF"
-                              >
-                                STEADY PROGRESS, BRIGHTER FUTURE
-                              </text>
-                            </g>
-                          </svg>
-                        )}
+                        {renderLogo('0.38in')}
                       </div>
                       <div className="text-cell">
-                        <div className="word-dotmond">{fullSchoolTitle}</div>
-                        <div className="subline">{schoolAddress}</div>
+                        <div className="word-dotmond" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
+                        <div className="subline" style={{ color: activePrimary }}>{schoolAddress}</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="rule"></div>
+                  <div className="rule" style={{ backgroundColor: activePrimary }}></div>
 
                   <div className="notice">
                     This card is official identification & attendance badge for {fullSchoolTitle}.
@@ -729,7 +425,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   </div>
 
                   <div className="scan-block">
-                    <div className="scan-label">ATTENDANCE QR</div>
+                    <div className="scan-label" style={{ color: activePrimary }}>ATTENDANCE QR</div>
                     <div className="qr-wrap">
                       <div className="cell">
                         {idCardData.qrCodeSvg && (
@@ -751,10 +447,10 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                         className="sig-img"
                       />
                     )}
-                    <div className="sig-line-text">Principal Signature</div>
+                    <div className="sig-line-text" style={{ color: activePrimary, borderColor: activePrimary }}>Principal Signature</div>
                   </div>
 
-                  <div className="compact-back-footer">{fullSchoolTitle}</div>
+                  <div className="compact-back-footer" style={{ backgroundColor: activePrimary }}>{fullSchoolTitle}</div>
                 </>
               )}
             </div>
