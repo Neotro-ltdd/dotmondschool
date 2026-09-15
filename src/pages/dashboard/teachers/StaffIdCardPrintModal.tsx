@@ -214,6 +214,42 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
   const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
   const isSquare = rawTemplate.toLowerCase().includes('square');
 
+  const wrapperStyle = isLandscape
+    ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' }
+    : isSquare
+    ? { width: '2.5in', height: '2.5in', minWidth: '2.5in', minHeight: '2.5in' }
+    : undefined;
+
+  const cardStyle = isLandscape
+    ? {
+        width: '3.375in',
+        height: '2.125in',
+        minWidth: '3.375in',
+        minHeight: '2.125in',
+        display: 'flex',
+        flexDirection: 'row' as const,
+        overflow: 'hidden',
+        boxSizing: 'border-box' as const,
+        borderRadius: '0.12in',
+        background: '#ffffff',
+        boxShadow: '0 10px 24px rgba(11, 37, 69, 0.2)',
+      }
+    : isSquare
+    ? {
+        width: '2.5in',
+        height: '2.5in',
+        minWidth: '2.5in',
+        minHeight: '2.5in',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        overflow: 'hidden',
+        boxSizing: 'border-box' as const,
+        borderRadius: '0.12in',
+        background: '#ffffff',
+        boxShadow: '0 10px 24px rgba(11, 37, 69, 0.2)',
+      }
+    : undefined;
+
   return (
     <div className="id-card-overlay">
       <div className="id-card-modal-content">
@@ -249,26 +285,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
 
         <div className="id-card-preview-area flex flex-col md:flex-row gap-8 justify-center items-center" ref={printRef}>
           {/* ================= FRONT SIDE ================= */}
-          <div className="id-card-wrapper" style={isLandscape ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' } : undefined}>
+          <div className="id-card-wrapper" style={wrapperStyle}>
             <div
               className={`card staff-card front ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}
-              style={
-                isLandscape
-                  ? {
-                      width: '3.375in',
-                      height: '2.125in',
-                      minWidth: '3.375in',
-                      minHeight: '2.125in',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
-                      boxSizing: 'border-box',
-                      borderRadius: '0.12in',
-                      background: '#ffffff',
-                      boxShadow: '0 10px 24px rgba(11, 37, 69, 0.2)',
-                    }
-                  : undefined
-              }
+              style={cardStyle}
             >
               {isLandscape ? (
                 <>
@@ -367,26 +387,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           </div>
 
           {/* ================= BACK SIDE ================= */}
-          <div className="id-card-wrapper" style={isLandscape ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' } : undefined}>
+          <div className="id-card-wrapper" style={wrapperStyle}>
             <div
               className={`card staff-card back ${isLandscape ? 'landscape' : isSquare ? 'square' : ''}`}
-              style={
-                isLandscape
-                  ? {
-                      width: '3.375in',
-                      height: '2.125in',
-                      minWidth: '3.375in',
-                      minHeight: '2.125in',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      overflow: 'hidden',
-                      boxSizing: 'border-box',
-                      borderRadius: '0.12in',
-                      background: '#ffffff',
-                      boxShadow: '0 10px 24px rgba(11, 37, 69, 0.2)',
-                    }
-                  : undefined
-              }
+              style={cardStyle}
             >
               {isLandscape ? (
                 <>

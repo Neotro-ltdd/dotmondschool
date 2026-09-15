@@ -1007,7 +1007,12 @@
 /* ══════════════════════════════════════════════════════════════════
    SQUARE BADGE (2.5in W × 2.5in H)
    ══════════════════════════════════════════════════════════════════ */
-.id-card-wrapper .card.square {
+.id-card-wrapper .card.square,
+.id-card-wrapper .card.staff-card.square,
+.card.staff-card.square,
+.staff-card.square,
+.card.square,
+.square {
   width: 2.5in !important;
   height: 2.5in !important;
   display: flex !important;
@@ -1018,5 +1023,162 @@
   border-radius: 0.12in !important;
   background: #ffffff !important;
   box-shadow: 0 10px 24px rgba(11, 37, 69, 0.2) !important;
+  padding: 0 !important;
+}
+
+/* Front Side Square adjustments */
+.card.square .card-header,
+.card.square.staff-card .card-header {
+  height: 0.42in !important;
+  padding: 0.04in 0.08in 0.02in !important;
+}
+
+.card.square .card-header img,
+.card.square.staff-card .card-header img {
+  width: 0.32in !important;
+}
+
+.card.square .card-header .school-name,
+.card.square.staff-card .card-header .school-name {
+  font-size: 10px !important;
+}
+
+.card.square .id-tag,
+.card.square.staff-card .id-tag {
+  font-size: 6.8px !important;
+  padding: 1px 0.08in 0 !important;
+}
+
+.card.square .large-photo-box,
+.card.square.staff-card .large-photo-box {
+  height: 1.15in !important;
+  width: 1.05in !important;
+  margin: 2px auto !important;
+}
+
+.card.square .name-block,
+.card.square.staff-card .name-block {
+  padding: 0 0.06in 0.04in !important;
+}
+
+.card.square .name-block .name,
+.card.square.staff-card .name-block .name {
+  font-size: 9.5px !important;
+}
+
+.card.square .name-underline,
+.card.square.staff-card .name-underline {
+  margin: 2px auto 3px !important;
+}
+
+.card.square .meta-row,
+.card.square.staff-card .meta-row {
+  font-size: 7.5px !important;
+  margin-bottom: 1px !important;
+}
+
+.card.square .bottom-school-watermark,
+.card.square.staff-card .bottom-school-watermark {
+  font-size: 5px !important;
+  margin-top: 1px !important;
+}
+
+/* Student Slanted Name Band inside Square */
+.card.square .slanted-name-band {
+  bottom: 0.18in !important;
+  height: 0.62in !important;
+  padding: 0.08in 0.08in 0.02in !important;
+}
+
+.card.square .slanted-name-band .name {
+  font-size: 10px !important;
+  margin-bottom: 1px !important;
+}
+
+.card.square .slanted-name-band .field {
+  font-size: 7.5px !important;
+}
+
+.card.square .red-accent-line {
+  bottom: 0.18in !important;
+}
+
+.card.square .foot-strip {
+  height: 0.18in !important;
+  font-size: 6.5px !important;
+}
+
+/* Back Side Square adjustments */
+.card.square .back-body,
+.card.square.staff-card .back-body {
+  padding: 2px 0.08in 0 !important;
+}
+
+.card.square .owner-text,
+.card.square.staff-card .owner-text,
+.card.square .notice {
+  font-size: 5.8px !important;
+  line-height: 1.25 !important;
+  margin: 1px 0 !important;
+}
+
+.card.square .scan-label,
+.card.square.staff-card .scan-label {
+  font-size: 6.8px !important;
+  margin: 2px 0 0 !important;
+}
+
+.card.square .qr-wrap,
+.card.square.staff-card .qr-wrap {
+  margin: 0 0 2px !important;
+}
+
+.card.square .qr-box,
+.card.square.staff-card .qr-box {
+  width: 0.92in !important;
+  height: 0.92in !important;
+  margin: 0 auto !important;
+}
+
+.card.square .qr-wrap .cell {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.card.square .encoded-id,
+.card.square.staff-card .encoded-id,
+.card.square .encoded-pill {
+  font-size: 6.8px !important;
+  margin-top: 1px !important;
+  padding: 1px 6px !important;
+}
+
+.card.square .sig-block,
+.card.square.staff-card .sig-block {
+  position: relative !important;
+  bottom: auto !important;
+  margin-top: 2px !important;
+  padding: 0 !important;
+}
+
+.card.square .sig-img,
+.card.square.staff-card .sig-img {
+  height: 0.18in !important;
+  margin: 0 auto -2px !important;
+}
+
+.card.square .sig-line-text,
+.card.square.staff-card .sig-line-text {
+  font-size: 6.5px !important;
+  padding-top: 1px !important;
+  width: 1.1in !important;
+}
+
+.card.square .back-footer,
+.card.square.staff-card .back-footer,
+.card.square .compact-back-footer {
+  height: 0.18in !important;
+  font-size: 5.8px !important;
+  padding: 2px 0 !important;
 }
 
