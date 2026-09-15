@@ -9,6 +9,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import LandingPage from './pages/LandingPage';
 import NeotroLanding from './pages/NeotroLanding';
 import Login from './pages/auth/Login';
+import NeotroLogin from './pages/auth/NeotroLogin';
 import ChangePassword from './pages/auth/ChangePassword';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Overview from './pages/dashboard/Overview';
@@ -87,7 +88,11 @@ function App() {
                     path="/" 
                     element={(import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro' ? <NeotroLanding /> : <LandingPage />} 
                   />
-                  <Route path="/login" element={<Login />} />
+                  <Route 
+                    path="/login" 
+                    element={(import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro' ? <NeotroLogin /> : <Login />} 
+                  />
+                  <Route path="/neotro-login" element={<NeotroLogin />} />
                   <Route path="/apply-admission" element={<PublicAdmissionForm />} />
                   <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />
                   <Route path="/change-password" element={<ChangePassword />} />

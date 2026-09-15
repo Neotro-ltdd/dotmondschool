@@ -74,7 +74,7 @@ export default function NeotroLanding() {
             <a href="#features">SUPPORT</a>
           </nav>
 
-          <button onClick={() => navigate('/login')} className="nas-btn nas-btn-header">
+          <button onClick={() => navigate('/neotro-login')} className="nas-btn nas-btn-header">
             Portal Login <ArrowRight size={16} />
           </button>
         </div>

@@ -1,0 +1,338 @@
+/* Neotro Custom Login Aesthetics - Emerald & Gold Signature Theme */
+.neotro-login-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #061e16;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(27, 94, 75, 0.45) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(178, 206, 182, 0.25) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(6, 30, 22, 0.95) 0px, transparent 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.neotro-bg-mesh {
+  position: absolute;
+  inset: 0;
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  pointer-events: none;
+}
+
+.neotro-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.neotro-orb-1 {
+  width: 450px;
+  height: 450px;
+  background: #1B5E4B;
+  top: -100px;
+  right: -100px;
+}
+
+.neotro-orb-2 {
+  width: 350px;
+  height: 350px;
+  background: #0f3d30;
+  bottom: -80px;
+  left: -80px;
+}
+
+.neotro-login-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 460px;
+  background: rgba(12, 45, 35, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(178, 206, 182, 0.2);
+  border-radius: 24px;
+  padding: 40px 36px;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  color: #ffffff;
+  animation: neotroFadeIn 0.5s ease-out;
+}
+
+@keyframes neotroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.neotro-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.neotro-brand-badge {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neotro-custom-logo {
+  max-height: 56px;
+  max-width: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+.neotro-logo-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1B5E4B 0%, #0d382c 100%);
+  border: 1px solid rgba(178, 206, 182, 0.4);
+  color: #B2CEB6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(27, 94, 75, 0.4);
+}
+
+.neotro-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(178, 206, 182, 0.12);
+  border: 1px solid rgba(178, 206, 182, 0.25);
+  color: #B2CEB6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.neotro-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.3px;
+}
+
+.neotro-card-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.neotro-error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  font-size: 13px;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.neotro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.neotro-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.neotro-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.neotro-input-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.3px;
+}
+
+.neotro-forgot-link {
+  background: none;
+  border: none;
+  color: #B2CEB6;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.neotro-forgot-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.neotro-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.neotro-input-icon {
+  position: absolute;
+  left: 14px;
+  color: rgba(178, 206, 182, 0.6);
+  pointer-events: none;
+}
+
+.neotro-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 44px 0 44px;
+  background: rgba(6, 30, 22, 0.6);
+  border: 1px solid rgba(178, 206, 182, 0.25);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.neotro-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.neotro-input:focus {
+  border-color: #B2CEB6;
+  box-shadow: 0 0 0 3px rgba(178, 206, 182, 0.2);
+  background: rgba(6, 30, 22, 0.85);
+}
+
+.neotro-toggle-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: rgba(178, 206, 182, 0.6);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.neotro-toggle-btn:hover {
+  color: #ffffff;
+}
+
+.neotro-submit-btn {
+  height: 50px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1B5E4B 0%, #154b3c 100%);
+  border: 1px solid rgba(178, 206, 182, 0.4);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(27, 94, 75, 0.4);
+  transition: all 0.25s ease;
+  margin-top: 8px;
+}
+
+.neotro-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #22755e 0%, #1B5E4B 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(27, 94, 75, 0.6);
+}
+
+.neotro-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.neotro-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: neotroSpin 0.7s linear infinite;
+}
+
+@keyframes neotroSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.neotro-card-footer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.neotro-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.neotro-footer-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.neotro-footer-btn:hover {
+  color: #B2CEB6;
+}
+
+.neotro-copyright {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
