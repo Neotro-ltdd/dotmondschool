@@ -615,7 +615,7 @@ export default function ParentHub() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     overflow: 'hidden',
-                    border: '2px solid #4f46e5',
+                    border: '2px solid var(--primary-color, #000080)',
                   }}
                 >
                   {selectedKid.passportUrl ? (
@@ -625,7 +625,7 @@ export default function ParentHub() {
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   ) : (
-                    <span style={{ fontWeight: 700, color: '#4338ca' }}>
+                    <span style={{ fontWeight: 700, color: 'var(--primary-color, #000080)' }}>
                       {selectedKid.firstName.charAt(0)}
                       {selectedKid.surname.charAt(0)}
                     </span>
@@ -1383,7 +1383,7 @@ export default function ParentHub() {
                   </div>
                   <div className="stat-card">
                     <p className="stat-label">Punctuality Rate</p>
-                    <h3 className="stat-value" style={{ color: '#4f46e5' }}>
+                    <h3 className="stat-value" style={{ color: 'var(--primary-color, #000080)' }}>
                       {attendanceData.attendanceRatePercentage}%
                     </h3>
                   </div>
@@ -1424,7 +1424,7 @@ export default function ParentHub() {
                           </td>
                           <td>{log.dayName}</td>
                           <td style={{ fontWeight: 600, color: '#16a34a' }}>{log.timeIn}</td>
-                          <td style={{ fontWeight: 600, color: '#4338ca' }}>{log.timeOut}</td>
+                          <td style={{ fontWeight: 600, color: 'var(--primary-color, #000080)' }}>{log.timeOut}</td>
                           <td>
                             <span
                               style={{

@@ -77,14 +77,15 @@
   font-weight: 500;
   border-radius: 8px;
   border: none;
-  background: #0284c7;
+  background: var(--primary-color, #000080);
   color: #ffffff;
   cursor: pointer;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color, #000080) 25%, transparent);
   transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .push-btn-primary:hover:not(:disabled) {
-  background: #0369a1;
+  background: color-mix(in srgb, var(--primary-color, #000080) 85%, black);
   transform: translateY(-1px);
 }
 
