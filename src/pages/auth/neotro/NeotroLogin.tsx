@@ -140,314 +140,338 @@ export default function NeotroLogin() {
 
   return (
     <div className="neotro-login-container">
-      {/* Background Decorative Mesh & Geometry */}
-      <div className="neotro-bg-mesh"></div>
-      <div className="neotro-orb neotro-orb-1"></div>
-      <div className="neotro-orb neotro-orb-2"></div>
+      {/* Left Panel: Branded Dark Emerald Section with Curved Edge & Shadow */}
+      <div className="neotro-panel-brand">
+        <div className="neotro-bg-mesh"></div>
+        <div className="neotro-orb neotro-orb-1"></div>
+        <div className="neotro-orb neotro-orb-2"></div>
 
-      <div className="neotro-login-card">
-        {/* Header Branding */}
-        <div className="neotro-card-header">
-          <div className="neotro-brand-badge">
-            {logoUrl ? (
-              <img src={logoUrl} alt={schoolName} className="neotro-custom-logo" />
-            ) : (
-              <div className="neotro-logo-icon">
-                <Shield size={28} />
-              </div>
-            )}
+        <div className="neotro-hero-content">
+          {logoUrl ? (
+            <img src={logoUrl} alt={schoolName} className="neotro-hero-logo" />
+          ) : (
+            <div className="neotro-hero-icon">
+              <Shield size={56} />
+            </div>
+          )}
+          <div className="neotro-hero-tag">
+            <Building2 size={13} />
+            <span>Neotro Enterprise Portal</span>
           </div>
-          <span className="neotro-pill-tag">
-            <Building2 size={12} />
-            Neotro Enterprise Portal
-          </span>
-          <h1 className="neotro-card-title">
-            {isForgotPasswordMode ? "Reset Password" : schoolName}
-          </h1>
-          <p className="neotro-card-subtitle">
-            {isForgotPasswordMode
-              ? (forgotPasswordStep === 1
-                  ? "Enter your registered email to receive an OTP code."
-                  : "Enter the 6-digit OTP sent to your email and your new password.")
-              : "Sign in to access your administrative dashboard, academic broadsheets & student records."}
+          <h2 className="neotro-hero-title">{schoolName}</h2>
+          <p className="neotro-hero-subtitle">
+            Streamlined Administrative Dashboard, Broadsheets & Academic Records Management System.
           </p>
         </div>
+      </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="neotro-error-banner" role="alert">
-            <AlertCircle size={18} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form */}
-        {isForgotPasswordMode ? (
-          <form onSubmit={handleForgotPasswordSubmit} className="neotro-form">
-            {/* School Code Input */}
-            <div className="neotro-input-group">
-              <label htmlFor="neotro-school-code" className="neotro-input-label">
-                School Code / Tenant ID
-              </label>
-              <div className="neotro-input-wrapper">
-                <Building2 className="neotro-input-icon" size={18} />
-                <input
-                  id="neotro-school-code"
-                  type="text"
-                  required
-                  placeholder="e.g. neotro or greenhillschools"
-                  value={schoolCode}
-                  onChange={(e) => setSchoolCode(e.target.value)}
-                  disabled={forgotPasswordStep === 2}
-                  className="neotro-input"
-                />
-              </div>
-            </div>
-
-            {/* Email Input */}
-            <div className="neotro-input-group">
-              <label htmlFor="neotro-email" className="neotro-input-label">
-                Email Address
-              </label>
-              <div className="neotro-input-wrapper">
-                <Mail className="neotro-input-icon" size={18} />
-                <input
-                  id="neotro-email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="principal@neotro.edu.ng"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={forgotPasswordStep === 2}
-                  className="neotro-input"
-                />
-              </div>
-            </div>
-
-            {/* Step 2 Inputs */}
-            {forgotPasswordStep === 2 && (
-              <>
-                <div className="neotro-input-group">
-                  <label htmlFor="neotro-otp" className="neotro-input-label">
-                    6-Digit Reset Code (OTP)
-                  </label>
-                  <div className="neotro-input-wrapper">
-                    <Lock className="neotro-input-icon" size={18} />
-                    <input
-                      id="neotro-otp"
-                      type="text"
-                      required
-                      maxLength={6}
-                      placeholder="123456"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      className="neotro-input"
-                    />
-                  </div>
-                </div>
-
-                <div className="neotro-input-group">
-                  <label htmlFor="neotro-new-password" className="neotro-input-label">
-                    New Password
-                  </label>
-                  <div className="neotro-input-wrapper">
-                    <Lock className="neotro-input-icon" size={18} />
-                    <input
-                      id="neotro-new-password"
-                      type={showNewPassword ? 'text' : 'password'}
-                      required
-                      placeholder="••••••••••••"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      disabled={otp.length !== 6}
-                      className="neotro-input"
-                    />
-                    <button
-                      type="button"
-                      className="neotro-toggle-btn"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="neotro-input-group">
-                  <label htmlFor="neotro-confirm-password" className="neotro-input-label">
-                    Confirm New Password
-                  </label>
-                  <div className="neotro-input-wrapper">
-                    <Lock className="neotro-input-icon" size={18} />
-                    <input
-                      id="neotro-confirm-password"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      required
-                      placeholder="••••••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={otp.length !== 6}
-                      className="neotro-input"
-                    />
-                    <button
-                      type="button"
-                      className="neotro-toggle-btn"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                    >
-                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Submit Button */}
-            <button type="submit" disabled={loading} className="neotro-submit-btn">
-              {loading ? (
-                <>
-                  <div className="neotro-spinner" />
-                  Processing...
-                </>
+      {/* Right Panel: Form Container */}
+      <div className="neotro-panel-form">
+        <div className="neotro-login-card">
+          {/* Header Branding */}
+          <div className="neotro-card-header">
+            <div className="neotro-brand-badge">
+              {logoUrl ? (
+                <img src={logoUrl} alt={schoolName} className="neotro-custom-logo" />
               ) : (
-                <>
-                  {forgotPasswordStep === 1 ? "Send OTP Code" : "Reset Password"}
-                  <ArrowRight size={18} />
-                </>
+                <div className="neotro-logo-icon">
+                  <Shield size={26} />
+                </div>
               )}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleLoginSubmit} className="neotro-form">
-            {/* School Code Input */}
-            <div className="neotro-input-group">
-              <label htmlFor="neotro-school-code" className="neotro-input-label">
-                School Code / Institution ID
-              </label>
-              <div className="neotro-input-wrapper">
-                <Building2 className="neotro-input-icon" size={18} />
-                <input
-                  id="neotro-school-code"
-                  type="text"
-                  required
-                  placeholder="e.g. neotro or greenhillschools"
-                  value={schoolCode}
-                  onChange={(e) => setSchoolCode(e.target.value)}
-                  className="neotro-input"
-                />
-              </div>
             </div>
+            <span className="neotro-pill-tag">
+              <Building2 size={12} />
+              Neotro Enterprise Portal
+            </span>
+            <h1 className="neotro-card-title">
+              {isForgotPasswordMode ? "Reset Password" : schoolName}
+            </h1>
+            <p className="neotro-card-subtitle">
+              {isForgotPasswordMode
+                ? (forgotPasswordStep === 1
+                    ? "Enter your registered email to receive an OTP code."
+                    : "Enter the 6-digit OTP sent to your email and your new password.")
+                : "Sign in to access your administrative dashboard, academic broadsheets & student records."}
+            </p>
+          </div>
 
-            {/* Email Input */}
-            <div className="neotro-input-group">
-              <label htmlFor="neotro-email" className="neotro-input-label">
-                Email Address
-              </label>
-              <div className="neotro-input-wrapper">
-                <Mail className="neotro-input-icon" size={18} />
-                <input
-                  id="neotro-email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  placeholder="principal@neotro.edu.ng"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="neotro-input"
-                />
-              </div>
+          {/* Error Alert */}
+          {error && (
+            <div className="neotro-error-banner" role="alert">
+              <AlertCircle size={18} />
+              <span>{error}</span>
             </div>
+          )}
 
-            {/* Password Input */}
-            <div className="neotro-input-group">
-              <div className="neotro-label-row">
-                <label htmlFor="neotro-password" className="neotro-input-label">
-                  Password
+          {/* Form */}
+          {isForgotPasswordMode ? (
+            <form onSubmit={handleForgotPasswordSubmit} className="neotro-form">
+              {/* School Code Input */}
+              <div className="neotro-input-group">
+                <label htmlFor="neotro-school-code" className="neotro-input-label">
+                  School Code / Tenant ID
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setIsForgotPasswordMode(true)}
-                  className="neotro-forgot-link"
-                >
-                  Reset Password?
-                </button>
+                <div className="neotro-input-wrapper">
+                  <Building2 className="neotro-input-icon" size={18} />
+                  <input
+                    id="neotro-school-code"
+                    type="text"
+                    required
+                    placeholder="e.g. neotro or greenhillschools"
+                    value={schoolCode}
+                    onChange={(e) => setSchoolCode(e.target.value)}
+                    disabled={forgotPasswordStep === 2}
+                    className="neotro-input"
+                  />
+                </div>
               </div>
-              <div className="neotro-input-wrapper">
-                <Lock className="neotro-input-icon" size={18} />
-                <input
-                  id="neotro-password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="neotro-input"
-                />
-                <button
-                  type="button"
-                  className="neotro-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
 
-            {/* Submit Button */}
-            <button type="submit" disabled={loading} className="neotro-submit-btn">
-              {loading ? (
+              {/* Email Input */}
+              <div className="neotro-input-group">
+                <label htmlFor="neotro-email" className="neotro-input-label">
+                  Email Address
+                </label>
+                <div className="neotro-input-wrapper">
+                  <Mail className="neotro-input-icon" size={18} />
+                  <input
+                    id="neotro-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="principal@neotro.edu.ng"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={forgotPasswordStep === 2}
+                    className="neotro-input"
+                  />
+                </div>
+              </div>
+
+              {/* Step 2 Inputs */}
+              {forgotPasswordStep === 2 && (
                 <>
-                  <div className="neotro-spinner" />
-                  Signing In...
-                </>
-              ) : (
-                <>
-                  Access Portal
-                  <ArrowRight size={18} />
+                  <div className="neotro-input-group">
+                    <label htmlFor="neotro-otp" className="neotro-input-label">
+                      6-Digit Reset Code (OTP)
+                    </label>
+                    <div className="neotro-input-wrapper">
+                      <Lock className="neotro-input-icon" size={18} />
+                      <input
+                        id="neotro-otp"
+                        type="text"
+                        required
+                        maxLength={6}
+                        placeholder="123456"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="neotro-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="neotro-input-group">
+                    <label htmlFor="neotro-new-password" className="neotro-input-label">
+                      New Password
+                    </label>
+                    <div className="neotro-input-wrapper">
+                      <Lock className="neotro-input-icon" size={18} />
+                      <input
+                        id="neotro-new-password"
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        placeholder="••••••••••••"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        disabled={otp.length !== 6}
+                        className="neotro-input"
+                      />
+                      <button
+                        type="button"
+                        className="neotro-toggle-btn"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="neotro-input-group">
+                    <label htmlFor="neotro-confirm-password" className="neotro-input-label">
+                      Confirm New Password
+                    </label>
+                    <div className="neotro-input-wrapper">
+                      <Lock className="neotro-input-icon" size={18} />
+                      <input
+                        id="neotro-confirm-password"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        required
+                        placeholder="••••••••••••"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={otp.length !== 6}
+                        className="neotro-input"
+                      />
+                      <button
+                        type="button"
+                        className="neotro-toggle-btn"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
                 </>
               )}
-            </button>
-          </form>
-        )}
 
-        {/* Footer */}
-        <div className="neotro-card-footer">
-          <div className="neotro-footer-links">
-            {isForgotPasswordMode ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsForgotPasswordMode(false);
-                  setForgotPasswordStep(1);
-                  setOtp('');
-                  setNewPassword('');
-                  setConfirmPassword('');
-                  setError(null);
-                }}
-                className="neotro-footer-btn"
-              >
-                ← Back to Login
+              {/* Submit Button */}
+              <button type="submit" disabled={loading} className="neotro-submit-btn">
+                {loading ? (
+                  <>
+                    <div className="neotro-spinner" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {forgotPasswordStep === 1 ? "Send OTP Code" : "Reset Password"}
+                    <ArrowRight size={18} />
+                  </>
+                )}
               </button>
-            ) : (
-              <>
-                <button type="button" onClick={() => navigate('/')} className="neotro-footer-btn">
-                  ← Return Home
+            </form>
+          ) : (
+            <form onSubmit={handleLoginSubmit} className="neotro-form">
+              {/* School Code Input */}
+              <div className="neotro-input-group">
+                <label htmlFor="neotro-school-code" className="neotro-input-label">
+                  School Code / Institution ID
+                </label>
+                <div className="neotro-input-wrapper">
+                  <Building2 className="neotro-input-icon" size={18} />
+                  <input
+                    id="neotro-school-code"
+                    type="text"
+                    required
+                    placeholder="e.g. neotro or greenhillschools"
+                    value={schoolCode}
+                    onChange={(e) => setSchoolCode(e.target.value)}
+                    className="neotro-input"
+                  />
+                </div>
+              </div>
+
+              {/* Email Input */}
+              <div className="neotro-input-group">
+                <label htmlFor="neotro-email" className="neotro-input-label">
+                  Email Address
+                </label>
+                <div className="neotro-input-wrapper">
+                  <Mail className="neotro-input-icon" size={18} />
+                  <input
+                    id="neotro-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="principal@neotro.edu.ng"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="neotro-input"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="neotro-input-group">
+                <div className="neotro-label-row">
+                  <label htmlFor="neotro-password" className="neotro-input-label">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPasswordMode(true)}
+                    className="neotro-forgot-link"
+                  >
+                    Reset Password?
+                  </button>
+                </div>
+                <div className="neotro-input-wrapper">
+                  <Lock className="neotro-input-icon" size={18} />
+                  <input
+                    id="neotro-password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="neotro-input"
+                  />
+                  <button
+                    type="button"
+                    className="neotro-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button type="submit" disabled={loading} className="neotro-submit-btn">
+                {loading ? (
+                  <>
+                    <div className="neotro-spinner" />
+                    Signing In...
+                  </>
+                ) : (
+                  <>
+                    Access Portal
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* Footer */}
+          <div className="neotro-card-footer">
+            <div className="neotro-footer-links">
+              {isForgotPasswordMode ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgotPasswordMode(false);
+                    setForgotPasswordStep(1);
+                    setOtp('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                    setError(null);
+                  }}
+                  className="neotro-footer-btn"
+                >
+                  ← Back to Login
                 </button>
-                <button type="button" onClick={() => navigate('/master-login')} className="neotro-footer-btn">
-                  <KeyRound size={13} /> Master Admin
-                </button>
-              </>
-            )}
+              ) : (
+                <>
+                  <button type="button" onClick={() => navigate('/')} className="neotro-footer-btn">
+                    ← Return Home
+                  </button>
+                  <button type="button" onClick={() => navigate('/master-login')} className="neotro-footer-btn">
+                    <KeyRound size={13} /> Master Admin
+                  </button>
+                </>
+              )}
+            </div>
+            <p className="neotro-copyright">
+              © {new Date().getFullYear()} Neotro Academic System. All Rights Reserved.
+            </p>
           </div>
-          <p className="neotro-copyright">
-            © {new Date().getFullYear()} Neotro Academic System. All Rights Reserved.
-          </p>
         </div>
       </div>
     </div>
   );
 }
+
 
