@@ -5,11 +5,11 @@
 }
 
 .attendance-header-banner {
-  background: linear-gradient(135deg, #000080 0%, #1e1b4b 50%, #0f172a 100%);
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, color-mix(in srgb, var(--primary-color, #000080) 70%, black) 50%, color-mix(in srgb, var(--primary-color, #000080) 40%, black) 100%);
   color: #ffffff;
   padding: 1.75rem 2rem;
   border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 128, 0.25);
+  box-shadow: 0 10px 25px -5px color-mix(in srgb, var(--primary-color, #000080) 25%, transparent);
   margin-bottom: 1.75rem;
   display: flex;
   justify-content: space-between;
@@ -103,9 +103,9 @@
 
 .attendance-filter-group select:focus,
 .attendance-filter-group input:focus {
-  border-color: #000080;
+  border-color: var(--primary-color, #000080);
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color, #000080) 12%, transparent);
 }
 
 .stat-grid-executive {
@@ -235,7 +235,7 @@
 }
 
 .btn-view-logs:hover {
-  background: #000080;
+  background: var(--primary-color, #000080);
   color: #ffffff;
 }
 
@@ -376,9 +376,9 @@
 }
 
 .sub-pill.primary {
-  background: #000080;
+  background: var(--primary-color, #000080);
   color: #ffffff;
-  border-color: #000080;
+  border-color: var(--primary-color, #000080);
 }
 
 .parent-contact-grid {

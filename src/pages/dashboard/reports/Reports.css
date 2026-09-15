@@ -11,12 +11,12 @@
 
 /* ════════ EXECUTIVE HERO BANNER ════════ */
 .reports-header-banner {
-  background: linear-gradient(135deg, #0b1329 0%, #111e38 40%, #1e293b 100%);
+  background: linear-gradient(135deg, var(--primary-color, #000080) 0%, color-mix(in srgb, var(--primary-color, #000080) 70%, black) 40%, color-mix(in srgb, var(--primary-color, #000080) 40%, black) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #ffffff;
   padding: 2rem 2.25rem;
   border-radius: 20px;
-  box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 16px 36px -10px color-mix(in srgb, var(--primary-color, #000080) 35%, transparent), 0 0 0 1px rgba(255, 255, 255, 0.05);
   margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
@@ -139,8 +139,8 @@
 
 .reports-tab-item.active {
   color: #ffffff;
-  background: linear-gradient(135deg, #0b1329 0%, #1e293b 100%);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+  background: var(--primary-color, #000080);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color, #000080) 30%, transparent);
 }
 
 /* ════════ FILTER CONTROL PANEL ════════ */
@@ -211,7 +211,7 @@
 }
 
 .btn-apply-filters {
-  background: linear-gradient(135deg, #0b1329 0%, #1e293b 100%);
+  background: var(--primary-color, #000080);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.875rem;
@@ -225,12 +225,13 @@
   gap: 0.55rem;
   transition: all 0.2s ease;
   height: 44px;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color, #000080) 25%, transparent);
 }
 
 .btn-apply-filters:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary-color, #000080) 85%, black);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary-color, #000080) 35%, transparent);
 }
 
 .btn-apply-filters:disabled {

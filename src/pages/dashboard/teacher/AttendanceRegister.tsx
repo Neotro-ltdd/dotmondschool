@@ -291,7 +291,7 @@ export default function AttendanceRegister() {
         <div className="ca-dev-banner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span className="ca-dev-badge">Developer & Admin Mode</span>
-            <span style={{ fontSize: '0.9rem', color: '#1E40AF', fontWeight: 500 }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--primary-color, #000080)', fontWeight: 500 }}>
               You are inspecting class attendance records as a System Admin / SuperAdmin. Select any
               class below to inspect or mark attendance.
             </span>

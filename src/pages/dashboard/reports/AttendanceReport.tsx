@@ -286,7 +286,7 @@ export default function AttendanceReport() {
           />
         </div>
 
-        <button type="submit" className="btn-apply-filters" style={{ background: '#000080', color: '#fff', padding: '0.65rem 1.25rem', borderRadius: '10px', border: 'none', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px' }}>
+        <button type="submit" className="btn-apply-filters" style={{ background: 'var(--primary-color, #000080)', color: '#fff', padding: '0.65rem 1.25rem', borderRadius: '10px', border: 'none', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px' }}>
           <Search size={16} /> Search
         </button>
       </form>
@@ -294,7 +294,7 @@ export default function AttendanceReport() {
       {/* Executive Summary Stat Cards */}
       <div className="stat-grid-executive">
         <div className="stat-card-executive">
-          <div className="stat-title-exec">Students Monitored <Users size={16} color="#000080" /></div>
+          <div className="stat-title-exec">Students Monitored <Users size={16} color="var(--primary-color, #000080)" /></div>
           <div className="stat-value-exec">{stats.totalStudents}</div>
           <div className="stat-sub-exec">Active Enrolled Roster</div>
         </div>
@@ -308,7 +308,7 @@ export default function AttendanceReport() {
         </div>
 
         <div className="stat-card-executive">
-          <div className="stat-title-exec">Present Days Count <UserCheck size={16} color="#2563eb" /></div>
+          <div className="stat-title-exec">Present Days Count <UserCheck size={16} color="var(--primary-color, #000080)" /></div>
           <div className="stat-value-exec">{stats.totalPresentSum}</div>
           <div className="stat-sub-exec">Scanned Gate Clock-Ins</div>
         </div>
@@ -324,7 +324,7 @@ export default function AttendanceReport() {
       <div className="attendance-table-card">
         {isLoading ? (
           <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-            <RefreshCw className="animate-spin" size={32} style={{ margin: '0 auto 0.75rem', color: '#000080' }} />
+            <RefreshCw className="animate-spin" size={32} style={{ margin: '0 auto 0.75rem', color: 'var(--primary-color, #000080)' }} />
             <p style={{ fontWeight: 600 }}>Loading attendance summary report...</p>
           </div>
         ) : errorMsg ? (
@@ -405,7 +405,7 @@ export default function AttendanceReport() {
                 <button 
                   onClick={handlePrintStudentReport} 
                   className="btn-export-csv" 
-                  style={{ background: '#000080', border: 'none', height: '36px', fontSize: '0.8rem' }}
+                  style={{ background: 'var(--primary-color, #000080)', border: 'none', height: '36px', fontSize: '0.8rem' }}
                 >
                   <Printer size={15} /> Print Report
                 </button>
@@ -438,7 +438,7 @@ export default function AttendanceReport() {
 
               <div className="parent-contact-grid">
                 <div className="contact-item">
-                  <User size={15} color="#000080" /> Parent: <strong>{studentDetails?.parentName || 'Parent / Guardian'}</strong>
+                  <User size={15} color="var(--primary-color, #000080)" /> Parent: <strong>{studentDetails?.parentName || 'Parent / Guardian'}</strong>
                 </div>
                 {studentDetails?.parentEmail && (
                   <div className="contact-item">
@@ -447,7 +447,7 @@ export default function AttendanceReport() {
                 )}
                 {studentDetails?.parentPhone && (
                   <div className="contact-item">
-                    <Phone size={15} color="#2563eb" /> {studentDetails.parentPhone}
+                    <Phone size={15} color="var(--primary-color, #000080)" /> {studentDetails.parentPhone}
                   </div>
                 )}
               </div>

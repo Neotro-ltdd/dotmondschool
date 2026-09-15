@@ -123,8 +123,8 @@ export default function StaffAttendanceReport() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              background: 'rgba(0, 0, 128, 0.1)',
-              color: '#000080',
+              background: 'color-mix(in srgb, var(--primary-color, #000080) 10%, white)',
+              color: 'var(--primary-color, #000080)',
               padding: '4px 12px',
               borderRadius: '20px',
               fontSize: '0.75rem',
@@ -151,7 +151,7 @@ export default function StaffAttendanceReport() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              background: '#000080',
+              background: 'var(--primary-color, #000080)',
               color: '#FFFFFF',
               padding: '8px 16px',
               borderRadius: '8px',
@@ -291,10 +291,10 @@ export default function StaffAttendanceReport() {
             </span>
             <div
               style={{
-                background: '#EFF6FF',
+                background: 'color-mix(in srgb, var(--primary-color, #000080) 10%, white)',
                 padding: '8px',
                 borderRadius: '10px',
-                color: '#1D4ED8',
+                color: 'var(--primary-color, #000080)',
               }}
             >
               <Users size={20} />
@@ -551,7 +551,7 @@ export default function StaffAttendanceReport() {
                 fontWeight: 700,
                 border: 'none',
                 cursor: 'pointer',
-                background: statusFilter === 'All' ? '#000080' : '#F1F5F9',
+                background: statusFilter === 'All' ? 'var(--primary-color, #000080)' : '#F1F5F9',
                 color: statusFilter === 'All' ? '#FFF' : '#475569',
               }}
             >
@@ -670,7 +670,7 @@ export default function StaffAttendanceReport() {
                           width: '36px',
                           height: '36px',
                           borderRadius: '50%',
-                          background: '#000080',
+                          background: 'var(--primary-color, #000080)',
                           color: '#FFF',
                           display: 'flex',
                           alignItems: 'center',
