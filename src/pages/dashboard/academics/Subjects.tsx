@@ -664,8 +664,73 @@ export default function Subjects() {
                   />
                 </div>
 
-                {/* Senior Department Track */}
-                {formData.level === 'Senior Secondary' && (
+                {/* Department Track */}
+                <div className="form-group">
+                  <label
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      color: '#334155',
+                      display: 'block',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    Department / Track
+                  </label>
+                  <select
+                    name="departmentTrack"
+                    value={formData.departmentTrack}
+                    onChange={handleInputChange}
+                    className="select-filter-input"
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem',
+                      fontSize: '0.9rem',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    <option value="General">General (Cross-Cutting)</option>
+                    <option value="Science">Science</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Commercial">Commercial</option>
+                  </select>
+                </div>
+
+                {/* Parent Grouping Settings */}
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="isParent"
+                    name="isParent"
+                    checked={formData.isParent}
+                    onChange={handleInputChange}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  <label
+                    htmlFor="isParent"
+                    style={{
+                      margin: 0,
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      color: '#0F172A',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Is this a Parent Subject? (e.g. NVE, Basic Science & Tech)
+                  </label>
+                </div>
+
+                {!formData.isParent && (
                   <div className="form-group">
                     <label
                       style={{
@@ -676,11 +741,11 @@ export default function Subjects() {
                         marginBottom: '0.4rem',
                       }}
                     >
-                      Department / Track
+                      Parent Subject (Optional)
                     </label>
                     <select
-                      name="departmentTrack"
-                      value={formData.departmentTrack}
+                      name="parentSubjectId"
+                      value={formData.parentSubjectId}
                       onChange={handleInputChange}
                       className="select-filter-input"
                       style={{
@@ -690,87 +755,16 @@ export default function Subjects() {
                         borderRadius: '10px',
                       }}
                     >
-                      <option value="General">General (Cross-Cutting)</option>
-                      <option value="Science">Science</option>
-                      <option value="Arts">Arts</option>
-                      <option value="Commercial">Commercial</option>
+                      <option value="">-- No Parent (Standalone) --</option>
+                      {subjects
+                        .filter((s) => s.isParent && (!formData.level || s.category === formData.level))
+                        .map((parentSub) => (
+                          <option key={parentSub.id} value={parentSub.id}>
+                            {parentSub.name} ({parentSub.category})
+                          </option>
+                        ))}
                     </select>
                   </div>
-                )}
-
-                {/* Junior/Primary Parent Grouping */}
-                {formData.level && formData.level !== 'Senior Secondary' && (
-                  <>
-                    <div
-                      style={{
-                        background: '#F8FAFC',
-                        padding: '0.85rem 1rem',
-                        borderRadius: '10px',
-                        border: '1px solid #E2E8F0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.65rem',
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        id="isParent"
-                        name="isParent"
-                        checked={formData.isParent}
-                        onChange={handleInputChange}
-                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                      />
-                      <label
-                        htmlFor="isParent"
-                        style={{
-                          margin: 0,
-                          fontWeight: 700,
-                          fontSize: '0.85rem',
-                          color: '#0F172A',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Is this a Parent Subject? (e.g. NVE, Basic Science & Tech)
-                      </label>
-                    </div>
-
-                    {!formData.isParent && (
-                      <div className="form-group">
-                        <label
-                          style={{
-                            fontSize: '0.85rem',
-                            fontWeight: 700,
-                            color: '#334155',
-                            display: 'block',
-                            marginBottom: '0.4rem',
-                          }}
-                        >
-                          Parent Subject (Optional)
-                        </label>
-                        <select
-                          name="parentSubjectId"
-                          value={formData.parentSubjectId}
-                          onChange={handleInputChange}
-                          className="select-filter-input"
-                          style={{
-                            width: '100%',
-                            padding: '0.7rem',
-                            fontSize: '0.9rem',
-                            borderRadius: '10px',
-                          }}
-                        >
-                          <option value="">-- No Parent (Standalone) --</option>
-                          {subjects
-                            .filter((s) => s.isParent && s.category === formData.level)
-                            .map((parentSub) => (
-                              <option key={parentSub.id} value={parentSub.id}>
-                                {parentSub.name}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    )}
-                  </>
                 )}
 
                 <div
