@@ -154,11 +154,53 @@
 .slideover-footer {
   padding: 16px 24px;
   border-top: 1px solid #e3e7ef;
-  background-color: #f8fafc;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+}
+
+.slideover-footer .btn,
+.slideover-footer button {
+  padding: 0.65rem 1.35rem !important;
+  border-radius: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.slideover-footer .btn-primary,
+.slideover-footer button[type='submit'] {
+  background: var(--primary-color, #000080) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--primary-color, #000080) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.slideover-footer .btn-primary:hover,
+.slideover-footer button[type='submit']:hover {
+  filter: brightness(0.92) !important;
+  transform: translateY(-1px) !important;
+}
+
+.slideover-footer .btn-secondary,
+.slideover-footer button[type='button'] {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+
+.slideover-footer .btn-secondary:hover,
+.slideover-footer button[type='button']:hover {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
 }
 
 /* Reusable Multi-Stage Slide Stepper & Transitions (Dotmond School System architecture) */
