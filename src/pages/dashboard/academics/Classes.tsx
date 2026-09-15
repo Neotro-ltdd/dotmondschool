@@ -57,7 +57,7 @@ export default function Classes() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     id: '',
-    session: '2025/2026',
+    session: '2026/2027',
     level: 'Junior Secondary',
     name: '1',
     section: '',
@@ -149,7 +149,7 @@ export default function Classes() {
   const openCreateModal = () => {
     setFormData({
       id: '',
-      session: '2025/2026',
+      session: '2026/2027',
       level: 'Junior Secondary',
       name: '1',
       section: '',
@@ -726,21 +726,31 @@ export default function Classes() {
                   >
                     Academic Session <span style={{ color: '#E11D48' }}>*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="session"
                     value={formData.session}
                     onChange={handleInputChange}
                     required
-                    placeholder="e.g. 2025/2026"
+                    className="select-filter-input"
                     style={{
                       width: '100%',
                       padding: '0.7rem 0.85rem',
                       border: '1px solid #CBD5E1',
                       borderRadius: '10px',
                       fontSize: '0.9rem',
+                      backgroundColor: '#ffffff',
                     }}
-                  />
+                  >
+                    {!['2026/2027', '2027/2028', '2028/2029', '2029/2030', '2030/2031', '2031/2032'].includes(formData.session) && (
+                      <option value={formData.session}>{formData.session}</option>
+                    )}
+                    <option value="2026/2027">2026/2027</option>
+                    <option value="2027/2028">2027/2028</option>
+                    <option value="2028/2029">2028/2029</option>
+                    <option value="2029/2030">2029/2030</option>
+                    <option value="2030/2031">2030/2031</option>
+                    <option value="2031/2032">2031/2032</option>
+                  </select>
                 </div>
 
                 {/* Level Select */}
