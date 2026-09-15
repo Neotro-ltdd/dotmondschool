@@ -16,39 +16,26 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  background: transparent;
 }
 
 .login-container .split {
   display: flex;
   min-height: 100vh;
   width: 100%;
-  max-width: none;
-  border-radius: 0;
-  box-shadow: none;
-  background:
-    radial-gradient(ellipse 900px 700px at 50% -10%, rgba(240,169,59,0.12), transparent 60%),
-    radial-gradient(ellipse 1000px 800px at 0% 100%, rgba(22,64,125,0.6), transparent 60%),
-    linear-gradient(200deg, var(--navy-deep) 0%, var(--navy) 45%, #0A1F44 100%);
-  position: relative;
-  overflow: hidden;
 }
 
 /* ---------- LEFT: brand panel, dark, logo in motion ---------- */
 .login-container .panel-brand {
-  flex: 0 0 58%;
-  height: 100vh;
-  min-height: 100vh;
+  flex: 0 0 60%;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  padding: 40px;
+  background:
+    radial-gradient(ellipse 900px 700px at 50% -10%, rgba(240,169,59,0.10), transparent 60%),
+    radial-gradient(ellipse 1000px 800px at 0% 100%, rgba(22,64,125,0.55), transparent 60%),
+    linear-gradient(200deg, var(--navy-deep) 0%, var(--navy) 45%, #0A1F44 100%);
 }
 
 .login-container .ribbon-decor { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
@@ -60,7 +47,7 @@
 
 .login-container .crest-motion-wrap {
   position: relative;
-  width: min(420px, 65%);
+  width: min(420px, 60%);
 }
 
 .login-container .crest-glow-big {
@@ -90,21 +77,18 @@
   .login-container .crest-motion{ animation:none; }
 }
 
-/* ---------- RIGHT: form panel - outer curved frame white card containing inner form card ---------- */
+/* ---------- RIGHT: form panel - form nested inside a curved frame ---------- */
 .login-container .panel-form {
-  flex: 0 0 42%;
-  min-width: 420px;
-  height: 100vh;
-  min-height: 100vh;
+  flex: 0 0 40%;
+  min-width: 400px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
-  background: transparent;
+  padding: 40px;
+  background: linear-gradient(170deg, #EDF0F6 0%, #E4E9F2 100%);
 }
 
-/* Outer white card container */
 .login-container .curve-frame {
   position: relative;
   width: 100%;
@@ -114,16 +98,15 @@
   background: linear-gradient(170deg, #FFFFFF 0%, #F1F4F9 100%);
   border: 1px solid #FFFFFF;
   box-shadow:
-    0 40px 70px -30px rgba(16,32,63,0.35),
+    0 40px 70px -30px rgba(16,32,63,0.28),
     inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
-/* Inner login card */
 .login-container .form-card {
   position: relative;
   background: #fff;
   border-radius: 38px;
-  padding: 40px 32px 34px;
+  padding: 44px 32px 34px;
   box-shadow: 0 18px 40px -22px rgba(16,32,63,0.35);
 }
 
@@ -360,6 +343,3 @@
   .login-container .curve-frame { border-radius:40px; padding:16px; }
   .login-container .form-card { border-radius:28px; padding:36px 24px 28px; }
 }
-
-
-
