@@ -18,6 +18,12 @@
   width: 100%;
 }
 
+.login-container .split {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
 /* ---------- LEFT: brand panel, dark, logo in motion ---------- */
 .login-container .panel-brand {
   flex: 0 0 60%;
