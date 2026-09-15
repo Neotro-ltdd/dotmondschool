@@ -16,23 +16,38 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: #030B1C;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(22, 64, 125, 0.45) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(240, 169, 59, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(7, 23, 57, 0.95) 0px, transparent 100%);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
 .login-container .split {
   display: flex;
-  min-height: 100vh;
   width: 100%;
+  max-width: 1120px;
+  min-height: 640px;
+  border-radius: 40px;
   background:
     radial-gradient(ellipse 900px 700px at 50% -10%, rgba(240,169,59,0.12), transparent 60%),
     radial-gradient(ellipse 1000px 800px at 0% 100%, rgba(22,64,125,0.6), transparent 60%),
     linear-gradient(200deg, var(--navy-deep) 0%, var(--navy) 45%, #0A1F44 100%);
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
   position: relative;
   overflow: hidden;
 }
 
 /* ---------- LEFT: brand panel, dark, logo in motion ---------- */
 .login-container .panel-brand {
-  flex: 0 0 58%;
+  flex: 1;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -51,7 +66,7 @@
 
 .login-container .crest-motion-wrap {
   position: relative;
-  width: min(420px, 60%);
+  width: min(420px, 65%);
 }
 
 .login-container .crest-glow-big {
@@ -81,34 +96,37 @@
   .login-container .crest-motion{ animation:none; }
 }
 
-/* ---------- RIGHT: form panel - form nested inside rounded card with blue wrap ---------- */
+/* ---------- RIGHT: form panel - outer curved frame white card containing inner form card ---------- */
 .login-container .panel-form {
-  flex: 0 0 42%;
-  min-width: 420px;
+  flex: 0 0 480px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 32px;
   background: transparent;
 }
 
+/* Outer white card container */
 .login-container .curve-frame {
   position: relative;
   width: 100%;
-  max-width: 450px;
-  padding: 0;
-  border-radius: 36px;
-  background: #FFFFFF;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
+  max-width: 460px;
+  padding: 22px;
+  border-radius: 56px;
+  background: linear-gradient(170deg, #FFFFFF 0%, #F1F4F9 100%);
+  border: 1px solid #FFFFFF;
+  box-shadow:
+    0 40px 70px -30px rgba(16,32,63,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
+/* Inner login card */
 .login-container .form-card {
   position: relative;
   background: #fff;
-  border-radius: 36px;
-  padding: 40px 34px 32px;
+  border-radius: 38px;
+  padding: 40px 32px 34px;
   box-shadow: 0 18px 40px -22px rgba(16,32,63,0.35);
 }
 
@@ -342,8 +360,9 @@
   .login-container .panel-form { flex:none; max-width:none; min-width:0; padding:28px 18px 48px; }
   .login-container .crest-motion-wrap { width:140px; }
   .login-container .ribbon-decor { display:none; }
-  .login-container .curve-frame { border-radius:32px; }
+  .login-container .curve-frame { border-radius:40px; padding:16px; }
   .login-container .form-card { border-radius:28px; padding:36px 24px 28px; }
 }
+
 
 
