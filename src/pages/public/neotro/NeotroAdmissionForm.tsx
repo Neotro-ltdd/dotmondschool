@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { api, API_ROOT, getTenantId } from '../../services/api';
-import { useTenant } from '../../context/TenantContext';
-import './PublicAdmissionForm.css';
+import { api, API_ROOT, getTenantId } from '../../../services/api';
+import { useTenant } from '../../../context/TenantContext';
+import { Shield, ArrowRight, CheckCircle2 } from 'lucide-react';
+import './NeotroAdmissionForm.css';
 
 interface ClassItem {
   id: string;
@@ -10,14 +11,14 @@ interface ClassItem {
   section: string;
 }
 
-export default function PublicAdmissionForm() {
+export default function NeotroAdmissionForm() {
   const { schoolName: tenantSchoolName, logoUrl } = useTenant();
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Active Form Section Tab: 'header' | 'sectionA' | 'sectionB' | 'sectionC' | 'sectionD' | 'sectionE'
+  // Active Form Section Tab: 'sectionA' | 'sectionB' | 'sectionC' | 'sectionD' | 'sectionE' | 'sectionF'
   const [activeTab, setActiveTab] = useState<string>('sectionA');
 
   // Form State
@@ -80,7 +81,6 @@ export default function PublicAdmissionForm() {
   const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
   const [passportFile, setPassportFile] = useState<File | null>(null);
   const [previousResultFile, setPreviousResultFile] = useState<File | null>(null);
-  const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchClasses();
@@ -103,7 +103,6 @@ export default function PublicAdmissionForm() {
   ) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
-      // SAFETY: only HTMLInputElement in this handler's element union can have type 'checkbox', so the checked branch target is the checkbox input.
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
@@ -111,7 +110,6 @@ export default function PublicAdmissionForm() {
     }
   };
 
-  // Auto calculate age from date of birth
   const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dobStr = e.target.value;
     let calculatedAge = 0;
@@ -139,7 +137,6 @@ export default function PublicAdmissionForm() {
       return;
     }
 
-    // Check at least one parent/guardian name is provided
     const hasParentName =
       formData.fatherName.trim() || formData.motherName.trim() || formData.guardianName.trim();
     if (!hasParentName) {
@@ -176,7 +173,6 @@ export default function PublicAdmissionForm() {
       if (birthCertFile) submitData.append('BirthCertificateFile', birthCertFile);
       if (passportFile) submitData.append('PassportPhotoFile', passportFile);
       if (previousResultFile) submitData.append('PreviousResultFile', previousResultFile);
-      if (paymentProofFile) submitData.append('PaymentProofFile', paymentProofFile);
 
       await api.post('/public/admission', submitData);
       setSubmitted(true);
@@ -193,31 +189,23 @@ export default function PublicAdmissionForm() {
 
   if (submitted) {
     return (
-      <div className="public-admission-page">
-        <div className="admission-container success-card">
-          <div className="success-icon">🎉</div>
+      <div className="neotro-admission-page">
+        <div className="neotro-admission-container success-card">
+          <div className="success-icon"><CheckCircle2 size={54} color="#1B5E4B" /></div>
           <h2 className="success-title">Application Submitted Successfully!</h2>
           <p className="success-message">
             Thank you for registering your child with{' '}
-            <strong>DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</strong>.
+            <strong>{tenantSchoolName || 'NEOTRO ACADEMIC SYSTEM'}</strong>.
           </p>
           <div className="success-details-box">
-            <p>
-              <strong>Student Name:</strong> {formData.fullName}
-            </p>
-            <p>
-              <strong>Primary Parent Email:</strong> {formData.parentEmail}
-            </p>
-            <p>
-              <strong>Primary Parent Phone:</strong> {formData.parentPhoneNumber}
-            </p>
+            <p><strong>Student Name:</strong> {formData.fullName}</p>
+            <p><strong>Primary Parent Email:</strong> {formData.parentEmail}</p>
+            <p><strong>Primary Parent Phone:</strong> {formData.parentPhoneNumber}</p>
           </div>
           <p className="success-next-steps">
-            Our admissions office, principal, and accountant have received your application. You
-            will receive an <strong>Email and SMS</strong> notifying you to bring your child to
-            school for documentation and physical assessment.
+            Our admissions office and academic panel have received your application. You will receive an <strong>Email and SMS</strong> notifying you regarding physical assessment and document verification.
           </p>
-          <button className="btn btn-primary" onClick={() => window.location.reload()}>
+          <button className="neotro-btn neotro-btn-primary" onClick={() => window.location.reload()}>
             Submit Another Application
           </button>
         </div>
@@ -226,28 +214,26 @@ export default function PublicAdmissionForm() {
   }
 
   return (
-    <div className="public-admission-page">
-      <div className="admission-container">
+    <div className="neotro-admission-page">
+      <div className="neotro-admission-container">
         {/* School Banner Header */}
-        <div className="admission-header-card">
-          <div className="school-logo-container">
-            <img
-              src={logoUrl || '/images/dotmond-logo-1.png'}
-              alt={tenantSchoolName || 'Dotmond School'}
-              className="admission-school-logo"
-              onError={(e) => {
-                // SAFETY: onError is attached directly to this <img>, so the event target is guaranteed to be that image element.
-                (e.target as HTMLImageElement).src = '/images/dotmond-logo-1.png';
-              }}
-            />
+        <div className="neotro-admission-header-card">
+          <div className="neotro-logo-container">
+            {logoUrl ? (
+              <img src={logoUrl} alt={tenantSchoolName || 'Neotro School'} className="neotro-school-logo" />
+            ) : (
+              <div className="neotro-logo-icon">
+                <Shield size={32} color="#FFFFFF" />
+              </div>
+            )}
           </div>
-          <h1 className="school-form-title">DOTMOND NURSERY, PRIMARY AND SECONDARY SCHOOL</h1>
-          <h2 className="school-form-subtitle">OFFICIAL ONLINE REGISTRATION FORM</h2>
-          <p className="school-address">Happyland Estate, Ajah, Lagos State, Nigeria</p>
+          <h1 className="neotro-form-title">{tenantSchoolName || 'NEOTRO ACADEMIC SYSTEM'}</h1>
+          <h2 className="neotro-form-subtitle">OFFICIAL ONLINE ADMISSION REGISTRATION</h2>
+          <p className="neotro-address">Victoria Island Campus, Lagos State, Nigeria</p>
         </div>
 
         {/* Target Session & Class Bar */}
-        <div className="target-selection-bar">
+        <div className="neotro-target-bar">
           <div className="form-group">
             <label>Academic Session *</label>
             <input
@@ -285,57 +271,57 @@ export default function PublicAdmissionForm() {
         </div>
 
         {/* Section Tab Stepper Navigation */}
-        <div className="section-tabs-nav">
+        <div className="neotro-tabs-nav">
           <button
             type="button"
-            className={`tab-nav-btn ${activeTab === 'sectionA' ? 'active' : ''}`}
+            className={`tab-btn ${activeTab === 'sectionA' ? 'active' : ''}`}
             onClick={() => setActiveTab('sectionA')}
           >
             Section A: Student Info
           </button>
           <button
             type="button"
-            className={`tab-nav-btn ${activeTab === 'sectionB' ? 'active' : ''}`}
+            className={`tab-btn ${activeTab === 'sectionB' ? 'active' : ''}`}
             onClick={() => setActiveTab('sectionB')}
           >
             Section B: Parent/Guardian
           </button>
           <button
             type="button"
-            className={`tab-nav-btn ${activeTab === 'sectionC' ? 'active' : ''}`}
+            className={`tab-btn ${activeTab === 'sectionC' ? 'active' : ''}`}
             onClick={() => setActiveTab('sectionC')}
           >
             Section C: Medical Info
           </button>
           <button
             type="button"
-            className={`tab-nav-btn ${activeTab === 'sectionD' ? 'active' : ''}`}
+            className={`tab-btn ${activeTab === 'sectionD' ? 'active' : ''}`}
             onClick={() => setActiveTab('sectionD')}
           >
             Section D: Documents
           </button>
           <button
             type="button"
-            className={`tab-nav-btn ${activeTab === 'sectionE' ? 'active' : ''}`}
+            className={`tab-btn ${activeTab === 'sectionE' ? 'active' : ''}`}
             onClick={() => setActiveTab('sectionE')}
           >
-            Section E: Rules &amp; Regulations
+            Section E: Rules &amp; Code
           </button>
           <button
             type="button"
-            className={`tab-nav-btn ${activeTab === 'sectionF' ? 'active' : ''}`}
+            className={`tab-btn ${activeTab === 'sectionF' ? 'active' : ''}`}
             onClick={() => setActiveTab('sectionF')}
           >
             Section F: Declaration
           </button>
         </div>
 
-        {error && <div className="alert-banner alert-danger">{error}</div>}
+        {error && <div className="neotro-alert alert-danger">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="admission-form">
+        <form onSubmit={handleSubmit} className="neotro-admission-form">
           {/* SECTION A: STUDENT INFORMATION */}
           {activeTab === 'sectionA' && (
-            <div className="form-section-card">
+            <div className="neotro-card">
               <h3 className="section-heading">SECTION A: STUDENT INFORMATION</h3>
               <div className="form-grid-2">
                 <div className="form-group full-width">
@@ -346,34 +332,16 @@ export default function PublicAdmissionForm() {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="e.g. ABIODUN, Josiah Oluwaseun"
+                    placeholder="e.g. ADENIRAN, Samuel Kayode"
                     required
                   />
                 </div>
 
                 <div className="form-group">
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    <label style={{ margin: 0 }}>Date of Birth *</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label>Date of Birth *</label>
                     {formData.age > 0 && (
-                      <span
-                        style={{
-                          fontSize: '12px',
-                          color: '#047857',
-                          background: '#d1fae5',
-                          padding: '2px 8px',
-                          borderRadius: '12px',
-                          fontWeight: 700,
-                        }}
-                      >
-                        Calculated Age: {formData.age} yrs
-                      </span>
+                      <span className="age-badge">Calculated Age: {formData.age} yrs</span>
                     )}
                   </div>
                   <input
@@ -431,7 +399,7 @@ export default function PublicAdmissionForm() {
                     name="stateOfOrigin"
                     value={formData.stateOfOrigin}
                     onChange={handleInputChange}
-                    placeholder="e.g. Ogun State"
+                    placeholder="e.g. Lagos State"
                   />
                 </div>
 
@@ -488,10 +456,10 @@ export default function PublicAdmissionForm() {
               <div className="step-actions">
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="neotro-btn neotro-btn-primary"
                   onClick={() => setActiveTab('sectionB')}
                 >
-                  Next: Section B (Parent Info) ➔
+                  Next: Parent Info <ArrowRight size={16} />
                 </button>
               </div>
             </div>
@@ -499,10 +467,10 @@ export default function PublicAdmissionForm() {
 
           {/* SECTION B: PARENT/GUARDIAN INFORMATION */}
           {activeTab === 'sectionB' && (
-            <div className="form-section-card">
+            <div className="neotro-card">
               <h3 className="section-heading">SECTION B: PARENT / GUARDIAN INFORMATION</h3>
 
-              <div className="sub-section-title">👨 Father's Information</div>
+              <div className="sub-heading">Father's Information</div>
               <div className="form-grid-2">
                 <div className="form-group">
                   <label>Father's Full Name</label>
@@ -550,7 +518,7 @@ export default function PublicAdmissionForm() {
                 </div>
               </div>
 
-              <div className="sub-section-title">👩 Mother's Information</div>
+              <div className="sub-heading">Mother's Information</div>
               <div className="form-grid-2">
                 <div className="form-group">
                   <label>Mother's Full Name</label>
@@ -598,14 +566,10 @@ export default function PublicAdmissionForm() {
                 </div>
               </div>
 
-              <div className="sub-section-title">
-                📱 Primary Notification Contact (For Email &amp; SMS Alerts)
-              </div>
-              <div className="form-grid-2 highlight-box">
+              <div className="sub-heading">Primary Notification Contact (Email &amp; SMS)</div>
+              <div className="form-grid-2 highlight-box-neotro">
                 <div className="form-group">
-                  <label>
-                    Primary Parent Email Address (Receives Admission Status &amp; Portal Login) *
-                  </label>
+                  <label>Primary Parent Email Address *</label>
                   <input
                     type="email"
                     className="form-control"
@@ -616,9 +580,8 @@ export default function PublicAdmissionForm() {
                     required
                   />
                 </div>
-
                 <div className="form-group">
-                  <label>Primary Parent Phone Number (Receives Assessment SMS) *</label>
+                  <label>Primary Parent Phone Number *</label>
                   <input
                     type="text"
                     className="form-control"
@@ -631,57 +594,20 @@ export default function PublicAdmissionForm() {
                 </div>
               </div>
 
-              <div className="sub-section-title">🏠 Guardian Information (If Different)</div>
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label>Guardian's Name</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="guardianName"
-                    value={formData.guardianName}
-                    onChange={handleInputChange}
-                    placeholder="Guardian Name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Relationship to Child</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="guardianRelationship"
-                    value={formData.guardianRelationship}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Uncle / Aunt"
-                  />
-                </div>
-                <div className="form-group full-width">
-                  <label>Guardian Address</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="guardianAddress"
-                    value={formData.guardianAddress}
-                    onChange={handleInputChange}
-                    placeholder="Guardian Residential Address"
-                  />
-                </div>
-              </div>
-
               <div className="step-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="neotro-btn neotro-btn-secondary"
                   onClick={() => setActiveTab('sectionA')}
                 >
-                  ⬅ Back
+                  Back
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="neotro-btn neotro-btn-primary"
                   onClick={() => setActiveTab('sectionC')}
                 >
-                  Next: Section C (Medical Info) ➔
+                  Next: Medical Info <ArrowRight size={16} />
                 </button>
               </div>
             </div>
@@ -689,7 +615,7 @@ export default function PublicAdmissionForm() {
 
           {/* SECTION C: MEDICAL INFORMATION */}
           {activeTab === 'sectionC' && (
-            <div className="form-section-card">
+            <div className="neotro-card">
               <h3 className="section-heading">SECTION C: MEDICAL INFORMATION</h3>
               <div className="form-grid-2">
                 <div className="form-group">
@@ -729,38 +655,14 @@ export default function PublicAdmissionForm() {
                 </div>
 
                 <div className="form-group full-width">
-                  <label>Any Medical Condition / Allergy</label>
+                  <label>Medical Conditions / Allergies</label>
                   <textarea
                     className="form-control"
                     name="medicalConditions"
                     value={formData.medicalConditions}
                     onChange={handleInputChange}
                     rows={2}
-                    placeholder="State any allergies, asthma, or medical conditions..."
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Doctor's Name / Clinic</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="doctorNameClinic"
-                    value={formData.doctorNameClinic}
-                    onChange={handleInputChange}
-                    placeholder="Name of Family Doctor or Hospital"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Emergency Contact Number</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="emergencyContactNumber"
-                    value={formData.emergencyContactNumber}
-                    onChange={handleInputChange}
-                    placeholder="e.g. 08029998877"
+                    placeholder="State any allergies or medical requirements..."
                   />
                 </div>
               </div>
@@ -768,30 +670,28 @@ export default function PublicAdmissionForm() {
               <div className="step-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="neotro-btn neotro-btn-secondary"
                   onClick={() => setActiveTab('sectionB')}
                 >
-                  ⬅ Back
+                  Back
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="neotro-btn neotro-btn-primary"
                   onClick={() => setActiveTab('sectionD')}
                 >
-                  Next: Section D (Documents) ➔
+                  Next: Documents <ArrowRight size={16} />
                 </button>
               </div>
             </div>
           )}
 
-          {/* SECTION D: DOCUMENTS REQUIRED CHECKLIST & UPLOADS */}
+          {/* SECTION D: DOCUMENTS REQUIRED CHECKLIST */}
           {activeTab === 'sectionD' && (
-            <div className="form-section-card">
-              <h3 className="section-heading">SECTION D: DOCUMENTS REQUIRED (TICK IF SUBMITTED)</h3>
-
+            <div className="neotro-card">
+              <h3 className="section-heading">SECTION D: DOCUMENTS REQUIRED</h3>
               <div className="checklist-container">
-                {/* Birth Certificate */}
-                <div className="checklist-item-row">
+                <div className="checklist-row">
                   <label className="checkbox-label">
                     <input
                       type="checkbox"
@@ -801,17 +701,14 @@ export default function PublicAdmissionForm() {
                     />
                     <span>Birth Certificate</span>
                   </label>
-                  <div className="file-upload-box">
-                    <input
-                      type="file"
-                      accept="image/*,application/pdf"
-                      onChange={(e) => setBirthCertFile(e.target.files?.[0] || null)}
-                    />
-                  </div>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => setBirthCertFile(e.target.files?.[0] || null)}
+                  />
                 </div>
 
-                {/* Passports */}
-                <div className="checklist-item-row">
+                <div className="checklist-row">
                   <label className="checkbox-label">
                     <input
                       type="checkbox"
@@ -819,19 +716,16 @@ export default function PublicAdmissionForm() {
                       checked={formData.passportsSubmitted}
                       onChange={handleInputChange}
                     />
-                    <span>2 Passport Photographs</span>
+                    <span>Passport Photograph</span>
                   </label>
-                  <div className="file-upload-box">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setPassportFile(e.target.files?.[0] || null)}
-                    />
-                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setPassportFile(e.target.files?.[0] || null)}
+                  />
                 </div>
 
-                {/* Previous Result / Transfer Certificate */}
-                <div className="checklist-item-row">
+                <div className="checklist-row">
                   <label className="checkbox-label">
                     <input
                       type="checkbox"
@@ -839,150 +733,49 @@ export default function PublicAdmissionForm() {
                       checked={formData.previousResultSubmitted}
                       onChange={handleInputChange}
                     />
-                    <span>Previous School Result / Transfer Certificate</span>
+                    <span>Previous Academic Result</span>
                   </label>
-                  <div className="file-upload-box">
-                    <input
-                      type="file"
-                      accept="image/*,application/pdf"
-                      onChange={(e) => setPreviousResultFile(e.target.files?.[0] || null)}
-                    />
-                  </div>
-                </div>
-
-                {/* Other Documents */}
-                <div className="form-group full-width mt-3">
-                  <label>Other Documents (Specify)</label>
                   <input
-                    type="text"
-                    className="form-control"
-                    name="otherDocuments"
-                    value={formData.otherDocuments}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Immunization Card"
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => setPreviousResultFile(e.target.files?.[0] || null)}
                   />
-                </div>
-
-                {/* Registration Form Fee Payment Notice */}
-                <div className="fee-notice-banner mt-3">
-                  <div className="fee-notice-icon">ℹ️</div>
-                  <div className="fee-notice-content">
-                    <strong>Important Notice on Registration Form Fee</strong>
-                    <p>
-                      The registration form fee will be paid physically at the school administrative
-                      office when you and your child visit the school for documentation and physical
-                      assessment.
-                    </p>
-                  </div>
                 </div>
               </div>
 
               <div className="step-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="neotro-btn neotro-btn-secondary"
                   onClick={() => setActiveTab('sectionC')}
                 >
-                  ⬅ Back
+                  Back
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="neotro-btn neotro-btn-primary"
                   onClick={() => setActiveTab('sectionE')}
                 >
-                  Next: Section E (Rules &amp; Regulations) ➔
+                  Next: Rules &amp; Code <ArrowRight size={16} />
                 </button>
               </div>
             </div>
           )}
 
-          {/* SECTION E: SCHOOL RULES & REGULATIONS */}
+          {/* SECTION E: RULES & CODE */}
           {activeTab === 'sectionE' && (
-            <div className="form-section-card">
-              <h3 className="section-heading">SECTION E: SCHOOL RULES AND REGULATIONS</h3>
-
-              <div
-                className="rules-container"
-                style={{
-                  background: '#f8fafc',
-                  padding: '20px',
-                  borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
-                  marginBottom: '20px',
-                }}
-              >
-                <h4
-                  style={{
-                    color: '#000080',
-                    marginTop: 0,
-                    marginBottom: '14px',
-                    fontSize: '16px',
-                    fontWeight: 800,
-                  }}
-                >
-                  📜 DOTMOND SCHOOL CODE OF CONDUCT &amp; REGULATIONS
-                </h4>
-
-                <ol
-                  style={{
-                    paddingLeft: '20px',
-                    margin: 0,
-                    color: '#334155',
-                    fontSize: '13.5px',
-                    lineHeight: '1.75',
-                  }}
-                >
-                  <li style={{ marginBottom: '8px' }}>
-                    <strong>Attendance &amp; Punctuality:</strong> School gates open at 7:15 AM and
-                    close for morning assembly at 7:45 AM. Punctual attendance at all classes,
-                    assemblies, and official school events is mandatory.
-                  </li>
-                  <li style={{ marginBottom: '8px' }}>
-                    <strong>Dress Code &amp; Uniform Policy:</strong> Students must wear full, neat,
-                    and prescribed school uniforms with black polished shoes and white socks. Hair
-                    must be neatly groomed in accordance with school regulations.
-                  </li>
-                  <li style={{ marginBottom: '8px' }}>
-                    <strong>Academic Integrity &amp; Behavior:</strong> Students are expected to
-                    demonstrate diligence, respect for staff and peers, and academic honesty.
-                    Bullying, fighting, or disruptive conduct on school grounds is strictly
-                    prohibited.
-                  </li>
-                  <li style={{ marginBottom: '8px' }}>
-                    <strong>Mobile Phones &amp; Gadgets:</strong> Mobile phones, electronic gaming
-                    devices, and non-prescribed valuables are not permitted on campus without prior
-                    principal authorization.
-                  </li>
-                  <li style={{ marginBottom: '8px' }}>
-                    <strong>Health &amp; Safety:</strong> Parents must inform the school
-                    administration of any chronic medical conditions or emergency medication
-                    requirements.
-                  </li>
-                  <li style={{ marginBottom: '8px' }}>
-                    <strong>Assessment &amp; Fee Policy:</strong> Registration form fees and
-                    physical document verifications are completed physically at school upon
-                    assessment visit.
-                  </li>
+            <div className="neotro-card">
+              <h3 className="section-heading">SECTION E: CODE OF CONDUCT &amp; RULES</h3>
+              <div className="rules-box">
+                <ol style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
+                  <li>Punctuality and consistent attendance are required for academic success.</li>
+                  <li>Prescribed institutional uniform and grooming guidelines must be strictly observed.</li>
+                  <li>Academic integrity and mutual respect are non-negotiable core values.</li>
+                  <li>Digital devices during instructional hours require explicit instructor consent.</li>
                 </ol>
 
-                <div
-                  className="declaration-agree-check mt-4"
-                  style={{
-                    background: '#ffffff',
-                    padding: '14px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                  }}
-                >
-                  <label
-                    className="checkbox-label"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      cursor: 'pointer',
-                    }}
-                  >
+                <div style={{ marginTop: '1.5rem' }}>
+                  <label className="checkbox-label">
                     <input
                       type="checkbox"
                       name="agreeRules"
@@ -990,10 +783,7 @@ export default function PublicAdmissionForm() {
                       onChange={handleInputChange}
                       required
                     />
-                    <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>
-                      I have read, understood, and agree to abide by the Dotmond School Rules and
-                      Regulations.
-                    </span>
+                    <span style={{ fontWeight: 700 }}>I agree to abide by the Neotro Academic Code of Conduct.</span>
                   </label>
                 </div>
               </div>
@@ -1001,17 +791,17 @@ export default function PublicAdmissionForm() {
               <div className="step-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="neotro-btn neotro-btn-secondary"
                   onClick={() => setActiveTab('sectionD')}
                 >
-                  ⬅ Back
+                  Back
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="neotro-btn neotro-btn-primary"
                   onClick={() => setActiveTab('sectionF')}
                 >
-                  Next: Section F (Declaration) ➔
+                  Next: Declaration <ArrowRight size={16} />
                 </button>
               </div>
             </div>
@@ -1019,26 +809,24 @@ export default function PublicAdmissionForm() {
 
           {/* SECTION F: DECLARATION */}
           {activeTab === 'sectionF' && (
-            <div className="form-section-card">
-              <h3 className="section-heading">SECTION F: DECLARATION</h3>
-
-              <div className="declaration-box">
-                <p className="declaration-text">
+            <div className="neotro-card">
+              <h3 className="section-heading">SECTION F: PARENT/GUARDIAN DECLARATION</h3>
+              <div className="declaration-box-neotro">
+                <p>
                   I,{' '}
                   <input
                     type="text"
-                    className="inline-declarant-input"
+                    className="inline-input"
                     name="declarantFullName"
                     value={formData.declarantFullName}
                     onChange={handleInputChange}
                     placeholder="Parent/Guardian Full Name"
                     required
                   />{' '}
-                  (Parent/Guardian), hereby declare that the information provided above is true to
-                  the best of my knowledge.
+                  hereby declare that all information submitted in this application is accurate and complete.
                 </p>
 
-                <div className="declaration-agree-check">
+                <div style={{ marginTop: '1.25rem' }}>
                   <label className="checkbox-label">
                     <input
                       type="checkbox"
@@ -1055,13 +843,13 @@ export default function PublicAdmissionForm() {
               <div className="step-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="neotro-btn neotro-btn-secondary"
                   onClick={() => setActiveTab('sectionE')}
                 >
-                  ⬅ Back
+                  Back
                 </button>
-                <button type="submit" className="btn btn-success submit-app-btn" disabled={loading}>
-                  {loading ? 'Submitting Application...' : '📩 Submit Admission Application'}
+                <button type="submit" className="neotro-btn neotro-btn-submit" disabled={loading}>
+                  {loading ? 'Submitting Application...' : 'Submit Neotro Application'}
                 </button>
               </div>
             </div>

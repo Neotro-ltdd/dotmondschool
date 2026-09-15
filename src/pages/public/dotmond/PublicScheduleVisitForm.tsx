@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { api } from '../../services/api';
-import { useTenant } from '../../context/TenantContext';
+import { api } from '../../../services/api';
+import { useTenant } from '../../../context/TenantContext';
 import './PublicScheduleVisitForm.css';
 
 export default function PublicScheduleVisitForm() {
@@ -115,7 +115,6 @@ export default function PublicScheduleVisitForm() {
               alt={tenantSchoolName || 'Dotmond School'}
               className="visit-school-logo"
               onError={(e) => {
-                // SAFETY: onError is attached directly to this <img>, so the event target is guaranteed to be that image element.
                 (e.target as HTMLImageElement).src = '/images/dotmond-logo-1.png';
               }}
             />

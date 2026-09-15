@@ -1,0 +1,70 @@
+/* NeotroScheduleVisitForm.css */
+.neotro-visit-page {
+  padding: 2.5rem 1.5rem;
+  background-color: #F7FAF7;
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #17483B;
+}
+
+.neotro-visit-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.neotro-visit-header-card {
+  background: linear-gradient(135deg, #1B5E4B 0%, #113C30 100%);
+  color: #ffffff;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 25px rgba(17, 46, 37, 0.15);
+}
+
+.neotro-visit-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.neotro-visit-subtitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #B2CEB6;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+}
+
+.neotro-visit-logo {
+  max-height: 80px;
+  width: auto;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.neotro-visit-card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid #D4E3D6;
+  box-shadow: 0 4px 16px rgba(17, 46, 37, 0.05);
+}
+
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.btn-group-center {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 1.5rem;
+}

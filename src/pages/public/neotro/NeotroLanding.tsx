@@ -99,13 +99,12 @@ export default function NeotroLanding() {
             <div className="nas-carousel-caption">
               <h1 className="nas-carousel-title">{heroSlides[activeSlide].title}</h1>
               <p className="nas-carousel-subtitle">{heroSlides[activeSlide].subtitle}</p>
-              
               <div className="nas-hero-cta-group">
-                <button onClick={() => navigate('/login')} className="nas-btn nas-btn-primary">
-                  Access Portal Login <ArrowRight size={16} />
+                <button onClick={() => navigate('/apply-admission')} className="nas-btn nas-btn-primary">
+                  Apply for Admission <ArrowRight size={16} />
                 </button>
-                <button onClick={() => navigate('/apply-admission')} className="nas-btn nas-btn-outline">
-                  Apply for Admission
+                <button onClick={() => navigate('/schedule-visit')} className="nas-btn nas-btn-outline">
+                  Schedule Campus Tour
                 </button>
               </div>
             </div>
@@ -128,116 +127,100 @@ export default function NeotroLanding() {
         </div>
       </section>
 
-      {/* Quick Action Bar (Sage Accent) */}
-      <div className="nas-quick-bar">
+      {/* Sage Green Quick Action Banner */}
+      <section className="nas-quick-bar">
         <div className="nas-inner nas-quick-bar-content">
-          <a href="/apply-admission" className="nas-quick-item">Inquire</a>
+          <a href="/apply-admission" className="nas-quick-item">Apply for Admission</a>
           <div className="nas-quick-divider"></div>
-          <a href="#solutions" className="nas-quick-item">Schedule Visit</a>
+          <a href="/schedule-visit" className="nas-quick-item">Schedule a Visit</a>
           <div className="nas-quick-divider"></div>
-          <a href="/apply-admission" className="nas-quick-item">Apply</a>
+          <a href="#features" className="nas-quick-item">Virtual Campus Tour</a>
         </div>
-      </div>
+      </section>
 
       {/* Inspirational Serif Quote Section */}
       <section className="nas-inspirational-quote">
         <div className="nas-inner">
-          <h2 className="nas-quote-headline">
-            Giving children the opportunity to grow into who they are...
-          </h2>
+          <h2 className="nas-quote-headline">Striving for Purpose, Wisdom &amp; Distinction</h2>
           <p className="nas-quote-body">
-            At Neotro Academic System, every institution is nurtured, celebrated, and emboldened to graduate students with a strong foundation of knowledge, skills, and confidence, ready to excel in higher education and beyond.
+            Neotro Academic System provides an advanced, seamless operational backbone designed for premier educational institutions. We combine strict governance with modern digital innovation so your staff, parents, and learners excel every single day.
           </p>
         </div>
       </section>
 
-      {/* St. Patrick's Style Color-Block Overlapping Divisions Grid */}
+      {/* Overlapping Pastel Division Cards */}
       <section id="solutions" className="nas-divisions-section">
         <div className="nas-inner nas-divisions-layout">
           <div className="nas-divisions-cards">
-            {/* Dusty Mauve Pink Card */}
-            <div className="nas-division-card card-pink">
+            <div className="nas-division-card card-pink" onClick={() => navigate('/apply-admission')}>
               <div className="nas-card-header">
                 <div>
-                  <h3 className="nas-division-title">Bursary & Financial Division</h3>
-                  <span className="nas-division-badge">Term Invoicing & POS Clearance</span>
+                  <h3 className="nas-division-title">Early Years &amp; Kindergarten</h3>
+                  <span className="nas-division-badge">FOUNDATION STAGE</span>
                 </div>
                 <div className="nas-card-arrow">→</div>
               </div>
-              <p className="nas-division-desc">
-                Constructive ledger management, automated term fee generation, POS direct payment recording, and instant payment clearance receipts.
-              </p>
+              <p className="nas-division-desc">Nurturing creative play, language development, and foundational cognitive milestones in safe spaces.</p>
             </div>
 
-            {/* Warm Soft Peach Card */}
-            <div className="nas-division-card card-peach">
+            <div className="nas-division-card card-peach" onClick={() => navigate('/apply-admission')}>
               <div className="nas-card-header">
                 <div>
-                  <h3 className="nas-division-title">Academics & Continuous Assessment</h3>
-                  <span className="nas-division-badge">Broadsheets & Report Cards</span>
+                  <h3 className="nas-division-title">Primary Academy</h3>
+                  <span className="nas-division-badge">GRADES 1 TO 6</span>
                 </div>
                 <div className="nas-card-arrow">→</div>
               </div>
-              <p className="nas-division-desc">
-                Weighted grade calculations, class broadsheet approvals, student subject positioning, and digital signature PDF report card generation.
-              </p>
+              <p className="nas-division-desc">Empowering young minds with inquiry-based STEM, literacy, mathematics, and moral character building.</p>
             </div>
 
-            {/* Clean White Card */}
-            <div className="nas-division-card card-white">
+            <div className="nas-division-card card-white" onClick={() => navigate('/apply-admission')}>
               <div className="nas-card-header">
                 <div>
-                  <h3 className="nas-division-title">Realtime Gate Attendance</h3>
-                  <span className="nas-division-badge">Barcode & ID Scanner</span>
+                  <h3 className="nas-division-title">Secondary College</h3>
+                  <span className="nas-division-badge">GRADES 7 TO 12</span>
                 </div>
                 <div className="nas-card-arrow">→</div>
               </div>
-              <p className="nas-division-desc">
-                Instant barcode and ID card verification for students and staff with automated SMS and WhatsApp arrival notifications to parents.
-              </p>
+              <p className="nas-division-desc">Preparing scholars for WAEC, IGCSE, SATs, and entrance into top global universities.</p>
             </div>
 
-            {/* Pale Blue-Gray Card */}
-            <div className="nas-division-card card-bluegray">
+            <div className="nas-division-card card-bluegray" onClick={() => navigate('/apply-admission')}>
               <div className="nas-card-header">
                 <div>
-                  <h3 className="nas-division-title">Online Admissions Portal</h3>
-                  <span className="nas-division-badge">Applicant Registration</span>
+                  <h3 className="nas-division-title">Sixth Form &amp; A-Levels</h3>
+                  <span className="nas-division-badge">PRE-UNIVERSITY</span>
                 </div>
                 <div className="nas-card-arrow">→</div>
               </div>
-              <p className="nas-division-desc">
-                Digital application forms, document verification, entrance exam scoring, and automated student profile creation.
-              </p>
+              <p className="nas-division-desc">Specialized university preparation, research mentorship, leadership internships, and global exchange.</p>
             </div>
           </div>
 
-          {/* Right Side Featured Photo Grid */}
           <div className="nas-divisions-photo-container">
             <img 
-              src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1000&auto=format&fit=crop" 
-              alt="Students in classroom" 
-              className="nas-divisions-main-photo"
+              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop" 
+              alt="Students in Library" 
+              className="nas-divisions-main-photo" 
             />
           </div>
         </div>
       </section>
 
-      {/* Organic Wave Divider SVG */}
+      {/* Organic Wave Divider */}
       <div className="nas-wave-divider">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,32 C320,96 420,-16 720,48 C1020,112 1120,16 1440,64 L1440,120 L0,120 Z" fill="#F7FAF7" />
-          <path d="M-100,20 C300,120 700,-40 1100,80 C1300,140 1500,40 1600,60" stroke="#1B5E4B" strokeWidth="1.5" fill="none" opacity="0.4" />
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" fill="#F7FAF7">
+          <path d="M0,0 C150,90 350,-40 500,60 C650,160 900,10 1200,40 L1200,120 L0,120 Z"></path>
         </svg>
       </div>
 
-      {/* Pillars Section (Shaping Lives of Value) */}
+      {/* Pillars Section */}
       <section id="features" className="nas-pillars-section">
         <div className="nas-inner">
           <div className="nas-section-header">
-            <h2 className="nas-section-title-serif">Shaping Lives of Value</h2>
+            <h2 className="nas-section-title-serif">Shaping Lives of Character &amp; Value</h2>
             <p className="nas-section-subtitle-serif">
-              Pillars of Neotro Academic System that help define and shape our educational community.
+              Our holistic framework balances academic rigor with community engagement, wellness, and leadership development.
             </p>
           </div>
 
@@ -245,62 +228,66 @@ export default function NeotroLanding() {
             <div className="nas-pillar-card">
               <div className="nas-pillar-img-wrapper">
                 <img 
-                  src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800&auto=format&fit=crop" 
-                  alt="Students learning together"
+                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop" 
+                  alt="Academic Excellence" 
                   className="nas-pillar-img" 
                 />
               </div>
-              <h3 className="nas-pillar-title">Tenant Security & Schema Isolation</h3>
+              <h3 className="nas-pillar-title">Digital Academic Governance</h3>
               <p className="nas-pillar-desc">
-                Bank-grade database schema isolation guarantees that every school's data, staff records, and financial transactions remain strictly private and protected.
+                Real-time assessment tracking, automated term broadsheet computation, and transparent gradebook verification for total institutional trust.
               </p>
             </div>
 
             <div className="nas-pillar-card">
               <div className="nas-pillar-img-wrapper">
                 <img 
-                  src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop" 
-                  alt="School assembly and governance"
+                  src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop" 
+                  alt="Student Security" 
                   className="nas-pillar-img" 
                 />
               </div>
-              <h3 className="nas-pillar-title">Multi-Branch Governance</h3>
+              <h3 className="nas-pillar-title">Campus Security &amp; Attendance</h3>
               <p className="nas-pillar-desc">
-                Unified administration for multi-campus institutions with centralized admin overview, branch-level filtering, and granular role permission policies.
+                Integrated gate scanner terminals with immediate WhatsApp and SMS arrival notifications to keep parents fully informed and pupils safe.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="nas-footer">
-        <div className="nas-inner nas-footer-grid">
-          <div>
-            <div className="nas-footer-brand-title">NEOTRO ACADEMIC SYSTEM</div>
-            <p style={{ maxWidth: '400px', lineHeight: 1.6, color: '#A3B8B0' }}>
-              Neotro Academic System (NAS) is an enterprise multi-tenant software solution built by Neotro Technologies to empower schools with world-class academic, administrative, and financial automation.
-            </p>
+      {/* Dark Emerald Footer */}
+      <footer id="security" className="nas-footer">
+        <div className="nas-inner">
+          <div className="nas-footer-grid">
+            <div>
+              <h3 className="nas-footer-brand-title">NEOTRO ACADEMIC SYSTEM</h3>
+              <p style={{ maxWidth: '400px', lineHeight: '1.6' }}>
+                Transforming educational management across Africa through secure cloud technology, real-time analytics, and elegant user experiences.
+              </p>
+            </div>
+
+            <div>
+              <h4 style={{ color: '#FFFFFF', marginBottom: '1rem', fontFamily: 'Playfair Display' }}>Navigation</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: '2' }}>
+                <li><a href="/" style={{ color: 'inherit', textDecoration: 'none' }}>Home</a></li>
+                <li><a href="/apply-admission" style={{ color: 'inherit', textDecoration: 'none' }}>Admissions</a></li>
+                <li><a href="/schedule-visit" style={{ color: 'inherit', textDecoration: 'none' }}>Schedule Visit</a></li>
+                <li><a href="/neotro-login" style={{ color: 'inherit', textDecoration: 'none' }}>Portal Login</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 style={{ color: '#FFFFFF', marginBottom: '1rem', fontFamily: 'Playfair Display' }}>Support &amp; Contact</h4>
+              <p style={{ margin: '0 0 0.5rem 0' }}>Victoria Island, Lagos, Nigeria</p>
+              <p style={{ margin: '0 0 0.5rem 0' }}>Email: support@neotro.com</p>
+              <p style={{ margin: 0 }}>Phone: +234 (0) 700 NEOTRO</p>
+            </div>
           </div>
-          <div>
-            <h4 style={{ color: '#FFFFFF', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Navigation</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' }}>
-              <li><a href="/login" style={{ color: '#A3B8B0', textDecoration: 'none' }}>Portal Login</a></li>
-              <li><a href="/apply-admission" style={{ color: '#A3B8B0', textDecoration: 'none' }}>Online Admission</a></li>
-              <li><a href="#solutions" style={{ color: '#A3B8B0', textDecoration: 'none' }}>Academics & Reports</a></li>
-            </ul>
+
+          <div className="nas-footer-copy">
+            &copy; {new Date().getFullYear()} Neotro Academic System. All rights reserved.
           </div>
-          <div>
-            <h4 style={{ color: '#FFFFFF', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Enterprise Support</h4>
-            <p style={{ margin: 0, lineHeight: 1.6, color: '#A3B8B0' }}>
-              Engineered by Neotro Technologies<br />
-              Cloud Multi-Tenant Infrastructure<br />
-              24/7 Dedicated System Monitoring
-            </p>
-          </div>
-        </div>
-        <div className="nas-inner nas-footer-copy">
-          &copy; {new Date().getFullYear()} Neotro Technologies. All rights reserved. Neotro Academic System is an enterprise education management platform.
         </div>
       </footer>
     </div>

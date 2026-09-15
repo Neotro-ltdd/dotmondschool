@@ -6,8 +6,14 @@ import { DialogProvider } from './context/DialogContext';
 import { BranchProvider } from './context/BranchContext';
 import { ThemeProvider } from './context/ThemeContext';
 
-import LandingPage from './pages/LandingPage';
-import NeotroLanding from './pages/NeotroLanding';
+import { 
+  LandingPage, 
+  NeotroLanding, 
+  PublicAdmissionForm, 
+  NeotroAdmissionForm, 
+  PublicScheduleVisitForm, 
+  NeotroScheduleVisitForm 
+} from './pages/public';
 import { DotmondLogin as Login, NeotroLogin, DotmondChangePassword as ChangePassword, MasterLogin } from './pages/auth';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Overview from './pages/dashboard/Overview';
@@ -59,8 +65,6 @@ import TeacherResults from './pages/dashboard/teacher/TeacherResults';
 import StaffAttendanceReport from './pages/dashboard/attendance/StaffAttendanceReport';
 import ParentHub from './pages/dashboard/parent/ParentHub';
 import VendorHub from './pages/dashboard/vendor/VendorHub';
-import PublicAdmissionForm from './pages/public/PublicAdmissionForm';
-import PublicScheduleVisitForm from './pages/public/PublicScheduleVisitForm';
 import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import { OfflineIndicator } from './components/pwa/OfflineIndicator';
@@ -70,6 +74,8 @@ import { PWAProvider } from './context/PWAContext';
 import './App.css';
 
 function App() {
+  const isNeotro = (import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro';
+
   return (
     <PWAProvider>
       <ThemeProvider>
@@ -83,15 +89,24 @@ function App() {
                 <Routes>
                   <Route 
                     path="/" 
-                    element={(import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro' ? <NeotroLanding /> : <LandingPage />} 
+                    element={isNeotro ? <NeotroLanding /> : <LandingPage />} 
                   />
                   <Route 
                     path="/login" 
-                    element={(import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'neotro' ? <NeotroLogin /> : <Login />} 
+                    element={isNeotro ? <NeotroLogin /> : <Login />} 
                   />
                   <Route path="/neotro-login" element={<NeotroLogin />} />
-                  <Route path="/apply-admission" element={<PublicAdmissionForm />} />
-                  <Route path="/schedule-visit" element={<PublicScheduleVisitForm />} />
+                  <Route 
+                    path="/apply-admission" 
+                    element={isNeotro ? <NeotroAdmissionForm /> : <PublicAdmissionForm />} 
+                  />
+                  <Route 
+                    path="/schedule-visit" 
+                    element={isNeotro ? <NeotroScheduleVisitForm /> : <PublicScheduleVisitForm />} 
+                  />
+                  <Route path="/neotro-landing" element={<NeotroLanding />} />
+                  <Route path="/neotro-admission" element={<NeotroAdmissionForm />} />
+                  <Route path="/neotro-schedule-visit" element={<NeotroScheduleVisitForm />} />
                   <Route path="/change-password" element={<ChangePassword />} />
                   <Route path="/master-login" element={<MasterLogin />} />
 
