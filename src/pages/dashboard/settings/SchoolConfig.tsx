@@ -15,8 +15,11 @@ import {
   Receipt,
 } from 'lucide-react';
 
+import { useTenant } from '../../../context/TenantContext';
+
 export default function SchoolConfig() {
   const { showAlert } = useDialog();
+  const { refreshTenantDetails } = useTenant();
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -124,6 +127,7 @@ export default function SchoolConfig() {
         setSuccess('School configuration saved successfully.');
         setIsUpdateMode(true);
       }
+      await refreshTenantDetails();
     } catch (err: any) {
       if (err instanceof ApiError) {
         if (err.data?.errors) {

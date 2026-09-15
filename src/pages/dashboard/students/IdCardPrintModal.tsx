@@ -219,7 +219,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return trimmedClass;
   };
 
-  const rawTemplate = tenantIdCardTemplate || schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || 'Vertical CR80';
+  const rawTemplate = schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || tenantIdCardTemplate || 'Vertical CR80';
   const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
   const isSquare = rawTemplate.toLowerCase().includes('square');
 
