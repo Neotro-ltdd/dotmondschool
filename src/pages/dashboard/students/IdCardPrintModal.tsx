@@ -40,7 +40,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     logoUrl: tenantLogoUrl,
     primaryColor: tenantPrimaryColor,
     secondaryColor: tenantSecondaryColor,
-    idCardTemplate: tenantIdCardTemplate,
+    idCardTemplate,
   } = useTenant();
 
   const [loading, setLoading] = useState(true);
@@ -219,7 +219,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
     return trimmedClass;
   };
 
-  const rawTemplate = schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || tenantIdCardTemplate || 'Vertical CR80';
+  const rawTemplate = idCardTemplate || 'Vertical CR80';
   const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
   const isSquare = rawTemplate.toLowerCase().includes('square');
 

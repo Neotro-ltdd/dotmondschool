@@ -42,7 +42,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     logoUrl: tenantLogoUrl,
     primaryColor: tenantPrimaryColor,
     secondaryColor: tenantSecondaryColor,
-    idCardTemplate: tenantIdCardTemplate,
+    idCardTemplate,
   } = useTenant();
 
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
         const idData = await api.get(`/attendance/staff-id-card/${staffId}`);
         setIdCardData(idData);
 
-        // Fetch school profile metadata
+        // Fetch school profile metadata for signatures and address
         try {
           const profile = await api.get('/setup/school-profile');
           setSchoolProfile(profile);
@@ -85,7 +85,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
       }
     };
     fetchData();
-  }, [staffId, tenantSchoolName, tenantLogoUrl, tenantPrimaryColor, tenantSecondaryColor]);
+  }, [staffId]);
 
   if (loading) {
     return (
@@ -210,7 +210,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
-  const rawTemplate = schoolProfile?.idCardTemplate || (schoolProfile as any)?.IdCardTemplate || tenantIdCardTemplate || 'Vertical CR80';
+  const rawTemplate = idCardTemplate || 'Vertical CR80';
   const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
   const isSquare = rawTemplate.toLowerCase().includes('square');
 
