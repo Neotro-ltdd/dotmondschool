@@ -181,8 +181,8 @@ export default function NeotroLanding() {
                 <Shield size={28} color="#FFFFFF" />
               </div>
               <div className="nas-brand-titles">
-                <span className="nas-brand-name">St. Patrick's</span>
-                <span className="nas-brand-sub">EPISCOPAL DAY SCHOOL &bull; NEOTRO ACADEMY</span>
+                <span className="nas-brand-name">Neotro Academy</span>
+                <span className="nas-brand-sub">ENTERPRISE ACADEMIC SYSTEM &bull; EXCELLENCE &amp; INTEGRITY</span>
               </div>
             </div>
 
@@ -382,7 +382,7 @@ export default function NeotroLanding() {
         <div className="nas-inner text-center">
           <h2 className="nas-pillars-main-title">Shaping Lives of Value</h2>
           <p className="nas-pillars-main-sub">
-            Pillars of St. Patrick's Neotro Day School that help define and shape our community.
+            Pillars of Neotro Academy that help define and shape our community.
           </p>
         </div>
       </section>
@@ -481,7 +481,7 @@ export default function NeotroLanding() {
           <div className="nas-community-header">
             <h2 className="nas-pillars-main-title">A Culture of Community</h2>
             <p className="nas-community-body">
-              St. Patrick's Episcopal Day School strives to create a diverse and inclusive learning community of students, faculty and staff, and parents who recognize the infinite value of every individual. Located in Washington D.C., our independent school is committed to developing character, advancing human understanding, and promoting academic excellence to shape engaged citizens who live with integrity, empathy, and purpose.
+              Neotro Academy strives to create a diverse and inclusive learning community of students, faculty and staff, and parents who recognize the infinite value of every individual. Our school is committed to developing character, advancing human understanding, and promoting academic excellence to shape engaged citizens who live with integrity, empathy, and purpose.
             </p>
           </div>
 
@@ -552,11 +552,11 @@ export default function NeotroLanding() {
             <div className="nas-footer-col footer-logo-col">
               <div className="footer-logo-box">
                 <Shield size={36} color="#B2CEB6" />
-                <h3>St. Patrick's</h3>
-                <p>EPISCOPAL DAY SCHOOL &bull; NEOTRO</p>
+                <h3>Neotro Academy</h3>
+                <p>ENTERPRISE EDUCATION MANAGEMENT SYSTEM</p>
               </div>
               <p className="footer-school-desc">
-                Age 3 to Grade 8 independent coed school serving the metropolitan Washington D.C. area.
+                Premier independent co-educational institution committed to academic distinction and holistic student development.
               </p>
             </div>
 
@@ -607,7 +607,7 @@ export default function NeotroLanding() {
           </div>
 
           <div className="nas-footer-copyright">
-            &copy; {new Date().getFullYear()} St. Patrick's Episcopal Day School &bull; Neotro Academic System. Powered by Neotro Engine.
+            &copy; {new Date().getFullYear()} Neotro Academy. Powered by Neotro Engine. All rights reserved.
           </div>
         </div>
       </footer>
