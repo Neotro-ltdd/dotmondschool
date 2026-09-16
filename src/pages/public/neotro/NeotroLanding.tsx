@@ -28,7 +28,7 @@ export default function NeotroLanding() {
       headingHighlight: "Infinitely",
       headingEnd: "You",
       subtext: "For who you are. For who you will become.",
-      bgImage: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1800&auto=format&fit=crop"
+      bgImage: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1800&auto=format&fit=crop"
     },
     {
       headingLead: "Shine",
@@ -49,7 +49,7 @@ export default function NeotroLanding() {
       headingHighlight: "Infinitely",
       headingEnd: "More",
       subtext: "For your community. For your world.",
-      bgImage: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1800&auto=format&fit=crop"
+      bgImage: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1800&auto=format&fit=crop"
     }
   ];
 
@@ -74,7 +74,7 @@ export default function NeotroLanding() {
       title: "Early Childhood Division",
       subtitle: "Nursery 1 – Nursery 2",
       desc: "Constructive play, rich conversation, and meaningful experiences provide the foundation for learning in our Early Childhood Division.",
-      image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=1200&auto=format&fit=crop",
       badgeColor: "#E2BDC0"
     },
     {
@@ -88,7 +88,7 @@ export default function NeotroLanding() {
       title: "Basic Education",
       subtitle: "Primary 4 – Primary 5",
       desc: "An exciting stage as students develop a deeper capacity for abstract thinking, critical analysis, and greater independence.",
-      image: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=1200&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1200&auto=format&fit=crop",
       badgeColor: "#FFFFFF"
     },
     {
@@ -115,9 +115,9 @@ export default function NeotroLanding() {
       link: "/who-we-are/equity-diversity-inclusion"
     },
     {
-      title: "Episcopal & Moral Identity",
-      desc: "Weekly Chapel services help set a clear moral compass, compassion, and spiritual reflection for our students.",
-      image: "https://images.unsplash.com/photo-1548625361-1851e4431e28?q=80&w=800&auto=format&fit=crop",
+      title: "Moral & Character Identity",
+      desc: "Weekly Chapel services and ethical assemblies help set a clear moral compass, compassion, and spiritual reflection for our students.",
+      image: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop",
       link: "/who-we-are/episcopalidentity"
     },
     {
@@ -128,7 +128,7 @@ export default function NeotroLanding() {
     },
     {
       title: "Sustainability Program",
-      desc: "As recognized by the U.S. Department of Education, we strive to shape engaged citizens who live with integrity by involving our community in environmental stewardship.",
+      desc: "We strive to shape engaged citizens who live with integrity by involving our community in environmental stewardship.",
       image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop",
       link: "/programs/sustainability"
     }
@@ -139,13 +139,13 @@ export default function NeotroLanding() {
       title: "Student-Centered Approach",
       subtitle: "Personalized Growth & Agency",
       description: "Student-centered learning puts the individual learner's desire to make meaning out of the wider world at the very heart of the work we do.",
-      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1000&auto=format&fit=crop"
     },
     {
       title: "Inquiry-Based Learning",
       subtitle: "The Tools to Succeed",
       description: "We consider project and inquiry-based learning essential to motivating our students to remain inspired, curious, and analytical.",
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop"
     },
     {
       title: "Design & Collaboration Lab",
@@ -157,7 +157,7 @@ export default function NeotroLanding() {
       title: "Exceptional Literacy",
       subtitle: "Critical Insight & Expression",
       description: "We encourage our students to collaborate in transforming information into insights that lead to creative, sometimes ingenious, solutions.",
-      image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1000&auto=format&fit=crop"
     }
   ];
 
