@@ -13,6 +13,8 @@ interface ClassItem {
 
 export default function NeotroAdmissionForm() {
   const { schoolName: tenantSchoolName, logoUrl } = useTenant();
+  const displaySchoolName = (tenantSchoolName && tenantSchoolName.toLowerCase() !== 'dbo') ? tenantSchoolName : 'Neotro Academy';
+  const hasCustomLogo = logoUrl && !logoUrl.includes('dotmond-logo-1');
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -195,7 +197,7 @@ export default function NeotroAdmissionForm() {
           <h2 className="success-title">Application Submitted Successfully!</h2>
           <p className="success-message">
             Thank you for registering your child with{' '}
-            <strong>{tenantSchoolName || 'NEOTRO ACADEMIC SYSTEM'}</strong>.
+            <strong>{displaySchoolName}</strong>.
           </p>
           <div className="success-details-box">
             <p><strong>Student Name:</strong> {formData.fullName}</p>
@@ -219,15 +221,15 @@ export default function NeotroAdmissionForm() {
         {/* School Banner Header */}
         <div className="neotro-admission-header-card">
           <div className="neotro-logo-container">
-            {logoUrl ? (
-              <img src={logoUrl} alt={tenantSchoolName || 'Neotro School'} className="neotro-school-logo" />
+            {hasCustomLogo ? (
+              <img src={logoUrl} alt={displaySchoolName} className="neotro-school-logo" />
             ) : (
               <div className="neotro-logo-icon">
                 <Shield size={32} color="#FFFFFF" />
               </div>
             )}
           </div>
-          <h1 className="neotro-form-title">{tenantSchoolName || 'NEOTRO ACADEMIC SYSTEM'}</h1>
+          <h1 className="neotro-form-title">{displaySchoolName}</h1>
           <h2 className="neotro-form-subtitle">OFFICIAL ONLINE ADMISSION REGISTRATION</h2>
           <p className="neotro-address">Victoria Island Campus, Lagos State, Nigeria</p>
         </div>

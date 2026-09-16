@@ -6,6 +6,8 @@ import './NeotroScheduleVisitForm.css';
 
 export default function NeotroScheduleVisitForm() {
   const { schoolName: tenantSchoolName, logoUrl } = useTenant();
+  const displaySchoolName = (tenantSchoolName && tenantSchoolName.toLowerCase() !== 'dbo') ? tenantSchoolName : 'Neotro Academy';
+  const hasCustomLogo = logoUrl && !logoUrl.includes('dotmond-logo-1');
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -66,7 +68,7 @@ export default function NeotroScheduleVisitForm() {
           <h2 className="success-title">Campus Visit Scheduled Successfully!</h2>
           <p className="success-message">
             Thank you for booking a campus tour with{' '}
-            <strong>{tenantSchoolName || 'NEOTRO ACADEMIC SYSTEM'}</strong>.
+            <strong>{displaySchoolName}</strong>.
           </p>
           <div className="success-details-box">
             <p><strong>Visitor Name:</strong> {formData.parentName}</p>
@@ -100,15 +102,15 @@ export default function NeotroScheduleVisitForm() {
         {/* Header Banner */}
         <div className="neotro-visit-header-card">
           <div className="neotro-logo-container">
-            {logoUrl ? (
-              <img src={logoUrl} alt={tenantSchoolName || 'Neotro School'} className="neotro-visit-logo" />
+            {hasCustomLogo ? (
+              <img src={logoUrl} alt={displaySchoolName} className="neotro-visit-logo" />
             ) : (
               <div className="neotro-logo-icon">
                 <Shield size={32} color="#FFFFFF" />
               </div>
             )}
           </div>
-          <h1 className="neotro-visit-title">{tenantSchoolName || 'NEOTRO ACADEMIC SYSTEM'}</h1>
+          <h1 className="neotro-visit-title">{displaySchoolName}</h1>
           <h2 className="neotro-visit-subtitle">SCHEDULE A VIRTUAL OR CAMPUS TOUR</h2>
           <p className="neotro-address">Victoria Island Campus, Lagos State, Nigeria</p>
         </div>

@@ -63,17 +63,22 @@ export const TenantProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshTenantDetails = async () => {
     const tenantId = getTenantId();
-    const isNeotro = isNeotroBranding || tenantId === 'neotro';
+    const isNeotro = isNeotroBranding || tenantId === 'neotro' || window.location.pathname.includes('/neotro') || window.location.pathname === '/apply-admission' || window.location.pathname === '/schedule-visit';
     if (tenantId) {
       try {
         const details = await getPublicTenantDetails(tenantId);
         if (details) {
-          if (details.schoolName) setSchoolName(details.schoolName);
+          if (details.schoolName && details.schoolName.toLowerCase() !== 'dbo') {
+            setSchoolName(details.schoolName);
+          } else if (isNeotro) {
+            setSchoolName('Neotro Academy');
+          }
+
           if (details.logoUrl) {
             const fullLogo = details.logoUrl.startsWith('http') ? details.logoUrl : `${API_ROOT}${details.logoUrl}`;
             setLogoUrl(fullLogo);
           } else {
-            setLogoUrl('/images/dotmond-logo-1.png');
+            setLogoUrl(isNeotro ? null : '/images/dotmond-logo-1.png');
           }
           
           const activePrimary = details.primaryColor || (isNeotro ? '#1B5E4B' : '#000080');
