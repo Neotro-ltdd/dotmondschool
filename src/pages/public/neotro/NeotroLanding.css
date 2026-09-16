@@ -1,20 +1,22 @@
-/* Neotro Academic System (NAS) St. Patrick's Episcopal Day School Theme */
+/* Neotro Academic System - St. Patrick's Episcopal Day School Theme */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 .neotro-lp-container {
-  --nas-primary: #1B5E4B;
-  --nas-primary-hover: #144839;
-  --nas-primary-dark: #113C30;
+  --nas-primary: #155D4F;
+  --nas-primary-hover: #114B40;
+  --nas-primary-dark: #0D372F;
   --nas-accent: #B2CEB6;
-  --nas-accent-hover: #9EBEA3;
+  --nas-accent-hover: #97B69C;
   --nas-bg-main: #FFFFFF;
-  --nas-bg-soft: #F7FAF7;
+  --nas-bg-soft: #F6F9F7;
   --nas-bg-dark: #112E25;
   --nas-text-main: #17483B;
-  --nas-text-muted: #3A564F;
-  --nas-border: #D4E3D6;
+  --nas-text-muted: #4A635B;
+  --nas-border: #D1E2D5;
+  --nas-font-serif: 'Playfair Display', Georgia, serif;
+  --nas-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--nas-font-sans);
   color: var(--nas-text-main);
   background-color: var(--nas-bg-main);
   width: 100%;
@@ -22,6 +24,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow-x: hidden;
 }
 
 .neotro-lp-container * {
@@ -35,7 +38,11 @@
   width: 100%;
 }
 
-/* Floating Left Action Sidebar (St. Patrick's Left Dock) */
+.text-center {
+  text-align: center;
+}
+
+/* Floating Left Action Dock (St. Patrick's Sidebar) */
 .nas-floating-sidebar {
   position: fixed;
   left: 0;
@@ -46,140 +53,343 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.75rem 0.5rem;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  box-shadow: 2px 4px 12px rgba(17, 46, 37, 0.15);
+  padding: 0.875rem 0.625rem;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 2px 4px 16px rgba(17, 46, 37, 0.18);
 }
 
 .nas-sidebar-btn {
   color: #17483B;
-  padding: 0.5rem;
+  padding: 0.625rem;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: transform 0.2s ease, color 0.2s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .nas-sidebar-btn:hover {
   transform: scale(1.15);
-  color: #113C30;
+  background-color: rgba(21, 93, 79, 0.15);
+  color: #0D372F;
 }
 
 .nas-sidebar-divider {
-  width: 16px;
+  width: 18px;
   height: 1px;
-  background-color: rgba(23, 72, 59, 0.25);
-  margin: 0.4rem 0;
+  background-color: rgba(23, 72, 59, 0.3);
+  margin: 0.5rem 0;
 }
 
-/* Header & Nav (Dark Forest Green) */
-.nas-header {
+/* Header & Utility Bar */
+.nas-header-wrapper {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: var(--nas-primary);
-  border-bottom: 1px solid #144839;
+  z-index: 1000;
+  background-color: var(--nas-primary);
   box-shadow: 0 4px 20px rgba(17, 46, 37, 0.15);
 }
 
-.nas-header-content {
+.nas-utility-bar {
+  background-color: var(--nas-primary-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0;
+}
+
+.nas-utility-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 84px;
 }
 
-.nas-brand {
+.nas-utility-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.util-link {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #FFFFFF;
+  transition: opacity 0.2s ease;
+}
+
+.util-link:hover {
+  opacity: 0.85;
+}
+
+.link-blue {
+  background-color: #2F5C8F;
+}
+
+.link-orange {
+  background-color: #D97724;
+}
+
+.link-pink {
+  background-color: #B84E7B;
+}
+
+.nas-utility-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nas-search-trigger {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.nas-search-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.nas-portal-login-btn {
+  background-color: var(--nas-accent);
+  color: var(--nas-primary-dark);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.nas-portal-login-btn:hover {
+  background-color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* Search Expand Bar */
+.nas-search-expand-bar {
+  background-color: var(--nas-primary);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nas-search-expand-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nas-search-input {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid var(--nas-border);
+  border-radius: 6px;
+  padding: 0.625rem 1rem;
+  font-size: 0.9375rem;
+  outline: none;
+  font-family: var(--nas-font-sans);
+}
+
+.nas-search-close {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Main Navigation Header */
+.nas-main-header {
+  padding: 0.875rem 0;
+}
+
+.nas-main-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nas-brand-block {
   display: flex;
   align-items: center;
   gap: 0.875rem;
-  text-decoration: none;
+  cursor: pointer;
 }
 
-.nas-logo-icon {
+.nas-seal {
   width: 44px;
   height: 44px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: var(--nas-primary-dark);
+  border: 2px solid var(--nas-accent);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
 }
 
-.nas-brand-title {
-  font-size: 1.25rem;
-  font-weight: 800;
+.nas-brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.nas-brand-name {
+  font-family: var(--nas-font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
   letter-spacing: -0.02em;
-  color: #FFFFFF;
   line-height: 1.1;
-  font-family: 'Playfair Display', Georgia, serif;
 }
 
-.nas-brand-subtitle {
+.nas-brand-sub {
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--nas-accent);
-  display: block;
-  margin-top: 2px;
+  letter-spacing: 0.1em;
 }
 
-.nas-nav {
+.nas-desktop-nav {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 2rem;
 }
 
-.nas-nav a {
+.nas-desktop-nav a {
+  color: #FFFFFF;
   text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.95);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: 0.9375rem;
+  font-weight: 600;
   transition: color 0.2s ease;
+  position: relative;
 }
 
-.nas-nav a:hover {
+.nas-desktop-nav a:hover {
   color: var(--nas-accent);
 }
 
-.nas-btn {
-  display: inline-flex;
+.nas-desktop-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: var(--nas-accent);
+  transition: width 0.2s ease;
+}
+
+.nas-desktop-nav a:hover::after {
+  width: 100%;
+}
+
+.nas-header-ctas {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-size: 0.9375rem;
+  gap: 0.625rem;
+}
+
+.nas-cta-link {
+  font-size: 0.875rem;
   font-weight: 700;
+  padding: 0.5rem 1.125rem;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
-  text-decoration: none;
+  border: 1px solid transparent;
 }
 
-.nas-btn-header {
+.btn-inquire {
+  background-color: transparent;
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-inquire:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #FFFFFF;
+}
+
+.btn-visit {
   background-color: var(--nas-accent);
-  color: #17483B;
-  font-weight: 800;
+  color: var(--nas-primary-dark);
 }
 
-.nas-btn-header:hover {
-  background-color: var(--nas-accent-hover);
-  transform: translateY(-1px);
+.btn-visit:hover {
+  background-color: #FFFFFF;
 }
 
-/* Hero Carousel (Full Photo Overlay with Serif Copy & Controls) */
+.btn-apply {
+  background-color: var(--nas-primary-dark);
+  color: #FFFFFF;
+  border-color: var(--nas-accent);
+}
+
+.btn-apply:hover {
+  background-color: var(--nas-accent);
+  color: var(--nas-primary-dark);
+}
+
+.nas-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.nas-mobile-menu-drawer {
+  background-color: var(--nas-primary-dark);
+  padding: 1.5rem 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nas-mobile-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nas-mobile-nav-list a {
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.mobile-login-link {
+  color: var(--nas-accent) !important;
+  font-weight: 700 !important;
+}
+
+/* Hero Carousel */
 .nas-hero-carousel {
   position: relative;
   width: 100%;
-  height: 480px;
+  height: 600px;
   overflow: hidden;
 }
 
@@ -188,18 +398,18 @@
   height: 100%;
   background-size: cover;
   background-position: center;
-  transition: background-image 0.6s ease-in-out;
+  transition: background-image 0.8s ease-in-out;
 }
 
 .nas-carousel-overlay {
+  position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(17, 46, 37, 0.75) 0%, rgba(17, 46, 37, 0.88) 100%);
+  background: linear-gradient(180deg, rgba(21, 93, 79, 0.45) 0%, rgba(17, 46, 37, 0.75) 100%);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 3rem;
-  position: relative;
+  justify-content: center;
+  padding: 0 4rem;
 }
 
 .nas-hero-svg-line {
@@ -211,45 +421,44 @@
   pointer-events: none;
 }
 
-.nas-carousel-arrow {
-  background: transparent;
-  border: none;
-  color: #FFFFFF;
-  cursor: pointer;
-  padding: 0.75rem;
-  border-radius: 50%;
-  transition: background 0.2s ease, transform 0.2s ease;
-  z-index: 10;
-}
-
-.nas-carousel-arrow:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
 .nas-carousel-caption {
   text-align: center;
-  max-width: 1050px;
-  margin: 0 auto;
   color: #FFFFFF;
+  max-width: 900px;
   z-index: 10;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .nas-carousel-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 3.25rem;
-  font-weight: 700;
+  font-family: var(--nas-font-serif);
+  font-size: 3.5rem;
+  font-weight: 400;
+  margin: 0 0 1rem 0;
   line-height: 1.15;
-  margin-bottom: 1rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+.nas-carousel-title strong {
+  font-weight: 800;
+}
+
+.infinite-text {
+  font-family: var(--nas-font-serif);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--nas-accent);
 }
 
 .nas-carousel-subtitle {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-size: 1.35rem;
-  color: var(--nas-accent);
-  margin-bottom: 2rem;
+  font-size: 1.375rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 2rem 0;
 }
 
 .nas-hero-cta-group {
@@ -259,46 +468,89 @@
   gap: 1.25rem;
 }
 
+.nas-btn {
+  font-family: var(--nas-font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.875rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25 ease;
+  border: 2px solid transparent;
+}
+
 .nas-btn-primary {
-  background-color: var(--nas-accent);
-  color: #17483B;
-  font-weight: 800;
+  background-color: var(--nas-primary);
+  color: #FFFFFF;
 }
 
 .nas-btn-primary:hover {
-  background-color: var(--nas-accent-hover);
-  transform: translateY(-1px);
+  background-color: var(--nas-primary-hover);
+  transform: translateY(-2px);
 }
 
 .nas-btn-outline {
-  background: transparent;
+  background-color: transparent;
   color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-color: #FFFFFF;
 }
 
 .nas-btn-outline:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: #FFFFFF;
+  background-color: #FFFFFF;
+  color: var(--nas-primary-dark);
+  transform: translateY(-2px);
+}
+
+.nas-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(17, 46, 37, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nas-carousel-arrow:hover {
+  background: var(--nas-primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nas-arrow-left {
+  left: 2rem;
+}
+
+.nas-arrow-right {
+  right: 2rem;
 }
 
 .nas-carousel-dots {
   position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 1.75rem;
   display: flex;
-  gap: 10px;
-  z-index: 10;
+  gap: 0.75rem;
+  z-index: 20;
 }
 
 .nas-dot {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.25s ease, transform 0.25s ease;
 }
 
 .nas-dot.active {
@@ -306,312 +558,754 @@
   transform: scale(1.3);
 }
 
-/* Quick Action Bar (Sage Green Strip) */
+/* Quick Action Sage Green Bar */
 .nas-quick-bar {
   background-color: var(--nas-accent);
-  border-bottom: 1px solid #9EBEA3;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--nas-accent-hover);
 }
 
 .nas-quick-bar-content {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
+  display: flex;
   align-items: center;
-  padding: 1.15rem 1.5rem;
-  text-align: center;
+  justify-content: center;
+  gap: 3rem;
 }
 
 .nas-quick-item {
-  color: #17483B;
-  font-size: 1.25rem;
+  color: var(--nas-primary-dark);
+  font-size: 1.125rem;
   font-weight: 700;
   text-decoration: none;
-  font-family: 'Playfair Display', Georgia, serif;
-  letter-spacing: 0.02em;
-  transition: opacity 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .nas-quick-item:hover {
-  opacity: 0.75;
+  transform: translateY(-2px);
+  color: #000000;
 }
 
 .nas-quick-divider {
   width: 1px;
-  height: 28px;
+  height: 24px;
   background-color: rgba(23, 72, 59, 0.3);
 }
 
-/* Inspirational Serif Quote Section */
-.nas-inspirational-quote {
-  padding: 4.5rem 0 3.5rem;
+/* Panel 1: Inspirational Quote */
+.nas-home-panel-1 {
+  padding: 5rem 0 3rem 0;
   text-align: center;
-  background-color: var(--nas-bg-main);
 }
 
-.nas-quote-headline {
-  font-family: 'Playfair Display', Georgia, serif;
+.nas-panel-quote-title {
+  font-family: var(--nas-font-serif);
   font-size: 2.75rem;
   font-weight: 700;
-  color: #17483B;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
+  color: var(--nas-primary-dark);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
 }
 
-.nas-quote-body {
-  font-size: 1.125rem;
+.nas-panel-quote-body {
+  font-size: 1.25rem;
   line-height: 1.7;
   color: var(--nas-text-muted);
-  max-width: 1100px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
-/* Overlapping Color-Block Divisions (St. Patrick's Academic Cards) */
-.nas-divisions-section {
-  padding: 3rem 0 5rem;
-  background-color: var(--nas-bg-main);
-}
-
-.nas-divisions-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-}
-
-.nas-divisions-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.nas-division-card {
-  border-radius: 12px;
-  padding: 1.75rem;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.nas-division-card:hover {
-  transform: translateX(8px);
-  box-shadow: 0 12px 28px rgba(17, 46, 37, 0.1);
-}
-
-/* Pastel Card Variations */
-.card-pink {
-  background-color: #E2BDC0;
-  color: #17483B;
-}
-
-.card-peach {
-  background-color: #FDE3B2;
-  color: #17483B;
-}
-
-.card-white {
-  background-color: #FFFFFF;
-  color: #17483B;
-  border: 1px solid var(--nas-border);
-}
-
-.card-bluegray {
-  background-color: #D0E3E5;
-  color: #17483B;
-}
-
-.nas-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-}
-
-.nas-division-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-
-.nas-division-badge {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.85;
-}
-
-.nas-card-arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid currentColor;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.nas-division-desc {
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  opacity: 0.9;
-  margin: 0;
-}
-
-.nas-divisions-photo-container {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(17, 46, 37, 0.12);
-  height: 100%;
-  max-height: 620px;
-}
-
-.nas-divisions-main-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Organic Wave SVG Divider */
-.nas-wave-divider {
+/* Animated SVG Lines */
+.nas-line-animated {
   width: 100%;
   overflow: hidden;
   line-height: 0;
-  margin-top: -1px;
+  margin: 2rem 0;
 }
 
-.nas-wave-divider svg {
+.nas-line-animated svg {
   width: 100%;
-  height: 100px;
-  display: block;
+  height: auto;
 }
 
-/* Pillars Section (Shaping Lives of Value) */
-.nas-pillars-section {
-  padding: 4rem 0 6rem;
+.line-one-path, .line-two-path, .line-three-path {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 0;
+  animation: dash 8s ease-in-out infinite alternate;
+}
+
+@keyframes dash {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Panel 2: Division Layout */
+.nas-home-panel-2 {
+  padding: 3rem 0 5rem 0;
   background-color: var(--nas-bg-soft);
 }
 
-.nas-section-header {
-  text-align: center;
-  max-width: 980px;
-  margin: 0 auto 3.5rem;
+.nas-panel-2-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
 }
 
-.nas-section-title-serif {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 2.75rem;
-  font-weight: 700;
-  color: #17483B;
+.nas-panel-2-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.nas-panel-2-text-box {
+  background-color: #FFFFFF;
+  border-left: 6px solid var(--nas-border);
+  padding: 1.75rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(17, 46, 37, 0.05);
+  transition: all 0.3s ease;
+}
+
+.nas-panel-2-text-box:hover, .nas-panel-2-text-box.active-box {
+  border-left-color: var(--nas-primary);
+  background-color: #FFFFFF;
+  transform: translateX(8px);
+  box-shadow: 0 8px 24px rgba(17, 46, 37, 0.12);
+}
+
+.box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 0.75rem;
 }
 
-.nas-section-subtitle-serif {
-  font-size: 1.125rem;
+.box-title {
+  font-family: var(--nas-font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--nas-primary-dark);
+  margin: 0;
+}
+
+.box-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--nas-primary);
+  background-color: rgba(21, 93, 79, 0.1);
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+
+}
+
+.box-body p {
+  font-size: 1rem;
   color: var(--nas-text-muted);
   line-height: 1.6;
+  margin: 0;
 }
 
-.nas-pillars-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-}
-
-.nas-pillar-card {
-  background-color: #FFFFFF;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--nas-border);
-  box-shadow: 0 8px 24px rgba(17, 46, 37, 0.05);
-  transition: transform 0.25s ease;
-}
-
-.nas-pillar-card:hover {
-  transform: translateY(-6px);
-}
-
-.nas-pillar-img-wrapper {
-  height: 260px;
+.nas-panel-2-image-container {
   width: 100%;
+  height: 520px;
+}
+
+.nas-image-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(17, 46, 37, 0.15);
+}
+
+.nas-division-featured-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.nas-image-frame:hover .nas-division-featured-photo {
+  transform: scale(1.04);
+}
+
+.nas-image-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(17, 46, 37, 0.9) 100%);
+  padding: 2rem 2rem 1.5rem 2rem;
+  color: #FFFFFF;
+}
+
+.nas-image-caption h4 {
+  font-family: var(--nas-font-serif);
+  font-size: 1.5rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.nas-image-caption p {
+  font-size: 0.9375rem;
+  margin: 0;
+  color: var(--nas-accent);
+}
+
+/* Pillars Section ("Shaping Lives of Value") */
+.nas-home-panel-3 {
+  padding: 4rem 0 2rem 0;
+}
+
+.nas-pillars-main-title {
+  font-family: var(--nas-font-serif);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--nas-primary-dark);
+  margin: 0 0 1rem 0;
+}
+
+.nas-pillars-main-sub {
+  font-size: 1.25rem;
+  color: var(--nas-text-muted);
+  margin: 0 0 2.5rem 0;
+}
+
+.nas-home-panel-4 {
+  padding: 0 0 4rem 0;
+}
+
+.nas-pillars-grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.nas-mission-box {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid var(--nas-border);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(17, 46, 37, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nas-mission-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(17, 46, 37, 0.12);
+}
+
+.mission-box-header {
+  background-color: var(--nas-primary);
+  padding: 1.25rem 1.5rem;
+}
+
+.mission-box-header h3 {
+  font-family: var(--nas-font-serif);
+  font-size: 1.25rem;
+  color: #FFFFFF;
+  margin: 0;
+  font-weight: 600;
+}
+
+.mission-box-img-wrapper {
+  width: 100%;
+  height: 200px;
   overflow: hidden;
 }
 
-.nas-pillar-img {
+.mission-box-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
 
-.nas-pillar-card:hover .nas-pillar-img {
-  transform: scale(1.05);
+.nas-mission-box:hover .mission-box-img-wrapper img {
+  transform: scale(1.06);
 }
 
-.nas-pillar-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #17483B;
-  padding: 1.5rem 1.5rem 0.5rem;
-  margin: 0;
+.mission-box-footer {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
-.nas-pillar-desc {
+.mission-box-footer p {
   font-size: 0.9375rem;
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--nas-text-muted);
-  padding: 0 1.5rem 1.75rem;
   margin: 0;
 }
 
-/* Dark Emerald Footer */
-.nas-footer {
-  background-color: var(--nas-bg-dark);
-  color: #A3B8B0;
-  padding: 4rem 0 2rem;
-  margin-top: auto;
+/* Foundations Section (Panels 7 & 8) */
+.nas-home-panel-7 {
+  padding: 4rem 0 2rem 0;
+  background-color: var(--nas-bg-soft);
 }
 
-.nas-footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
-}
-
-.nas-footer-brand-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.35rem;
+.nas-foundation-title {
+  font-family: var(--nas-font-serif);
+  font-size: 2.75rem;
   font-weight: 700;
+  color: var(--nas-primary-dark);
+  margin: 0 0 1rem 0;
+}
+
+.nas-foundation-sub {
+  font-size: 1.1875rem;
+  color: var(--nas-text-muted);
+  max-width: 860px;
+  margin: 0 auto 2rem auto;
+  line-height: 1.6;
+}
+
+.nas-home-panel-8 {
+  padding: 0 0 5rem 0;
+  background-color: var(--nas-bg-soft);
+}
+
+.nas-voices-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.nas-voice-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid var(--nas-border);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(17, 46, 37, 0.05);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.nas-voice-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--nas-primary);
+  box-shadow: 0 12px 28px rgba(17, 46, 37, 0.12);
+}
+
+.voice-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--nas-border);
+  background-color: #FAFDFB;
+}
+
+.voice-card-header h3 {
+  font-family: var(--nas-font-serif);
+  font-size: 1.25rem;
+  color: var(--nas-primary-dark);
+  margin: 0 0 0.25rem 0;
+}
+
+.voice-card-sub {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--nas-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.voice-card-img-wrapper {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.voice-card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.nas-voice-card:hover .voice-card-img-wrapper img {
+  transform: scale(1.08);
+}
+
+.voice-card-body {
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.voice-card-body p {
+  font-size: 0.9375rem;
+  color: var(--nas-text-muted);
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.read-more-btn {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--nas-primary);
+}
+
+/* Modal Popup */
+.nas-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(17, 46, 37, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.nas-modal-content {
+  background: #FFFFFF;
+  border-radius: 12px;
+  max-width: 680px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.3s ease forwards;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.nas-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
   color: #FFFFFF;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.nas-modal-hero {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+}
+
+.nas-modal-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nas-modal-body {
+  padding: 2rem;
+}
+
+.nas-modal-badge {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--nas-primary);
+  background: rgba(21, 93, 79, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  display: inline-block;
   margin-bottom: 0.75rem;
 }
 
-.nas-footer-copy {
-  text-align: center;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.8125rem;
-  color: #76968B;
+.nas-modal-body h2 {
+  font-family: var(--nas-font-serif);
+  font-size: 2rem;
+  color: var(--nas-primary-dark);
+  margin: 0 0 1rem 0;
 }
 
-/* Responsive Rules */
-@media (max-width: 992px) {
-  .nas-divisions-layout {
+.nas-modal-body p {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--nas-text-muted);
+  margin: 0 0 1.5rem 0;
+}
+
+/* Community Stats Section */
+.nas-community-section {
+  padding: 6rem 0;
+}
+
+.nas-community-header {
+  text-align: center;
+  max-width: 960px;
+  margin: 0 auto 4rem auto;
+}
+
+.nas-community-body {
+  font-size: 1.1875rem;
+  line-height: 1.8;
+  color: var(--nas-text-muted);
+}
+
+.nas-infographic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+}
+
+.nas-stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--nas-border);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(17, 46, 37, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nas-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(17, 46, 37, 0.12);
+  border-color: var(--nas-primary);
+}
+
+.stat-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  background-color: var(--nas-bg-soft);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem auto;
+}
+
+.stat-number {
+  font-family: var(--nas-font-serif);
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--nas-primary-dark);
+  display: block;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--nas-text-muted);
+  margin: 0;
+}
+
+/* Footer Styling */
+.nas-footer {
+  background-color: var(--nas-bg-dark);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0 0 3rem 0;
+}
+
+.nas-footer-cta-strip {
+  background-color: var(--nas-primary);
+  padding: 1rem 0;
+}
+
+.nas-footer-cta-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.foot-cta-item {
+  color: #FFFFFF;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.foot-cta-item:hover {
+  color: var(--nas-accent);
+}
+
+.nas-footer-main {
+  padding-top: 4rem;
+}
+
+.nas-footer-top-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.footer-logo-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.footer-logo-box h3 {
+  font-family: var(--nas-font-serif);
+  font-size: 1.75rem;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.footer-logo-box p {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--nas-accent);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.footer-school-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.nas-footer-col h4 {
+  font-family: var(--nas-font-serif);
+  font-size: 1.25rem;
+  color: #FFFFFF;
+  margin: 0 0 1.25rem 0;
+}
+
+.nas-footer-col p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0 0 0.5rem 0;
+}
+
+.footer-social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-social-icons a {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.footer-social-icons a:hover {
+  color: #FFFFFF;
+  background: var(--nas-primary);
+  transform: translateY(-2px);
+}
+
+.nas-footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 0;
+}
+
+.footer-tagline {
+  font-family: var(--nas-font-serif);
+  font-size: 1.5rem;
+  color: #FFFFFF;
+}
+
+.footer-utility-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-utility-links a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  transition: color 0.2s ease;
+}
+
+.footer-utility-links a:hover {
+  color: var(--nas-accent);
+}
+
+.nas-footer-copyright {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 1.5rem;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1200px) {
+  .nas-pillars-grid-container, .nas-voices-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .nas-footer-top-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .nas-panel-2-layout {
     grid-template-columns: 1fr;
   }
-  .nas-pillars-grid {
-    grid-template-columns: 1fr;
+  .nas-panel-2-image-container {
+    height: 380px;
+  }
+  .nas-infographic-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .nas-desktop-nav {
+    display: none;
+  }
+  .nas-mobile-toggle {
+    display: block;
   }
   .nas-carousel-title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
-  .nas-quote-headline {
+}
+
+@media (max-width: 600px) {
+  .nas-pillars-grid-container, .nas-voices-grid, .nas-infographic-grid, .nas-footer-top-grid {
+    grid-template-columns: 1fr;
+  }
+  .nas-utility-links {
+    display: none;
+  }
+  .nas-carousel-arrow {
+    display: none;
+  }
+  .nas-carousel-title {
     font-size: 2rem;
   }
-  .nas-floating-sidebar {
+  .nas-quick-bar-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .nas-quick-divider {
     display: none;
+  }
+  .nas-footer-bottom-bar {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
   }
 }
