@@ -320,10 +320,10 @@ export default function NeotroLanding() {
       <section id="who-we-are" className="nas-home-panel-1">
         <div className="nas-inner">
           <h2 className="nas-panel-quote-title">
-            Creating Endless Possibilities for the Modern Academic Sector...
+            Creating Endless Possibilities for the Modern Academic Sector
           </h2>
           <p className="nas-panel-quote-body">
-            Neotro Academic System creates limitless possibilities for premier educational institutions—from automated digital gate attendance and instant WhatsApp/SMS parent alerts, to real-time continuous assessment, automated term broadsheet generation, digital principal signatures, cashless fee portal management, and seamless exit clearances. Built with strict enterprise governance and modern cloud architecture, Neotro empowers school administrators, teachers, parents, and students to achieve operational excellence every single day.
+            The Neotro Academic System creates limitless possibilities for premier educational institutions. We deliver a comprehensive ecosystem designed for modern schools—from automated digital gate attendance and instant multi-channel parent alerts (via Email, SMS, or WhatsApp), to real-time continuous assessments and automated broadsheet generation. Featuring custom-designed ID cards tailored to your school's branding and a dedicated parent portal for tracking student progress and receiving direct feedback, Neotro bridges the gap between school and home. Complete with cashless fee management, and seamless exit clearances, Neotro is built on strict enterprise governance and modern cloud architecture to empower administrators, teachers, parents, and students to achieve operational excellence every single day.
           </p>
         </div>
       </section>
