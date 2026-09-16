@@ -352,6 +352,20 @@
   color: var(--nas-primary-dark);
 }
 
+.btn-login {
+  background-color: var(--nas-accent);
+  color: var(--nas-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.btn-login:hover {
+  background-color: #FFFFFF;
+  color: var(--nas-primary-dark);
+  transform: translateY(-1px);
+}
+
 .nas-mobile-toggle {
   display: none;
   background: transparent;

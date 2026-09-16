@@ -19,8 +19,6 @@ export default function NeotroLanding() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeDivision, setActiveDivision] = useState(0);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeVoiceModal, setActiveVoiceModal] = useState<VoiceModalContent | null>(null);
 
@@ -173,61 +171,8 @@ export default function NeotroLanding() {
         </button>
       </aside>
 
-      {/* Header Top Utility Bar & Main Header */}
+      {/* Header Navigation Header */}
       <header className="nas-header-wrapper">
-        <div className="nas-utility-bar">
-          <div className="nas-inner nas-utility-content">
-            <div className="nas-utility-links">
-              <a href="/programs/early-childhood/program" className="util-link link-blue">Infant-Toddler Center</a>
-              <a href="#portals" className="util-link link-orange">Houndnet Portals</a>
-              <a href="#community" className="util-link link-pink">Our Community</a>
-              <a href="/calendar-header" className="util-link link-blue">School Calendar</a>
-            </div>
-
-            <div className="nas-utility-actions">
-              <button 
-                className="nas-search-trigger" 
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                aria-label="Open Search"
-              >
-                <Search size={15} />
-                <span>Search</span>
-              </button>
-              <button 
-                onClick={() => navigate('/neotro-login')} 
-                className="nas-portal-login-btn"
-              >
-                Portal Login <ArrowRight size={14} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Collapsible Search Modal Bar */}
-        {isSearchOpen && (
-          <div className="nas-search-expand-bar">
-            <div className="nas-inner nas-search-expand-content">
-              <input
-                type="text"
-                placeholder="What are you looking for at St. Patrick's Neotro Day School?"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="nas-search-input"
-                autoFocus
-              />
-              <button className="nas-btn nas-btn-primary search-submit">
-                Search
-              </button>
-              <button 
-                className="nas-search-close" 
-                onClick={() => setIsSearchOpen(false)}
-              >
-                <X size={20} />
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Main Navigation Header */}
         <div className="nas-main-header">
           <div className="nas-inner nas-main-header-content">
@@ -259,6 +204,9 @@ export default function NeotroLanding() {
               </button>
               <button onClick={() => navigate('/apply-admission')} className="nas-cta-link btn-apply">
                 Apply
+              </button>
+              <button onClick={() => navigate('/neotro-login')} className="nas-cta-link btn-login">
+                Portal Login <ArrowRight size={14} />
               </button>
               <button 
                 className="nas-mobile-toggle" 
