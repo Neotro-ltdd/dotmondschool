@@ -308,10 +308,10 @@ export default function NeotroLanding() {
       <section id="who-we-are" className="nas-home-panel-1">
         <div className="nas-inner">
           <h2 className="nas-panel-quote-title">
-            Giving children the opportunity to grow into who they are...
+            Creating Endless Possibilities for the Modern Academic Sector...
           </h2>
           <p className="nas-panel-quote-body">
-            At St. Patrick's Neotro Day School, every child is nurtured, celebrated, and emboldened to graduate with a strong foundation of knowledge, skills, and confidence, ready to excel in high school and beyond, empowered to make their mark on the world.
+            Neotro Academic System creates limitless possibilities for premier educational institutions—from automated digital gate attendance and instant WhatsApp/SMS parent alerts, to real-time continuous assessment, automated term broadsheet generation, digital principal signatures, cashless fee portal management, and seamless exit clearances. Built with strict enterprise governance and modern cloud architecture, Neotro empowers school administrators, teachers, parents, and students to achieve operational excellence every single day.
           </p>
         </div>
       </section>
