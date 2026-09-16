@@ -107,30 +107,38 @@ export default function NeotroLanding() {
     }
   ];
 
-  const pillarsData = [
+  const featureModules = [
     {
-      title: "Equity, Diversity, & Inclusion",
-      desc: "We come to understand the world more fully through others and foster a diverse, welcoming school environment.",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
-      link: "/who-we-are/equity-diversity-inclusion"
+      title: "Gate Security & Attendance",
+      badge: "REAL-TIME ALERTS",
+      desc: "Instant barcode & RFID gate verification terminal with automatic WhatsApp & SMS arrival/departure notifications sent directly to parents.",
+      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop",
+      icon: <Shield size={20} color="#B2CEB6" />,
+      tag: "Gate Terminal & SMS"
     },
     {
-      title: "Moral & Character Identity",
-      desc: "Weekly Chapel services and ethical assemblies help set a clear moral compass, compassion, and spiritual reflection for our students.",
-      image: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop",
-      link: "/who-we-are/episcopalidentity"
+      title: "Result & Broadsheet Engine",
+      badge: "AUTOMATED GRADING",
+      desc: "Instant continuous assessment (CA) computation, term broadsheets, digital principal signature authorization, and downloadable PDF report cards.",
+      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop",
+      icon: <BarChart3 size={20} color="#B2CEB6" />,
+      tag: "CA & Report Cards"
     },
     {
-      title: "Service & Social Justice",
-      desc: "Service opportunities represent a vital part of students' experience, inviting them to actively engage with the larger world.",
-      image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=800&auto=format&fit=crop",
-      link: "/who-we-are/community-service"
+      title: "Cashless Fee Portal",
+      badge: "ONLINE PAYMENTS",
+      desc: "Seamless online tuition payment gateway, automated invoice generation, digital receipt dispatch, and real-time revenue analytics per student.",
+      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop",
+      icon: <CreditCard size={20} color="#B2CEB6" />,
+      tag: "Tuition & Receipts"
     },
     {
-      title: "Sustainability Program",
-      desc: "We strive to shape engaged citizens who live with integrity by involving our community in environmental stewardship.",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop",
-      link: "/programs/sustainability"
+      title: "Student Profile & Clearances",
+      badge: "LIFECYCLE MANAGEMENT",
+      desc: "Comprehensive student profile records, ID card printing, automated exit clearance approvals, disciplinary logs, and parent communication portal.",
+      image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop",
+      icon: <Users size={20} color="#B2CEB6" />,
+      tag: "Profiles & Clearances"
     }
   ];
 
@@ -384,28 +392,35 @@ export default function NeotroLanding() {
         </svg>
       </div>
 
-      {/* Pillars Section ("Shaping Lives of Value") */}
-      <section className="nas-home-panel-3">
+      {/* Feature Modules Section */}
+      <section id="solutions" className="nas-home-panel-3">
         <div className="nas-inner text-center">
-          <h2 className="nas-pillars-main-title">Shaping Lives of Value</h2>
+          <h2 className="nas-pillars-main-title">Enterprise System Modules</h2>
           <p className="nas-pillars-main-sub">
-            Pillars of Neotro Academy that help define and shape our community.
+            Powerful features engineered for modern Nigerian schools and academic institutions.
           </p>
         </div>
       </section>
 
       <section className="nas-home-panel-4">
         <div className="nas-inner nas-pillars-grid-container">
-          {pillarsData.map((pillar, idx) => (
+          {featureModules.map((module, idx) => (
             <div key={idx} className="nas-mission-box">
               <div className="mission-box-header">
-                <h3>{pillar.title}</h3>
+                <div className="module-header-top">
+                  {module.icon}
+                  <span className="module-badge">{module.badge}</span>
+                </div>
+                <h3>{module.title}</h3>
               </div>
               <div className="mission-box-img-wrapper">
-                <img src={pillar.image} alt={pillar.title} />
+                <img src={module.image} alt={module.title} />
               </div>
               <div className="mission-box-footer">
-                <p>{pillar.desc}</p>
+                <p>{module.desc}</p>
+                <div className="module-tag-bar">
+                  <span className="module-tag">&bull; {module.tag}</span>
+                </div>
               </div>
             </div>
           ))}

@@ -819,6 +819,21 @@
   padding: 1.25rem 1.5rem;
 }
 
+.module-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.module-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--nas-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .mission-box-header h3 {
   font-family: var(--nas-font-serif);
   font-size: 1.25rem;
@@ -848,7 +863,8 @@
   padding: 1.5rem;
   flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .mission-box-footer p {
@@ -856,6 +872,18 @@
   line-height: 1.6;
   color: var(--nas-text-muted);
   margin: 0;
+}
+
+.module-tag-bar {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--nas-border);
+}
+
+.module-tag {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--nas-primary);
 }
 
 /* Foundations Section (Panels 7 & 8) */
