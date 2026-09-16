@@ -486,9 +486,9 @@ export default function NeotroLanding() {
       <section id="stats" className="nas-community-section">
         <div className="nas-inner">
           <div className="nas-community-header">
-            <h2 className="nas-pillars-main-title">A Culture of Community</h2>
+            <h2 className="nas-pillars-main-title">A Culture of Academic Distinction &amp; Integrity</h2>
             <p className="nas-community-body">
-              Neotro Academy strives to create a diverse and inclusive learning community of students, faculty and staff, and parents who recognize the infinite value of every individual. Our school is committed to developing character, advancing human understanding, and promoting academic excellence to shape engaged citizens who live with integrity, empathy, and purpose.
+              Neotro Academy is committed to academic excellence, moral discipline, and technological innovation. We partner with parents and dedicated educators across Nigeria to nurture confident, high-achieving scholars equipped to excel in WAEC, NECO, IGCSE, JAMB, and top global university admissions.
             </p>
           </div>
 
@@ -497,8 +497,16 @@ export default function NeotroLanding() {
               <div className="stat-icon-wrapper">
                 <Award size={32} color="#155D4F" />
               </div>
-              <span className="stat-number">73%</span>
-              <h4 className="stat-label">teachers hold advanced degrees</h4>
+              <span className="stat-number">98%+</span>
+              <h4 className="stat-label">WAEC &amp; NECO Credit Pass Rate</h4>
+            </div>
+
+            <div className="nas-stat-card">
+              <div className="stat-icon-wrapper">
+                <Shield size={32} color="#155D4F" />
+              </div>
+              <span className="stat-number">100%</span>
+              <h4 className="stat-label">Digital Gate Security &amp; Instant SMS</h4>
             </div>
 
             <div className="nas-stat-card">
@@ -511,34 +519,26 @@ export default function NeotroLanding() {
 
             <div className="nas-stat-card">
               <div className="stat-icon-wrapper">
-                <Globe size={32} color="#155D4F" />
+                <BarChart3 size={32} color="#155D4F" />
               </div>
-              <span className="stat-number">41%</span>
-              <h4 className="stat-label">are students of color</h4>
-            </div>
-
-            <div className="nas-stat-card">
-              <div className="stat-icon-wrapper">
-                <MapPin size={32} color="#155D4F" />
-              </div>
-              <span className="stat-number">19</span>
-              <h4 className="stat-label">acres of campus grounds</h4>
+              <span className="stat-number">100%</span>
+              <h4 className="stat-label">Automated Broadsheets &amp; Digital Portals</h4>
             </div>
 
             <div className="nas-stat-card">
               <div className="stat-icon-wrapper">
                 <GraduationCap size={32} color="#155D4F" />
               </div>
-              <span className="stat-number">17</span>
-              <h4 className="stat-label">interscholastic athletics teams</h4>
+              <span className="stat-number">12+</span>
+              <h4 className="stat-label">Co-Curricular Clubs &amp; Sports Teams</h4>
             </div>
 
             <div className="nas-stat-card">
               <div className="stat-icon-wrapper">
-                <Shield size={32} color="#155D4F" />
+                <CheckCircle2 size={32} color="#155D4F" />
               </div>
-              <span className="stat-number">7:1</span>
-              <h4 className="stat-label">student-to-faculty ratio</h4>
+              <span className="stat-number">10:1</span>
+              <h4 className="stat-label">student-to-teacher ratio</h4>
             </div>
           </div>
         </div>
