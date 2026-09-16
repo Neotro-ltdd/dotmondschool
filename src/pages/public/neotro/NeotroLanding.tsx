@@ -211,9 +211,6 @@ export default function NeotroLanding() {
             </nav>
 
             <div className="nas-header-ctas">
-              <button onClick={() => navigate('/apply-admission')} className="nas-cta-link btn-inquire">
-                Inquire
-              </button>
               <button onClick={() => navigate('/schedule-visit')} className="nas-cta-link btn-visit">
                 Visit
               </button>
@@ -282,7 +279,7 @@ export default function NeotroLanding() {
               
               <div className="nas-hero-cta-group">
                 <button onClick={() => navigate('/apply-admission')} className="nas-btn nas-btn-primary">
-                  Inquire Now <ArrowRight size={16} />
+                  Apply Online <ArrowRight size={16} />
                 </button>
                 <button onClick={() => navigate('/schedule-visit')} className="nas-btn nas-btn-outline">
                   Schedule Campus Tour
@@ -311,11 +308,11 @@ export default function NeotroLanding() {
       {/* Quick Action Sage Green Ribbon */}
       <section className="nas-quick-bar">
         <div className="nas-inner nas-quick-bar-content">
-          <a href="/apply-admission" className="nas-quick-item">Inquire Online</a>
-          <div className="nas-quick-divider"></div>
           <a href="/schedule-visit" className="nas-quick-item">Book Campus Visit</a>
           <div className="nas-quick-divider"></div>
           <a href="/apply-admission" className="nas-quick-item">Apply for Admission</a>
+          <div className="nas-quick-divider"></div>
+          <a href="/neotro-login" className="nas-quick-item">Portal Login</a>
         </div>
       </section>
 
@@ -563,7 +560,6 @@ export default function NeotroLanding() {
       <footer id="support" className="nas-footer">
         <div className="nas-footer-cta-strip">
           <div className="nas-inner nas-footer-cta-content">
-            <a href="/apply-admission" className="foot-cta-item">Inquire</a>
             <a href="/schedule-visit" className="foot-cta-item">Visit</a>
             <a href="/apply-admission" className="foot-cta-item">Apply</a>
           </div>
