@@ -72,31 +72,38 @@ export default function NeotroLanding() {
   const divisionData = [
     {
       title: "Early Childhood Division",
-      subtitle: "PK3 & PK4 (Preschool & Nursery)",
+      subtitle: "Nursery 1 – Nursery 2",
       desc: "Constructive play, rich conversation, and meaningful experiences provide the foundation for learning in our Early Childhood Division.",
       image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop",
       badgeColor: "#E2BDC0"
     },
     {
-      title: "Lower School",
-      subtitle: "Kindergarten – Grade 3",
-      desc: "Inquiry-based experiences allow our Lower School students to internalize structure while engaging deeply with academic exploration.",
+      title: "Lower Primary",
+      subtitle: "Kindergarten – Primary 3",
+      desc: "Inquiry-based experiences allow our Lower Primary students to internalize structure while engaging deeply with academic exploration.",
       image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1200&auto=format&fit=crop",
       badgeColor: "#FDE3B2"
     },
     {
-      title: "Upper Elementary",
-      subtitle: "Grades 4 & 5",
+      title: "Basic Education",
+      subtitle: "Primary 4 – Primary 5",
       desc: "An exciting stage as students develop a deeper capacity for abstract thinking, critical analysis, and greater independence.",
       image: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=1200&auto=format&fit=crop",
       badgeColor: "#FFFFFF"
     },
     {
       title: "Middle School",
-      subtitle: "Grades 6 – 8",
-      desc: "Middle School represents a time of tremendous transition for these young people—intellectually, socially, emotionally, morally, and physically.",
+      subtitle: "JSS 1 – JSS 3",
+      desc: "Junior Secondary represents a time of tremendous transition for these young scholars—intellectually, socially, emotionally, and morally.",
       image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
       badgeColor: "#D0E3E5"
+    },
+    {
+      title: "High School",
+      subtitle: "SS 1 – SS 3",
+      desc: "Preparing scholars for WAEC, NECO, IGCSE, SATs, and entrance into top global universities with specialized academic rigor and leadership.",
+      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop",
+      badgeColor: "#E2BDC0"
     }
   ];
 

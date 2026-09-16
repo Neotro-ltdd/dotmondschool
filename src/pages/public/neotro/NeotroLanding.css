@@ -662,19 +662,19 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3.5rem;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .nas-panel-2-text-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .nas-panel-2-text-box {
   background-color: #FFFFFF;
   border-left: 6px solid var(--nas-border);
-  padding: 1.75rem 2rem;
+  padding: 1.5rem 1.75rem;
   border-radius: 8px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(17, 46, 37, 0.05);
@@ -692,12 +692,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .box-title {
   font-family: var(--nas-font-serif);
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--nas-primary-dark);
   margin: 0;
@@ -714,15 +714,17 @@
 }
 
 .box-body p {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   color: var(--nas-text-muted);
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
 }
 
 .nas-panel-2-image-container {
   width: 100%;
-  height: 520px;
+  height: 600px;
+  position: sticky;
+  top: 100px;
 }
 
 .nas-image-frame {
