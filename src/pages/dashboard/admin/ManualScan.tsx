@@ -112,7 +112,12 @@ const ManualScan: React.FC = () => {
       } catch (e) {}
     } catch (err: any) {
       const errorMsg =
-        err?.data?.message || err?.data?.Message || err?.message || 'Failed to verify ID or log attendance.';
+        err?.response?.data?.message ||
+        err?.response?.data?.Message ||
+        err?.data?.message ||
+        err?.data?.Message ||
+        err?.message ||
+        'Failed to verify ID or log attendance.';
       setError(errorMsg);
 
       try {
