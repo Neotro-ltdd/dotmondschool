@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { QrCode, Search } from 'lucide-react';
 import { api, getTenantId } from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
-import './GateScanner.css';
 
 interface ScanResult {
   message: string;
@@ -15,6 +13,12 @@ interface ScanResult {
   designation?: string;
 }
 
+interface StaffOption {
+  staffId: string;
+  fullName: string;
+  designation: string;
+}
+
 const GateScanner: React.FC = () => {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,11 +26,52 @@ const GateScanner: React.FC = () => {
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
   const [manualPayload, setManualPayload] = useState('');
   const [cameraError, setCameraError] = useState<boolean>(false);
+  const [staffList, setStaffList] = useState<StaffOption[]>([]);
+  const [selectedStaffId, setSelectedStaffId] = useState<string>('');
   const { userName } = useAuth();
-
+  
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isProcessingRef = useRef(false);
+
+  const [loadingStaff, setLoadingStaff] = useState(true);
+
+  // Load staff list for quick test dropdown
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        setLoadingStaff(true);
+        let list: StaffOption[] = [];
+        try {
+          const res = await api.get('/setup/staff');
+          if (Array.isArray(res)) {
+            list = res.map((s: any) => ({
+              staffId: s.id,
+              fullName: `${s.surname || ''} ${s.firstName || ''}`.trim() || s.fullName || 'Staff Member',
+              designation: s.designation || s.staffCategory || 'Staff'
+            }));
+          }
+        } catch {
+          // Fallback to staff report
+          const todayStr = new Date().toISOString().split('T')[0];
+          const res = await api.get(`/attendance/staff-report?date=${todayStr}`);
+          if (res && Array.isArray(res.staffAttendanceList)) {
+            list = res.staffAttendanceList.map((s: any) => ({
+              staffId: s.staffId,
+              fullName: s.fullName,
+              designation: s.designation || 'Staff'
+            }));
+          }
+        }
+        setStaffList(list);
+      } catch (e) {
+        console.error("Failed to load staff list for gate scanner", e);
+      } finally {
+        setLoadingStaff(false);
+      }
+    };
+    fetchStaff();
+  }, []);
 
   // Load offline queue on mount
   useEffect(() => {
@@ -34,7 +79,7 @@ const GateScanner: React.FC = () => {
     if (savedQueue) {
       try {
         setOfflineQueue(JSON.parse(savedQueue));
-      } catch (e) {}
+      } catch (e) { }
     }
   }, []);
 
@@ -48,21 +93,19 @@ const GateScanner: React.FC = () => {
     const syncOfflineScans = async () => {
       const savedQueue = localStorage.getItem('offline_scans_queue');
       if (!savedQueue) return;
-
+      
       let queue: string[];
       try {
         queue = JSON.parse(savedQueue);
-      } catch (e) {
-        return;
-      }
-
+      } catch (e) { return; }
+      
       if (queue.length === 0) return;
 
       const payload = queue[0];
       try {
         await api.post('/attendance/scan', { qrPayload: payload, scannedById: userName });
       } catch (err: any) {
-        console.warn('Offline scan sync processed/discarded:', err);
+        console.warn("Offline scan sync processed/discarded:", err);
       } finally {
         queue.shift();
         localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
@@ -80,21 +123,21 @@ const GateScanner: React.FC = () => {
     const startScanner = async () => {
       try {
         setCameraError(false);
-        const scanner = new Html5Qrcode('qr-reader');
+        const scanner = new Html5Qrcode("qr-reader");
         scannerRef.current = scanner;
-
+        
         await scanner.start(
-          { facingMode: 'environment' },
+          { facingMode: "environment" }, 
           { fps: 10, qrbox: 250 },
           (decodedText) => {
-            if (!isProcessingRef.current) {
-              onScanSuccess(decodedText);
-            }
+             if (!isProcessingRef.current) {
+                 onScanSuccess(decodedText);
+             }
           },
-          onScanFailure,
+          onScanFailure
         );
       } catch (err) {
-        console.error('Camera startup failed:', err);
+        console.error("Camera startup failed:", err);
         if (isMounted) setCameraError(true);
       }
     };
@@ -105,14 +148,11 @@ const GateScanner: React.FC = () => {
       isMounted = false;
       if (scannerRef.current) {
         if (scannerRef.current.isScanning) {
-          scannerRef.current
-            .stop()
-            .then(() => {
-              scannerRef.current?.clear();
-            })
-            .catch(console.error);
+          scannerRef.current.stop().then(() => {
+            scannerRef.current?.clear();
+          }).catch(console.error);
         } else {
-          scannerRef.current.clear();
+            scannerRef.current.clear();
         }
       }
       if (scanTimeoutRef.current) {
@@ -123,31 +163,31 @@ const GateScanner: React.FC = () => {
 
   // Support for Physical USB Scanners
   useEffect(() => {
-    let scannedString = '';
+    let scannedString = "";
     let lastKeyTime = 0;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const currentTime = Date.now();
-
+      
       if (currentTime - lastKeyTime > 50) {
-        scannedString = '';
+        scannedString = "";
       }
-
+      
       lastKeyTime = currentTime;
 
-      if (e.key === 'Enter' && scannedString.length > 0) {
+      if (e.key === "Enter" && scannedString.length > 0) {
         e.preventDefault();
         if (!isProcessingRef.current) {
-          onScanSuccess(scannedString);
+            onScanSuccess(scannedString);
         }
-        scannedString = '';
-      } else if (e.key !== 'Enter' && e.key.length === 1) {
+        scannedString = "";
+      } else if (e.key !== "Enter" && e.key.length === 1) {
         scannedString += e.key;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const getInitials = (name: string) => {
@@ -200,8 +240,7 @@ const GateScanner: React.FC = () => {
     }
 
     // Check if it's a Guid (36 chars: 8-4-4-4-12)
-    const guidRegex =
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     if (guidRegex.test(trimmed)) {
       const tenantId = getTenantId() || '1';
       return btoa(`RMS|${tenantId}|${trimmed}`);
@@ -212,108 +251,102 @@ const GateScanner: React.FC = () => {
 
   const onScanSuccess = async (rawDecodedText: string) => {
     if (isProcessingRef.current) return;
-
+    
     isProcessingRef.current = true;
     setIsProcessing(true);
 
     if (scannerRef.current && scannerRef.current.isScanning) {
-      scannerRef.current.pause(true);
+        scannerRef.current.pause(true);
     }
 
     const payloadToSend = formatPayload(rawDecodedText);
 
     try {
       setError(null);
-      const res = await api.post('/attendance/scan', {
-        qrPayload: payloadToSend,
-        scannedById: userName,
-      });
+      const res = await api.post('/attendance/scan', { qrPayload: payloadToSend, scannedById: userName });
       const resultData = res?.data || res;
       setScanResult(resultData);
-
+      
       // Play a success beep
       try {
-        // SAFETY: webkitAudioContext is Safari's legacy alias of AudioContext with the same constructor; wrapped in try/catch so unsupported browsers silently skip the beep.
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        oscillator.start();
-        setTimeout(() => oscillator.stop(), 200);
-      } catch (e) {}
+         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+         const oscillator = audioContext.createOscillator();
+         const gainNode = audioContext.createGain();
+         oscillator.type = 'sine';
+         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+         gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+         oscillator.connect(gainNode);
+         gainNode.connect(audioContext.destination);
+         oscillator.start();
+         setTimeout(() => oscillator.stop(), 200);
+      } catch(e) {}
 
+      
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       scanTimeoutRef.current = setTimeout(() => {
         setScanResult(null);
       }, 6000);
+
     } catch (err: any) {
-      const errorMsg =
-        err?.data?.message || err?.data?.Message || err?.message || 'Failed to scan ID.';
+      const errorMsg = err?.data?.message || err?.data?.Message || err?.message || 'Failed to scan ID.';
 
       if (!err.response && !err.status && err.message === 'Failed to fetch') {
         // Network Error -> Queue Offline
         const savedQueue = localStorage.getItem('offline_scans_queue');
         let queue: string[] = [];
         if (savedQueue) {
-          try {
-            queue = JSON.parse(savedQueue);
-          } catch (e) {}
+            try { queue = JSON.parse(savedQueue); } catch(e){}
         }
         if (!queue.includes(rawDecodedText)) {
-          queue.push(rawDecodedText);
-          localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
-          setOfflineQueue(queue);
+            queue.push(rawDecodedText);
+            localStorage.setItem('offline_scans_queue', JSON.stringify(queue));
+            setOfflineQueue(queue);
         }
 
         setScanResult({
-          message: 'Saved to offline queue',
-          studentName: 'Offline Scan Saved',
-          time: new Date().toISOString(),
-          status: 'Offline',
+            message: "Saved to offline queue",
+            studentName: "Offline Scan Saved",
+            time: new Date().toISOString(),
+            status: "Offline"
         });
 
         if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
         scanTimeoutRef.current = setTimeout(() => {
-          setScanResult(null);
+            setScanResult(null);
         }, 6000);
       } else {
         setError(errorMsg);
-
+        
         // Play error beep
         try {
-          // SAFETY: webkitAudioContext is Safari's legacy alias of AudioContext with the same constructor; wrapped in try/catch so unsupported browsers silently skip the beep.
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          oscillator.type = 'sawtooth';
-          oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          oscillator.start();
-          setTimeout(() => oscillator.stop(), 300);
-        } catch (e) {}
-
+           const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+           const oscillator = audioContext.createOscillator();
+           const gainNode = audioContext.createGain();
+           oscillator.type = 'sawtooth';
+           oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+           gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+           oscillator.connect(gainNode);
+           gainNode.connect(audioContext.destination);
+           oscillator.start();
+           setTimeout(() => oscillator.stop(), 300);
+        } catch(e) {}
+        
         if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
         scanTimeoutRef.current = setTimeout(() => {
           setError(null);
         }, 6000);
       }
     } finally {
-      // Reduced debounce timeout to keep the line moving, but still prevents double-fires
-      setTimeout(() => {
-        isProcessingRef.current = false;
-        setIsProcessing(false);
-        if (scannerRef.current && scannerRef.current.isScanning === false) {
-          scannerRef.current.resume();
-        } else if (scannerRef.current) {
-          scannerRef.current.resume();
-        }
-      }, 2000);
+        // Reduced debounce timeout to keep the line moving, but still prevents double-fires
+        setTimeout(() => {
+            isProcessingRef.current = false;
+            setIsProcessing(false);
+            if (scannerRef.current && scannerRef.current.isScanning === false) {
+                scannerRef.current.resume();
+            } else if (scannerRef.current) {
+                scannerRef.current.resume();
+            }
+        }, 2000);
     }
   };
 
@@ -322,129 +355,116 @@ const GateScanner: React.FC = () => {
   };
 
   return (
-    <div className="gate-scanner-page fade-in">
-      <div className="scanner-main-card">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-gray-50 p-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 flex flex-col items-center relative">
+        
         {offlineQueue.length > 0 && (
-          <div className="offline-queue-badge">
-            <span className="offline-badge-pill">
-              {offlineQueue.length} Offline Scan(s)
-            </span>
-            <button
-              type="button"
-              onClick={clearOfflineQueue}
-              className="offline-clear-btn"
-              title="Clear saved offline queue"
-            >
-              Clear
-            </button>
-          </div>
+            <div className="absolute top-6 right-6 flex items-center gap-1.5 z-20">
+                <span className="bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full text-xs font-bold border border-orange-300 shadow-sm animate-pulse">
+                    {offlineQueue.length} Offline Scan(s)
+                </span>
+                <button
+                  type="button"
+                  onClick={clearOfflineQueue}
+                  className="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-bold transition-colors shadow-xs"
+                  title="Clear saved offline queue"
+                >
+                  Clear
+                </button>
+            </div>
         )}
 
-        <h2 className="scanner-header-title">
-          <QrCode size={26} style={{ color: 'var(--primary-color, #000080)' }} />
-          Gate Scanner
-        </h2>
-
-        {/* Camera Viewport Frame */}
-        <div className="camera-viewport-frame">
-          <style>
-            {`
-              #qr-reader {
-                width: 100% !important;
-              }
-            `}
-          </style>
-          <div id="qr-reader"></div>
-          {isProcessing && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', zIndex: 20 }}>
-              <div style={{ width: '32px', height: '32px', border: '3px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div>
-            </div>
-          )}
-
-          {/* OVERLAYS */}
-          {scanResult && !isProcessing && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 30,
-                background: scanResult.status === 'Offline' ? 'rgba(234, 88, 12, 0.95)' : scanResult.status === 'AlreadyClockedIn' ? 'rgba(217, 119, 6, 0.95)' : 'rgba(5, 150, 105, 0.95)',
-                color: '#fff',
-                padding: '1rem',
-              }}
-            >
-              <svg className="w-12 h-12 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d={
-                    scanResult.status === 'Offline'
-                      ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'
-                      : 'M5 13l4 4L19 7'
-                  }
-                />
-              </svg>
-              <p style={{ fontWeight: 800, fontSize: '1.2rem', textAlign: 'center', margin: 0 }}>
-                {scanResult.studentName || scanResult.staffName || 'Attendance Logged'}
-              </p>
-              <p style={{ fontSize: '0.9rem', textAlign: 'center', margin: '4px 0 0 0', opacity: 0.9 }}>
-                {scanResult.message}
-              </p>
-            </div>
-          )}
-
-          {error && !isProcessing && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 30, background: 'rgba(220, 38, 38, 0.95)', color: '#fff', padding: '1rem' }}>
-              <svg className="w-12 h-12 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <p style={{ fontWeight: 800, fontSize: '1.1rem', margin: 0 }}>Verification Failed</p>
-              <p style={{ fontSize: '0.85rem', textAlign: 'center', margin: '4px 0 0 0', opacity: 0.9 }}>{error}</p>
-            </div>
-          )}
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Gate Scanner</h2>
+        
+        {/* Small Screen viewport */}
+        <div className={`w-full max-w-[350px] mx-auto relative rounded-lg overflow-hidden border-2 ${isProcessing ? 'border-blue-400 opacity-80' : 'border-gray-200'} bg-black transition-all`} style={{ minHeight: '250px' }}>
+            <style>
+              {`
+                #qr-reader {
+                  width: 100% !important;
+                }
+              `}
+            </style>
+            <div id="qr-reader"></div>
+            {isProcessing && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-20">
+                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
+            
+            {/* OVERLAYS */}
+            {scanResult && !isProcessing && (
+                <div className={`absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in ${scanResult.status === 'Offline' ? 'bg-orange-500 bg-opacity-95' : scanResult.status === 'AlreadyClockedIn' ? 'bg-amber-500 bg-opacity-95' : 'bg-green-500 bg-opacity-95'}`}>
+                    <svg className="w-16 h-16 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d={scanResult.status === 'Offline' ? "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" : "M5 13l4 4L19 7"} />
+                    </svg>
+                    <p className="text-white font-bold text-xl text-center px-4">
+                      {scanResult.studentName || scanResult.staffName || "Attendance Logged"}
+                    </p>
+                    <p className="text-white text-md text-center font-medium mt-1">{scanResult.message}</p>
+                </div>
+            )}
+            {error && !isProcessing && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-30 animate-fade-in bg-red-500 bg-opacity-95">
+                    <svg className="w-16 h-16 text-white mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <p className="text-white font-bold text-xl text-center">Error</p>
+                    <p className="text-white text-md text-center px-4 font-medium mt-1">{error}</p>
+                </div>
+            )}
         </div>
 
-        {/* VERIFICATION NOTIFICATION CARD */}
+        {/* EXECUTIVE ENTERPRISE ATTENDANCE CARD */}
         {scanResult && (
-          <div
+          <div 
+            className="mt-4 w-full max-w-[360px] rounded-2xl p-4 sm:p-5 shadow-2xl border flex flex-col items-center text-center transition-all animate-bounce-once relative overflow-hidden"
             style={{
-              marginTop: '1.25rem',
-              width: '100%',
-              maxWidth: '440px',
-              borderRadius: '16px',
-              padding: '1rem 1.25rem',
-              background:
-                scanResult.status === 'AlreadyClockedIn'
-                  ? 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)'
-                  : scanResult.status === 'Offline'
-                    ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
-                    : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-              color: '#ffffff',
-              textAlign: 'center',
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+              background: scanResult.status === 'AlreadyClockedIn' 
+                ? 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)' 
+                : scanResult.status === 'Offline' 
+                ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)' 
+                : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+              borderColor: scanResult.status === 'AlreadyClockedIn' ? '#f97316' : scanResult.status === 'Offline' ? '#f59e0b' : '#10b981',
+              color: '#ffffff'
             }}
           >
-            <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem', opacity: 0.9 }}>
-              {scanResult.status === 'AlreadyClockedIn'
-                ? 'ℹ️ ALREADY CLOCKED IN TODAY'
-                : scanResult.status === 'Offline'
-                  ? '⏳ SAVED OFFLINE'
-                  : '✓ ATTENDANCE RECORDED'}
+            {/* Top Status Header Pill */}
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border border-white/30 flex items-center gap-1 shadow-xs">
+                {scanResult.status === 'AlreadyClockedIn' ? 'ℹ️ ALREADY CLOCKED IN TODAY' : scanResult.status === 'Offline' ? '⏳ SAVED OFFLINE' : '✓ ATTENDANCE RECORDED'}
+              </span>
             </div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 0.25rem 0' }}>
-              {scanResult.staffName || scanResult.studentName || 'Attendance Logged'}
-            </h3>
-            <p style={{ fontSize: '0.85rem', margin: 0, opacity: 0.95 }}>
+
+            {/* Profile Avatar & Name */}
+            <div className="flex items-center justify-center gap-3 my-1 w-full">
+              {(scanResult.staffName || scanResult.studentName) && (
+                <div className="w-11 h-11 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-white font-black text-sm shadow-inner shrink-0">
+                  {getInitials(scanResult.staffName || scanResult.studentName || '')}
+                </div>
+              )}
+              <div className="text-left">
+                <h3 className="text-lg sm:text-xl font-black text-white leading-tight">
+                  {scanResult.staffName || scanResult.studentName || "Attendance Logged"}
+                </h3>
+                {(scanResult.staffCategory || scanResult.designation) && (
+                  <span className="inline-block mt-0.5 text-[11px] font-bold text-white/95 bg-white/20 px-2 py-0.5 rounded border border-white/25">
+                    {scanResult.staffCategory ? `${scanResult.staffCategory} Staff` : scanResult.designation}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Professional Verified Status Text */}
+            <p className="text-xs sm:text-sm font-medium text-white/95 mt-2.5 px-2.5 leading-relaxed bg-black/15 py-2 rounded-xl w-full border border-white/10">
               {getCleanMessage(scanResult)}
             </p>
+
+            {/* Timestamp Badge */}
             {scanResult.time && (
-              <div style={{ marginTop: '0.65rem', fontSize: '0.75rem', fontWeight: 700, background: 'rgba(0,0,0,0.25)', padding: '0.25rem 0.75rem', borderRadius: '20px', display: 'inline-block' }}>
-                Clocked in at {formatTime(scanResult.time)}
+              <div className="mt-3 inline-flex items-center gap-1.5 bg-black/30 px-3.5 py-1 rounded-full text-xs font-bold text-white border border-white/25 shadow-xs">
+                <span>🕒</span>
+                <span>Clocked in at {formatTime(scanResult.time)}</span>
               </div>
             )}
           </div>
@@ -452,57 +472,45 @@ const GateScanner: React.FC = () => {
 
         {/* ERROR NOTIFICATION CARD */}
         {error && (
-          <div
+          <div 
+            className="mt-4 w-full max-w-[360px] rounded-2xl p-4 sm:p-5 shadow-2xl border flex flex-col items-center text-center transition-all animate-shake relative overflow-hidden"
             style={{
-              marginTop: '1.25rem',
-              width: '100%',
-              maxWidth: '440px',
-              borderRadius: '16px',
-              padding: '1rem 1.25rem',
               background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-              color: '#ffffff',
-              textAlign: 'center',
-              boxShadow: '0 10px 25px rgba(220, 38, 38, 0.25)',
+              borderColor: '#ef4444',
+              color: '#ffffff'
             }}
           >
-            <div style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem', opacity: 0.9 }}>
-              ✕ IDENTITY VERIFICATION FAILED
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border border-white/30 flex items-center gap-1">
+                ✕ COULD NOT BE CAPTURED
+              </span>
             </div>
-            <p style={{ fontSize: '0.85rem', margin: 0, opacity: 0.95 }}>{error}</p>
+            <h3 className="text-base font-black text-white leading-snug my-1 px-1">
+              Identity Verification Failed
+            </h3>
+            <p className="text-xs sm:text-sm font-medium text-white/95 px-2 leading-relaxed bg-black/15 py-2 rounded-xl w-full border border-white/10 mt-1">
+              {error}
+            </p>
           </div>
         )}
 
-        {/* MANUAL ID ENTRY & VERIFICATION CARD */}
-        <div className="manual-verification-card">
-          <div className="manual-verification-header">
-            <span className="manual-verification-title">
-              <Search size={15} />
-              Manual ID Verification
-            </span>
-            <span className="manual-verification-badge">
-              Student / Staff ID
-            </span>
-          </div>
-
-          <div className="manual-input-row">
-            <div className="manual-input-wrapper">
-              <Search size={16} className="manual-input-icon" />
-              <input
-                type="text"
-                placeholder="Enter Student or Staff ID, Reg No, Phone or Email..."
-                value={manualPayload}
-                onChange={(e) => setManualPayload(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && manualPayload.trim()) {
-                    onScanSuccess(manualPayload.trim());
-                    setManualPayload('');
-                  }
-                }}
-                className="manual-id-input"
-              />
-            </div>
-
-            <button
+        {/* Manual Test Input for Rapid Admin Testing (Mobile Responsive) */}
+        <div className="mt-6 w-full max-w-[360px]">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input 
+              type="text" 
+              placeholder="Search staff email, phone, or ID..." 
+              value={manualPayload}
+              onChange={(e) => setManualPayload(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && manualPayload.trim()) {
+                  onScanSuccess(manualPayload.trim());
+                  setManualPayload('');
+                }
+              }}
+              className="w-full sm:flex-1 px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white text-slate-800 font-medium shadow-xs"
+            />
+            <button 
               type="button"
               onClick={() => {
                 if (manualPayload.trim()) {
@@ -510,19 +518,54 @@ const GateScanner: React.FC = () => {
                   setManualPayload('');
                 }
               }}
-              disabled={!manualPayload.trim() || isProcessing}
-              className="manual-submit-btn"
+              className="w-full sm:w-auto px-4 py-2.5 bg-blue-900 text-white rounded-xl text-xs font-bold hover:bg-blue-800 transition-colors shadow-sm shrink-0"
             >
-              <QrCode size={16} />
-              <span>{isProcessing ? 'Verifying...' : 'Submit Scan'}</span>
+              Test Scan
             </button>
           </div>
 
+          {/* Quick Staff Select Dropdown for Instant 1-Click Testing */}
+          <div className="mt-3.5 w-full bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-xs">
+            <label className="block text-[11px] font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+              ⚡ Quick Staff Tap-In Test Dropdown:
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <select
+                value={selectedStaffId}
+                onChange={(e) => setSelectedStaffId(e.target.value)}
+                disabled={loadingStaff}
+                className="w-full sm:flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs bg-white text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+              >
+                <option value="">
+                  {loadingStaff ? '-- Loading Staff Roster... --' : (staffList.length === 0 ? '-- No Staff Members Found --' : '-- Select Staff Member to Test --')}
+                </option>
+                {staffList.map((s) => (
+                  <option key={s.staffId} value={s.staffId}>
+                    {s.fullName} ({s.designation})
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                disabled={!selectedStaffId || loadingStaff}
+                onClick={() => {
+                  if (selectedStaffId) {
+                    onScanSuccess(selectedStaffId);
+                    setSelectedStaffId('');
+                  }
+                }}
+                className="w-full sm:w-auto px-4 py-2 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50 shadow-sm shrink-0"
+              >
+                Tap-In
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 w-full flex flex-col items-center justify-center">
           {!scanResult && !error && (
-            <p className="manual-hint-text">
-              {isProcessing
-                ? 'Processing attendance verification...'
-                : 'Align a Student or Staff ID card within the scanning frame above or enter ID details manually.'}
+            <p className="text-gray-500 text-sm text-center px-4">
+              {isProcessing ? "Processing scan..." : "Align a Student or Staff ID card within the scanning frame above or use the test box."}
             </p>
           )}
         </div>
