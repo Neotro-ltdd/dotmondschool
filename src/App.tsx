@@ -50,6 +50,7 @@ import GradingRules from './pages/dashboard/admin/operations/GradingRules';
 import GateScanner from './pages/dashboard/admin/GateScanner';
 import GateAttendanceLog from './pages/dashboard/admin/GateAttendanceLog';
 import ManualClearance from './pages/dashboard/admin/ManualClearance';
+import ManualScan from './pages/dashboard/admin/ManualScan';
 import SystemLayout from './components/layout/SystemLayout';
 import SystemOverview from './pages/dashboard/admin/SystemOverview';
 import SystemSchools from './pages/dashboard/admin/SystemSchools';
@@ -134,6 +135,7 @@ function App() {
                     <Route path="admin/students" element={<Students />} />
                     <Route path="staff-attendance" element={<StaffAttendanceReport />} />
                     <Route path="gate-scanner" element={<GateScanner />} />
+                    <Route path="manual-scan" element={<ManualScan />} />
                     <Route path="scanner-preview" element={<GateScanner />} />
                     <Route path="gate-logs" element={<GateAttendanceLog />} />
                     <Route path="students" element={<Students />} />
@@ -165,6 +167,7 @@ function App() {
                       <Route path="template-gallery" element={<TemplateGallery />} />
                       <Route path="grading" element={<GradingRules />} />
                       <Route path="gate-scanner" element={<GateScanner />} />
+                      <Route path="manual-scan" element={<ManualScan />} />
                       <Route path="gate-logs" element={<GateAttendanceLog />} />
                       <Route path="result-management" element={<ResultManagement />} />
                       <Route path="review-results" element={<AdminReviewResults />} />

@@ -171,7 +171,9 @@ export default function Sidebar({
     }
     if (
       path.includes('/dashboard/operations/gate-scanner') ||
-      path.includes('/dashboard/operations/gate-logs')
+      path.includes('/dashboard/operations/gate-logs') ||
+      path.includes('/dashboard/operations/manual-scan') ||
+      path.includes('/dashboard/manual-scan')
     ) {
       setIsAttendanceOpen(true);
     }
@@ -840,6 +842,18 @@ export default function Sidebar({
                             }
                           >
                             Staff Attendance Log
+                          </NavLink>
+                        )}
+                        {(hasPermission('attendance.scan') ||
+                          hasPermission('attendance.staff.view') ||
+                          hasPermission('attendance.view')) && (
+                          <NavLink
+                            to="/dashboard/operations/manual-scan"
+                            className={({ isActive }) =>
+                              `nav-item submenu-item ${isActive ? 'active' : ''}`
+                            }
+                          >
+                            Manual Scan
                           </NavLink>
                         )}
                         {hasPermission('reports.attendance') && (
