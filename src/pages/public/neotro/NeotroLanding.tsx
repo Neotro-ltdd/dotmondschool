@@ -568,17 +568,20 @@ export default function NeotroLanding() {
             </div>
 
             <div className="nas-footer-col">
-              <h4>Whitehaven Campus</h4>
-              <p>4700 Whitehaven Parkway NW</p>
-              <p>Washington, D.C. 20007-1586</p>
-              <p>P: 202-342-2805</p>
+              <h4>Campus Location</h4>
+              <p>Victoria Island Campus</p>
+              <p>Lagos State, Nigeria</p>
+              <p>Email: info@neotroacademy.com</p>
+              <p>P: +234 (0) 700 NEOTRO</p>
             </div>
 
             <div className="nas-footer-col">
-              <h4>MacArthur Campus</h4>
-              <p>4590 MacArthur Blvd. NW</p>
-              <p>Washington, D.C. 20007-4226</p>
-              <p>P: 202-650-5324</p>
+              <h4>Quick Links</h4>
+              <p><a href="#who-we-are" style={{ color: 'inherit', textDecoration: 'none' }}>Who We Are</a></p>
+              <p><a href="#academics" style={{ color: 'inherit', textDecoration: 'none' }}>Academics &amp; Divisions</a></p>
+              <p><a href="/apply-admission" style={{ color: 'inherit', textDecoration: 'none' }}>Online Admissions</a></p>
+              <p><a href="/schedule-visit" style={{ color: 'inherit', textDecoration: 'none' }}>Schedule Campus Visit</a></p>
+              <p><a href="/neotro-login" style={{ color: 'inherit', textDecoration: 'none' }}>Portal Login</a></p>
             </div>
 
             <div className="nas-footer-col">
@@ -606,10 +609,10 @@ export default function NeotroLanding() {
             </div>
             
             <div className="footer-utility-links">
-              <a href="/site-map">Sitemap</a>
-              <a href="/calendar-header">Calendar</a>
-              <a href="/directions">Directions</a>
-              <a href="/who-we-are/careers">Careers</a>
+              <a href="#who-we-are">Who We Are</a>
+              <a href="#academics">Academics</a>
+              <a href="/apply-admission">Admissions</a>
+              <a href="/neotro-login">Portal Login</a>
             </div>
           </div>
 
