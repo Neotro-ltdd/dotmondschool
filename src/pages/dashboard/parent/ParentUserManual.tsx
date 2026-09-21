@@ -166,17 +166,17 @@ export default function ParentUserManual() {
           <section id="ch1" className="manual-chapter-card">
             <div className="manual-chapter-header">
               <span className="chapter-badge">CHAPTER 1</span>
-              <h2 className="chapter-title">Overview & Managing Wards (My Kids)</h2>
+              <h2 className="chapter-title">Overview & Accessing Wards ("My Kids")</h2>
             </div>
 
             <p className="manual-text-block">
-              When logging into the Parent Portal, your home dashboard displays a consolidated view of all children and wards registered under your parent account. You can easily view registration numbers, assigned classes, passport photographs, and financial clearance badges.
+              When logging into the Parent Portal, your home dashboard displays an overview of your registered children, financial clearance status, term report card locks, and attendance summary.
             </p>
 
             <div className="manual-callout tip">
               <Lightbulb className="callout-icon" size={20} />
               <div>
-                <strong>Pro-Tip:</strong> If you have multiple children attending the school, click on any child's card to switch the active workspace context to that specific student.
+                <strong>Accessing Your Child's Cards:</strong> To access your child's profile card, fee invoices, report cards, or attendance records, locate the <strong>PARENT PORTAL</strong> section on the left sidebar navigation and click <strong>"My Kids"</strong>.
               </div>
             </div>
 
@@ -188,15 +188,15 @@ export default function ParentUserManual() {
                   <span className="browser-dot yellow"></span>
                   <span className="browser-dot green"></span>
                 </div>
-                <span className="screenshot-caption-title">Parent Portal - Student Profile Cards View</span>
+                <span className="screenshot-caption-title">{schoolName || 'Dotmond'} Parent Portal - Dashboard Overview & Sidebar Navigation</span>
               </div>
               <div
                 className="screenshot-image-wrapper"
-                onClick={() => openLightbox('/manual/parent_overview_kids.jpg', 'Parent Portal - Student Selector & Overview Page')}
+                onClick={() => openLightbox('/manual/parent_overview_kids.jpg', 'Parent Portal Dashboard & Sidebar Navigation')}
               >
                 <img
                   src="/manual/parent_overview_kids.jpg"
-                  alt="Student Selector View"
+                  alt="Parent Portal Dashboard Overview"
                   className="manual-screenshot-img"
                 />
                 <div className="screenshot-zoom-overlay">
@@ -209,18 +209,27 @@ export default function ParentUserManual() {
               <div className="manual-step-item">
                 <div className="step-num-badge">1</div>
                 <div>
-                  <div className="step-content-title">Select Child Profile</div>
+                  <div className="step-content-title">Click "My Kids" on Sidebar</div>
                   <div className="step-content-desc">
-                    Click the <strong>"View Profile"</strong> or <strong>"Go to Dashboard"</strong> button under your child's card.
+                    In the left navigation sidebar under <strong>PARENT PORTAL</strong>, click <strong>"My Kids"</strong> to open your ward management hub where you can view student profile cards, ID numbers, and assigned classes.
                   </div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">2</div>
                 <div>
-                  <div className="step-content-title">Check Financial Clearance Badge</div>
+                  <div className="step-content-title">Check Overview Summary & Status Cards</div>
                   <div className="step-content-desc">
-                    A green <strong>"Paid / Cleared"</strong> badge indicates all compulsory term fees are settled. A red or yellow badge alerts you of outstanding invoices requiring attention.
+                    Your Overview screen features live summary cards: <strong>Linked Wards</strong>, <strong>Fee Payment Status</strong>, <strong>Term Report Cards</strong>, and <strong>Ward Attendance Rate</strong>.
+                  </div>
+                </div>
+              </div>
+              <div className="manual-step-item">
+                <div className="step-num-badge">3</div>
+                <div>
+                  <div className="step-content-title">Use Dashboard Quick Actions</div>
+                  <div className="step-content-desc">
+                    You can also click the quick banner buttons: <strong>"View Ward Report Cards"</strong>, <strong>"Pay & Download Receipts"</strong>, or <strong>"User Manual & Guide"</strong> to navigate directly to key portal tools.
                   </div>
                 </div>
               </div>
