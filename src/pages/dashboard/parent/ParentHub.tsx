@@ -1002,16 +1002,6 @@ export default function ParentHub() {
                         <div className="signature-line">ACCOUNTANT SIGNATURE</div>
                       </div>
                     </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                      <button
-                        className="btn btn-outline"
-                        onClick={() => window.print()}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}
-                      >
-                        <Printer size={15} /> Print Breakdown
-                      </button>
-                    </div>
                   </div>
                 </div>
               )}
