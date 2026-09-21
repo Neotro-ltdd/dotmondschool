@@ -170,13 +170,13 @@ export default function ParentUserManual() {
             </div>
 
             <p className="manual-text-block">
-              When logging into the Parent Portal, your home dashboard displays an overview of your registered children, financial clearance status, term report card locks, and attendance summary.
+              When logging into the Parent Portal, you can navigate to the <strong>"My Kids"</strong> page from the left sidebar. This displays official student cards for all children registered under your parent profile.
             </p>
 
             <div className="manual-callout tip">
               <Lightbulb className="callout-icon" size={20} />
               <div>
-                <strong>Accessing Your Child's Cards:</strong> To access your child's profile card, fee invoices, report cards, or attendance records, locate the <strong>PARENT PORTAL</strong> section on the left sidebar navigation and click <strong>"My Kids"</strong>.
+                <strong>Accessing Your Child's Portal:</strong> Locate the <strong>PARENT PORTAL</strong> section on the left sidebar and click <strong>"My Kids"</strong>. Click <strong>"Open Student Portal →"</strong> on your child's card to access their detailed fee receipts, report cards, and attendance logs.
               </div>
             </div>
 
@@ -188,15 +188,15 @@ export default function ParentUserManual() {
                   <span className="browser-dot yellow"></span>
                   <span className="browser-dot green"></span>
                 </div>
-                <span className="screenshot-caption-title">{schoolName || 'Dotmond'} Parent Portal - Dashboard Overview & Sidebar Navigation</span>
+                <span className="screenshot-caption-title">{schoolName || 'Dotmond'} Parent Hub - Real Student Profile Cards View ("My Kids")</span>
               </div>
               <div
                 className="screenshot-image-wrapper"
-                onClick={() => openLightbox('/manual/parent_overview_kids.jpg', 'Parent Portal Dashboard & Sidebar Navigation')}
+                onClick={() => openLightbox('/manual/parent_overview_kids.jpg', 'Real Student Profile Card View (My Kids)')}
               >
                 <img
                   src="/manual/parent_overview_kids.jpg"
-                  alt="Parent Portal Dashboard Overview"
+                  alt="Real Student Profile Card View"
                   className="manual-screenshot-img"
                 />
                 <div className="screenshot-zoom-overlay">
@@ -209,27 +209,27 @@ export default function ParentUserManual() {
               <div className="manual-step-item">
                 <div className="step-num-badge">1</div>
                 <div>
-                  <div className="step-content-title">Click "My Kids" on Sidebar</div>
+                  <div className="step-content-title">Click "My Kids" on Left Sidebar</div>
                   <div className="step-content-desc">
-                    In the left navigation sidebar under <strong>PARENT PORTAL</strong>, click <strong>"My Kids"</strong> to open your ward management hub where you can view student profile cards, ID numbers, and assigned classes.
+                    In the left navigation sidebar under <strong>PARENT PORTAL</strong>, click <strong>"My Kids"</strong> to view your children's official school cards.
                   </div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">2</div>
                 <div>
-                  <div className="step-content-title">Check Overview Summary & Status Cards</div>
+                  <div className="step-content-title">Inspect Student Details & Status Badges</div>
                   <div className="step-content-desc">
-                    Your Overview screen features live summary cards: <strong>Linked Wards</strong>, <strong>Fee Payment Status</strong>, <strong>Term Report Cards</strong>, and <strong>Ward Attendance Rate</strong>.
+                    Each card displays your child's student passport photo in school uniform, full name, class level (e.g. <em>Junior Secondary JSS 2</em>), unique ID number (e.g. <em># DOTJS52-002</em>), <strong>Tuition Clearance</strong> status (<em>Pending/Cleared</em>), and <strong>Term Report</strong> status (<em>Restricted/Unlocked</em>).
                   </div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">3</div>
                 <div>
-                  <div className="step-content-title">Use Dashboard Quick Actions</div>
+                  <div className="step-content-title">Click "Open Student Portal →"</div>
                   <div className="step-content-desc">
-                    You can also click the quick banner buttons: <strong>"View Ward Report Cards"</strong>, <strong>"Pay & Download Receipts"</strong>, or <strong>"User Manual & Guide"</strong> to navigate directly to key portal tools.
+                    Click the <strong>"Open Student Portal →"</strong> button at the bottom of the card to enter the full student dashboard for fee payments, report cards, and attendance registers.
                   </div>
                 </div>
               </div>
