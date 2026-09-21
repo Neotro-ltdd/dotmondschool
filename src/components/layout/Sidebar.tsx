@@ -326,6 +326,26 @@ export default function Sidebar({
                   </span>
                   Printing Hub
                 </NavLink>
+
+                <div className="sidebar-section-header">PARENT PORTAL (SAMPLE)</div>
+                <NavLink
+                  to="/dashboard/parent-hub"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <Users size={18} />
+                  </span>
+                  Parent Portal Hub
+                </NavLink>
+                <NavLink
+                  to="/dashboard/parent-manual"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <BookOpen size={18} />
+                  </span>
+                  Parent User Manual
+                </NavLink>
               </>
             )}
 
@@ -453,6 +473,15 @@ export default function Sidebar({
                     <Users size={18} />
                   </span>
                   My Kids
+                </NavLink>
+                <NavLink
+                  to="/dashboard/parent-manual"
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon-box">
+                    <BookOpen size={18} />
+                  </span>
+                  User Manual
                 </NavLink>
               </>
             )}

@@ -65,6 +65,7 @@ import Utilities from './pages/dashboard/teacher/Utilities';
 import TeacherResults from './pages/dashboard/teacher/TeacherResults';
 import StaffAttendanceReport from './pages/dashboard/attendance/StaffAttendanceReport';
 import ParentHub from './pages/dashboard/parent/ParentHub';
+import ParentUserManual from './pages/dashboard/parent/ParentUserManual';
 import VendorHub from './pages/dashboard/vendor/VendorHub';
 import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
@@ -188,6 +189,7 @@ function App() {
                     </Route>
                     <Route path="parent-hub" element={<ParentHub />} />
                     <Route path="parent" element={<ParentHub />} />
+                    <Route path="parent-manual" element={<ParentUserManual />} />
                     <Route path="vendor-hub" element={<VendorHub />} />
                     <Route path="admissions" element={<AdmissionsHub />} />
                     <Route path="profile" element={<ProfileSettings />} />
