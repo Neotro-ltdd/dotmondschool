@@ -934,61 +934,155 @@ export default function ParentHub() {
                       </span>
                     </div>
 
-                    {/* Fee Items Table */}
-                    <table className="items-table">
-                      <thead>
-                        <tr>
-                          <th>FEE ITEM</th>
-                          <th style={{ textAlign: 'right' }}>AMOUNT</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(() => {
-                          if (loadingBreakdown) {
-                            return (
+                    {/* Fee Items 2-Column Grid */}
+                    {(() => {
+                      if (loadingBreakdown) {
+                        return (
+                          <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b' }}>
+                            Loading class fee breakdown...
+                          </div>
+                        );
+                      }
+
+                      let itemsToRender: { name: string; amount: number }[] = [];
+                      if (classFeeBreakdown?.items && classFeeBreakdown.items.length > 0) {
+                        itemsToRender = classFeeBreakdown.items;
+                      } else if (currentInvoice?.feeItems && currentInvoice.feeItems.length > 0) {
+                        itemsToRender = currentInvoice.feeItems;
+                      } else {
+                        itemsToRender = [
+                          { name: 'Registration Form', amount: 5000 },
+                          { name: 'Christmas Party', amount: 10000 },
+                          { name: 'Uniform Fees', amount: 40000 },
+                          { name: 'Notebook', amount: 10000 },
+                          { name: 'Sport Wear', amount: 10000 },
+                          { name: 'Security ID / Resource Management', amount: 10000 },
+                          { name: 'Textbook', amount: 30000 },
+                          { name: 'Development Fees', amount: 10000 },
+                          { name: 'Tuition Fees', amount: 90000 },
+                          { name: 'Lesson Fees', amount: 10000 },
+                        ];
+                      }
+
+                      const calculatedTotal = itemsToRender.reduce(
+                        (sum, it) => sum + Number(it.amount || 0),
+                        0
+                      );
+                      const displayTotal =
+                        classFeeBreakdown?.totalFee ||
+                        currentInvoice?.totalAmount ||
+                        calculatedTotal ||
+                        225000;
+
+                      if (itemsToRender.length >= 4) {
+                        const midIndex = Math.ceil(itemsToRender.length / 2);
+                        const leftCol = itemsToRender.slice(0, midIndex);
+                        const rightCol = itemsToRender.slice(midIndex);
+
+                        return (
+                          <div style={{ margin: '1.25rem 0' }}>
+                            <div
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                gap: '1.25rem',
+                              }}
+                            >
+                              {/* Left Column Table */}
+                              <table className="items-table" style={{ margin: 0 }}>
+                                <thead>
+                                  <tr>
+                                    <th>FEE ITEM</th>
+                                    <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {leftCol.map((item: any, idx: number) => (
+                                    <tr key={`left-${idx}`}>
+                                      <td>{item.name}</td>
+                                      <td style={{ textAlign: 'right' }}>
+                                        ₦{Number(item.amount || 0).toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+
+                              {/* Right Column Table */}
+                              <table className="items-table" style={{ margin: 0 }}>
+                                <thead>
+                                  <tr>
+                                    <th>FEE ITEM</th>
+                                    <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {rightCol.map((item: any, idx: number) => (
+                                    <tr key={`right-${idx}`}>
+                                      <td>{item.name}</td>
+                                      <td style={{ textAlign: 'right' }}>
+                                        ₦{Number(item.amount || 0).toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+
+                            {/* Full Width Total Summary Bar */}
+                            <div
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                background: '#f0fdf4',
+                                border: '1px solid #bbf7d0',
+                                color: '#15803d',
+                                padding: '0.85rem 1.25rem',
+                                borderRadius: '10px',
+                                marginTop: '1.25rem',
+                                fontWeight: 800,
+                                fontSize: '1rem',
+                              }}
+                            >
+                              <span>TOTAL OFFICIAL FEE</span>
+                              <span style={{ fontSize: '1.1rem' }}>
+                                ₦{displayTotal.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div style={{ margin: '1.25rem 0' }}>
+                          <table className="items-table" style={{ margin: 0 }}>
+                            <thead>
                               <tr>
-                                <td colSpan={2} style={{ textAlign: 'center', color: '#64748b' }}>
-                                  Loading class fee breakdown...
+                                <th>FEE ITEM</th>
+                                <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {itemsToRender.map((item: any, idx: number) => (
+                                <tr key={idx}>
+                                  <td>{item.name}</td>
+                                  <td style={{ textAlign: 'right' }}>
+                                    ₦{Number(item.amount || 0).toLocaleString()}
+                                  </td>
+                                </tr>
+                              ))}
+                              <tr className="total-row">
+                                <td>Total</td>
+                                <td style={{ textAlign: 'right' }}>
+                                  ₦{displayTotal.toLocaleString()}
                                 </td>
                               </tr>
-                            );
-                          }
-
-                          let itemsToRender: { name: string; amount: number }[] = [];
-                          if (classFeeBreakdown?.items && classFeeBreakdown.items.length > 0) {
-                            itemsToRender = classFeeBreakdown.items;
-                          } else if (currentInvoice?.feeItems && currentInvoice.feeItems.length > 0) {
-                            itemsToRender = currentInvoice.feeItems;
-                          } else {
-                            itemsToRender = [
-                              { name: 'Registration Form', amount: 5000 },
-                              { name: 'Christmas Party', amount: 10000 },
-                              { name: 'Uniform Fees', amount: 40000 },
-                              { name: 'Notebook', amount: 10000 },
-                              { name: 'Sport Wear', amount: 10000 },
-                              { name: 'Security ID / Resource Management', amount: 10000 },
-                              { name: 'Textbook', amount: 30000 },
-                              { name: 'Development Fees', amount: 10000 },
-                              { name: 'Tuition Fees', amount: 90000 },
-                              { name: 'Lesson Fees', amount: 10000 },
-                            ];
-                          }
-
-                          return itemsToRender.map((item: any, idx: number) => (
-                            <tr key={idx}>
-                              <td>{item.name}</td>
-                              <td style={{ textAlign: 'right' }}>₦{Number(item.amount || 0).toLocaleString()}</td>
-                            </tr>
-                          ));
-                        })()}
-                        <tr className="total-row">
-                          <td>Total</td>
-                          <td style={{ textAlign: 'right' }}>
-                            ₦{(classFeeBreakdown?.totalFee || currentInvoice?.totalAmount || 225000).toLocaleString()}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })()}
 
                     <div className="dotted-divider"></div>
 
