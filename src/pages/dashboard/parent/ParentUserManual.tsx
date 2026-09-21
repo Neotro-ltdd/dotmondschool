@@ -22,6 +22,7 @@ import {
   Printer,
   Calendar,
 } from 'lucide-react';
+import { useTenant } from '../../../context/TenantContext';
 import './ParentUserManual.css';
 
 interface Chapter {
@@ -43,6 +44,7 @@ const CHAPTERS: Chapter[] = [
 ];
 
 export default function ParentUserManual() {
+  const { schoolName } = useTenant();
   const [activeChapter, setActiveChapter] = useState<string>('ch1');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTagFilter, setActiveTagFilter] = useState<string>('all');
