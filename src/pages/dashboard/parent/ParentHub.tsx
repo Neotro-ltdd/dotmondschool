@@ -320,6 +320,16 @@ export default function ParentHub() {
     }
   };
 
+  const isWeekendLog = (log: any) => {
+    const dayStr = String(log.dayName || log.dayOfWeek || log.formattedDate || log.date || '').toLowerCase();
+    if (dayStr.includes('sat') || dayStr.includes('sun')) return true;
+    if (log.date) {
+      const d = new Date(log.date);
+      if (!isNaN(d.getTime()) && (d.getDay() === 0 || d.getDay() === 6)) return true;
+    }
+    return false;
+  };
+
   const fetchAttendance = async (studentId: string, sess: string, trm: string) => {
     try {
       setLoadingTab(true);
@@ -345,10 +355,21 @@ export default function ParentHub() {
 
       // Format 1: Direct array of attendance logs
       if (Array.isArray(data)) {
-        const totalDays = data.length;
-        const presentDays = data.filter((d: any) => d.status === 'Present' || d.status === 'Departed' || d.status === 'On Time').length;
-        const lateDays = data.filter((d: any) => d.status === 'Late').length;
-        const absentDays = data.filter((d: any) => d.status === 'Absent').length;
+        const rawLogs = data.map((d: any) => ({
+          date: d.date || '',
+          dayName: d.dayOfWeek || d.dayName || d.date || '',
+          formattedDate: d.formattedDate || d.date || '',
+          timeIn: d.clockInTime ? new Date(d.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeIn || '—'),
+          timeOut: d.clockOutTime ? new Date(d.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeOut || '—'),
+          status: d.status || 'Present',
+          remarks: d.remarks || (d.status === 'Absent' ? 'System Automated Absent Log' : 'Gate Scan Verified'),
+        }));
+
+        const schoolLogs = rawLogs.filter((l: any) => !isWeekendLog(l));
+        const totalDays = schoolLogs.length;
+        const presentDays = schoolLogs.filter((d: any) => d.status === 'Present' || d.status === 'Departed' || d.status === 'On Time').length;
+        const lateDays = schoolLogs.filter((d: any) => d.status === 'Late').length;
+        const absentDays = schoolLogs.filter((d: any) => d.status === 'Absent').length;
         const rate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
 
         setAttendanceData({
@@ -357,21 +378,12 @@ export default function ParentHub() {
           daysLate: lateDays,
           daysAbsent: absentDays,
           attendanceRatePercentage: rate,
-          logs: data.map((d: any) => ({
-            date: d.date || '',
-            dayName: d.dayOfWeek || d.dayName || d.date || '',
-            formattedDate: d.formattedDate || d.date || '',
-            timeIn: d.clockInTime ? new Date(d.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeIn || '—'),
-            timeOut: d.clockOutTime ? new Date(d.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeOut || '—'),
-            status: d.status || 'Present',
-            remarks: d.remarks || (d.status === 'Absent' ? 'System Automated Absent Log' : 'Gate Scan Verified'),
-            gateTerminal: d.gateTerminal || d.terminal || d.gateName || 'Main Entrance A',
-          })),
+          logs: schoolLogs,
         });
       }
-      // Format 2: Report object with history array (from /reports/attendance/student/{studentId})
+      // Format 2: Report object with history array
       else if (data.history && Array.isArray(data.history)) {
-        const historyLogs: AttendanceLogItem[] = data.history.map((h: any) => {
+        const rawLogs: AttendanceLogItem[] = data.history.map((h: any) => {
           let timeInDisplay = '—';
           let timeOutDisplay = '—';
 
@@ -398,15 +410,15 @@ export default function ParentHub() {
             timeOut: timeOutDisplay,
             status: h.status || 'Present',
             remarks: h.remarks || (h.status === 'Absent' ? 'Marked Absent' : 'Gate Scan Verified'),
-            gateTerminal: h.gateTerminal || h.terminal || h.gateName || 'Main Entrance A',
           };
         });
 
-        const totalExpected = data.totalExpectedDays ?? historyLogs.length;
-        const totalPresent = data.totalPresent ?? historyLogs.filter((l: any) => l.status === 'Present' || l.status === 'On Time').length;
-        const totalLate = data.totalLate ?? historyLogs.filter((l: any) => l.status === 'Late').length;
-        const totalAbsent = data.totalAbsent ?? historyLogs.filter((l: any) => l.status === 'Absent').length;
-        const percent = Math.round(data.attendancePercentage ?? (totalExpected > 0 ? (totalPresent / totalExpected) * 100 : 100));
+        const schoolLogs = rawLogs.filter((l: any) => !isWeekendLog(l));
+        const totalExpected = schoolLogs.length;
+        const totalPresent = schoolLogs.filter((l: any) => l.status === 'Present' || l.status === 'On Time').length;
+        const totalLate = schoolLogs.filter((l: any) => l.status === 'Late').length;
+        const totalAbsent = schoolLogs.filter((l: any) => l.status === 'Absent').length;
+        const percent = Math.round(totalExpected > 0 ? ((totalPresent + totalLate) / totalExpected) * 100 : 100);
 
         setAttendanceData({
           totalSchoolDays: totalExpected,
@@ -414,27 +426,35 @@ export default function ParentHub() {
           daysLate: totalLate,
           daysAbsent: totalAbsent,
           attendanceRatePercentage: percent,
-          logs: historyLogs,
+          logs: schoolLogs,
         });
       }
       // Format 3: Object with logs array (from /parents/my-kids/{studentId}/attendance)
       else if (data.logs && Array.isArray(data.logs)) {
+        const rawLogs = data.logs.map((l: any) => ({
+          date: l.date || '',
+          dayName: l.dayName || l.dayOfWeek || '',
+          formattedDate: l.formattedDate || l.date || '',
+          timeIn: l.timeIn || '—',
+          timeOut: l.timeOut || '—',
+          status: l.status || 'Present',
+          remarks: l.remarks || '',
+        }));
+
+        const schoolLogs = rawLogs.filter((l: any) => !isWeekendLog(l));
+        const totalExpected = schoolLogs.length;
+        const totalPresent = schoolLogs.filter((l: any) => l.status === 'Present' || l.status === 'On Time').length;
+        const totalLate = schoolLogs.filter((l: any) => l.status === 'Late').length;
+        const totalAbsent = schoolLogs.filter((l: any) => l.status === 'Absent').length;
+        const percent = Math.round(totalExpected > 0 ? ((totalPresent + totalLate) / totalExpected) * 100 : 100);
+
         setAttendanceData({
-          totalSchoolDays: data.totalSchoolDays ?? data.logs.length,
-          daysPresent: data.daysPresent ?? 0,
-          daysLate: data.daysLate ?? 0,
-          daysAbsent: data.daysAbsent ?? 0,
-          attendanceRatePercentage: data.attendanceRatePercentage ?? 0,
-          logs: data.logs.map((l: any) => ({
-            date: l.date || '',
-            dayName: l.dayName || l.dayOfWeek || '',
-            formattedDate: l.formattedDate || l.date || '',
-            timeIn: l.timeIn || '—',
-            timeOut: l.timeOut || '—',
-            status: l.status || 'Present',
-            remarks: l.remarks || '',
-            gateTerminal: l.gateTerminal || l.terminal || l.gateName || 'Main Entrance A',
-          })),
+          totalSchoolDays: totalExpected,
+          daysPresent: totalPresent,
+          daysLate: totalLate,
+          daysAbsent: totalAbsent,
+          attendanceRatePercentage: percent,
+          logs: schoolLogs,
         });
       }
       // Fallback
@@ -1786,8 +1806,8 @@ export default function ParentHub() {
                                   <th>DATE</th>
                                   <th>TIME IN</th>
                                   <th>TIME OUT</th>
-                                  <th>GATE TERMINAL</th>
                                   <th>STATUS</th>
+                                  <th>REMARKS</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1815,13 +1835,13 @@ export default function ParentHub() {
                                       <td className={`att-col-time ${isAbsent ? 'text-absent' : 'text-primary'}`}>
                                         {isAbsent ? '(Absent)' : log.timeOut}
                                       </td>
-                                      <td className="att-col-terminal">
-                                        {log.gateTerminal || 'Main Entrance A'}
-                                      </td>
                                       <td>
                                         <span className={`att-pill-badge ${isLate ? 'pill-late' : isAbsent ? 'pill-absent' : 'pill-present'}`}>
                                           {isLate ? 'Late' : isAbsent ? 'Absent' : 'On Time'}
                                         </span>
+                                      </td>
+                                      <td style={{ color: '#64748b', fontSize: '0.84rem' }}>
+                                        {log.remarks}
                                       </td>
                                     </tr>
                                   );
