@@ -957,9 +957,7 @@ export default function ParentHub() {
                                   <thead>
                                     <tr>
                                       <th>FEE DESCRIPTION</th>
-                                      <th>INVOICE #</th>
                                       <th>DATE</th>
-                                      <th>DUE DATE</th>
                                       <th style={{ textAlign: 'right' }}>AMOUNT (₦)</th>
                                       <th style={{ textAlign: 'right' }}>PAID (₦)</th>
                                       <th style={{ textAlign: 'right' }}>BALANCE (₦)</th>
@@ -974,8 +972,6 @@ export default function ParentHub() {
                                       return (
                                         <tr key={idx}>
                                           <td className="fee-item-name">{item.name}</td>
-                                          <td className="fee-invoice-no">{invoiceNumberDisplay}</td>
-                                          <td className="fee-date">{dateDisplay}</td>
                                           <td className="fee-date">{dateDisplay}</td>
                                           <td style={{ textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
                                             ₦{amt.toLocaleString()}
@@ -992,7 +988,7 @@ export default function ParentHub() {
                                   </tbody>
                                   <tfoot>
                                     <tr className="fee-total-footer-row">
-                                      <td colSpan={4} className="fee-total-label">
+                                      <td colSpan={2} className="fee-total-label">
                                         Total
                                       </td>
                                       <td style={{ textAlign: 'right', fontWeight: 800, fontSize: '1rem' }}>
@@ -1062,26 +1058,9 @@ export default function ParentHub() {
                               <button
                                 type="button"
                                 className="fee-btn-primary"
-                                onClick={() => {
-                                  setUploadingInvoiceId(currentInvoice?.id || '');
-                                  setFeeSubTab('upload');
-                                }}
-                              >
-                                <CreditCard size={18} /> Pay Online
-                              </button>
-                              <button
-                                type="button"
-                                className="fee-btn-secondary"
                                 onClick={() => setFeeSubTab('upload')}
                               >
                                 <Upload size={18} /> Upload Receipt
-                              </button>
-                              <button
-                                type="button"
-                                className="fee-btn-outline"
-                                onClick={() => window.print()}
-                              >
-                                <Printer size={18} /> Download Invoice (PDF)
                               </button>
                             </div>
                           </div>
