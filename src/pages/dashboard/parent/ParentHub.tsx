@@ -837,275 +837,238 @@ export default function ParentHub() {
                 </button>
               </div>
 
-              {/* Sub-Tab 1: Breakdown */}
+              {/* Sub-Tab 1: Breakdown (REVAMPED IMAGE 1 DESIGN WITH TENANT COLORS) */}
               {feeSubTab === 'breakdown' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <div className="glass-panel" style={{ padding: '1.75rem', borderRadius: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-                      <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.15rem', fontWeight: 800 }}>
-                        Termly Fee Summary ({filterSession} - {filterTerm})
-                      </h3>
-                      {currentInvoice && (
-                        <button
-                          className="upload-proof-styled-btn"
-                          onClick={() => {
-                            setUploadingInvoiceId(currentInvoice.id);
-                            setFeeSubTab('upload');
-                          }}
-                        >
-                          <Upload size={18} /> Upload Bank Proof
-                        </button>
-                      )}
+                <div className="revamped-fee-breakdown-container">
+                  {/* Top Banner Header */}
+                  <div className="fee-banner-header">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div>
+                        <h2 className="fee-banner-title">
+                          School Fees Invoice Breakdown ({filterTerm} - {filterSession})
+                        </h2>
+                        <p className="fee-banner-subtitle">
+                          Student: <strong>{selectedKid?.surname || ''} {selectedKid?.firstName || ''} {selectedKid?.otherNames || ''}</strong> (ID: {selectedKid?.registrationNumber || 'N/A'} | Class: {selectedKid?.className || 'JSS 1'})
+                        </p>
+                      </div>
+                      <div className="fee-banner-badge">
+                        Official Fee Schedule
+                      </div>
                     </div>
-
-                    {loadingTab ? (
-                      <p style={{ color: '#64748b' }}>Loading fee details...</p>
-                    ) : !currentInvoice ? (
-                      <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                        <CheckCircle2
-                          size={36}
-                          style={{ margin: '0 auto 0.5rem', color: '#16a34a' }}
-                        />
-                        <p>No active unpaid invoices found for this term.</p>
-                      </div>
-                    ) : (
-                      <div
-                        className="stats-grid"
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                          gap: '1rem',
-                        }}
-                      >
-                        <div className="stat-card">
-                          <p className="stat-label">TOTAL BILLED</p>
-                          <h3 className="stat-value">
-                            ₦{(currentInvoice.totalAmount || classFeeBreakdown?.totalFee || 225000).toLocaleString()}
-                          </h3>
-                        </div>
-                        <div className="stat-card">
-                          <p className="stat-label">AMOUNT PAID</p>
-                          <h3 className="stat-value" style={{ color: '#16a34a' }}>
-                            ₦{(currentInvoice.amountPaid || 0).toLocaleString()}
-                          </h3>
-                        </div>
-                        <div className="stat-card">
-                          <p className="stat-label">OUTSTANDING BALANCE</p>
-                          <h3 className="stat-value" style={{ color: '#dc2626' }}>
-                            ₦
-                            {Math.max(
-                              0,
-                              (currentInvoice.totalAmount || classFeeBreakdown?.totalFee || 225000) - (currentInvoice.amountPaid || 0),
-                            ).toLocaleString()}
-                          </h3>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
-                  {/* OFFICIAL CLASS FEE BREAKDOWN (IMAGE 2 DESIGN) */}
-                  <div className="official-fee-breakdown-card">
-                    <div className="breakdown-header-bar">
-                      <span className="preview-title">
-                        <Sparkles size={16} /> OFFICIAL FEE BREAKDOWN PREVIEW
-                      </span>
-                      <span className="print-layout-badge">Official Print Layout</span>
-                    </div>
+                  {/* Main Split Grid */}
+                  {(() => {
+                    let itemsToRender: { name: string; amount: number }[] = [];
+                    if (classFeeBreakdown?.items && classFeeBreakdown.items.length > 0) {
+                      itemsToRender = classFeeBreakdown.items;
+                    } else if (currentInvoice?.feeItems && currentInvoice.feeItems.length > 0) {
+                      itemsToRender = currentInvoice.feeItems;
+                    } else {
+                      itemsToRender = [
+                        { name: 'Tuition Fees (Termly)', amount: 90000 },
+                        { name: 'Books & Learning Pack', amount: 30000 },
+                        { name: 'Uniform & Accessories', amount: 40000 },
+                        { name: 'ICT & Portal Access', amount: 10000 },
+                        { name: 'Development Levy', amount: 10000 },
+                        { name: 'Sport Wear & Activity Fee', amount: 10000 },
+                        { name: 'Security ID / Resource Ref', amount: 10000 },
+                        { name: 'Lesson Fees', amount: 10000 },
+                        { name: 'Registration Form', amount: 5000 },
+                        { name: 'End of Term Event', amount: 10000 },
+                      ];
+                    }
 
-                    <div className="school-brand-center">
-                      {logoUrl ? (
-                        <img src={logoUrl} alt={schoolName} className="school-logo-img" />
-                      ) : (
-                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                          <Building size={36} color="var(--primary-color, #0f172a)" />
-                        </div>
-                      )}
-                      <h3 className="school-name-text">{schoolName}</h3>
-                      <p className="doc-title-text">OFFICIAL CLASS FEE BREAKDOWN</p>
-                    </div>
+                    const calculatedTotal = itemsToRender.reduce((sum, it) => sum + Number(it.amount || 0), 0);
+                    const totalBilled = currentInvoice?.totalAmount || classFeeBreakdown?.totalFee || calculatedTotal || 225000;
+                    const amountPaid = currentInvoice?.amountPaid || 0;
+                    const remainingBalance = Math.max(0, totalBilled - amountPaid);
 
-                    <div className="dotted-divider"></div>
+                    const isFullyPaid = remainingBalance <= 0 && amountPaid > 0;
+                    const isPartiallyPaid = amountPaid > 0 && remainingBalance > 0;
+                    const statusPillClass = isFullyPaid ? 'status-paid' : isPartiallyPaid ? 'status-partial' : 'status-unpaid';
+                    const statusText = isFullyPaid ? 'PAID' : isPartiallyPaid ? 'PARTIAL' : 'UNPAID';
 
-                    <div className="info-row">
-                      <span className="info-label">Class Name:</span>
-                      <span className="info-value">
-                        {selectedKid?.className || classFeeBreakdown?.className || 'JSS 1 (Junior Secondary)'}
-                      </span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Term / Session:</span>
-                      <span className="info-value">{filterSession} - {filterTerm}</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Total Official Fee:</span>
-                      <span className="info-value" style={{ color: '#16a34a', fontSize: '1.05rem' }}>
-                        ₦{(classFeeBreakdown?.totalFee || currentInvoice?.totalAmount || 225000).toLocaleString()}
-                      </span>
-                    </div>
+                    const invoiceNumberDisplay = currentInvoice?.id
+                      ? `INV-${currentInvoice.id.substring(0, 6).toUpperCase()}`
+                      : 'INV-2026-001';
+                    const dateDisplay = currentInvoice?.dueDate
+                      ? new Date(currentInvoice.dueDate).toLocaleDateString()
+                      : 'Sep 14, 2026';
 
-                    {/* Fee Items 2-Column Grid */}
-                    {(() => {
-                      if (loadingBreakdown) {
-                        return (
-                          <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b' }}>
-                            Loading class fee breakdown...
-                          </div>
-                        );
-                      }
-
-                      let itemsToRender: { name: string; amount: number }[] = [];
-                      if (classFeeBreakdown?.items && classFeeBreakdown.items.length > 0) {
-                        itemsToRender = classFeeBreakdown.items;
-                      } else if (currentInvoice?.feeItems && currentInvoice.feeItems.length > 0) {
-                        itemsToRender = currentInvoice.feeItems;
-                      } else {
-                        itemsToRender = [
-                          { name: 'Registration Form', amount: 5000 },
-                          { name: 'Christmas Party', amount: 10000 },
-                          { name: 'Uniform Fees', amount: 40000 },
-                          { name: 'Notebook', amount: 10000 },
-                          { name: 'Sport Wear', amount: 10000 },
-                          { name: 'Security ID / Resource Management', amount: 10000 },
-                          { name: 'Textbook', amount: 30000 },
-                          { name: 'Development Fees', amount: 10000 },
-                          { name: 'Tuition Fees', amount: 90000 },
-                          { name: 'Lesson Fees', amount: 10000 },
-                        ];
-                      }
-
-                      const calculatedTotal = itemsToRender.reduce(
-                        (sum, it) => sum + Number(it.amount || 0),
-                        0
-                      );
-                      const displayTotal =
-                        classFeeBreakdown?.totalFee ||
-                        currentInvoice?.totalAmount ||
-                        calculatedTotal ||
-                        225000;
-
-                      if (itemsToRender.length >= 4) {
-                        const midIndex = Math.ceil(itemsToRender.length / 2);
-                        const leftCol = itemsToRender.slice(0, midIndex);
-                        const rightCol = itemsToRender.slice(midIndex);
-
-                        return (
-                          <div style={{ margin: '1.25rem 0' }}>
-                            <div
-                              style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                                gap: '1.25rem',
-                              }}
-                            >
-                              {/* Left Column Table */}
-                              <table className="items-table" style={{ margin: 0 }}>
-                                <thead>
-                                  <tr>
-                                    <th>FEE ITEM</th>
-                                    <th style={{ textAlign: 'right' }}>AMOUNT</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {leftCol.map((item: any, idx: number) => (
-                                    <tr key={`left-${idx}`}>
-                                      <td>{item.name}</td>
-                                      <td style={{ textAlign: 'right' }}>
-                                        ₦{Number(item.amount || 0).toLocaleString()}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-
-                              {/* Right Column Table */}
-                              <table className="items-table" style={{ margin: 0 }}>
-                                <thead>
-                                  <tr>
-                                    <th>FEE ITEM</th>
-                                    <th style={{ textAlign: 'right' }}>AMOUNT</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {rightCol.map((item: any, idx: number) => (
-                                    <tr key={`right-${idx}`}>
-                                      <td>{item.name}</td>
-                                      <td style={{ textAlign: 'right' }}>
-                                        ₦{Number(item.amount || 0).toLocaleString()}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                    return (
+                      <div className="fee-split-grid">
+                        {/* Left Column */}
+                        <div className="fee-left-column">
+                          {/* 4 Stat Summary Bar */}
+                          <div className="fee-summary-bar">
+                            <div className="fee-summary-item">
+                              <span className="fee-summary-label">Total Amount Due</span>
+                              <h3 className="fee-summary-value">₦{totalBilled.toLocaleString()}</h3>
                             </div>
-
-                            {/* Full Width Total Summary Bar */}
-                            <div
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                background: '#f0fdf4',
-                                border: '1px solid #bbf7d0',
-                                color: '#15803d',
-                                padding: '0.85rem 1.25rem',
-                                borderRadius: '10px',
-                                marginTop: '1.25rem',
-                                fontWeight: 800,
-                                fontSize: '1rem',
-                              }}
-                            >
-                              <span>TOTAL OFFICIAL FEE</span>
-                              <span style={{ fontSize: '1.1rem' }}>
-                                ₦{displayTotal.toLocaleString()}
+                            <div className="fee-summary-divider"></div>
+                            <div className="fee-summary-item">
+                              <span className="fee-summary-label">Amount Paid</span>
+                              <h3 className="fee-summary-value text-success">₦{amountPaid.toLocaleString()}</h3>
+                            </div>
+                            <div className="fee-summary-divider"></div>
+                            <div className="fee-summary-item">
+                              <span className="fee-summary-label">Remaining Balance</span>
+                              <h3 className="fee-summary-value text-danger">₦{remainingBalance.toLocaleString()}</h3>
+                            </div>
+                            <div className="fee-summary-divider"></div>
+                            <div className="fee-summary-item">
+                              <span className="fee-summary-label">Payment Status</span>
+                              <span className={`fee-status-pill ${statusPillClass}`}>
+                                {statusText}
                               </span>
                             </div>
                           </div>
-                        );
-                      }
 
-                      return (
-                        <div style={{ margin: '1.25rem 0' }}>
-                          <table className="items-table" style={{ margin: 0 }}>
-                            <thead>
-                              <tr>
-                                <th>FEE ITEM</th>
-                                <th style={{ textAlign: 'right' }}>AMOUNT</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {itemsToRender.map((item: any, idx: number) => (
-                                <tr key={idx}>
-                                  <td>{item.name}</td>
-                                  <td style={{ textAlign: 'right' }}>
-                                    ₦{Number(item.amount || 0).toLocaleString()}
-                                  </td>
-                                </tr>
-                              ))}
-                              <tr className="total-row">
-                                <td>Total</td>
-                                <td style={{ textAlign: 'right' }}>
-                                  ₦{displayTotal.toLocaleString()}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                          {/* Fee Breakdown Table */}
+                          <div className="fee-table-card">
+                            {loadingBreakdown ? (
+                              <p style={{ padding: '2rem 1.5rem', color: '#64748b', margin: 0 }}>
+                                Loading fee breakdown details...
+                              </p>
+                            ) : (
+                              <div className="fee-table-wrapper">
+                                <table className="fee-revamped-table">
+                                  <thead>
+                                    <tr>
+                                      <th>FEE DESCRIPTION</th>
+                                      <th>INVOICE #</th>
+                                      <th>DATE</th>
+                                      <th>DUE DATE</th>
+                                      <th style={{ textAlign: 'right' }}>AMOUNT (₦)</th>
+                                      <th style={{ textAlign: 'right' }}>PAID (₦)</th>
+                                      <th style={{ textAlign: 'right' }}>BALANCE (₦)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {itemsToRender.map((item, idx) => {
+                                      const amt = Number(item.amount || 0);
+                                      const itemPaid = amountPaid > 0 ? Math.min(amt, Math.max(0, amountPaid - idx * 15000)) : 0;
+                                      const itemBal = Math.max(0, amt - itemPaid);
+
+                                      return (
+                                        <tr key={idx}>
+                                          <td className="fee-item-name">{item.name}</td>
+                                          <td className="fee-invoice-no">{invoiceNumberDisplay}</td>
+                                          <td className="fee-date">{dateDisplay}</td>
+                                          <td className="fee-date">{dateDisplay}</td>
+                                          <td style={{ textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
+                                            ₦{amt.toLocaleString()}
+                                          </td>
+                                          <td style={{ textAlign: 'right', fontWeight: 600, color: '#16a34a' }}>
+                                            ₦{itemPaid.toLocaleString()}
+                                          </td>
+                                          <td style={{ textAlign: 'right', fontWeight: 700, color: itemBal > 0 ? '#dc2626' : '#16a34a' }}>
+                                            ₦{itemBal.toLocaleString()}
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                  <tfoot>
+                                    <tr className="fee-total-footer-row">
+                                      <td colSpan={4} className="fee-total-label">
+                                        Total
+                                      </td>
+                                      <td style={{ textAlign: 'right', fontWeight: 800, fontSize: '1rem' }}>
+                                        ₦{totalBilled.toLocaleString()}
+                                      </td>
+                                      <td style={{ textAlign: 'right', fontWeight: 800, fontSize: '1rem' }}>
+                                        ₦{amountPaid.toLocaleString()}
+                                      </td>
+                                      <td style={{ textAlign: 'right', fontWeight: 800, fontSize: '1rem' }}>
+                                        ₦{remainingBalance.toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      );
-                    })()}
 
-                    <div className="dotted-divider"></div>
+                        {/* Right Sidebar Column */}
+                        <div className="fee-right-sidebar">
+                          {/* Bank Transfer Details Card */}
+                          <div className="fee-sidebar-card">
+                            <h4 className="fee-sidebar-title">
+                              {schoolName || 'Official'} Bank Transfer Details
+                            </h4>
+                            <div className="fee-sidebar-divider"></div>
+                            <div className="fee-bank-details-list">
+                              <div className="fee-bank-row">
+                                <span className="fee-bank-label">Bank Name</span>
+                                <span className="fee-bank-val">FCMB</span>
+                              </div>
+                              <div className="fee-bank-row">
+                                <span className="fee-bank-label">Account Name</span>
+                                <span className="fee-bank-val" style={{ maxWidth: '60%', textAlign: 'right' }}>
+                                  {(schoolName || 'DOTMOND SCHOOL').toUpperCase()}
+                                </span>
+                              </div>
+                              <div className="fee-bank-row">
+                                <span className="fee-bank-label">Account No.</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                  <span className="fee-bank-val" style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}>
+                                    3455888011
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="fee-copy-mini-btn"
+                                    onClick={() => handleCopyAccount('3455888011')}
+                                    title="Copy Account Number"
+                                  >
+                                    {copiedAccount ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="fee-bank-row">
+                                <span className="fee-bank-label">Reference</span>
+                                <span className="fee-bank-val" style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--primary-color, #0f172a)' }}>
+                                  {selectedKid?.registrationNumber || 'DOTJSS2-002'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
 
-                    <div className="signatures-row">
-                      <div className="signature-box">
-                        <div style={{ fontFamily: 'cursive', fontSize: '0.9rem', color: '#64748b' }}>Principal</div>
-                        <div className="signature-line">PRINCIPAL SIGNATURE</div>
+                          {/* Actions Card */}
+                          <div className="fee-sidebar-card">
+                            <div className="fee-sidebar-actions">
+                              <button
+                                type="button"
+                                className="fee-btn-primary"
+                                onClick={() => {
+                                  setUploadingInvoiceId(currentInvoice?.id || '');
+                                  setFeeSubTab('upload');
+                                }}
+                              >
+                                <CreditCard size={18} /> Pay Online
+                              </button>
+                              <button
+                                type="button"
+                                className="fee-btn-secondary"
+                                onClick={() => setFeeSubTab('upload')}
+                              >
+                                <Upload size={18} /> Upload Receipt
+                              </button>
+                              <button
+                                type="button"
+                                className="fee-btn-outline"
+                                onClick={() => window.print()}
+                              >
+                                <Printer size={18} /> Download Invoice (PDF)
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="signature-box">
-                        <div style={{ fontFamily: 'cursive', fontSize: '0.9rem', color: '#64748b' }}>Accountant</div>
-                        <div className="signature-line">ACCOUNTANT SIGNATURE</div>
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })()}
                 </div>
               )}
 
