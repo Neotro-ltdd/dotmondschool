@@ -782,8 +782,314 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   OFFICIAL CLASS FEE BREAKDOWN CARD (IMAGE 2 DESIGN)
+   REVAMPED ATTENDANCE REPORT (IMAGE 1 DESIGN WITH TENANT BRAND COLORS)
    ═══════════════════════════════════════════════════════════════════════ */
+.attendance-revamped-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.attendance-banner-header {
+  background: linear-gradient(135deg, var(--primary-color, #0f172a) 0%, #1e293b 100%);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.attendance-banner-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.attendance-banner-subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.attendance-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.att-stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.att-stat-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.att-stat-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+
+.att-stat-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1;
+}
+
+.att-stat-val-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.att-stat-percentage {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.att-stat-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 0.4rem;
+}
+
+.att-stat-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.att-stat-icon-wrapper.primary-tint {
+  background: rgba(var(--primary-rgb, 15, 23, 42), 0.08);
+  color: var(--primary-color, #0f172a);
+}
+
+.att-stat-icon-wrapper.amber-tint {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.att-stat-icon-wrapper.red-tint {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Donut Badge */
+.att-donut-badge {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.att-donut-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.att-donut-text {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--primary-color, #0f172a);
+}
+
+/* Daily Timestamp Table Card */
+.attendance-table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.att-table-header-bar {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+
+.att-table-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.att-table-wrapper {
+  overflow-x: auto;
+}
+
+.att-revamped-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.att-revamped-table th {
+  background: rgba(var(--primary-rgb, 15, 23, 42), 0.06);
+  color: var(--primary-color, #0f172a);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 2px solid rgba(var(--primary-rgb, 15, 23, 42), 0.1);
+}
+
+.att-revamped-table td {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Row Conditional Background Tints */
+.att-row-present {
+  background: rgba(220, 252, 231, 0.35);
+}
+
+.att-row-present:hover {
+  background: rgba(220, 252, 231, 0.6);
+}
+
+.att-row-late {
+  background: #fffbe6;
+}
+
+.att-row-late:hover {
+  background: #fef9c3;
+}
+
+.att-row-absent {
+  background: #fdf2f2;
+}
+
+.att-row-absent:hover {
+  background: #fee2e2;
+}
+
+.att-col-date {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.att-col-time.text-present {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.att-col-time.text-primary {
+  color: var(--primary-color, #0f172a);
+  font-weight: 700;
+}
+
+.att-col-time.text-absent {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.att-col-terminal {
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Pill Badges */
+.att-pill-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.att-pill-badge.pill-present {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.att-pill-badge.pill-late {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.att-pill-badge.pill-absent {
+  background: #94a3b8;
+  color: #ffffff;
+}
+
+/* Pagination Bar */
+.att-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.75rem;
+  border-top: 1px solid #f1f5f9;
+  background: #fafafa;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.att-pagination-info {
+  font-size: 0.84rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.att-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.att-page-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.att-page-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.att-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.att-page-btn.active {
+  background: var(--primary-color, #0f172a);
+  color: #ffffff;
+  border-color: var(--primary-color, #0f172a);
+}
 .official-fee-breakdown-card {
   background: #ffffff;
   border-radius: 16px;

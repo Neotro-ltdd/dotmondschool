@@ -38,6 +38,7 @@ import {
   ArrowRight,
   ChevronRight,
   Printer,
+  XCircle,
 } from 'lucide-react';
 import './ParentHub.css';
 
@@ -86,6 +87,7 @@ interface AttendanceLogItem {
   timeOut: string;
   status: string;
   remarks: string;
+  gateTerminal?: string;
 }
 
 interface AttendanceReportData {
@@ -148,6 +150,7 @@ export default function ParentHub() {
   const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
   const [receipts, setReceipts] = useState<ReceiptItem[]>([]);
   const [attendanceData, setAttendanceData] = useState<AttendanceReportData | null>(null);
+  const [attPage, setAttPage] = useState(1);
   const [transcripts, setTranscripts] = useState<TranscriptTerm[]>([]);
   const [selectedReportCard, setSelectedReportCard] = useState<{
     session: string;
@@ -320,6 +323,7 @@ export default function ParentHub() {
   const fetchAttendance = async (studentId: string, sess: string, trm: string) => {
     try {
       setLoadingTab(true);
+      setAttPage(1);
       let data: any = null;
       try {
         data = await api.get(`/reports/attendance/student/${studentId}?session=${encodeURIComponent(sess)}&term=${encodeURIComponent(trm)}`);
@@ -342,14 +346,15 @@ export default function ParentHub() {
       // Format 1: Direct array of attendance logs
       if (Array.isArray(data)) {
         const totalDays = data.length;
-        const presentDays = data.filter((d: any) => d.status === 'Present' || d.status === 'Departed').length;
+        const presentDays = data.filter((d: any) => d.status === 'Present' || d.status === 'Departed' || d.status === 'On Time').length;
+        const lateDays = data.filter((d: any) => d.status === 'Late').length;
         const absentDays = data.filter((d: any) => d.status === 'Absent').length;
         const rate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
 
         setAttendanceData({
           totalSchoolDays: totalDays,
           daysPresent: presentDays,
-          daysLate: 0,
+          daysLate: lateDays,
           daysAbsent: absentDays,
           attendanceRatePercentage: rate,
           logs: data.map((d: any) => ({
@@ -360,6 +365,7 @@ export default function ParentHub() {
             timeOut: d.clockOutTime ? new Date(d.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (d.timeOut || '—'),
             status: d.status || 'Present',
             remarks: d.remarks || (d.status === 'Absent' ? 'System Automated Absent Log' : 'Gate Scan Verified'),
+            gateTerminal: d.gateTerminal || d.terminal || d.gateName || 'Main Entrance A',
           })),
         });
       }
@@ -392,18 +398,20 @@ export default function ParentHub() {
             timeOut: timeOutDisplay,
             status: h.status || 'Present',
             remarks: h.remarks || (h.status === 'Absent' ? 'Marked Absent' : 'Gate Scan Verified'),
+            gateTerminal: h.gateTerminal || h.terminal || h.gateName || 'Main Entrance A',
           };
         });
 
         const totalExpected = data.totalExpectedDays ?? historyLogs.length;
-        const totalPresent = data.totalPresent ?? historyLogs.filter((l: any) => l.status === 'Present').length;
+        const totalPresent = data.totalPresent ?? historyLogs.filter((l: any) => l.status === 'Present' || l.status === 'On Time').length;
+        const totalLate = data.totalLate ?? historyLogs.filter((l: any) => l.status === 'Late').length;
         const totalAbsent = data.totalAbsent ?? historyLogs.filter((l: any) => l.status === 'Absent').length;
         const percent = Math.round(data.attendancePercentage ?? (totalExpected > 0 ? (totalPresent / totalExpected) * 100 : 100));
 
         setAttendanceData({
           totalSchoolDays: totalExpected,
           daysPresent: totalPresent,
-          daysLate: 0,
+          daysLate: totalLate,
           daysAbsent: totalAbsent,
           attendanceRatePercentage: percent,
           logs: historyLogs,
@@ -425,6 +433,7 @@ export default function ParentHub() {
             timeOut: l.timeOut || '—',
             status: l.status || 'Present',
             remarks: l.remarks || '',
+            gateTerminal: l.gateTerminal || l.terminal || l.gateName || 'Main Entrance A',
           })),
         });
       }
@@ -1646,116 +1655,257 @@ export default function ParentHub() {
             </div>
           )}
 
-          {/* TAB 3: ATTENDANCE REPORT */}
+          {/* TAB 3: ATTENDANCE REPORT (REVAMPED IMAGE 1 DESIGN WITH TENANT COLORS) */}
           {activeTab === 'attendance' && (
-            <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '16px' }}>
-              <h3 style={{ margin: '0 0 1rem', color: '#0f172a' }}>
-                Gate Attendance & Time In / Time Out Log
-              </h3>
-
-              {attendanceData && (
-                <div
-                  className="stats-grid"
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '1rem',
-                    marginBottom: '1.5rem',
-                  }}
-                >
-                  <div className="stat-card">
-                    <p className="stat-label">Total School Days</p>
-                    <h3 className="stat-value">{attendanceData.totalSchoolDays}</h3>
-                  </div>
-                  <div className="stat-card">
-                    <p className="stat-label">Days Present</p>
-                    <h3 className="stat-value" style={{ color: '#16a34a' }}>
-                      {attendanceData.daysPresent}
-                    </h3>
-                  </div>
-                  <div className="stat-card">
-                    <p className="stat-label">Days Absent</p>
-                    <h3 className="stat-value" style={{ color: '#dc2626' }}>
-                      {attendanceData.daysAbsent}
-                    </h3>
-                  </div>
-                  <div className="stat-card">
-                    <p className="stat-label">Punctuality Rate</p>
-                    <h3 className="stat-value" style={{ color: 'var(--primary-color, #000080)' }}>
-                      {attendanceData.attendanceRatePercentage}%
-                    </h3>
+            <div className="attendance-revamped-container">
+              {/* Top Banner */}
+              <div className="attendance-banner-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <ShieldCheck size={32} style={{ color: '#ffffff', flexShrink: 0 }} />
+                  <div>
+                    <h2 className="attendance-banner-title">
+                      Student Gate Attendance Log & Verification
+                    </h2>
+                    <p className="attendance-banner-subtitle">
+                      Academic Session {filterSession} • {filterTerm}
+                    </p>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {loadingTab ? (
-                <p style={{ color: '#64748b' }}>Loading gate attendance logs...</p>
-              ) : !attendanceData || !attendanceData.logs || attendanceData.logs.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: '#64748b' }}>
-                  <Clock size={40} style={{ margin: '0 auto 0.5rem', color: '#94a3b8' }} />
-                  <p>No daily gate attendance logs recorded for this term selection.</p>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    overflow: 'hidden',
-                    borderRadius: '12px',
-                    border: '1px solid #e2e8f0',
-                  }}
-                >
-                  <table className="attendance-table">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Day</th>
-                        <th>Time In</th>
-                        <th>Time Out</th>
-                        <th>Status</th>
-                        <th>Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(attendanceData.logs || []).map((log, idx) => (
-                        <tr key={idx}>
-                          <td style={{ fontWeight: 600, color: '#0f172a' }}>
-                            {log.formattedDate}
-                          </td>
-                          <td>{log.dayName}</td>
-                          <td style={{ fontWeight: 600, color: '#16a34a' }}>{log.timeIn}</td>
-                          <td style={{ fontWeight: 600, color: 'var(--primary-color, #000080)' }}>{log.timeOut}</td>
-                          <td>
-                            <span
-                              style={{
-                                padding: '0.25rem 0.6rem',
-                                borderRadius: '12px',
-                                fontSize: '0.78rem',
-                                fontWeight: 600,
-                                background:
-                                  log.status === 'Present'
-                                    ? '#dcfce7'
-                                    : log.status === 'Late'
-                                      ? '#fef9c3'
-                                      : '#fee2e2',
-                                color:
-                                  log.status === 'Present'
-                                    ? '#15803d'
-                                    : log.status === 'Late'
-                                      ? '#854d0e'
-                                      : '#b91c1c',
-                              }}
-                            >
-                              {log.status}
+              {/* 4 Stat Summary Cards */}
+              {(() => {
+                const totalSchoolDaysCount =
+                  attendanceData?.totalSchoolDays || (attendanceData?.logs || []).length || 0;
+                const presentCount =
+                  attendanceData?.daysPresent ??
+                  (attendanceData?.logs || []).filter(
+                    (l) => l.status === 'Present' || l.status === 'On Time' || l.status === 'Departed',
+                  ).length;
+                const lateCount =
+                  attendanceData?.daysLate ??
+                  (attendanceData?.logs || []).filter((l) => l.status === 'Late').length;
+                const absentCount =
+                  attendanceData?.daysAbsent ??
+                  (attendanceData?.logs || []).filter((l) => l.status === 'Absent').length;
+
+                const presentPercent =
+                  totalSchoolDaysCount > 0
+                    ? Math.round((presentCount / totalSchoolDaysCount) * 100)
+                    : attendanceData?.attendanceRatePercentage || 0;
+                const latePercent =
+                  totalSchoolDaysCount > 0
+                    ? Math.round((lateCount / totalSchoolDaysCount) * 100)
+                    : 0;
+                const absentPercent =
+                  totalSchoolDaysCount > 0
+                    ? Math.round((absentCount / totalSchoolDaysCount) * 100)
+                    : 0;
+
+                const totalLogs = (attendanceData?.logs || []).length;
+                const pageSize = 10;
+                const totalPages = Math.ceil(totalLogs / pageSize) || 1;
+                const startIndex = (attPage - 1) * pageSize;
+                const paginatedLogs = (attendanceData?.logs || []).slice(
+                  startIndex,
+                  startIndex + pageSize,
+                );
+
+                return (
+                  <>
+                    <div className="attendance-stats-grid">
+                      {/* CARD 1: Total School Days */}
+                      <div className="att-stat-card">
+                        <div className="att-stat-left">
+                          <span className="att-stat-label">Total School Days</span>
+                          <h3 className="att-stat-value">{totalSchoolDaysCount}</h3>
+                          <span className="att-stat-sub">Academic Term</span>
+                        </div>
+                        <div className="att-stat-icon-wrapper primary-tint">
+                          <Calendar size={24} />
+                        </div>
+                      </div>
+
+                      {/* CARD 2: Days Present */}
+                      <div className="att-stat-card">
+                        <div className="att-stat-left">
+                          <span className="att-stat-label">Days Present</span>
+                          <div className="att-stat-val-group">
+                            <h3 className="att-stat-value" style={{ color: '#16a34a' }}>
+                              {presentCount}
+                            </h3>
+                            <span className="att-stat-percentage">({presentPercent}%)</span>
+                          </div>
+                          <span className="att-stat-sub">Verified Attendance</span>
+                        </div>
+                        {/* Donut Badge */}
+                        <div className="att-donut-badge">
+                          <svg viewBox="0 0 36 36" className="att-donut-svg">
+                            <path
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="rgba(15, 23, 42, 0.12)"
+                              strokeWidth="3.5"
+                            />
+                            <path
+                              strokeDasharray={`${presentPercent}, 100`}
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="var(--primary-color, #0f172a)"
+                              strokeWidth="3.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <span className="att-donut-text">{presentPercent}%</span>
+                        </div>
+                      </div>
+
+                      {/* CARD 3: Days Late */}
+                      <div className="att-stat-card">
+                        <div className="att-stat-left">
+                          <span className="att-stat-label">Days Late</span>
+                          <div className="att-stat-val-group">
+                            <h3 className="att-stat-value" style={{ color: '#d97706' }}>
+                              {lateCount}
+                            </h3>
+                            <span className="att-stat-percentage" style={{ color: '#d97706' }}>
+                              ({latePercent}%)
                             </span>
-                          </td>
-                          <td style={{ color: '#64748b', fontSize: '0.84rem' }}>
-                            {log.remarks}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                          </div>
+                          <span className="att-stat-sub">Average Punctuality</span>
+                        </div>
+                        <div className="att-stat-icon-wrapper amber-tint">
+                          <Clock size={24} />
+                        </div>
+                      </div>
+
+                      {/* CARD 4: Days Absent */}
+                      <div className="att-stat-card">
+                        <div className="att-stat-left">
+                          <span className="att-stat-label">Days Absent</span>
+                          <div className="att-stat-val-group">
+                            <h3 className="att-stat-value" style={{ color: '#dc2626' }}>
+                              {absentCount}
+                            </h3>
+                            <span className="att-stat-percentage" style={{ color: '#dc2626' }}>
+                              ({absentPercent}%)
+                            </span>
+                          </div>
+                          <span className="att-stat-sub">Absence Logged</span>
+                        </div>
+                        <div className="att-stat-icon-wrapper red-tint">
+                          <XCircle size={24} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Daily Timestamp Table Section */}
+                    <div className="attendance-table-card">
+                      <div className="att-table-header-bar">
+                        <h3 className="att-table-title">Daily Timestamp</h3>
+                      </div>
+
+                      {loadingTab ? (
+                        <p style={{ color: '#64748b', padding: '2rem 1.5rem', margin: 0 }}>
+                          Loading gate attendance logs...
+                        </p>
+                      ) : totalLogs === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '3rem 1.5rem', color: '#64748b' }}>
+                          <Clock size={40} style={{ margin: '0 auto 0.5rem', color: '#94a3b8' }} />
+                          <p style={{ margin: 0 }}>No daily gate attendance logs recorded for this term selection.</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="att-table-wrapper">
+                            <table className="att-revamped-table">
+                              <thead>
+                                <tr>
+                                  <th>DATE</th>
+                                  <th>TIME IN</th>
+                                  <th>TIME OUT</th>
+                                  <th>GATE TERMINAL</th>
+                                  <th>STATUS</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {paginatedLogs.map((log, idx) => {
+                                  const isLate = log.status === 'Late';
+                                  const isAbsent = log.status === 'Absent';
+
+                                  return (
+                                    <tr
+                                      key={idx}
+                                      className={
+                                        isLate
+                                          ? 'att-row-late'
+                                          : isAbsent
+                                            ? 'att-row-absent'
+                                            : 'att-row-present'
+                                      }
+                                    >
+                                      <td className="att-col-date">
+                                        {log.formattedDate || log.date}
+                                      </td>
+                                      <td className={`att-col-time ${isAbsent ? 'text-absent' : 'text-present'}`}>
+                                        {isAbsent ? '(Absent)' : log.timeIn}
+                                      </td>
+                                      <td className={`att-col-time ${isAbsent ? 'text-absent' : 'text-primary'}`}>
+                                        {isAbsent ? '(Absent)' : log.timeOut}
+                                      </td>
+                                      <td className="att-col-terminal">
+                                        {log.gateTerminal || 'Main Entrance A'}
+                                      </td>
+                                      <td>
+                                        <span className={`att-pill-badge ${isLate ? 'pill-late' : isAbsent ? 'pill-absent' : 'pill-present'}`}>
+                                          {isLate ? 'Late' : isAbsent ? 'Absent' : 'On Time'}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* Pagination Footer */}
+                          {totalPages > 1 && (
+                            <div className="att-pagination-bar">
+                              <span className="att-pagination-info">
+                                Showing {startIndex + 1} to {Math.min(startIndex + pageSize, totalLogs)} of {totalLogs} entries
+                              </span>
+                              <div className="att-pagination-controls">
+                                <button
+                                  className="att-page-btn"
+                                  disabled={attPage === 1}
+                                  onClick={() => setAttPage((p) => Math.max(1, p - 1))}
+                                >
+                                  Previous
+                                </button>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                                  <button
+                                    key={pageNum}
+                                    className={`att-page-btn ${attPage === pageNum ? 'active' : ''}`}
+                                    onClick={() => setAttPage(pageNum)}
+                                  >
+                                    {pageNum}
+                                  </button>
+                                ))}
+                                <button
+                                  className="att-page-btn"
+                                  disabled={attPage === totalPages}
+                                  onClick={() => setAttPage((p) => Math.min(totalPages, p + 1))}
+                                >
+                                  Next
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           )}
         </div>
