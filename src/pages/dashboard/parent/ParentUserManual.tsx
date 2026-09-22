@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   BookOpen,
-  Search,
   Users,
   CreditCard,
   UploadCloud,
@@ -41,7 +40,7 @@ const CHAPTERS: Chapter[] = [
   { id: 'ch2', num: 2, title: 'School Fees & Online Payment', icon: <CreditCard size={18} />, tags: ['fees', 'invoice', 'bank', 'pay online'] },
   { id: 'ch3', num: 3, title: 'Uploading Payment Receipts', icon: <UploadCloud size={18} />, tags: ['bank teller', 'receipt', 'proof', 'upload'] },
   { id: 'ch4', num: 4, title: 'Terminal Report Cards & Results', icon: <FileText size={18} />, tags: ['grades', 'report card', 'pdf', 'results'] },
-  { id: 'ch5', num: 5, title: 'Academic Performance & Trends', icon: <TrendingUp size={18} />, tags: ['gpa', 'trend', 'analytics', 'strengths'] },
+  { id: 'ch5', num: 5, title: 'Academic Performance Trends', icon: <TrendingUp size={18} />, tags: ['gpa', 'trend', 'analytics', 'strengths'] },
   { id: 'ch6', num: 6, title: 'Gate Attendance & Push Alerts', icon: <ShieldCheck size={18} />, tags: ['attendance', 'gate', 'pwa', 'push alerts'] },
   { id: 'ch7', num: 7, title: 'Frequently Asked Questions (FAQ)', icon: <HelpCircle size={18} />, tags: ['support', 'help', 'faq', 'clearance'] },
 ];
@@ -49,7 +48,6 @@ const CHAPTERS: Chapter[] = [
 export default function ParentUserManual() {
   const { schoolName } = useTenant();
   const [activeChapter, setActiveChapter] = useState<string>('ch1');
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTagFilter, setActiveTagFilter] = useState<string>('all');
   const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -86,21 +84,8 @@ export default function ParentUserManual() {
           Welcome to the step-by-step visual documentation guide for parents and guardians. Learn how to view student profiles, manage school fee payments, upload bank teller slips, print terminal report cards, track gate attendance, and receive real-time push alerts.
         </div>
 
-        {/* Search Input Bar & Print Action Row */}
+        {/* Header Action Row: Print Button */}
         <div className="manual-header-actions-row">
-          <div className="manual-search-wrapper">
-            <div className="manual-search-input-box">
-              <Search size={18} />
-              <input
-                type="text"
-                className="manual-search-input"
-                placeholder="Search guide by feature or keyword (e.g. upload teller, print result, fees, gate log)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
-
           <button
             type="button"
             className="manual-print-btn no-print"
