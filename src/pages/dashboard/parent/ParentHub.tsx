@@ -718,9 +718,7 @@ export default function ParentHub() {
 
                         <div className="glass-meta-line">
                           <span className="glass-meta-label">Reg No:</span>
-                          <span className="glass-reg-badge">
-                            <Hash size={12} /> {kid.registrationNumber}
-                          </span>
+                          <span className="glass-meta-val">{kid.registrationNumber}</span>
                           {kid.departmentTrack && kid.departmentTrack !== 'General' && (
                             <span className="glass-track-badge">{kid.departmentTrack}</span>
                           )}
