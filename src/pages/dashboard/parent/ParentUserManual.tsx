@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Printer,
   Calendar,
+  Sparkles,
 } from 'lucide-react';
 import { useTenant } from '../../../context/TenantContext';
 import './ParentUserManual.css';
@@ -180,7 +181,7 @@ export default function ParentUserManual() {
               </div>
             </div>
 
-            {/* Screenshot Card */}
+            {/* Live Interactive Manual Sample Preview Card (Anonymized: No Real Student Name or Photo) */}
             <div className="manual-screenshot-card">
               <div className="screenshot-browser-bar">
                 <div className="browser-dots">
@@ -188,19 +189,119 @@ export default function ParentUserManual() {
                   <span className="browser-dot yellow"></span>
                   <span className="browser-dot green"></span>
                 </div>
-                <span className="screenshot-caption-title">{schoolName || 'Dotmond'} Parent Hub - Real Student Profile Cards View ("My Kids")</span>
+                <span className="screenshot-caption-title">{schoolName || 'Dotmond'} Parent Portal - Interactive Interface Preview</span>
               </div>
-              <div
-                className="screenshot-image-wrapper"
-                onClick={() => openLightbox('/manual/parent_overview_kids.jpg', 'Real Student Profile Card View (My Kids)')}
-              >
-                <img
-                  src="/manual/parent_overview_kids.jpg"
-                  alt="Real Student Profile Card View"
-                  className="manual-screenshot-img"
-                />
-                <div className="screenshot-zoom-overlay">
-                  <Maximize2 size={20} /> Click to expand full screenshot
+              
+              <div style={{ padding: '1.5rem', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {/* 1. Hero Banner Sample */}
+                <div className="parent-hero-banner" style={{ marginBottom: 0, padding: '1.75rem 2rem' }}>
+                  <div className="parent-hero-header">
+                    <div className="parent-hero-info">
+                      <div className="parent-hero-eyebrow">
+                        <Sparkles size={14} className="eyebrow-icon" />
+                        <span>PARENT & GUARDIAN PORTAL</span>
+                      </div>
+                      <h1 className="parent-hero-title" style={{ fontSize: '1.5rem' }}>
+                        Good morning, Parent / Guardian
+                      </h1>
+                      <p className="parent-hero-subtitle" style={{ fontSize: '0.88rem' }}>
+                        Review your children's real-time continuous assessment scores, terminal broadsheets, daily gate attendance logs, and itemized tuition clearance.
+                      </p>
+                    </div>
+
+                    <div className="parent-hero-pills">
+                      <div className="parent-hero-pill">
+                        <Calendar size={14} />
+                        <span>2026/2027 Session &bull; First Term</span>
+                      </div>
+                      <div className="parent-hero-pill">
+                        <Users size={14} />
+                        <span>1 Enrolled Ward</span>
+                      </div>
+                      <div className="parent-hero-pill live-indicator">
+                        <span className="pulse-dot"></span>
+                        <span>Portal Active</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Push Notifications Control Bar Sample */}
+                <div className="push-toggle-container" style={{ margin: 0 }}>
+                  <div className="push-toggle-header">
+                    <div className="push-toggle-info">
+                      <div className="push-icon-wrapper active">
+                        <Bell size={20} />
+                      </div>
+                      <div className="push-title-block">
+                        <h4>Push Notifications</h4>
+                        <p>Alerts active for Results, Attendance & Invoices</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="push-action-row">
+                    <button className="push-btn-primary push-btn-active" style={{ cursor: 'default' }}>
+                      <CheckCircle size={15} /> Push Alerts Enabled
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Anonymized Glass Student Profile Card Sample */}
+                <div style={{ maxWidth: '420px' }}>
+                  <div className="child-card glass-student-card">
+                    <div className="glass-card-top-row">
+                      {/* Generic Initial Avatar - No real student face image */}
+                      <div className="glass-avatar-container">
+                        <div className="glass-avatar-initials">SN</div>
+                      </div>
+
+                      <div className="glass-student-info">
+                        <div className="glass-student-header">
+                          <h3 className="glass-student-name">
+                            Student Name
+                          </h3>
+                          <span className="glass-active-tag">
+                            <span className="pulse-indicator"></span> Active
+                          </span>
+                        </div>
+
+                        <div className="glass-meta-line">
+                          <span className="glass-meta-label">Class:</span>
+                          <span className="glass-meta-val">Junior Secondary JSS 2</span>
+                        </div>
+
+                        <div className="glass-meta-line">
+                          <span className="glass-meta-label">Reg No:</span>
+                          <span className="glass-meta-val">DOTJSS2-002</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="glass-card-divider" />
+
+                    <div className="glass-status-container">
+                      <div className="glass-status-box">
+                        <span className="glass-status-title">TUITION CLEARANCE</span>
+                        <span className="child-clearance-pill pending">
+                          <AlertTriangle size={12} /> Pending
+                        </span>
+                      </div>
+
+                      <div className="glass-status-box text-right">
+                        <span className="glass-status-title">TERM REPORT</span>
+                        <span className="glass-report-val metric-amber">
+                          Restricted
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="glass-card-footer">
+                      <button type="button" className="btn-open-portal" style={{ cursor: 'default' }}>
+                        <span>Open Student Portal</span>
+                        <ArrowRight size={15} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -220,7 +321,7 @@ export default function ParentUserManual() {
                 <div>
                   <div className="step-content-title">Inspect Student Details & Status Badges</div>
                   <div className="step-content-desc">
-                    Each card displays your child's student passport photo in school uniform, full name, class level (e.g. <em>Junior Secondary JSS 2</em>), unique ID number (e.g. <em># DOTJS52-002</em>), <strong>Tuition Clearance</strong> status (<em>Pending/Cleared</em>), and <strong>Term Report</strong> status (<em>Restricted/Unlocked</em>).
+                    Each card displays your child's student passport avatar, full name, class level (e.g. <em>Junior Secondary JSS 2</em>), unique ID number (e.g. <em>DOTJSS2-002</em>), <strong>Tuition Clearance</strong> status (<em>Pending/Cleared</em>), and <strong>Term Report</strong> status (<em>Restricted/Unlocked</em>).
                   </div>
                 </div>
               </div>
