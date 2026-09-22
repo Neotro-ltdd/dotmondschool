@@ -162,16 +162,16 @@ body {
 }
 
 .logo-box {
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
-  background: #ffffff;
+  width: 105px;
+  height: 105px;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1.5px dashed #b8c2cf;
-  padding: 4px;
+  border: none;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -192,7 +192,7 @@ body {
 .school-name {
   margin: 0;
   color: #0f294a;
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -215,8 +215,8 @@ body {
 }
 
 .photo-box {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 115px;
   border: 1.5px dashed #b8c2cf;
   border-radius: 4px;
   display: flex;
@@ -228,6 +228,8 @@ body {
   flex-shrink: 0;
   box-sizing: border-box;
   overflow: hidden;
+  background: #ffffff;
+  padding: 2px;
 }
 
 .report-title {
