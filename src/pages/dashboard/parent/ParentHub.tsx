@@ -9,6 +9,8 @@ import { useAuth } from '../../../context/AuthContext';
 import { useTenant } from '../../../context/TenantContext';
 import { getParentDisplayName } from '../../../utils/nameFormatter';
 import { PushNotificationToggle } from '../../../components/pwa/PushNotificationToggle';
+import { NotificationCenter } from '../../../components/notifications/NotificationCenter';
+import { PushNotificationSettingsModal } from '../../../components/notifications/PushNotificationSettingsModal';
 import {
   Users,
   GraduationCap,
@@ -157,6 +159,7 @@ export default function ParentHub() {
     term: string;
   } | null>(null);
 
+  const [showPushModal, setShowPushModal] = useState(false);
   const [loadingTab, setLoadingTab] = useState(false);
 
   // Proof Upload Form
@@ -577,6 +580,12 @@ export default function ParentHub() {
                   <span className="pulse-dot"></span>
                   <span>Portal Active</span>
                 </div>
+                <NotificationCenter
+                  onOpenPushSettings={() => setShowPushModal(true)}
+                  onNavigateTab={(tab) => {
+                    if (kids && kids.length > 0) handleSelectKid(kids[0], tab as any);
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -798,6 +807,12 @@ export default function ParentHub() {
                   </option>
                 ))}
               </select>
+              <NotificationCenter
+                onOpenPushSettings={() => setShowPushModal(true)}
+                onNavigateTab={(tab) => {
+                  setActiveTab(tab as any);
+                }}
+              />
             </div>
           </div>
 
@@ -1882,6 +1897,12 @@ export default function ParentHub() {
           onClose={() => setSelectedReportCard(null)}
         />
       )}
+
+      {/* Push Notification Settings Modal */}
+      <PushNotificationSettingsModal
+        isOpen={showPushModal}
+        onClose={() => setShowPushModal(false)}
+      />
     </div>
   );
 }
