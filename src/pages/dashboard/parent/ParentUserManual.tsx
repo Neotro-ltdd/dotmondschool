@@ -547,7 +547,7 @@ export default function ParentUserManual() {
             </div>
 
             <p className="manual-text-block">
-              When you click on the <strong>Upload Bank Invoice / Proof</strong> sub-tab (or click the <strong>Upload Bank Proof</strong> button from your fee summary), you can view the official school bank account details, make your transfer, and submit your receipt for verification.
+              Under the <strong>Fees & Receipts</strong> tab, click on the <strong>Upload Bank Invoice / Proof</strong> sub-tab to view official school bank account details, copy the account number, and submit your payment proof for bursar verification.
             </p>
 
             {/* Form Step-by-Step Instructions */}
@@ -555,43 +555,43 @@ export default function ParentUserManual() {
               <div className="manual-step-item">
                 <div className="step-num-badge">1</div>
                 <div>
-                  <div className="step-content-title">View Official Bank Account Details</div>
-                  <div className="step-content-desc">Inspect the school's official bank name (FCMB), account name (DOTMOND SCHOOL), and click <strong>Copy</strong> next to the 10-digit account number (3455888011) to make your mobile transfer or bank deposit.</div>
+                  <div className="step-content-title">Inspect Official Bank Account Details</div>
+                  <div className="step-content-desc">Review the official school bank details on the dark left panel: <strong>Bank Name</strong> (<em>FCMB</em>), <strong>Account Name</strong> (<em>DOTMOND SCHOOL</em>), and click <strong>Copy</strong> next to the account number (<code>3455888011</code>) for your bank transfer or deposit.</div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">2</div>
                 <div>
                   <div className="step-content-title">Include Student Reg Ref in Narration</div>
-                  <div className="step-content-desc">Always include your child's unique registration reference (e.g. <code>DOTJSS2-002</code>) in your bank transaction narration for fast automated audit clearance.</div>
+                  <div className="step-content-desc">Always include your child's unique <strong>Student Reg Ref</strong> (e.g. <code>DOTJSS2-002</code>) in your mobile app transfer narration for fast automated audit clearance.</div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">3</div>
                 <div>
-                  <div className="step-content-title">Fill Depositor Full Name</div>
-                  <div className="step-content-desc">Type the full name as printed on your bank transfer receipt or paper teller slip.</div>
+                  <div className="step-content-title">Enter Depositor Full Name</div>
+                  <div className="step-content-desc">Type your full name as printed on your bank transfer receipt or paper deposit teller slip.</div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">4</div>
                 <div>
                   <div className="step-content-title">Enter Bank Reference & Amount Paid (₦)</div>
-                  <div className="step-content-desc">Enter your bank reference/teller number (e.g. <code>TRF/2026/84920</code>) and the exact amount deposited (e.g. <code>150000</code>).</div>
+                  <div className="step-content-desc">Enter your bank transfer reference/teller number (e.g. <code>TRF/2026/84920</code>) and the exact amount deposited in Naira (e.g. <code>150000</code>).</div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">5</div>
                 <div>
                   <div className="step-content-title">Upload Transfer Receipt Image / PDF</div>
-                  <div className="step-content-desc">Drag and drop or click to upload a clear image/PDF of your payment receipt (Supports JPG, PNG, WEBP, or PDF up to 10MB).</div>
+                  <div className="step-content-desc">Click or drag your payment receipt screenshot or paper teller image into the dropzone (Supports JPG, PNG, WEBP, or PDF files up to 10MB).</div>
                 </div>
               </div>
               <div className="manual-step-item">
                 <div className="step-num-badge">6</div>
                 <div>
                   <div className="step-content-title">Click "Submit Payment Proof for Verification"</div>
-                  <div className="step-content-desc">Submit your payment proof to the bursary audit queue. You can track verification status in your <strong>Payment History & Receipts</strong> sub-tab.</div>
+                  <div className="step-content-desc">Click the blue <strong>"Submit Payment Proof for Verification"</strong> button to send your receipt to the bursar audit queue. Track approval status in the <strong>Payment History & Receipts</strong> sub-tab.</div>
                 </div>
               </div>
             </div>
