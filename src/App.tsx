@@ -69,6 +69,8 @@ import ParentUserManual from './pages/dashboard/parent/ParentUserManual';
 import VendorHub from './pages/dashboard/vendor/VendorHub';
 import AdmissionsHub from './pages/dashboard/admissions/AdmissionsHub';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
+import PublicParentIntakeForm from './pages/public/PublicParentIntakeForm';
+import ParentIntakePage from './pages/dashboard/admissions/ParentIntakePage';
 import { OfflineIndicator } from './components/pwa/OfflineIndicator';
 import { InstallAppPrompt } from './components/pwa/InstallAppPrompt';
 import { PwaUpdateBanner } from './components/pwa/PwaUpdateBanner';
@@ -115,6 +117,7 @@ function App() {
                   />
                   <Route path="/neotro-change-password" element={<NeotroChangePassword />} />
                   <Route path="/master-login" element={<MasterLogin />} />
+                  <Route path="/parent-intake" element={<PublicParentIntakeForm />} />
 
                   <Route path="/system-admin" element={<SystemLayout />}>
                     <Route index element={<SystemOverview />} />
@@ -192,6 +195,7 @@ function App() {
                     <Route path="parent-manual" element={<ParentUserManual />} />
                     <Route path="vendor-hub" element={<VendorHub />} />
                     <Route path="admissions" element={<AdmissionsHub />} />
+                    <Route path="admissions/parent-form" element={<ParentIntakePage />} />
                     <Route path="profile" element={<ProfileSettings />} />
                   </Route>
                 </Routes>

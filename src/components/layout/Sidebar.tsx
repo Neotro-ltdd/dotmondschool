@@ -492,15 +492,27 @@ export default function Sidebar({
                 <div className="sidebar-section-header">MANAGEMENT MODULES</div>
 
                 {features.admissions && (hasPermission('admissions.view') || hasPermission('admissions.manage')) && userRole !== 'Chairman' && (
-                  <NavLink
-                    to="/dashboard/admissions"
-                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                  >
-                    <span className="nav-icon-box">
-                      <FileText size={18} />
-                    </span>
-                    Admission Applications
-                  </NavLink>
+                  <>
+                    <NavLink
+                      to="/dashboard/admissions"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <FileText size={18} />
+                      </span>
+                      Admission Applications
+                    </NavLink>
+
+                    <NavLink
+                      to="/dashboard/admissions/parent-form"
+                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon-box">
+                        <UserCheck size={18} />
+                      </span>
+                      Parent Intake Form
+                    </NavLink>
+                  </>
                 )}
 
                 {/* 1. USER & ROLE MANAGEMENT */}
