@@ -510,7 +510,7 @@ export default function Sidebar({
                       <span className="nav-icon-box">
                         <UserCheck size={18} />
                       </span>
-                      Parent Intake Form
+                      Parent Form
                     </NavLink>
                   </>
                 )}

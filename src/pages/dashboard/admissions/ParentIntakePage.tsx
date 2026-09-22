@@ -166,11 +166,11 @@ export default function ParentIntakePage() {
       <div className="intake-admin-header">
         <div className="intake-admin-title-block">
           <div className="intake-admin-eyebrow">
-            <Sparkles size={16} /> ADMISSIONS & PARENT INTAKE MODULE
+            <Sparkles size={16} /> ADMISSIONS & PARENT INFORMATION MODULE
           </div>
-          <h1 className="intake-admin-title">Parent Intake & Notification Setup</h1>
+          <h1 className="intake-admin-title">Parent Form & Notification Setup</h1>
           <p className="intake-admin-subtitle">
-            Manage submitted parent contact profiles, monitor notification preference distribution, and share the public intake link with parents.
+            Manage submitted parent contact profiles, monitor notification preference distribution, and share the public parent form link with parents.
           </p>
         </div>
 

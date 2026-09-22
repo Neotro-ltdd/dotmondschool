@@ -91,7 +91,7 @@ export default function PublicParentIntakeForm() {
           <form className="public-intake-form" onSubmit={handleSubmit}>
             <div className="intake-section-eyebrow">
               <Sparkles size={16} />
-              <span>OFFICIAL PARENT INTAKE REGISTRATION</span>
+              <span>OFFICIAL PARENT FORM & REGISTRATION</span>
             </div>
 
             <p className="intake-form-desc">
