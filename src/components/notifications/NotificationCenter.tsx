@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bell,
   CheckCheck,
@@ -10,6 +10,7 @@ import {
   Clock,
   Filter,
 } from 'lucide-react';
+import { api } from '../../services/api';
 import './NotificationCenter.css';
 
 export interface AppNotification {
@@ -24,58 +25,13 @@ export interface AppNotification {
 }
 
 interface NotificationCenterProps {
-  notifications?: AppNotification[];
   onMarkAsRead?: (id: string) => void;
   onMarkAllAsRead?: () => void;
   onNavigateTab?: (tab: string) => void;
   onOpenPushSettings?: () => void;
 }
 
-export const DEFAULT_MOCK_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: 'notif-1',
-    title: 'Campus Gate Entry (Clock-In)',
-    message: 'David scanned IN at Main Campus Gate at 07:42 AM.',
-    category: 'gate',
-    createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 mins ago
-    isRead: false,
-    linkTab: 'attendance',
-    studentName: 'David Nenty',
-  },
-  {
-    id: 'notif-2',
-    title: 'Terminal Report Card Published',
-    message: 'First Term Terminal Report Card for JSS 2 is now available for viewing and PDF download.',
-    category: 'academics',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), // 3 hours ago
-    isRead: false,
-    linkTab: 'academics',
-    studentName: 'David Nenty',
-  },
-  {
-    id: 'notif-3',
-    title: 'Bank Teller Receipt Verified',
-    message: 'Bursary has verified payment receipt of ₦150,000 for Tuition Fees.',
-    category: 'fees',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-    isRead: true,
-    linkTab: 'fees',
-    studentName: 'David Nenty',
-  },
-  {
-    id: 'notif-4',
-    title: 'Campus Gate Exit (Clock-Out)',
-    message: 'David scanned OUT at Main Campus Gate at 03:30 PM.',
-    category: 'gate',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-    isRead: true,
-    linkTab: 'attendance',
-    studentName: 'David Nenty',
-  },
-];
-
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({
-  notifications = DEFAULT_MOCK_NOTIFICATIONS,
   onMarkAsRead,
   onMarkAllAsRead,
   onNavigateTab,
@@ -83,23 +39,69 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filterCategory, setFilterCategory] = useState<'all' | 'unread' | 'gate' | 'academics' | 'fees'>('all');
-  const [localNotifs, setLocalNotifs] = useState<AppNotification[]>(notifications);
+  const [localNotifs, setLocalNotifs] = useState<AppNotification[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const unreadCount = localNotifs.filter((n) => !n.isRead).length;
 
-  const handleToggleOpen = () => {
-    setIsOpen(!isOpen);
+  const fetchLiveNotifications = async () => {
+    try {
+      setLoading(true);
+      const data = await api.get('/notifications/my');
+      if (data && Array.isArray(data.notifications)) {
+        const mapped: AppNotification[] = data.notifications.map((n: any) => ({
+          id: n.id,
+          title: n.title,
+          message: n.message,
+          category: (n.category || 'gate').toLowerCase() as any,
+          createdAt: n.createdAt,
+          isRead: !!n.isRead,
+          studentName: n.studentName || undefined,
+          linkTab: n.category === 'gate' ? 'attendance' : n.category === 'academics' ? 'academics' : n.category === 'fees' ? 'fees' : undefined,
+        }));
+        setLocalNotifs(mapped);
+      } else {
+        setLocalNotifs([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch live notifications', err);
+      setLocalNotifs([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleMarkOne = (id: string) => {
+  useEffect(() => {
+    fetchLiveNotifications();
+  }, []);
+
+  const handleToggleOpen = () => {
+    const nextState = !isOpen;
+    setIsOpen(nextState);
+    if (nextState) {
+      fetchLiveNotifications();
+    }
+  };
+
+  const handleMarkOne = async (id: string) => {
     setLocalNotifs((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
     );
+    try {
+      await api.put(`/notifications/${id}/read`);
+    } catch (err) {
+      console.error('Failed to mark notification read', err);
+    }
     if (onMarkAsRead) onMarkAsRead(id);
   };
 
-  const handleMarkAll = () => {
+  const handleMarkAll = async () => {
     setLocalNotifs((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    try {
+      await api.put('/notifications/read-all');
+    } catch (err) {
+      console.error('Failed to mark all notifications read', err);
+    }
     if (onMarkAllAsRead) onMarkAllAsRead();
   };
 
@@ -253,12 +255,16 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
             {/* Notification Items List */}
             <div className="notif-items-scroll-list">
-              {filteredList.length === 0 ? (
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '2.5rem 1.5rem', color: '#64748b' }}>
+                  <p style={{ margin: 0, fontSize: '0.9rem' }}>Loading system notifications...</p>
+                </div>
+              ) : filteredList.length === 0 ? (
                 <div className="notif-empty-box">
                   <Bell size={36} style={{ color: '#cbd5e1', marginBottom: '0.5rem' }} />
                   <p style={{ margin: 0, fontWeight: 600, color: '#64748b' }}>No notifications found</p>
                   <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                    All caught up! Real-time alerts will appear here.
+                    All caught up! Real-time alerts will appear here as gate scans and academic updates occur.
                   </span>
                 </div>
               ) : (
