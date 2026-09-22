@@ -714,31 +714,6 @@ export default function ParentUserManual() {
             <p className="manual-text-block">
               The <strong>Academic Trend</strong> sub-tab provides intuitive graphs visualizing your ward's GPA progress over multiple academic terms. You can review subject strengths, continuous assessment averages, and class percentile rankings.
             </p>
-
-            {/* Screenshot Card */}
-            <div className="manual-screenshot-card">
-              <div className="screenshot-browser-bar">
-                <div className="browser-dots">
-                  <span className="browser-dot red"></span>
-                  <span className="browser-dot yellow"></span>
-                  <span className="browser-dot green"></span>
-                </div>
-                <span className="screenshot-caption-title">GPA Trajectory & Subject Analysis Graph</span>
-              </div>
-              <div
-                className="screenshot-image-wrapper"
-                onClick={() => openLightbox('/manual/parent_academic_trend.jpg', 'Academic Trend Trajectory Graph')}
-              >
-                <img
-                  src="/manual/parent_academic_trend.jpg"
-                  alt="Academic Trend Graph"
-                  className="manual-screenshot-img"
-                />
-                <div className="screenshot-zoom-overlay">
-                  <Maximize2 size={20} /> Click to expand full screenshot
-                </div>
-              </div>
-            </div>
           </section>
 
           {/* CHAPTER 6 */}
