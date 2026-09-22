@@ -299,18 +299,17 @@ const ResultSheetViewer: React.FC = () => {
         </div>
 
         {/* Remarks & Signatures Section */}
-        <div className="remarks">
+        <div className="remarks-panel">
           <div className="remark-row">
-            <div className="label">Class Teacher's Remark:</div>
-            <div className="text">
+            <span className="remark-label">Class Teacher's Remark:</span>
+            <span className="remark-text">
               {result.teacherComment || 'Average Result, you can do better'}
-            </div>
-            <div className="sig">
+            </span>
+            <div className="signature">
               {result.teacherSignatureUrl ? (
                 <img
                   src={getFullUrl(result.teacherSignatureUrl)}
                   alt="Teacher Signature"
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                 />
               ) : (
                 <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -326,16 +325,15 @@ const ResultSheetViewer: React.FC = () => {
           </div>
 
           <div className="remark-row">
-            <div className="label">Principal's Remark:</div>
-            <div className="text">
+            <span className="remark-label">Principal's Remark:</span>
+            <span className="remark-text">
               {result.principalComment || 'There is room for improvement, Just keep improving'}
-            </div>
-            <div className="sig">
+            </span>
+            <div className="signature">
               {result.principalSignatureUrl ? (
                 <img
                   src={getFullUrl(result.principalSignatureUrl)}
                   alt="Principal Signature"
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                 />
               ) : (
                 <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -351,11 +349,13 @@ const ResultSheetViewer: React.FC = () => {
           </div>
         </div>
 
-        {/* Footer Section */}
-        <div className="footer">
+        {/* Next Term Resumes */}
+        <div className="next-term">
           Next Term Resumes:{' '}
           {result.resumptionDate
-            ? new Date(result.resumptionDate).toLocaleDateString('en-US')
+            ? (new Date(result.resumptionDate).toString() !== 'Invalid Date'
+                ? new Date(result.resumptionDate).toLocaleDateString('en-US')
+                : result.resumptionDate)
             : '9/14/2026'}
         </div>
       </div>

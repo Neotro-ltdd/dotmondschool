@@ -340,45 +340,79 @@ hr.top-rule {
   color: #111;
 }
 
-.remarks-panel {
-  background: var(--bg-band);
-  border-radius: 6px;
-  padding: 14px 18px;
-  margin-bottom: 18px;
-  font-size: 13px;
-}
-
-.remarks-panel .remark-row {
+.remarks-panel,
+.remarks {
+  background: #f4f8fc;
+  border: 1px solid #dbe8f6;
+  border-radius: 10px;
+  padding: 16px 22px;
+  margin-bottom: 20px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 13.5px;
+}
+
+.remarks-panel .remark-row,
+.remarks .remark-row {
+  display: flex;
   align-items: center;
-  padding: 5px 0;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
 }
 
-.remarks-panel .remark-label {
-  font-weight: bold;
-  color: #111;
-  min-width: 150px;
+.remarks-panel .remark-label,
+.remarks .remark-label,
+.remarks .label {
+  font-weight: 800;
+  color: #0f294a;
+  font-size: 13.5px;
+  min-width: 175px;
+  white-space: nowrap;
 }
 
-.remarks-panel .remark-text {
-  color: var(--blue);
+.remarks-panel .remark-text,
+.remarks .remark-text,
+.remarks .text {
+  color: #1e3a8a;
   font-style: italic;
+  font-size: 13.5px;
   flex: 1;
 }
 
-.signature {
-  font-family: 'Brush Script MT', cursive, sans-serif;
-  font-size: 20px;
-  color: #333;
+.signature,
+.sig {
+  width: 120px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
-.next-term {
+.signature img,
+.sig img {
+  max-width: 110px;
+  max-height: 44px;
+  object-fit: contain;
+  display: block;
+}
+
+.signature svg,
+.sig svg {
+  width: 90px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.next-term,
+.footer {
   text-align: center;
-  font-weight: bold;
-  font-size: 13px;
-  margin-top: 6px;
-  color: #111;
+  font-weight: 800;
+  font-size: 14px;
+  color: #0f294a;
+  margin-top: 18px;
 }
 
 @media print {

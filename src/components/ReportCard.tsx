@@ -330,9 +330,16 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
             <span className="remark-text">{data.teacherComment || 'Excellent Result, Keep up the good work'}</span>
             <div className="signature">
               {data.teacherSignatureUrl ? (
-                <img src={getFullUrl(data.teacherSignatureUrl)} alt="Signature" style={{ maxHeight: '30px', objectFit: 'contain' }} />
+                <img src={getFullUrl(data.teacherSignatureUrl)} alt="Teacher Signature" />
               ) : (
-                ' '
+                <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M6 38 C 18 12, 26 44, 36 22 S 54 10, 60 30 S 78 40, 86 18 S 104 8, 114 26"
+                    stroke="#5B6672"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
               )}
             </div>
           </div>
@@ -340,11 +347,20 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
           <div className="remark-row">
             <span className="remark-label">Principal's Remark:</span>
             <span className="remark-text">{data.principalComment || 'Very good Result, Keep going'}</span>
-            {data.principalSignatureUrl && (
-              <div className="signature">
-                <img src={getFullUrl(data.principalSignatureUrl)} alt="Signature" style={{ maxHeight: '30px', objectFit: 'contain' }} />
-              </div>
-            )}
+            <div className="signature">
+              {data.principalSignatureUrl ? (
+                <img src={getFullUrl(data.principalSignatureUrl)} alt="Principal Signature" />
+              ) : (
+                <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M4 30 C 14 40, 20 8, 32 26 C 40 38, 46 14, 58 24 C 70 34, 78 12, 92 22 C 100 28, 106 20, 116 24"
+                    stroke="#5B6672"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
+            </div>
           </div>
         </div>
 
