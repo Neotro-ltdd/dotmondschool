@@ -18,11 +18,8 @@ import {
   GraduationCap,
   Printer,
   Layers,
-  Award,
-  TrendingUp,
   CheckCircle2,
   AlertCircle,
-  Code,
   Calculator,
   Atom,
   Binary,
@@ -397,7 +394,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
       <div className="aa-filter-panel">
         <div className="aa-filter-header">
           <div className="aa-filter-title">
-            <Filter size={18} style={{ color: '#10b981' }} />
+            <Filter size={18} style={{ color: 'var(--primary-color, #000080)' }} />
             <span>Academic Analysis Scope & Parameters</span>
           </div>
           <button
@@ -499,7 +496,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
         </div>
       </div>
 
-      {/* ════════ MAIN DARK EMERALD DASHBOARD BOARD (IMAGE 2 DESIGN) ════════ */}
+      {/* ════════ MAIN DARK DASHBOARD BOARD (DYNAMIC TENANT BRAND COLOR) ════════ */}
       <div className="aa-dark-board">
         {/* Header Title Bar */}
         <div className="aa-dark-header">
@@ -553,23 +550,23 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                 <ResponsiveContainer width="100%" height={260}>
                   <AreaChart data={gpaTrendData} margin={{ top: 25, right: 25, left: 0, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="emeraldGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.45} />
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                      <linearGradient id="tenantGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--primary-color, #3b82f6)" stopOpacity={0.5} />
+                        <stop offset="95%" stopColor="var(--primary-color, #3b82f6)" stopOpacity={0.0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
                     <XAxis
                       dataKey="termShort"
-                      stroke="#64748b"
+                      stroke="#94a3b8"
                       fontSize={12}
                       tickLine={false}
-                      axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                      axisLine={{ stroke: 'rgba(255,255,255,0.15)' }}
                     />
                     <YAxis
                       domain={[0, 4.0]}
                       ticks={[0, 1.0, 2.0, 3.0, 4.0]}
-                      stroke="#64748b"
+                      stroke="#94a3b8"
                       fontSize={11}
                       tickLine={false}
                       axisLine={false}
@@ -598,12 +595,12 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                     <Area
                       type="monotone"
                       dataKey="gpa"
-                      stroke="#34d399"
+                      stroke="var(--primary-color, #60a5fa)"
                       strokeWidth={3.5}
                       fillOpacity={1}
-                      fill="url(#emeraldGrad)"
-                      dot={{ r: 5, fill: '#34d399', stroke: '#061d16', strokeWidth: 2 }}
-                      activeDot={{ r: 8, fill: '#6ee7b7', stroke: '#ffffff', strokeWidth: 2 }}
+                      fill="url(#tenantGrad)"
+                      dot={{ r: 5, fill: '#60a5fa', stroke: '#0a1220', strokeWidth: 2 }}
+                      activeDot={{ r: 8, fill: '#93c5fd', stroke: '#ffffff', strokeWidth: 2 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -659,11 +656,11 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                 <div className="aa-radial-item">
                   <div className="aa-gauge-container">
                     <svg viewBox="0 0 100 55" className="aa-gauge-svg">
-                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" strokeLinecap="round" />
                       <path
                         d="M 10 50 A 40 40 0 0 1 90 50"
                         fill="none"
-                        stroke="#34d399"
+                        stroke="var(--primary-color, #60a5fa)"
                         strokeWidth="8"
                         strokeLinecap="round"
                         strokeDasharray="125.6"
@@ -679,11 +676,11 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                 <div className="aa-radial-item">
                   <div className="aa-gauge-container">
                     <svg viewBox="0 0 100 55" className="aa-gauge-svg">
-                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" strokeLinecap="round" />
                       <path
                         d="M 10 50 A 40 40 0 0 1 90 50"
                         fill="none"
-                        stroke="#34d399"
+                        stroke="var(--primary-color, #60a5fa)"
                         strokeWidth="8"
                         strokeLinecap="round"
                         strokeDasharray="125.6"
@@ -699,11 +696,11 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                 <div className="aa-radial-item">
                   <div className="aa-gauge-container">
                     <svg viewBox="0 0 100 55" className="aa-gauge-svg">
-                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" strokeLinecap="round" />
                       <path
                         d="M 10 50 A 40 40 0 0 1 90 50"
                         fill="none"
-                        stroke="#34d399"
+                        stroke="var(--primary-color, #60a5fa)"
                         strokeWidth="8"
                         strokeLinecap="round"
                         strokeDasharray="125.6"
@@ -719,11 +716,11 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                 <div className="aa-radial-item">
                   <div className="aa-gauge-container">
                     <svg viewBox="0 0 100 55" className="aa-gauge-svg">
-                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" strokeLinecap="round" />
                       <path
                         d="M 10 50 A 40 40 0 0 1 90 50"
                         fill="none"
-                        stroke="#34d399"
+                        stroke="var(--primary-color, #60a5fa)"
                         strokeWidth="8"
                         strokeLinecap="round"
                         strokeDasharray="125.6"
@@ -751,13 +748,13 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                   {/* Fill area under bell curve */}
                   <path
                     d="M 10,80 Q 40,80 70,55 Q 100,10 130,10 Q 160,10 175,55 Q 190,80 200,80 L 200,85 L 10,85 Z"
-                    fill="rgba(16, 185, 129, 0.12)"
+                    fill="rgba(99, 102, 241, 0.15)"
                   />
                   {/* Bell Curve Stroke */}
                   <path
                     d="M 10,80 Q 40,80 70,55 Q 100,10 130,10 Q 160,10 175,55 Q 190,80 200,80"
                     fill="none"
-                    stroke="#34d399"
+                    stroke="var(--primary-color, #60a5fa)"
                     strokeWidth="2.5"
                   />
                   {/* Dotted Vertical Line for Student Position */}
@@ -766,7 +763,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                     y1={22}
                     x2={170 - (percentileStats.topPct * 1.1)}
                     y2={85}
-                    stroke="#a7f3d0"
+                    stroke="#c7d2fe"
                     strokeWidth="1.5"
                     strokeDasharray="3 3"
                   />
@@ -775,13 +772,13 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                     cx={170 - (percentileStats.topPct * 1.1)}
                     cy={22}
                     r="5"
-                    fill="#34d399"
-                    stroke="#061d16"
+                    fill="var(--primary-color, #60a5fa)"
+                    stroke="#0a1220"
                     strokeWidth="2"
                   />
                   {/* Marker Label Box */}
                   <g transform={`translate(${170 - (percentileStats.topPct * 1.1) - 22}, 2)`}>
-                    <rect width="44" height="15" rx="4" fill="#10b981" />
+                    <rect width="44" height="15" rx="4" fill="var(--primary-color, #4f46e5)" />
                     <text x="22" y="11" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
                       {selectedStudentInfo.firstName}
                     </text>
@@ -847,7 +844,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                       </td>
                       <td>
                         {pt.hasData ? (
-                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#10b981' }}>
+                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--primary-color, #000080)' }}>
                             {pt.averageScore}%
                           </span>
                         ) : (
