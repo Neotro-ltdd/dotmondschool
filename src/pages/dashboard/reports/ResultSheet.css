@@ -29,13 +29,88 @@ body {
   width: 100%;
   max-width: 850px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.actions-bar-left,
+.actions-bar-right {
+  display: flex;
+  align-items: center;
   gap: 10px;
-  margin-bottom: 15px;
-  padding: 10px 15px;
-  background: #fff;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.sheet-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.sheet-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.sheet-btn-back {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+}
+
+.sheet-btn-back:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.sheet-btn-print {
+  background: linear-gradient(135deg, var(--primary-color, #132238) 0%, #0f172a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.15);
+}
+
+.sheet-btn-print:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
+  background: linear-gradient(135deg, var(--primary-color, #132238) 20%, #1e293b 100%);
+}
+
+.sheet-btn-download {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(5, 150, 105, 0.2);
+}
+
+.sheet-btn-download:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .sheet {
@@ -87,20 +162,30 @@ body {
 }
 
 .logo-box {
-  width: 70px;
-  height: 70px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
-  background: var(--navy);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--navy, #1f3a63);
   font-size: 11px;
   font-weight: bold;
   text-align: center;
   flex-shrink: 0;
-  border: 3px solid var(--gold);
+  border: 3px solid var(--gold, #c99a3d);
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 3px;
+}
+
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #ffffff;
 }
 
 .school-info {

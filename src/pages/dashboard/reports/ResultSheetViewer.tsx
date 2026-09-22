@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Printer, Download, Loader2 } from 'lucide-react';
 import { api, API_ROOT, downloadReportCardPdf } from '../../../services/api';
 import './ResultSheet.css';
 
@@ -97,23 +98,42 @@ const ResultSheetViewer: React.FC = () => {
 
   const isSecondary = result.className?.includes('JSS') || result.className?.includes('SS');
 
+  const logoSrc = result.schoolLogoUrl ? getFullUrl(result.schoolLogoUrl) : '/images/dotmond-logo-1.png';
+
   return (
     <div className="result-sheet-container">
-      <div className="no-print actions-bar" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <button className="btn btn-secondary" onClick={() => navigate(-1)}>
-          ⬅ Back
-        </button>
-        <button className="btn btn-primary" onClick={() => window.print()}>
-          🖨️ Print Result Sheet
-        </button>
-        <button
-          className="btn btn-primary"
-          style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', border: 'none' }}
-          onClick={handleDownloadPdf}
-          disabled={downloadingPdf}
-        >
-          {downloadingPdf ? '⏳ Generating PDF...' : '📥 Download Official PDF'}
-        </button>
+      <div className="no-print actions-bar">
+        <div className="actions-bar-left">
+          <button className="sheet-btn sheet-btn-back" onClick={() => navigate(-1)}>
+            <ArrowLeft size={16} />
+            <span>Back</span>
+          </button>
+        </div>
+
+        <div className="actions-bar-right">
+          <button className="sheet-btn sheet-btn-print" onClick={() => window.print()}>
+            <Printer size={16} />
+            <span>Print Result Sheet</span>
+          </button>
+          
+          <button
+            className="sheet-btn sheet-btn-download"
+            onClick={handleDownloadPdf}
+            disabled={downloadingPdf}
+          >
+            {downloadingPdf ? (
+              <>
+                <Loader2 size={16} className="spin-icon" />
+                <span>Generating PDF...</span>
+              </>
+            ) : (
+              <>
+                <Download size={16} />
+                <span>Download Official PDF</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="sheet">
@@ -121,20 +141,21 @@ const ResultSheetViewer: React.FC = () => {
         <div
           className="watermark"
           style={{
-            backgroundImage: result.schoolLogoUrl
-              ? `url("${getFullUrl(result.schoolLogoUrl)}")`
-              : undefined,
+            backgroundImage: `url("${logoSrc}")`,
           }}
         ></div>
 
         {/* Header Section */}
         <div className="header">
           <div className="logo-box">
-            {result.schoolLogoUrl ? (
-              <img src={getFullUrl(result.schoolLogoUrl)} alt="School Logo" />
-            ) : (
-              <img src="/images/dotmond-logo-1.png" alt="Dotmond School" />
-            )}
+            <img
+              src={logoSrc}
+              alt={result.schoolName || 'School Logo'}
+              onError={(e) => {
+                // Fallback to local default school logo asset if remote logo URL fails
+                (e.target as HTMLImageElement).src = '/images/dotmond-logo-1.png';
+              }}
+            />
           </div>
 
           <div className="school-block">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Printer, X } from 'lucide-react';
 import { api, API_ROOT } from '../services/api';
 import '../pages/dashboard/reports/ResultSheet.css';
 
@@ -156,41 +156,49 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
 
   const isSecondary = data.className?.includes('JSS') || data.className?.includes('SS');
 
+  const logoSrc = data.schoolLogoUrl ? getFullUrl(data.schoolLogoUrl) : (logoUrl ? getFullUrl(logoUrl) : '/images/dotmond-logo-1.png');
+
   const sheetContent = (
     <div className="result-sheet-container">
       <div className="no-print actions-bar">
-        {onClose && (
-          <button
-            className="btn btn-secondary"
-            onClick={onClose}
-            style={{ padding: '6px 16px', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#334155', color: '#fff', cursor: 'pointer' }}
-          >
-            Close
+        <div className="actions-bar-left">
+          {onClose && (
+            <button className="sheet-btn sheet-btn-back" onClick={onClose}>
+              <X size={16} />
+              <span>Close</span>
+            </button>
+          )}
+        </div>
+
+        <div className="actions-bar-right">
+          <button className="sheet-btn sheet-btn-print" onClick={() => window.print()}>
+            <Printer size={16} />
+            <span>Print Result Sheet</span>
           </button>
-        )}
-        <button
-          className="btn btn-primary"
-          onClick={() => window.print()}
-          style={{ padding: '6px 16px', background: '#2f6fb0', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
-        >
-          🖨️ Print Result Sheet
-        </button>
+        </div>
       </div>
 
       <div className="sheet">
-        {data.schoolLogoUrl && (
-          <div className="watermark-container">
-            <img src={getFullUrl(data.schoolLogoUrl)} alt="Watermark" className="watermark-image" />
-          </div>
-        )}
+        <div className="watermark-container">
+          <img
+            src={logoSrc}
+            alt="Watermark"
+            className="watermark-image"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/images/dotmond-logo-1.png';
+            }}
+          />
+        </div>
 
         <div className="header">
           <div className="logo-box">
-            {data.schoolLogoUrl ? (
-              <img src={getFullUrl(data.schoolLogoUrl)} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            ) : (
-              data.schoolName?.substring(0, 7).toUpperCase() || 'DOTMOND'
-            )}
+            <img
+              src={logoSrc}
+              alt={data.schoolName || 'School Logo'}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/dotmond-logo-1.png';
+              }}
+            />
           </div>
           <div className="school-info">
             <h1>{data.schoolName || 'Dotmond School'}</h1>
