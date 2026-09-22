@@ -72,7 +72,7 @@ export default function ParentIntakePage() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
 
-  const publicFormUrl = `${window.location.origin}/parent-intake`;
+  const publicFormUrl = `${window.location.origin}/parent-form`;
 
   const fetchRecords = async () => {
     try {
@@ -206,7 +206,7 @@ export default function ParentIntakePage() {
             </button>
 
             <a
-              href="/parent-intake"
+              href="/parent-form"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-share-open"
@@ -340,13 +340,13 @@ export default function ParentIntakePage() {
           {isLoading ? (
             <div className="intake-loading-state">
               <RefreshCw size={24} className="spin-icon" />
-              <span>Loading parent intake records...</span>
+              <span>Loading parent form records...</span>
             </div>
           ) : records.length === 0 ? (
             <div className="intake-empty-state">
               <Users size={40} />
               <h3>No Parent Records Found</h3>
-              <p>No parent intake forms match your search criteria. Share the public link to gather parent information.</p>
+              <p>No parent forms match your search criteria. Share the public link to gather parent information.</p>
             </div>
           ) : (
             <div className="table-responsive">
@@ -433,11 +433,11 @@ export default function ParentIntakePage() {
         <div className="qr-modal-backdrop" onClick={() => setShowQrModal(false)}>
           <div className="qr-modal-card" onClick={(e) => e.stopPropagation()}>
             <h3 className="qr-modal-title">Public Form QR Code</h3>
-            <p className="qr-modal-desc">Scan with a smartphone camera to open the Parent Intake Form directly.</p>
+            <p className="qr-modal-desc">Scan with a smartphone camera to open the Parent Form directly.</p>
             <div className="qr-code-img-box">
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(publicFormUrl)}`}
-                alt="Parent Intake Form QR Code"
+                alt="Parent Form QR Code"
                 className="qr-img"
               />
             </div>

@@ -116,8 +116,8 @@ function App() {
                     element={isNeotro ? <NeotroChangePassword /> : <ChangePassword />} 
                   />
                   <Route path="/neotro-change-password" element={<NeotroChangePassword />} />
-                  <Route path="/master-login" element={<MasterLogin />} />
                   <Route path="/parent-intake" element={<PublicParentIntakeForm />} />
+                  <Route path="/parent-form" element={<PublicParentIntakeForm />} />
 
                   <Route path="/system-admin" element={<SystemLayout />}>
                     <Route index element={<SystemOverview />} />
