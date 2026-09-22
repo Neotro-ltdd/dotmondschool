@@ -633,6 +633,44 @@ export default function ParentUserManual() {
               Under the <strong>Academics Tab</strong>, parents can inspect official student broadsheet result cards for any academic term and session.
             </p>
 
+            <div className="manual-steps-list">
+              <div className="manual-step-item">
+                <div className="step-num-badge">1</div>
+                <div>
+                  <div className="step-content-title">Navigate to Academics Tab</div>
+                  <div className="step-content-desc">Open your child's student portal and select <strong>Academics</strong> from the top navigation bar to access report sheets.</div>
+                </div>
+              </div>
+              <div className="manual-step-item">
+                <div className="step-num-badge">2</div>
+                <div>
+                  <div className="step-content-title">Select Session & Term</div>
+                  <div className="step-content-desc">Choose the target Academic Session (e.g. <em>2025/2026</em>) and Term (e.g. <em>Third Term</em>) to load the official broadsheet.</div>
+                </div>
+              </div>
+              <div className="manual-step-item">
+                <div className="step-num-badge">3</div>
+                <div>
+                  <div className="step-content-title">Inspect Performance & Broad Sheet</div>
+                  <div className="step-content-desc">Review itemized subject scores (CA, Exam, Total Marks), letter grades, teacher remarks, attendance totals, and percentage averages.</div>
+                </div>
+              </div>
+              <div className="manual-step-item">
+                <div className="step-num-badge">4</div>
+                <div>
+                  <div className="step-content-title">Verify Official Stamp & Remarks</div>
+                  <div className="step-content-desc">Examine the split remarks section featuring the <strong>Class Teacher Remark & Signature</strong> (left) and <strong>Principal Remark with Official APPROVED School Stamp</strong> (right).</div>
+                </div>
+              </div>
+              <div className="manual-step-item">
+                <div className="step-num-badge">5</div>
+                <div>
+                  <div className="step-content-title">Print or Download Official PDF</div>
+                  <div className="step-content-desc">Click <strong>"Print Result Sheet"</strong> to send directly to a connected printer, or click <strong>"Download Official PDF"</strong> to save a certified digital copy to your smartphone or computer.</div>
+                </div>
+              </div>
+            </div>
+
             {/* Screenshot Card */}
             <div className="manual-screenshot-card">
               <div className="screenshot-browser-bar">
