@@ -811,14 +811,14 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 12mm;
+    margin: 8mm 10mm;
   }
 
   html,
   body {
     background: #ffffff !important;
     color: #0f172a !important;
-    font-size: 10pt !important;
+    font-size: 9.5pt !important;
     height: auto !important;
     overflow: visible !important;
   }
@@ -844,20 +844,21 @@
   .manual-header-banner {
     background: #0f172a !important;
     color: #ffffff !important;
-    padding: 0.85rem 1.25rem !important;
+    padding: 0.6rem 1rem !important;
     box-shadow: none !important;
-    margin-bottom: 0.85rem !important;
+    margin-bottom: 0.6rem !important;
     border-radius: 6px !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .manual-header-title {
-    font-size: 1.25rem !important;
+    font-size: 1.15rem !important;
   }
 
   .manual-header-subtitle {
-    font-size: 0.8rem !important;
+    font-size: 0.75rem !important;
+    margin-top: 0.2rem !important;
   }
 
   .manual-main-grid {
@@ -865,67 +866,83 @@
   }
 
   .manual-content-body {
-    gap: 0.85rem !important;
+    gap: 0.65rem !important;
   }
 
-  /* Allow chapter cards and internal containers to flow naturally across page boundaries */
+  /* Compact Chapter Cards */
   .manual-chapter-card {
     box-shadow: none !important;
     border: 1px solid #cbd5e1 !important;
-    padding: 0.85rem !important;
-    margin-bottom: 0.85rem !important;
+    padding: 0.65rem 0.85rem !important;
+    margin-bottom: 0.65rem !important;
     border-radius: 6px !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
   }
 
   .manual-chapter-header {
-    margin-bottom: 0.5rem !important;
-    padding-bottom: 0.4rem !important;
+    margin-bottom: 0.35rem !important;
+    padding-bottom: 0.25rem !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
   .chapter-title {
-    font-size: 1.1rem !important;
+    font-size: 1.05rem !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
   .chapter-badge {
-    padding: 0.2rem 0.5rem !important;
-    font-size: 0.7rem !important;
+    padding: 0.15rem 0.4rem !important;
+    font-size: 0.65rem !important;
   }
 
   .manual-text-block {
-    font-size: 0.82rem !important;
-    margin-bottom: 0.5rem !important;
-    line-height: 1.4 !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 0.4rem !important;
+    line-height: 1.35 !important;
   }
 
   .manual-steps-list {
-    margin: 0.5rem 0 !important;
-    gap: 0.4rem !important;
+    margin: 0.4rem 0 !important;
+    gap: 0.3rem !important;
   }
 
   .manual-step-item {
-    padding: 0.5rem 0.75rem !important;
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.78rem !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
   }
 
-  .manual-callout {
-    padding: 0.6rem 0.85rem !important;
-    margin: 0.6rem 0 !important;
+  .step-num-badge {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .step-content-title {
     font-size: 0.82rem !important;
+  }
+
+  .step-content-desc {
+    font-size: 0.75rem !important;
+  }
+
+  .manual-callout {
+    padding: 0.45rem 0.65rem !important;
+    margin: 0.45rem 0 !important;
+    font-size: 0.78rem !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
+  /* Compact Screenshot / Preview Wrapper */
   .manual-screenshot-card {
-    margin: 0.6rem 0 !important;
+    margin: 0.45rem 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
     border: 1px solid #cbd5e1 !important;
@@ -934,54 +951,247 @@
     break-inside: auto !important;
   }
 
+  .screenshot-browser-bar {
+    padding: 0.35rem 0.65rem !important;
+  }
+
+  .screenshot-caption-title {
+    font-size: 0.75rem !important;
+  }
+
   .manual-screenshot-img {
-    max-height: 220px !important;
+    max-height: 170px !important;
     width: auto !important;
     max-width: 100% !important;
     margin: 0 auto !important;
     object-fit: contain !important;
   }
 
+  /* Chapter 1 Sample Hero & Glass Card Compact Print Overrides */
+  .parent-hero-banner {
+    padding: 0.55rem 0.75rem !important;
+    margin-bottom: 0.35rem !important;
+    border-radius: 6px !important;
+  }
+
+  .parent-hero-eyebrow {
+    font-size: 0.62rem !important;
+    margin-bottom: 0.1rem !important;
+  }
+
+  .parent-hero-title {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .parent-hero-subtitle {
+    font-size: 0.7rem !important;
+    margin-bottom: 0.3rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .parent-hero-pills {
+    gap: 0.25rem !important;
+  }
+
+  .parent-hero-pill {
+    padding: 0.15rem 0.4rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .push-toggle-container {
+    padding: 0.35rem 0.6rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .push-title-block h4 {
+    font-size: 0.78rem !important;
+  }
+
+  .push-title-block p {
+    font-size: 0.68rem !important;
+  }
+
+  .push-btn-primary {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .glass-student-card {
+    padding: 0.55rem 0.75rem !important;
+    max-width: 340px !important;
+  }
+
+  .glass-student-card .child-avatar-wrapper {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .glass-student-card .child-name {
+    font-size: 0.88rem !important;
+  }
+
+  .glass-student-card .child-meta-text {
+    font-size: 0.68rem !important;
+  }
+
+  .glass-status-container {
+    padding: 0.35rem 0.5rem !important;
+    margin: 0.35rem 0 !important;
+  }
+
+  .glass-status-title {
+    font-size: 0.62rem !important;
+  }
+
+  .child-clearance-pill {
+    padding: 0.15rem 0.4rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .glass-card-footer {
+    margin-top: 0.35rem !important;
+  }
+
+  .btn-open-portal {
+    padding: 0.3rem 0.55rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  /* Chapter 2 Fee Mock Container Compact Print Overrides */
   .fee-mock-container {
-    padding: 0.5rem !important;
-    margin: 0.6rem 0 !important;
+    padding: 0.45rem 0.65rem !important;
+    margin: 0.45rem 0 !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
+  }
+
+  .fee-mock-header {
+    padding: 0.35rem 0.55rem !important;
+    margin-bottom: 0.35rem !important;
+    background: #f1f5f9 !important;
+    border-radius: 4px !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .fee-mock-title {
+    font-size: 0.85rem !important;
+    color: #0f172a !important;
+  }
+
+  .fee-mock-subtitle {
+    font-size: 0.68rem !important;
+    color: #475569 !important;
+  }
+
+  .fee-mock-schedule-btn {
+    display: none !important;
   }
 
   .fee-mock-metrics {
-    gap: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.35rem !important;
+    margin-bottom: 0.45rem !important;
   }
 
-  .fee-mock-metric-card {
-    padding: 0.5rem 0.75rem !important;
+  .fee-mock-metric-item {
+    padding: 0.3rem 0.45rem !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4px !important;
   }
 
-  .fee-mock-section {
-    padding: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-    page-break-inside: auto !important;
-    break-inside: auto !important;
+  .fee-mock-metric-label {
+    font-size: 0.62rem !important;
+    color: #64748b !important;
   }
 
-  .fee-table-mini th,
-  .fee-table-mini td {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.78rem !important;
+  .fee-mock-metric-value {
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+  }
+
+  .fee-mock-status-pill {
+    padding: 0.12rem 0.35rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  .fee-mock-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 220px !important;
+    gap: 0.55rem !important;
+    align-items: start !important;
+  }
+
+  .fee-mock-table-wrapper {
+    margin: 0 !important;
+  }
+
+  .fee-mock-table th {
+    padding: 0.28rem 0.45rem !important;
+    font-size: 0.65rem !important;
+    background: #f1f5f9 !important;
+  }
+
+  .fee-mock-table td {
+    padding: 0.22rem 0.45rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .fee-mock-table-total-row td {
+    padding: 0.3rem 0.45rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fee-mock-sidebar {
+    gap: 0.35rem !important;
+  }
+
+  .fee-mock-bank-card {
+    padding: 0.4rem 0.55rem !important;
+    border-radius: 4px !important;
+  }
+
+  .fee-mock-bank-title {
+    font-size: 0.72rem !important;
+    margin-bottom: 0.25rem !important;
+    padding-bottom: 0.15rem !important;
+  }
+
+  .fee-mock-bank-row {
+    margin-bottom: 0.2rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .fee-mock-upload-card {
+    padding: 0.3rem !important;
+  }
+
+  .fee-mock-upload-btn {
+    padding: 0.25rem 0.45rem !important;
+    font-size: 0.68rem !important;
   }
 
   .faq-item-card {
     page-break-inside: auto !important;
     break-inside: auto !important;
-    padding: 0.6rem 0.85rem !important;
-    margin-bottom: 0.4rem !important;
+    padding: 0.45rem 0.65rem !important;
+    margin-bottom: 0.35rem !important;
   }
 
   .faq-answer {
-    padding: 0.5rem 0 !important;
-    font-size: 0.8rem !important;
+    padding: 0.35rem 0 !important;
+    font-size: 0.75rem !important;
   }
 }
+
 
 
