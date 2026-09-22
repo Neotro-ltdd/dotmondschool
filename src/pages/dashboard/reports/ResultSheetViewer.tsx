@@ -187,34 +187,34 @@ const ResultSheetViewer: React.FC = () => {
         {/* Student Bio Data Info Grid */}
         <div className="info-grid">
           <div className="field">
-            <label>Name:</label>
-            <span>{result.studentName}</span>
+            <span className="label">Name:</span>
+            <span className="value">{result.studentName}</span>
           </div>
           <div className="field">
-            <label>Reg No:</label>
-            <span>{result.registrationNumber}</span>
+            <span className="label">Reg No:</span>
+            <span className="value">{result.registrationNumber}</span>
           </div>
           <div className="field">
-            <label>Class:</label>
-            <span>{result.className}</span>
+            <span className="label">Class:</span>
+            <span className="value">{result.className}</span>
           </div>
 
           <div className="field">
-            <label>Parent:</label>
-            <span>{result.parentName || 'Mr & Mrs. Parent'}</span>
+            <span className="label">Parent:</span>
+            <span className="value">{result.parentName || 'Mr & Mrs. Parent'}</span>
           </div>
           <div className="field">
-            <label>Term:</label>
-            <span>{result.term}</span>
+            <span className="label">Term:</span>
+            <span className="value">{result.term}</span>
           </div>
           <div className="field">
-            <label>Session:</label>
-            <span>{result.session}</span>
+            <span className="label">Session:</span>
+            <span className="value">{result.session}</span>
           </div>
 
-          <div className="field field-full">
-            <label>Date Processed:</label>
-            <span>{result.dateProcessed || new Date().toLocaleDateString('en-US')}</span>
+          <div className="field">
+            <span className="label">Date Processed:</span>
+            <span className="value">{result.dateProcessed || new Date().toLocaleDateString('en-US')}</span>
           </div>
         </div>
 

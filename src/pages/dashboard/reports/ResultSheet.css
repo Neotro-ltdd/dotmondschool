@@ -155,110 +155,128 @@ body {
 /* Header */
 .header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  padding-bottom: 10px;
+  padding-bottom: 4px;
 }
 
 .logo-box {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
   background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--navy, #1f3a63);
-  font-size: 11px;
-  font-weight: bold;
-  text-align: center;
   flex-shrink: 0;
-  border: 3px solid var(--gold, #c99a3d);
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 3px;
+  border: 1.5px dashed #b8c2cf;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .logo-box img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 50%;
-  background: #ffffff;
 }
 
+.school-block,
 .school-info {
   text-align: center;
   flex: 1;
 }
 
-.school-info h1 {
+.school-block h1,
+.school-info h1,
+.school-name {
   margin: 0;
-  color: var(--navy);
-  font-size: 28px;
-  letter-spacing: 1px;
+  color: #0f294a;
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+.school-block .school-addr,
 .school-info .address {
-  color: var(--blue);
-  font-size: 13px;
+  color: #334155;
+  font-size: 13.5px;
   margin: 4px 0 2px;
+  font-weight: 500;
 }
 
+.school-block .school-motto,
 .school-info .motto {
-  color: var(--blue);
-  font-size: 12px;
-  font-style: italic;
+  color: #334155;
+  font-size: 13px;
   margin: 0;
+  font-weight: 500;
 }
 
 .photo-box {
-  width: 70px;
+  width: 80px;
   height: 80px;
   border: 1.5px dashed #b8c2cf;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  color: #9aa5b1;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
   flex-shrink: 0;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
 .report-title {
   text-align: center;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
   text-decoration: underline;
-  margin: 14px 0 20px;
-  color: #111;
+  margin-top: 10px;
+  color: #0f294a;
   font-size: 15px;
+  display: block;
 }
 
+.rule,
 hr.top-rule {
   border: none;
-  border-top: 2px solid var(--navy);
-  margin: 0 0 18px;
+  border-top: 2px solid #0f294a;
+  margin: 16px 0 18px;
 }
 
 /* Student info grid */
 .info-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  row-gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 12px;
+  column-gap: 16px;
   margin-bottom: 22px;
   font-size: 13.5px;
 }
 
-.info-grid div span.label {
-  font-weight: bold;
-  color: #111;
+.info-grid .field,
+.info-grid > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
-.info-grid div span.value {
-  color: var(--blue);
-  font-weight: 600;
+.info-grid label,
+.info-grid .label {
+  font-weight: 800;
+  color: #0f294a;
+  margin-right: 2px;
+}
+
+.info-grid span,
+.info-grid .value {
+  color: #334155;
+  font-weight: 500;
 }
 
 /* Table */

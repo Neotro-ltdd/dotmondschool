@@ -201,9 +201,10 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
             />
           </div>
           <div className="school-info">
-            <h1>{data.schoolName || 'Dotmond School'}</h1>
+            <h1 className="school-name">{data.schoolName || 'DOTMOND SCHOOL'}</h1>
             <div className="address">{data.schoolAddress || 'Happyland Estate, Ajah, Lagos State, Nigeria'}</div>
             <div className="motto">Motto: {data.schoolMotto || 'Steady Progress, Brighter Future'}</div>
+            <span className="report-title">STUDENT'S TERMINAL REPORT</span>
           </div>
           <div className="photo-box">
             {data.studentPassportUrl ? (
@@ -214,31 +215,30 @@ export default function ReportCard({ studentId, session, term, onClose, isInline
           </div>
         </div>
 
-        <div className="report-title">STUDENT'S TERMINAL REPORT</div>
         <hr className="top-rule" />
 
         <div className="info-grid">
-          <div>
+          <div className="field">
             <span className="label">Name:</span> <span className="value">{data.studentName}</span>
           </div>
-          <div>
+          <div className="field">
             <span className="label">Reg No:</span> <span className="value">{data.registrationNumber || '—'}</span>
           </div>
-          <div>
+          <div className="field">
             <span className="label">Class:</span> <span className="value">{data.className}</span>
           </div>
 
-          <div>
+          <div className="field">
             <span className="label">Parent:</span> <span className="value">{data.parentName || '—'}</span>
           </div>
-          <div>
+          <div className="field">
             <span className="label">Term:</span> <span className="value">{data.term}</span>
           </div>
-          <div>
+          <div className="field">
             <span className="label">Session:</span> <span className="value">{data.session}</span>
           </div>
 
-          <div>
+          <div className="field">
             <span className="label">Date Processed:</span>{' '}
             <span className="value">{data.dateProcessed || data.dateOfResult || '—'}</span>
           </div>
