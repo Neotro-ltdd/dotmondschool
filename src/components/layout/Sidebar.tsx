@@ -344,7 +344,7 @@ export default function Sidebar({
                   <span className="nav-icon-box">
                     <BookOpen size={18} />
                   </span>
-                  Parent User Manual
+                  Parent's Guide
                 </NavLink>
               </>
             )}
@@ -481,7 +481,7 @@ export default function Sidebar({
                   <span className="nav-icon-box">
                     <BookOpen size={18} />
                   </span>
-                  User Manual
+                  Parent's Guide
                 </NavLink>
               </>
             )}

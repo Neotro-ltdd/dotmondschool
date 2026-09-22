@@ -129,7 +129,7 @@ export const ParentDashboardView: React.FC<ParentDashboardViewProps> = ({
               <CreditCard size={16} /> Pay & Download Receipts
             </Link>
             <Link to="/dashboard/parent-manual" className="banner-btn banner-btn-outline">
-              <BookOpen size={16} /> User Manual & Guide
+              <BookOpen size={16} /> Parent's Guide
             </Link>
           </div>
         </div>
