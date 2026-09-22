@@ -23,6 +23,8 @@ import {
   Sparkles,
   Copy,
   Upload,
+  Key,
+  Smartphone,
 } from 'lucide-react';
 import { useTenant } from '../../../context/TenantContext';
 import './ParentUserManual.css';
@@ -36,18 +38,19 @@ interface Chapter {
 }
 
 const CHAPTERS: Chapter[] = [
-  { id: 'ch1', num: 1, title: 'Overview & Ward Selection', icon: <Users size={18} />, tags: ['kids', 'wards', 'profile', 'clearance'] },
-  { id: 'ch2', num: 2, title: 'School Fees & Online Payment', icon: <CreditCard size={18} />, tags: ['fees', 'invoice', 'bank', 'pay online'] },
-  { id: 'ch3', num: 3, title: 'Uploading Payment Receipts', icon: <UploadCloud size={18} />, tags: ['bank teller', 'receipt', 'proof', 'upload'] },
-  { id: 'ch4', num: 4, title: 'Terminal Report Cards & Results', icon: <FileText size={18} />, tags: ['grades', 'report card', 'pdf', 'results'] },
-  { id: 'ch5', num: 5, title: 'Academic Performance Trends', icon: <TrendingUp size={18} />, tags: ['gpa', 'trend', 'analytics', 'strengths'] },
-  { id: 'ch6', num: 6, title: 'Gate Attendance & Push Alerts', icon: <ShieldCheck size={18} />, tags: ['attendance', 'gate', 'pwa', 'push alerts'] },
-  { id: 'ch7', num: 7, title: 'Frequently Asked Questions (FAQ)', icon: <HelpCircle size={18} />, tags: ['support', 'help', 'faq', 'clearance'] },
+  { id: 'ch-access', num: 1, title: 'Portal Access & Account Setup', icon: <Key size={18} />, tags: ['access', 'login', 'password', 'code', 'app', 'android'] },
+  { id: 'ch1', num: 2, title: 'Overview & Ward Selection', icon: <Users size={18} />, tags: ['kids', 'wards', 'profile', 'clearance'] },
+  { id: 'ch2', num: 3, title: 'School Fees & Online Payment', icon: <CreditCard size={18} />, tags: ['fees', 'invoice', 'bank', 'pay online'] },
+  { id: 'ch3', num: 4, title: 'Uploading Payment Receipts', icon: <UploadCloud size={18} />, tags: ['bank teller', 'receipt', 'proof', 'upload'] },
+  { id: 'ch4', num: 5, title: 'Terminal Report Cards & Results', icon: <FileText size={18} />, tags: ['grades', 'report card', 'pdf', 'results'] },
+  { id: 'ch5', num: 6, title: 'Academic Performance Trends', icon: <TrendingUp size={18} />, tags: ['gpa', 'trend', 'analytics', 'strengths'] },
+  { id: 'ch6', num: 7, title: 'Gate Attendance & Push Alerts', icon: <ShieldCheck size={18} />, tags: ['attendance', 'gate', 'pwa', 'push alerts', 'notifications'] },
+  { id: 'ch-faq', num: 8, title: 'Frequently Asked Questions (FAQ)', icon: <HelpCircle size={18} />, tags: ['support', 'help', 'faq', 'clearance'] },
 ];
 
 export default function ParentUserManual() {
   const { schoolName } = useTenant();
-  const [activeChapter, setActiveChapter] = useState<string>('ch1');
+  const [activeChapter, setActiveChapter] = useState<string>('ch-access');
   const [activeTagFilter, setActiveTagFilter] = useState<string>('all');
   const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
@@ -106,6 +109,12 @@ export default function ParentUserManual() {
             All Guide Topics
           </button>
           <button
+            className={`manual-tag-btn ${activeTagFilter === 'access' ? 'active' : ''}`}
+            onClick={() => handleTagClick('access')}
+          >
+            🔑 Portal Access & Setup
+          </button>
+          <button
             className={`manual-tag-btn ${activeTagFilter === 'wards' ? 'active' : ''}`}
             onClick={() => handleTagClick('wards')}
           >
@@ -162,10 +171,98 @@ export default function ParentUserManual() {
 
         {/* Content Body */}
         <main className="manual-content-body">
-          {/* CHAPTER 1 */}
-          <section id="ch1" className="manual-chapter-card">
+          {/* CHAPTER 1 - Portal Access */}
+          <section id="ch-access" className="manual-chapter-card">
             <div className="manual-chapter-header">
               <span className="chapter-badge">CHAPTER 1</span>
+              <h2 className="chapter-title">How to Access & Log Into the Portal</h2>
+            </div>
+
+            <p className="manual-text-block">
+              To access the Parent & Guardian Portal, parents must first register by filling out the official <strong>Parent Information Form</strong> provided by the school administration. Once your profile is submitted, your account credentials and portal access link will be delivered directly to your registered email address.
+            </p>
+
+            <div className="manual-callout info">
+              <Info className="callout-icon" size={20} />
+              <div>
+                <strong>Official School Tenant Code:</strong> When logging into the portal, always use the designated tenant code <strong>"dotmond"</strong> (or your school's assigned tenant code) along with your email address and initial default password.
+              </div>
+            </div>
+
+            <div className="manual-steps-list">
+              <div className="manual-step-item">
+                <div className="step-num-badge">1</div>
+                <div>
+                  <div className="step-content-title">Fill Out the Parent Information Form</div>
+                  <div className="step-content-desc">
+                    Submit the official Parent Information Form with your active email address, phone number, and student details to register your parent profile.
+                  </div>
+                </div>
+              </div>
+
+              <div className="manual-step-item">
+                <div className="step-num-badge">2</div>
+                <div>
+                  <div className="step-content-title">Receive Email with Default Password & Portal Link</div>
+                  <div className="step-content-desc">
+                    Check your email inbox for a welcome email containing your <strong>default login password</strong> and the direct URL link to the school portal.
+                  </div>
+                </div>
+              </div>
+
+              <div className="manual-step-item">
+                <div className="step-num-badge">3</div>
+                <div>
+                  <div className="step-content-title">Log In Using Code "dotmond"</div>
+                  <div className="step-content-desc">
+                    Navigate to the portal login page, select Parent Login, and enter the school tenant code <strong>"dotmond"</strong>, your registered email address, and default password.
+                  </div>
+                </div>
+              </div>
+
+              <div className="manual-step-item">
+                <div className="step-num-badge">4</div>
+                <div>
+                  <div className="step-content-title">Mandatory Password Reset</div>
+                  <div className="step-content-desc">
+                    Upon your initial successful login, the system will automatically prompt you to reset your password. Create a new strong password and confirm the update to log into your dashboard.
+                  </div>
+                </div>
+              </div>
+
+              <div className="manual-step-item">
+                <div className="step-num-badge">5</div>
+                <div>
+                  <div className="step-content-title">Download Mobile App (Android PWA Prompt)</div>
+                  <div className="step-content-desc">
+                    After logging in, Android smartphone users will see an automatic pop-up prompt inviting them to <strong>Install / Download the Mobile App</strong>. Click <strong>Install</strong> to add the app icon directly to your mobile home screen for fast 1-tap access.
+                  </div>
+                </div>
+              </div>
+
+              <div className="manual-step-item">
+                <div className="step-num-badge">6</div>
+                <div>
+                  <div className="step-content-title">Daily Real-Time Gate Attendance & Push Notifications</div>
+                  <div className="step-content-desc">
+                    Once active, you will automatically receive real-time notifications on both your <strong>smartphone (push alerts)</strong> and <strong>email address</strong> for your child's daily arrival and departure gate attendance.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="manual-callout tip">
+              <Smartphone className="callout-icon" size={20} />
+              <div>
+                <strong>Instant Attendance & Email Notifications:</strong> Ensure browser notifications are enabled on your smartphone so you receive instant gate entry/exit alerts and email updates for your child every day.
+              </div>
+            </div>
+          </section>
+
+          {/* CHAPTER 2 */}
+          <section id="ch1" className="manual-chapter-card">
+            <div className="manual-chapter-header">
+              <span className="chapter-badge">CHAPTER 2</span>
               <h2 className="chapter-title">Overview & Accessing Wards ("My Kids")</h2>
             </div>
 
@@ -701,10 +798,10 @@ export default function ParentUserManual() {
             </div>
           </section>
 
-          {/* CHAPTER 5 */}
+          {/* CHAPTER 6 */}
           <section id="ch5" className="manual-chapter-card">
             <div className="manual-chapter-header">
-              <span className="chapter-badge">CHAPTER 5</span>
+              <span className="chapter-badge">CHAPTER 6</span>
               <h2 className="chapter-title">Academic Performance Trends & Analytics</h2>
             </div>
 
@@ -713,15 +810,15 @@ export default function ParentUserManual() {
             </p>
           </section>
 
-          {/* CHAPTER 6 */}
+          {/* CHAPTER 7 */}
           <section id="ch6" className="manual-chapter-card">
             <div className="manual-chapter-header">
-              <span className="chapter-badge">CHAPTER 6</span>
+              <span className="chapter-badge">CHAPTER 7</span>
               <h2 className="chapter-title">Gate Attendance & Real-Time Mobile Push Alerts</h2>
             </div>
 
             <p className="manual-text-block">
-              The school gate system uses automated RFID/barcode turnstiles. Whenever your child scans into campus in the morning or exits at dismissal, exact timestamps are recorded.
+              The school gate system uses automated RFID turnstiles and barcode scanners. Every single day when your child scans into campus in the morning or exits at dismissal, exact timestamps are recorded in real-time. <strong>Parents automatically receive instant notifications on both their smartphone (push alerts) and registered email address for their child's daily gate attendance.</strong>
             </p>
 
             {/* Grid of Two Screenshots */}
@@ -785,10 +882,10 @@ export default function ParentUserManual() {
             </div>
           </section>
 
-          {/* CHAPTER 7 - FAQ */}
-          <section id="ch7" className="manual-chapter-card">
+          {/* CHAPTER 8 - FAQ */}
+          <section id="ch-faq" className="manual-chapter-card">
             <div className="manual-chapter-header">
-              <span className="chapter-badge">CHAPTER 7</span>
+              <span className="chapter-badge">CHAPTER 8</span>
               <h2 className="chapter-title">Frequently Asked Questions (FAQ)</h2>
             </div>
 
