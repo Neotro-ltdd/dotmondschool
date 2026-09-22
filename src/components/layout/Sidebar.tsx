@@ -502,16 +502,6 @@ export default function Sidebar({
                       </span>
                       Admission Applications
                     </NavLink>
-
-                    <NavLink
-                      to="/dashboard/admissions/parent-form"
-                      className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                    >
-                      <span className="nav-icon-box">
-                        <UserCheck size={18} />
-                      </span>
-                      Parent Form
-                    </NavLink>
                   </>
                 )}
 
