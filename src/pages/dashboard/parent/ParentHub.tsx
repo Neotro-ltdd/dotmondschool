@@ -690,71 +690,73 @@ export default function ParentHub() {
                 const initials = `${kid.surname?.[0] || 'S'}${kid.firstName?.[0] || 'K'}`.toUpperCase();
 
                 return (
-                  <div key={kid.id} className="child-card">
-                    {/* Top Contrast Header Banner */}
-                    <div className="child-card-banner" />
+                  <div key={kid.id} className="child-card glass-student-card">
+                    {/* Top Identity Row: Avatar on Left, Name & Meta on Right */}
+                    <div className="glass-card-top-row">
+                      <div className="glass-avatar-container">
+                        {photoUrl ? (
+                          <img src={photoUrl} alt={fullName} className="glass-avatar-img" />
+                        ) : (
+                          <div className="glass-avatar-initials">{initials}</div>
+                        )}
+                      </div>
 
-                    {/* Student Identity Section */}
-                    <div className="child-card-body">
-                      <div className="child-profile-row">
-                        <div className="child-avatar-container">
-                          {photoUrl ? (
-                            <img src={photoUrl} alt={fullName} className="child-avatar-img" />
-                          ) : (
-                            <div className="child-avatar-initials">{initials}</div>
-                          )}
-                        </div>
-
-                        <div className="child-info">
-                          <h3 className="child-name" title={fullName}>
+                      <div className="glass-student-info">
+                        <div className="glass-student-header">
+                          <h3 className="glass-student-name" title={fullName}>
                             {fullName}
                           </h3>
-                          <div className="child-class-row">
-                            <span className="child-class-text">{kid.className || 'Class Unassigned'}</span>
-                          </div>
-                          <div className="child-reg-row">
-                            <span className="child-reg-badge">
-                              <Hash size={12} /> {kid.registrationNumber}
-                            </span>
-                            <span className="active-student-dot-tag" title="Active Enrolled Student">
-                              <span className="pulse-indicator"></span>
-                              <span>Active</span>
-                            </span>
-                            {kid.departmentTrack && kid.departmentTrack !== 'General' && (
-                              <span className="child-track-badge">{kid.departmentTrack}</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Streamlined Status & Clearance Section (No nested box border) */}
-                      <div className="child-metrics-snapshot">
-                        <div className="child-metric-box">
-                          <span className="metric-box-label">Tuition Clearance</span>
-                          <span className={`child-clearance-pill ${isCleared ? 'cleared' : 'pending'}`}>
-                            {isCleared ? (
-                              <>
-                                <CheckCircle2 size={12} /> Cleared
-                              </>
-                            ) : (
-                              <>
-                                <AlertCircle size={12} /> Pending
-                              </>
-                            )}
+                          <span className="glass-active-tag" title="Active Enrolled Student">
+                            <span className="pulse-indicator"></span> Active
                           </span>
                         </div>
-                        <div className="child-metric-box">
-                          <span className="metric-box-label">Term Report</span>
-                          <span className={`metric-box-val ${isCleared ? 'metric-blue' : 'metric-amber'}`}>
-                            {isCleared ? 'Available' : 'Restricted'}
+
+                        <div className="glass-meta-line">
+                          <span className="glass-meta-label">Class:</span>
+                          <span className="glass-meta-val">{kid.className || 'Class Unassigned'}</span>
+                        </div>
+
+                        <div className="glass-meta-line">
+                          <span className="glass-meta-label">Reg No:</span>
+                          <span className="glass-reg-badge">
+                            <Hash size={12} /> {kid.registrationNumber}
                           </span>
+                          {kid.departmentTrack && kid.departmentTrack !== 'General' && (
+                            <span className="glass-track-badge">{kid.departmentTrack}</span>
+                          )}
                         </div>
                       </div>
-
                     </div>
 
-                    {/* Card Footer with Full-Width Primary CTA */}
-                    <div className="child-card-footer">
+                    <div className="glass-card-divider" />
+
+                    {/* Middle Status Box: Frosted Glass Inner Container (Matching Image 2 Fee Payment box) */}
+                    <div className="glass-status-container">
+                      <div className="glass-status-box">
+                        <span className="glass-status-title">TUITION CLEARANCE</span>
+                        <span className={`child-clearance-pill ${isCleared ? 'cleared' : 'pending'}`}>
+                          {isCleared ? (
+                            <>
+                              <CheckCircle2 size={12} /> Cleared
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle size={12} /> Pending
+                            </>
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="glass-status-box text-right">
+                        <span className="glass-status-title">TERM REPORT</span>
+                        <span className={`glass-report-val ${isCleared ? 'metric-green' : 'metric-amber'}`}>
+                          {isCleared ? 'Available' : 'Restricted'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Footer: Full Width Action Button */}
+                    <div className="glass-card-footer">
                       <button
                         type="button"
                         className="btn-open-portal"
