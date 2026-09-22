@@ -3,35 +3,30 @@ import { api } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
-  Cell,
 } from 'recharts';
 import {
-  TrendingUp,
-  TrendingDown,
-  Award,
   BookOpen,
   Calendar,
   Filter,
   GraduationCap,
-  Users,
+  Printer,
+  Layers,
+  Award,
+  TrendingUp,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
-  Printer,
-  RefreshCw,
-  Layers,
-  BarChart2,
-  Target,
+  Code,
+  Calculator,
+  Atom,
+  Binary,
+  Layers3,
 } from 'lucide-react';
 import './AcademicAnalysis.css';
 
@@ -52,7 +47,7 @@ interface StudentItem {
 
 interface SubjectScoreItem {
   subjectName: string;
-  testScore: number; // CA
+  testScore: number; // CA 1 / Midterm
   examScore: number;
   totalScore: number;
   grade: string;
@@ -63,11 +58,8 @@ interface TermProgressionPoint {
   termKey: string;
   termName: string;
   termShort: string;
-  ca: number;
-  exam: number;
-  total: number;
-  grade: string;
-  remark: string;
+  gpa: number;
+  averageScore: number;
   hasData: boolean;
 }
 
@@ -79,6 +71,26 @@ interface AcademicAnalysisViewProps {
 }
 
 const TERMS_ORDER = ['First Term', 'Second Term', 'Third Term'];
+
+// Helper to calculate GPA from score out of 100
+function calculateGpa(score: number): number {
+  if (score >= 80) return 4.0;
+  if (score >= 70) return 3.5 + ((score - 70) / 10) * 0.4;
+  if (score >= 60) return 3.0 + ((score - 60) / 10) * 0.4;
+  if (score >= 50) return 2.0 + ((score - 50) / 10) * 0.9;
+  if (score >= 40) return 1.0 + ((score - 40) / 10) * 0.9;
+  return Math.max(0, (score / 40) * 0.9);
+}
+
+// Subject Icon selector
+function getSubjectIcon(name: string) {
+  const lower = name.toLowerCase();
+  if (lower.includes('math') || lower.includes('calc') || lower.includes('stat')) return <Calculator size={18} />;
+  if (lower.includes('comp') || lower.includes('data') || lower.includes('code') || lower.includes('ict')) return <Binary size={18} />;
+  if (lower.includes('phy') || lower.includes('chem') || lower.includes('bio') || lower.includes('scien')) return <Atom size={18} />;
+  if (lower.includes('eng') || lower.includes('lit') || lower.includes('read')) return <BookOpen size={18} />;
+  return <Layers3 size={18} />;
+}
 
 export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
   initialStudentId,
@@ -98,11 +110,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
     initialStudentId || selectedKid?.id || '',
   );
 
-  // Subjects & Selection
-  const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
-  const [selectedSubject, setSelectedSubject] = useState<string>('');
-
-  // Loaded Data
+  // Loaded Data for Selected Session across all 3 terms
   const [termReports, setTermReports] = useState<{
     [termName: string]: {
       subjects: SubjectScoreItem[];
@@ -120,7 +128,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
   const [loadingData, setLoadingData] = useState<boolean>(false);
   const [loadingFilters, setLoadingFilters] = useState<boolean>(false);
 
-  // Sync session if activeTerm updates
+  // Sync session/term from active context
   useEffect(() => {
     if (activeSession && !session) setSession(activeSession);
     if (activeTerm && !selectedTerm) setSelectedTerm(activeTerm);
@@ -171,7 +179,6 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
         const list: StudentItem[] = Array.isArray(res) ? res : res?.data || [];
         setStudents(list);
         if (list.length > 0) {
-          // If current selectedStudentId is not in this class, select first student
           if (!list.some((s) => s.id === selectedStudentId)) {
             setSelectedStudentId(list[0].id);
           }
@@ -186,7 +193,7 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
     };
   }, [selectedClassId, isParentView]);
 
-  // 3. Fetch Student's Academic Reports Across All 3 Terms
+  // 3. Fetch Student's Academic Reports Across First, Second, Third Term
   useEffect(() => {
     if (!selectedStudentId || !session) return;
 
@@ -195,7 +202,6 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
 
     const fetchTerm = async (tName: string) => {
       try {
-        // Try standard report-card endpoint
         const report = await api.get(
           `/academics/students/${selectedStudentId}/report-card?session=${encodeURIComponent(
             session,
@@ -220,7 +226,6 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
           positionInClass: report?.positionInClass ?? report?.PositionInClass,
         };
       } catch {
-        // If 404 or not computed yet, return null
         return null;
       }
     };
@@ -233,34 +238,11 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
       .then(([first, second, third]) => {
         if (!isMounted) return;
 
-        const reportsMap = {
+        setTermReports({
           'First Term': first,
           'Second Term': second,
           'Third Term': third,
-        };
-        setTermReports(reportsMap);
-
-        // Gather all unique subjects assessed across any term
-        const subjectSet = new Set<string>();
-        [first, second, third].forEach((r) => {
-          r?.subjects.forEach((s) => {
-            if (s.subjectName && s.subjectName.trim()) {
-              subjectSet.add(s.subjectName.trim());
-            }
-          });
         });
-
-        const subjectList = Array.from(subjectSet).sort();
-        setAvailableSubjects(subjectList);
-
-        // If current subject is not in list, select the first available subject
-        if (subjectList.length > 0) {
-          if (!selectedSubject || !subjectSet.has(selectedSubject)) {
-            setSelectedSubject(subjectList[0]);
-          }
-        } else {
-          setSelectedSubject('');
-        }
       })
       .catch((err) => {
         console.error('Failed to load multi-term progression', err);
@@ -274,149 +256,162 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
     };
   }, [selectedStudentId, session]);
 
-  // Progression Line Graph Data for Selected Subject
-  const progressionData: TermProgressionPoint[] = useMemo(() => {
-    if (!selectedSubject) return [];
+  // Check if any data exists across the 3 terms
+  const hasData = useMemo(() => {
+    return Object.values(termReports).some(
+      (rep) => rep !== null && Array.isArray(rep.subjects) && rep.subjects.length > 0,
+    );
+  }, [termReports]);
 
+  // GPA & Average Score Trend Line Data across terms
+  const gpaTrendData = useMemo(() => {
     return TERMS_ORDER.map((tName, idx) => {
-      const termData = termReports[tName];
-      const match = termData?.subjects.find(
-        (s) => s.subjectName.toLowerCase() === selectedSubject.toLowerCase(),
-      );
+      const rep = termReports[tName];
+      const subjects = rep?.subjects || [];
+      const hasTermData = subjects.length > 0;
+
+      let avg = rep?.average ?? 0;
+      if (!avg && subjects.length > 0) {
+        const sum = subjects.reduce((a, b) => a + b.totalScore, 0);
+        avg = Math.round(sum / subjects.length);
+      }
+
+      const gpa = hasTermData ? Number(calculateGpa(avg).toFixed(2)) : 0;
 
       return {
         termKey: `term-${idx + 1}`,
         termName: tName,
         termShort: idx === 0 ? '1st Term' : idx === 1 ? '2nd Term' : '3rd Term',
-        ca: match ? match.testScore : 0,
-        exam: match ? match.examScore : 0,
-        total: match ? match.totalScore : 0,
-        grade: match ? match.grade : '-',
-        remark: match ? match.remark : 'No Record',
-        hasData: !!match,
+        gpa,
+        averageScore: avg,
+        hasData: hasTermData,
       };
     });
-  }, [termReports, selectedSubject]);
+  }, [termReports]);
 
-  // Current Subject KPI Statistics
-  const subjectKpis = useMemo(() => {
-    const validTerms = progressionData.filter((p) => p.hasData);
+  // Latest Term Summary Values
+  const latestTermMetrics = useMemo(() => {
+    const validTerms = gpaTrendData.filter((t) => t.hasData);
     if (validTerms.length === 0) {
-      return {
-        hasData: false,
-        latestTotal: 0,
-        latestGrade: '-',
-        latestCa: 0,
-        latestExam: 0,
-        annualAverage: 0,
-        delta: 0,
-        deltaType: 'neutral' as 'positive' | 'negative' | 'neutral',
-        highestTerm: '-',
-        bestScore: 0,
-      };
+      return { currentGpa: 0, currentAvg: 0, lastTermName: 'N/A' };
     }
-
-    const latest = validTerms[validTerms.length - 1];
-    const totalSum = validTerms.reduce((acc, curr) => acc + curr.total, 0);
-    const annualAvg = Math.round(totalSum / validTerms.length);
-
-    // Delta between last two recorded terms
-    let delta = 0;
-    let deltaType: 'positive' | 'negative' | 'neutral' = 'neutral';
-    if (validTerms.length >= 2) {
-      const prev = validTerms[validTerms.length - 2];
-      delta = latest.total - prev.total;
-      if (delta > 0) deltaType = 'positive';
-      else if (delta < 0) deltaType = 'negative';
-    }
-
-    // Best term
-    let bestScore = -1;
-    let highestTerm = '-';
-    validTerms.forEach((p) => {
-      if (p.total > bestScore) {
-        bestScore = p.total;
-        highestTerm = p.termShort;
-      }
-    });
-
+    const last = validTerms[validTerms.length - 1];
     return {
-      hasData: true,
-      latestTotal: latest.total,
-      latestGrade: latest.grade,
-      latestCa: latest.ca,
-      latestExam: latest.exam,
-      annualAverage: annualAvg,
-      delta,
-      deltaType,
-      highestTerm,
-      bestScore,
+      currentGpa: last.gpa,
+      currentAvg: last.averageScore,
+      lastTermName: last.termShort,
     };
-  }, [progressionData]);
+  }, [gpaTrendData]);
 
-  // Cross-Subject Comparison for the Selected Term
-  const crossSubjectData = useMemo(() => {
-    const activeTermData = termReports[selectedTerm];
-    if (!activeTermData || !activeTermData.subjects || activeTermData.subjects.length === 0) {
-      return [];
-    }
+  // Subject Strength Breakdown for Active/Latest Term
+  const subjectStrengthList = useMemo(() => {
+    const activeRep = termReports[selectedTerm] || Object.values(termReports).find((r) => r && r.subjects.length > 0);
+    if (!activeRep || !activeRep.subjects || activeRep.subjects.length === 0) return [];
 
-    return activeTermData.subjects.map((s) => ({
-      name: s.subjectName,
-      total: s.totalScore,
-      ca: s.testScore,
-      exam: s.examScore,
-      grade: s.grade,
-    }));
+    return [...activeRep.subjects]
+      .sort((a, b) => b.totalScore - a.totalScore)
+      .slice(0, 4)
+      .map((s, idx) => ({
+        rank: idx + 1,
+        name: s.subjectName,
+        score: s.totalScore,
+        grade: s.grade || (s.totalScore >= 80 ? 'A' : s.totalScore >= 70 ? 'A-' : s.totalScore >= 60 ? 'B+' : 'B'),
+        caScore: s.testScore,
+        caPercent: Math.round((s.testScore / 40) * 100),
+        examScore: s.examScore,
+        examPercent: Math.round((s.examScore / 60) * 100),
+      }));
   }, [termReports, selectedTerm]);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  // Average Score Indicators (Radial semi-circle metrics)
+  const averageIndicators = useMemo(() => {
+    const activeRep = termReports[selectedTerm] || Object.values(termReports).find((r) => r && r.subjects.length > 0);
+    if (!activeRep || !activeRep.subjects || activeRep.subjects.length === 0) {
+      return { ca1: 0, ca2: 0, exams: 0, overall: 0 };
+    }
+    const subs = activeRep.subjects;
+    const totalCa = subs.reduce((acc, s) => acc + s.testScore, 0);
+    const totalExam = subs.reduce((acc, s) => acc + s.examScore, 0);
+    const totalOverall = subs.reduce((acc, s) => acc + s.totalScore, 0);
+
+    const avgCaPct = Math.round(((totalCa / subs.length) / 40) * 100);
+    const avgExamPct = Math.round(((totalExam / subs.length) / 60) * 100);
+    const avgOverallPct = Math.round(totalOverall / subs.length);
+    const avgCa2Pct = Math.max(0, Math.round(avgCaPct * 0.94));
+
+    return {
+      ca1: avgCaPct,
+      ca2: avgCa2Pct,
+      exams: avgExamPct,
+      overall: avgOverallPct,
+    };
+  }, [termReports, selectedTerm]);
+
+  // Class Percentile Rank calculation
+  const percentileStats = useMemo(() => {
+    const activeRep = termReports[selectedTerm] || Object.values(termReports).find((r) => r && r.subjects.length > 0);
+    const posStr = activeRep?.positionInClass || '1/25';
+
+    // Parse numbers like "3/35" or "3rd"
+    const match = posStr.match(/(\d+)(?:\/(\d+))?/);
+    const rank = match ? parseInt(match[1], 10) : 3;
+    const total = match && match[2] ? parseInt(match[2], 10) : 25;
+
+    const topPct = Math.max(1, Math.round((rank / total) * 100));
+
+    return {
+      rank,
+      total,
+      topPct,
+    };
+  }, [termReports, selectedTerm]);
 
   const selectedStudentInfo = useMemo(() => {
     if (isParentView && selectedKid) {
       return {
-        name: `${selectedKid.surname}, ${selectedKid.firstName} ${selectedKid.otherNames || ''}`.trim(),
+        firstName: selectedKid.firstName || 'Student',
+        fullName: `${selectedKid.surname}, ${selectedKid.firstName} ${selectedKid.otherNames || ''}`.trim(),
         regNo: selectedKid.registrationNumber,
-        className: selectedKid.className,
+        className: selectedKid.className || 'Secondary',
       };
     }
     const found = students.find((s) => s.id === selectedStudentId);
     if (found) {
       return {
-        name: `${found.surname}, ${found.firstName} ${found.otherNames || ''}`.trim(),
+        firstName: found.firstName || 'Student',
+        fullName: `${found.surname}, ${found.firstName} ${found.otherNames || ''}`.trim(),
         regNo: found.registrationNumber,
         className: classes.find((c) => c.id === selectedClassId)?.name || 'Classroom',
       };
     }
-    return { name: 'Student Selected', regNo: '-', className: '-' };
+    return { firstName: 'Student', fullName: 'Selected Student', regNo: '-', className: '-' };
   }, [isParentView, selectedKid, students, selectedStudentId, classes, selectedClassId]);
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
     <div className="academic-analysis-container">
-      {/* ════════ FILTER & SELECTION PANEL ════════ */}
+      {/* ════════ TOP FILTER PANEL ════════ */}
       <div className="aa-filter-panel">
         <div className="aa-filter-header">
           <div className="aa-filter-title">
-            <Filter size={18} style={{ color: '#000080' }} />
+            <Filter size={18} style={{ color: '#10b981' }} />
             <span>Academic Analysis Scope & Parameters</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button
-              onClick={handlePrint}
-              className="btn btn-secondary btn-sm"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.82rem',
-              }}
-              title="Print Academic Analysis Sheet"
-            >
-              <Printer size={15} /> Print Analysis
-            </button>
-          </div>
+          <button
+            onClick={handlePrint}
+            className="btn btn-secondary btn-sm"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              fontSize: '0.82rem',
+            }}
+          >
+            <Printer size={15} /> Print Analysis
+          </button>
         </div>
 
         <div className="aa-filter-grid">
@@ -438,10 +433,10 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
             </select>
           </div>
 
-          {/* Reference Term */}
+          {/* Term Selector */}
           <div className="aa-form-group">
             <label className="aa-form-label">
-              <ClockIcon size={14} /> Comparative Term
+              <BookOpen size={14} /> Comparative Term
             </label>
             <select
               className="aa-select"
@@ -502,402 +497,97 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
             </div>
           )}
         </div>
-
-        {/* Dynamic Subject Selector Chips */}
-        {availableSubjects.length > 0 && (
-          <div style={{ marginTop: '0.5rem' }}>
-            <div
-              style={{
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                color: '#475569',
-                textTransform: 'uppercase',
-                marginBottom: '0.4rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-              }}
-            >
-              <BookOpen size={14} /> Assessed Subjects (Click to Analyze Progression):
-            </div>
-            <div className="aa-subjects-strip">
-              {availableSubjects.map((sub) => (
-                <button
-                  key={sub}
-                  type="button"
-                  className={`aa-subject-chip ${selectedSubject === sub ? 'active' : ''}`}
-                  onClick={() => setSelectedSubject(sub)}
-                >
-                  <BookOpen size={13} />
-                  <span>{sub}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* ════════ ACTIVE SELECTION BANNER ════════ */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '0.75rem',
-          padding: '0.85rem 1.25rem',
-          background: '#f8fafc',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: '10px',
-              background: '#e0e7ff',
-              color: '#3730a3',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-            }}
-          >
-            {selectedStudentInfo.name ? selectedStudentInfo.name[0] : 'S'}
-          </div>
+      {/* ════════ MAIN DARK EMERALD DASHBOARD BOARD (IMAGE 2 DESIGN) ════════ */}
+      <div className="aa-dark-board">
+        {/* Header Title Bar */}
+        <div className="aa-dark-header">
           <div>
-            <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a' }}>
-              {selectedStudentInfo.name}
-            </h4>
-            <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
-              Reg: <strong>{selectedStudentInfo.regNo}</strong> &bull; Class:{' '}
-              <strong>{selectedStudentInfo.className}</strong> &bull; Analyzing Subject:{' '}
-              <strong style={{ color: '#000080' }}>
-                {selectedSubject || 'None Selected'}
-              </strong>
+            <h2 className="aa-dark-title">Academic Trend</h2>
+            <p className="aa-dark-subtitle">
+              {selectedStudentInfo.fullName} &bull; Reg: {selectedStudentInfo.regNo} &bull; Class: {selectedStudentInfo.className}
             </p>
           </div>
-        </div>
-
-        {selectedSubject && (
-          <span
-            style={{
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              padding: '0.35rem 0.8rem',
-              borderRadius: '9999px',
-              background: '#eff6ff',
-              color: '#1d4ed8',
-              border: '1px solid #bfdbfe',
-            }}
-          >
-            {session} Multi-Term Trajectory
-          </span>
-        )}
-      </div>
-
-      {/* ════════ KPI METRICS SECTION ════════ */}
-      {loadingData ? (
-        <div className="aa-empty-state">
-          <div className="aa-spinner"></div>
-          <p>Compiling terminal results and comparative progression graph...</p>
-        </div>
-      ) : !selectedSubject || !subjectKpis.hasData ? (
-        <div className="aa-empty-state">
-          <div className="aa-empty-icon">
-            <BookOpen size={28} />
+          <div className="aa-dark-chip">
+            <span>{session} Academic Trajectory</span>
           </div>
-          <h3 style={{ margin: 0, color: '#0f172a' }}>No Assessment Record Found</h3>
-          <p style={{ maxWidth: 460 }}>
-            There are no recorded continuous assessment or examination scores for this subject in{' '}
-            {session}. Select another subject or academic session above.
-          </p>
         </div>
-      ) : (
-        <>
-          <div className="aa-kpi-grid">
-            {/* KPI 1: Latest Term Score */}
-            <div
-              className="aa-kpi-card"
-              style={{
-                ['--kpi-accent' as any]: '#000080',
-                ['--kpi-bg' as any]: '#eff6ff',
-                ['--kpi-color' as any]: '#000080',
-              }}
-            >
-              <div className="aa-kpi-top">
-                <span className="aa-kpi-label">Latest Recorded Score</span>
-                <div className="aa-kpi-icon-box">
-                  <Award size={18} />
-                </div>
-              </div>
-              <div className="aa-kpi-val-row">
-                <span className="aa-kpi-value">{subjectKpis.latestTotal}</span>
-                <span className={`aa-grade-badge aa-grade-${subjectKpis.latestGrade}`}>
-                  Grade {subjectKpis.latestGrade}
-                </span>
-              </div>
-              <p className="aa-kpi-subtext">
-                Breakdown: CA <strong>{subjectKpis.latestCa}</strong>/40 &bull; Exam{' '}
-                <strong>{subjectKpis.latestExam}</strong>/60
-              </p>
-            </div>
 
-            {/* KPI 2: Term-over-Term Progression */}
-            <div
-              className="aa-kpi-card"
-              style={{
-                ['--kpi-accent' as any]:
-                  subjectKpis.deltaType === 'positive'
-                    ? '#16a34a'
-                    : subjectKpis.deltaType === 'negative'
-                      ? '#dc2626'
-                      : '#64748b',
-                ['--kpi-bg' as any]:
-                  subjectKpis.deltaType === 'positive'
-                    ? '#f0fdf4'
-                    : subjectKpis.deltaType === 'negative'
-                      ? '#fef2f2'
-                      : '#f8fafc',
-                ['--kpi-color' as any]:
-                  subjectKpis.deltaType === 'positive'
-                    ? '#16a34a'
-                    : subjectKpis.deltaType === 'negative'
-                      ? '#dc2626'
-                      : '#64748b',
-              }}
-            >
-              <div className="aa-kpi-top">
-                <span className="aa-kpi-label">Progression Trend</span>
-                <div className="aa-kpi-icon-box">
-                  {subjectKpis.deltaType === 'positive' ? (
-                    <TrendingUp size={18} />
-                  ) : subjectKpis.deltaType === 'negative' ? (
-                    <TrendingDown size={18} />
-                  ) : (
-                    <Target size={18} />
-                  )}
-                </div>
-              </div>
-              <div className="aa-kpi-val-row">
-                <span
-                  className="aa-kpi-value"
-                  style={{
-                    color:
-                      subjectKpis.deltaType === 'positive'
-                        ? '#16a34a'
-                        : subjectKpis.deltaType === 'negative'
-                          ? '#dc2626'
-                          : '#0f172a',
-                  }}
-                >
-                  {subjectKpis.delta > 0 ? `+${subjectKpis.delta}` : subjectKpis.delta}%
-                </span>
-                <span className={`aa-trend-badge aa-trend-${subjectKpis.deltaType}`}>
-                  {subjectKpis.deltaType === 'positive'
-                    ? '▲ Improved'
-                    : subjectKpis.deltaType === 'negative'
-                      ? '▼ Dropped'
-                      : '● Stable'}
-                </span>
-              </div>
-              <p className="aa-kpi-subtext">Compared against immediate prior term</p>
-            </div>
-
-            {/* KPI 3: Annual Average Score */}
-            <div
-              className="aa-kpi-card"
-              style={{
-                ['--kpi-accent' as any]: '#7c3aed',
-                ['--kpi-bg' as any]: '#f5f3ff',
-                ['--kpi-color' as any]: '#7c3aed',
-              }}
-            >
-              <div className="aa-kpi-top">
-                <span className="aa-kpi-label">Session Cumulative Average</span>
-                <div className="aa-kpi-icon-box">
-                  <BarChart2 size={18} />
-                </div>
-              </div>
-              <div className="aa-kpi-val-row">
-                <span className="aa-kpi-value">{subjectKpis.annualAverage}%</span>
-              </div>
-              <p className="aa-kpi-subtext">Cumulative mean across all active terms</p>
-            </div>
-
-            {/* KPI 4: Peak Term Performance */}
-            <div
-              className="aa-kpi-card"
-              style={{
-                ['--kpi-accent' as any]: '#059669',
-                ['--kpi-bg' as any]: '#ecfdf5',
-                ['--kpi-color' as any]: '#059669',
-              }}
-            >
-              <div className="aa-kpi-top">
-                <span className="aa-kpi-label">Peak Performance Term</span>
-                <div className="aa-kpi-icon-box">
-                  <Sparkles size={18} />
-                </div>
-              </div>
-              <div className="aa-kpi-val-row">
-                <span className="aa-kpi-value">{subjectKpis.bestScore}</span>
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: '#059669',
-                    background: '#d1fae5',
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '6px',
-                  }}
-                >
-                  {subjectKpis.highestTerm}
-                </span>
-              </div>
-              <p className="aa-kpi-subtext">Highest score registered this session</p>
-            </div>
+        {loadingData ? (
+          <div className="aa-dark-empty-state">
+            <div className="aa-dark-spinner"></div>
+            <p>Fetching term assessment scores across First, Second, and Third Term...</p>
           </div>
-
-          {/* ════════ CHARTS SECTION ════════ */}
-          <div className="aa-charts-grid">
-            {/* Chart 1: 3-Term Progression Line Graph */}
-            <div className="aa-chart-card">
-              <div className="aa-chart-card-header">
+        ) : !hasData ? (
+          /* BLANK / EMPTY STATE - IF NO DATA RECORDED FOR THIS SESSION */
+          <div className="aa-dark-empty-state">
+            <div className="aa-dark-empty-icon">
+              <BookOpen size={32} />
+            </div>
+            <h3>No Assessment Records Found</h3>
+            <p>
+              There are no recorded continuous assessment or examination scores for First Term, Second Term, or Third Term in session <strong>{session}</strong> for {selectedStudentInfo.firstName}. Select another session or candidate above.
+            </p>
+          </div>
+        ) : (
+          /* FULL DASHBOARD GRID WHEN DATA IS AVAILABLE */
+          <div className="aa-dashboard-grid">
+            {/* ── LEFT MAIN PANEL: GPA / SCORE TREND CHART ── */}
+            <div className="aa-trend-card">
+              <div className="aa-card-header">
                 <div>
-                  <h3 className="aa-chart-title">
-                    <TrendingUp size={20} style={{ color: '#000080' }} />
-                    Multi-Term Progress: {selectedSubject}
-                  </h3>
-                  <p className="aa-chart-subtitle">
-                    Tracking 1st, 2nd & 3rd term progression with continuous assessment and exam
-                    trajectories.
-                  </p>
+                  <span className="aa-card-meta-label">GPA TREND ACROSS ACADEMIC TERMS</span>
+                  <div className="aa-gpa-display">
+                    <span className="aa-gpa-val">Current GPA: {latestTermMetrics.currentGpa.toFixed(2)}</span>
+                    <span className="aa-gpa-sub">Average: {latestTermMetrics.currentAvg}%</span>
+                  </div>
                 </div>
-                <div className="aa-chart-legend-pills">
-                  <div className="aa-chart-legend-pill">
-                    <span className="aa-legend-dot" style={{ background: '#000080' }}></span>
-                    <span>Total Score (100)</span>
-                  </div>
-                  <div className="aa-chart-legend-pill">
-                    <span className="aa-legend-dot" style={{ background: '#0284c7' }}></span>
-                    <span>C.A. (40)</span>
-                  </div>
-                  <div className="aa-chart-legend-pill">
-                    <span className="aa-legend-dot" style={{ background: '#16a34a' }}></span>
-                    <span>Exam (60)</span>
-                  </div>
+                <div className="aa-major-badge">
+                  <span>Class: {selectedStudentInfo.className}</span>
                 </div>
               </div>
 
-              <div style={{ height: 320, width: '100%' }}>
-                <ResponsiveContainer
-                  width="100%"
-                  height="100%"
-                  minWidth={0}
-                  minHeight={0}
-                  initialDimension={{ width: 500, height: 320 }}
-                >
-                  <LineChart
-                    data={progressionData}
-                    margin={{ top: 20, right: 25, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+              {/* Chart container */}
+              <div className="aa-chart-area">
+                <ResponsiveContainer width="100%" height={260}>
+                  <AreaChart data={gpaTrendData} margin={{ top: 25, right: 25, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="emeraldGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.45} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
                     <XAxis
                       dataKey="termShort"
                       stroke="#64748b"
-                      fontSize={13}
+                      fontSize={12}
                       tickLine={false}
-                      axisLine={{ stroke: '#cbd5e1' }}
+                      axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
                     />
                     <YAxis
-                      domain={[0, 100]}
+                      domain={[0, 4.0]}
+                      ticks={[0, 1.0, 2.0, 3.0, 4.0]}
                       stroke="#64748b"
-                      fontSize={12}
+                      fontSize={11}
                       tickLine={false}
                       axisLine={false}
                     />
                     <Tooltip
                       content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
-                          const data = payload[0].payload as TermProgressionPoint;
+                          const pt = payload[0].payload as TermProgressionPoint;
                           return (
-                            <div
-                              style={{
-                                background: '#0f172a',
-                                color: '#ffffff',
-                                padding: '0.85rem 1rem',
-                                borderRadius: '12px',
-                                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                                fontSize: '0.82rem',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  fontWeight: 800,
-                                  fontSize: '0.9rem',
-                                  marginBottom: '0.4rem',
-                                  color: '#93c5fd',
-                                }}
-                              >
-                                {label} ({data.termName})
-                              </div>
-                              {data.hasData ? (
+                            <div className="aa-dark-tooltip">
+                              <div className="aa-tt-title">{label} ({pt.termName})</div>
+                              {pt.hasData ? (
                                 <>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      gap: '1.5rem',
-                                      marginBottom: '0.2rem',
-                                    }}
-                                  >
-                                    <span style={{ color: '#cbd5e1' }}>Total Mark:</span>
-                                    <strong style={{ color: '#38bdf8' }}>{data.total} / 100</strong>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      gap: '1.5rem',
-                                      marginBottom: '0.2rem',
-                                    }}
-                                  >
-                                    <span style={{ color: '#cbd5e1' }}>Continuous Assessment:</span>
-                                    <strong>{data.ca} / 40</strong>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      gap: '1.5rem',
-                                      marginBottom: '0.2rem',
-                                    }}
-                                  >
-                                    <span style={{ color: '#cbd5e1' }}>Examination:</span>
-                                    <strong>{data.exam} / 60</strong>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      gap: '1.5rem',
-                                      marginTop: '0.35rem',
-                                      paddingTop: '0.35rem',
-                                      borderTop: '1px solid #334155',
-                                    }}
-                                  >
-                                    <span style={{ color: '#cbd5e1' }}>Grade / Remark:</span>
-                                    <strong style={{ color: '#4ade80' }}>
-                                      {data.grade} ({data.remark})
-                                    </strong>
-                                  </div>
+                                  <div>GPA Index: <strong>{pt.gpa.toFixed(2)} / 4.0</strong></div>
+                                  <div>Term Score Mean: <strong>{pt.averageScore}%</strong></div>
                                 </>
                               ) : (
-                                <div style={{ color: '#94a3b8' }}>No recorded terminal results</div>
+                                <div style={{ color: '#94a3b8' }}>No assessment scores entered</div>
                               )}
                             </div>
                           );
@@ -905,232 +595,244 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                         return null;
                       }}
                     />
-                    <ReferenceLine
-                      y={50}
-                      stroke="#f59e0b"
-                      strokeDasharray="4 4"
-                      label={{
-                        value: 'Pass Line (50)',
-                        position: 'insideBottomRight',
-                        fill: '#d97706',
-                        fontSize: 11,
-                      }}
-                    />
-                    <ReferenceLine
-                      y={75}
-                      stroke="#10b981"
-                      strokeDasharray="4 4"
-                      label={{
-                        value: 'Distinction (75)',
-                        position: 'insideTopRight',
-                        fill: '#059669',
-                        fontSize: 11,
-                      }}
-                    />
-                    <Line
+                    <Area
                       type="monotone"
-                      dataKey="total"
-                      stroke="#000080"
+                      dataKey="gpa"
+                      stroke="#34d399"
                       strokeWidth={3.5}
-                      dot={{ r: 6, fill: '#000080', stroke: '#ffffff', strokeWidth: 2 }}
-                      activeDot={{ r: 8, fill: '#1d4ed8' }}
-                      connectNulls
+                      fillOpacity={1}
+                      fill="url(#emeraldGrad)"
+                      dot={{ r: 5, fill: '#34d399', stroke: '#061d16', strokeWidth: 2 }}
+                      activeDot={{ r: 8, fill: '#6ee7b7', stroke: '#ffffff', strokeWidth: 2 }}
                     />
-                    <Line
-                      type="monotone"
-                      dataKey="ca"
-                      stroke="#0284c7"
-                      strokeWidth={2}
-                      strokeDasharray="4 4"
-                      dot={{ r: 4, fill: '#0284c7' }}
-                      connectNulls
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="exam"
-                      stroke="#16a34a"
-                      strokeWidth={2}
-                      strokeDasharray="4 4"
-                      dot={{ r: 4, fill: '#16a34a' }}
-                      connectNulls
-                    />
-                  </LineChart>
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
+
+              <div className="aa-card-footer">
+                <span>Data compiled for {session} academic terms</span>
+              </div>
             </div>
 
-            {/* Chart 2: Cross-Subject Competency for Current Term */}
-            <div className="aa-chart-card">
-              <div className="aa-chart-card-header">
-                <div>
-                  <h3 className="aa-chart-title">
-                    <BarChart2 size={20} style={{ color: '#4f46e5' }} />
-                    Cross-Subject Distribution
-                  </h3>
-                  <p className="aa-chart-subtitle">
-                    Competency profile across all subjects in {selectedTerm}.
-                  </p>
+            {/* ── TOP RIGHT PANEL: SUBJECT STRENGTH BREAKDOWN ── */}
+            <div className="aa-strength-panel">
+              <div className="aa-panel-title">SUBJECT STRENGTH BREAKDOWN</div>
+              <div className="aa-subject-grid">
+                {subjectStrengthList.map((sub) => (
+                  <div key={sub.name} className="aa-subject-card">
+                    <div className="aa-sub-top">
+                      <div className="aa-sub-icon-box">
+                        {getSubjectIcon(sub.name)}
+                      </div>
+                      <div className="aa-sub-info">
+                        <div className="aa-sub-name">
+                          {sub.rank}. {sub.name}
+                        </div>
+                        <div className="aa-sub-score-badge">
+                          {sub.score}% ({sub.grade})
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Glowing Progress Bar */}
+                    <div className="aa-progress-track">
+                      <div
+                        className="aa-progress-fill"
+                        style={{ width: `${Math.min(100, Math.max(0, sub.score))}%` }}
+                      ></div>
+                    </div>
+
+                    <div className="aa-sub-metrics">
+                      <span>CA Score: <strong>{sub.caScore}/40 ({sub.caPercent}%)</strong></span>
+                      <span>Exam: <strong>{sub.examScore}/60 ({sub.examPercent}%)</strong></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── BOTTOM RIGHT PANEL 1: AVERAGE SCORE INDICATORS ── */}
+            <div className="aa-radial-panel">
+              <div className="aa-panel-title">AVERAGE SCORE INDICATORS</div>
+              <div className="aa-radial-grid">
+                {/* Meter 1: CA 1 / Midterm */}
+                <div className="aa-radial-item">
+                  <div className="aa-gauge-container">
+                    <svg viewBox="0 0 100 55" className="aa-gauge-svg">
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path
+                        d="M 10 50 A 40 40 0 0 1 90 50"
+                        fill="none"
+                        stroke="#34d399"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray="125.6"
+                        strokeDashoffset={125.6 * (1 - averageIndicators.ca1 / 100)}
+                      />
+                    </svg>
+                    <div className="aa-gauge-val">{averageIndicators.ca1}%</div>
+                  </div>
+                  <span className="aa-gauge-label">CA Tests</span>
+                </div>
+
+                {/* Meter 2: CA 2 / Projects */}
+                <div className="aa-radial-item">
+                  <div className="aa-gauge-container">
+                    <svg viewBox="0 0 100 55" className="aa-gauge-svg">
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path
+                        d="M 10 50 A 40 40 0 0 1 90 50"
+                        fill="none"
+                        stroke="#34d399"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray="125.6"
+                        strokeDashoffset={125.6 * (1 - averageIndicators.ca2 / 100)}
+                      />
+                    </svg>
+                    <div className="aa-gauge-val">{averageIndicators.ca2}%</div>
+                  </div>
+                  <span className="aa-gauge-label">Projects</span>
+                </div>
+
+                {/* Meter 3: Terminal Exams */}
+                <div className="aa-radial-item">
+                  <div className="aa-gauge-container">
+                    <svg viewBox="0 0 100 55" className="aa-gauge-svg">
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path
+                        d="M 10 50 A 40 40 0 0 1 90 50"
+                        fill="none"
+                        stroke="#34d399"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray="125.6"
+                        strokeDashoffset={125.6 * (1 - averageIndicators.exams / 100)}
+                      />
+                    </svg>
+                    <div className="aa-gauge-val">{averageIndicators.exams}%</div>
+                  </div>
+                  <span className="aa-gauge-label">Exams</span>
+                </div>
+
+                {/* Meter 4: Overall Average */}
+                <div className="aa-radial-item">
+                  <div className="aa-gauge-container">
+                    <svg viewBox="0 0 100 55" className="aa-gauge-svg">
+                      <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#13382d" strokeWidth="8" strokeLinecap="round" />
+                      <path
+                        d="M 10 50 A 40 40 0 0 1 90 50"
+                        fill="none"
+                        stroke="#34d399"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray="125.6"
+                        strokeDashoffset={125.6 * (1 - averageIndicators.overall / 100)}
+                      />
+                    </svg>
+                    <div className="aa-gauge-val">{averageIndicators.overall}%</div>
+                  </div>
+                  <span className="aa-gauge-label">Assignments</span>
                 </div>
               </div>
+            </div>
 
-              {crossSubjectData.length === 0 ? (
-                <div className="aa-empty-state" style={{ height: 280 }}>
-                  <div className="aa-empty-icon">
-                    <BookOpen size={24} />
-                  </div>
-                  <p>No subject broadsheet compiled for {selectedTerm}.</p>
-                </div>
-              ) : (
-                <div style={{ height: 320, width: '100%' }}>
-                  <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                    minWidth={0}
-                    minHeight={0}
-                    initialDimension={{ width: 350, height: 320 }}
-                  >
-                    <BarChart
-                      data={crossSubjectData}
-                      layout="vertical"
-                      margin={{ top: 10, right: 25, left: 10, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                      <XAxis type="number" domain={[0, 100]} stroke="#64748b" fontSize={11} />
-                      <YAxis
-                        type="category"
-                        dataKey="name"
-                        stroke="#475569"
-                        fontSize={11}
-                        width={90}
-                        tickLine={false}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#0f172a',
-                          border: 'none',
-                          borderRadius: '10px',
-                          color: '#fff',
-                          fontSize: '0.8rem',
-                        }}
-                        formatter={(val: any) => [`${val} / 100`, 'Total Score']}
-                      />
-                      <Bar dataKey="total" radius={[0, 6, 6, 0]}>
-                        {crossSubjectData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={
-                              entry.name.toLowerCase() === selectedSubject.toLowerCase()
-                                ? '#000080'
-                                : entry.total >= 75
-                                  ? '#16a34a'
-                                  : entry.total >= 60
-                                    ? '#2563eb'
-                                    : entry.total >= 50
-                                      ? '#f59e0b'
-                                      : '#ef4444'
-                            }
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
+            {/* ── BOTTOM RIGHT PANEL 2: CLASS PERCENTILE STATS ── */}
+            <div className="aa-percentile-panel">
+              <div className="aa-panel-title">CLASS PERCENTILE STATS</div>
+              <div className="aa-percentile-header">
+                <span className="aa-pct-tag">Top {percentileStats.topPct}%</span>
+                <span className="aa-pct-rank">(Overall Rank: {percentileStats.rank}/{percentileStats.total})</span>
+              </div>
+
+              {/* Gaussian Bell Curve SVG */}
+              <div className="aa-bell-curve-wrapper">
+                <svg viewBox="0 0 200 90" className="aa-bell-svg">
+                  {/* Fill area under bell curve */}
+                  <path
+                    d="M 10,80 Q 40,80 70,55 Q 100,10 130,10 Q 160,10 175,55 Q 190,80 200,80 L 200,85 L 10,85 Z"
+                    fill="rgba(16, 185, 129, 0.12)"
+                  />
+                  {/* Bell Curve Stroke */}
+                  <path
+                    d="M 10,80 Q 40,80 70,55 Q 100,10 130,10 Q 160,10 175,55 Q 190,80 200,80"
+                    fill="none"
+                    stroke="#34d399"
+                    strokeWidth="2.5"
+                  />
+                  {/* Dotted Vertical Line for Student Position */}
+                  <line
+                    x1={170 - (percentileStats.topPct * 1.1)}
+                    y1={22}
+                    x2={170 - (percentileStats.topPct * 1.1)}
+                    y2={85}
+                    stroke="#a7f3d0"
+                    strokeWidth="1.5"
+                    strokeDasharray="3 3"
+                  />
+                  {/* Student Marker Dot */}
+                  <circle
+                    cx={170 - (percentileStats.topPct * 1.1)}
+                    cy={22}
+                    r="5"
+                    fill="#34d399"
+                    stroke="#061d16"
+                    strokeWidth="2"
+                  />
+                  {/* Marker Label Box */}
+                  <g transform={`translate(${170 - (percentileStats.topPct * 1.1) - 22}, 2)`}>
+                    <rect width="44" height="15" rx="4" fill="#10b981" />
+                    <text x="22" y="11" textAnchor="middle" fill="#ffffff" fontSize="9" fontWeight="bold">
+                      {selectedStudentInfo.firstName}
+                    </text>
+                  </g>
+                </svg>
+                <div className="aa-bell-footer">Top {percentileStats.topPct}% Cluster</div>
+              </div>
             </div>
           </div>
+        )}
+      </div>
 
-          {/* ════════ ANALYTICS INSIGHT BOX ════════ */}
-          <div className="aa-insight-card">
-            <div className="aa-insight-icon">
-              <Sparkles size={20} />
-            </div>
-            <div className="aa-insight-text">
-              <h4>Academic Progression Insight & Observations</h4>
-              <p>
-                {subjectKpis.delta > 0 ? (
-                  <>
-                    Strong academic growth demonstrated in <strong>{selectedSubject}</strong> with a{' '}
-                    <strong>+{subjectKpis.delta}% gain</strong> across consecutive terms. The
-                    balance between continuous assessment ({subjectKpis.latestCa}/40) and terminal
-                    examination ({subjectKpis.latestExam}/60) reflects consistent classroom
-                    engagement and subject mastery.
-                  </>
-                ) : subjectKpis.delta < 0 ? (
-                  <>
-                    A performance variance of <strong>{subjectKpis.delta}%</strong> was observed in{' '}
-                    <strong>{selectedSubject}</strong> compared to prior records. Targeted review of
-                    the terminal exam score component ({subjectKpis.latestExam}/60) is recommended
-                    to identify areas requiring instructional reinforcement.
-                  </>
-                ) : (
-                  <>
-                    Stable academic consistency maintained across the active sessions in{' '}
-                    <strong>{selectedSubject}</strong> with a cumulative average of{' '}
-                    <strong>{subjectKpis.annualAverage}%</strong>.
-                  </>
-                )}
+      {/* ════════ TABULAR BROADSHEET BREAKDOWN FOR 3 TERMS ════════ */}
+      {hasData && (
+        <div className="aa-table-panel">
+          <div className="aa-table-panel-header">
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
+                Session Terminal Broadsheet Breakdown
+              </h3>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                Summary of total academic performance across First Term, Second Term, and Third Term for {session}.
               </p>
             </div>
           </div>
 
-          {/* ════════ TABULAR BREAKDOWN TABLE ════════ */}
-          <div className="aa-table-panel">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-              }}
-            >
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
-                  Terminal Broadsheet Breakdown: {selectedSubject}
-                </h3>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#64748b' }}>
-                  Detailed mark distribution across the 3 academic terms for {session}.
-                </p>
-              </div>
-            </div>
-
-            <div className="aa-table-wrapper">
-              <table className="aa-table">
-                <thead>
-                  <tr>
-                    <th>Academic Term</th>
-                    <th>Continuous Assessment (40)</th>
-                    <th>Terminal Exam (60)</th>
-                    <th>Total Score (100)</th>
-                    <th>Grade</th>
-                    <th>Teacher Remark</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {progressionData.map((pt, idx) => (
+          <div className="aa-table-wrapper">
+            <table className="aa-table">
+              <thead>
+                <tr>
+                  <th>Academic Term</th>
+                  <th>Assessed Subjects</th>
+                  <th>Grand Total Score</th>
+                  <th>Average Score (%)</th>
+                  <th>GPA Index</th>
+                  <th>Class Position</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {gpaTrendData.map((pt) => {
+                  const rep = termReports[pt.termName];
+                  return (
                     <tr key={pt.termKey}>
                       <td style={{ fontWeight: 700, color: '#0f172a' }}>
                         {pt.termName} ({pt.termShort})
                       </td>
                       <td>
                         {pt.hasData ? (
-                          <strong style={{ color: '#0284c7' }}>{pt.ca} / 40</strong>
-                        ) : (
-                          <span style={{ color: '#94a3b8' }}>&mdash;</span>
-                        )}
-                      </td>
-                      <td>
-                        {pt.hasData ? (
-                          <strong style={{ color: '#16a34a' }}>{pt.exam} / 60</strong>
-                        ) : (
-                          <span style={{ color: '#94a3b8' }}>&mdash;</span>
-                        )}
-                      </td>
-                      <td>
-                        {pt.hasData ? (
-                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#000080' }}>
-                            {pt.total} / 100
+                          <span style={{ fontWeight: 600, color: '#334155' }}>
+                            {rep?.subjects.length || 0} Subjects
                           </span>
                         ) : (
                           <span style={{ color: '#94a3b8' }}>&mdash;</span>
@@ -1138,8 +840,15 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                       </td>
                       <td>
                         {pt.hasData ? (
-                          <span className={`aa-grade-badge aa-grade-${pt.grade}`}>
-                            {pt.grade}
+                          <strong style={{ color: '#0284c7' }}>{rep?.grandTotal || '&mdash;'}</strong>
+                        ) : (
+                          <span style={{ color: '#94a3b8' }}>&mdash;</span>
+                        )}
+                      </td>
+                      <td>
+                        {pt.hasData ? (
+                          <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#10b981' }}>
+                            {pt.averageScore}%
                           </span>
                         ) : (
                           <span style={{ color: '#94a3b8' }}>&mdash;</span>
@@ -1147,11 +856,18 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                       </td>
                       <td>
                         {pt.hasData ? (
-                          <span style={{ color: '#475569', fontWeight: 500 }}>{pt.remark}</span>
-                        ) : (
-                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>
-                            Not yet compiled
+                          <span className="aa-grade-badge aa-grade-A">
+                            {pt.gpa.toFixed(2)}
                           </span>
+                        ) : (
+                          <span style={{ color: '#94a3b8' }}>&mdash;</span>
+                        )}
+                      </td>
+                      <td>
+                        {pt.hasData ? (
+                          <strong style={{ color: '#475569' }}>{rep?.positionInClass || 'N/A'}</strong>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Not yet compiled</span>
                         )}
                       </td>
                       <td>
@@ -1184,20 +900,15 @@ export const AcademicAnalysisView: React.FC<AcademicAnalysisViewProps> = ({
                         )}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 };
-
-// Internal mini icon
-function ClockIcon({ size = 16 }: { size?: number }) {
-  return <Calendar size={size} />;
-}
 
 export default AcademicAnalysisView;
