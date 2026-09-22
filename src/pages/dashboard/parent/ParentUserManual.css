@@ -552,3 +552,226 @@
     position: static;
   }
 }
+
+/* Live Anonymized Fee Invoice Breakdown Mock (Image 1 Style) */
+.fee-mock-container {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+  font-family: inherit;
+  color: #0f172a;
+}
+
+.fee-mock-header {
+  background: linear-gradient(135deg, var(--primary-color, #132238) 0%, #0f172a 100%);
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.fee-mock-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.fee-mock-subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.fee-mock-schedule-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: default;
+}
+
+.fee-mock-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  background: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.fee-mock-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.fee-mock-metric-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.fee-mock-metric-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.fee-mock-metric-value.paid {
+  color: #16a34a;
+}
+
+.fee-mock-metric-value.balance {
+  color: #dc2626;
+}
+
+.fee-mock-status-pill {
+  display: inline-block;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 12px;
+  text-align: center;
+  width: fit-content;
+}
+
+.fee-mock-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1rem;
+}
+
+.fee-mock-table-wrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
+}
+
+.fee-mock-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.fee-mock-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.fee-mock-table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+.fee-mock-table tr:last-child td {
+  border-bottom: none;
+}
+
+.fee-mock-table-total-row {
+  background: linear-gradient(135deg, var(--primary-color, #132238) 0%, #0f172a 100%) !important;
+}
+
+.fee-mock-table-total-row td {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  padding: 0.85rem 1rem !important;
+}
+
+.fee-mock-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fee-mock-bank-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.fee-mock-bank-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fee-mock-bank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  font-size: 0.82rem;
+}
+
+.fee-mock-bank-label {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.fee-mock-bank-value {
+  color: #0f172a;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fee-mock-upload-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+.fee-mock-upload-btn {
+  width: 100%;
+  background: var(--primary-color, #132238);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .fee-mock-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .fee-mock-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

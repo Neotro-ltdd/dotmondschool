@@ -22,6 +22,8 @@ import {
   Printer,
   Calendar,
   Sparkles,
+  Copy,
+  Upload,
 } from 'lucide-react';
 import { useTenant } from '../../../context/TenantContext';
 import './ParentUserManual.css';
@@ -348,7 +350,7 @@ export default function ParentUserManual() {
               The <strong>Fees Tab</strong> allows parents to inspect the exact itemized financial bill for the current academic session and term. You can view total amount billed, amount paid, outstanding balance, and official bank transfer details.
             </p>
 
-            {/* Screenshot Card */}
+            {/* Live Anonymized Fee Breakdown Screenshot Card */}
             <div className="manual-screenshot-card">
               <div className="screenshot-browser-bar">
                 <div className="browser-dots">
@@ -358,17 +360,171 @@ export default function ParentUserManual() {
                 </div>
                 <span className="screenshot-caption-title">Itemized Fee Invoice Breakdown & Bank Details</span>
               </div>
-              <div
-                className="screenshot-image-wrapper"
-                onClick={() => openLightbox('/manual/parent_fee_breakdown.jpg', 'School Fees Invoice Breakdown & Bank Account Details')}
-              >
-                <img
-                  src="/manual/parent_fee_breakdown.jpg"
-                  alt="Fee Breakdown View"
-                  className="manual-screenshot-img"
-                />
-                <div className="screenshot-zoom-overlay">
-                  <Maximize2 size={20} /> Click to expand full screenshot
+
+              <div style={{ padding: '1rem', background: '#0f172a' }}>
+                <div className="fee-mock-container">
+                  {/* Mock Dark Header */}
+                  <div className="fee-mock-header">
+                    <div>
+                      <h3 className="fee-mock-title">School Fees Invoice Breakdown (First Term - 2026/2027)</h3>
+                      <p className="fee-mock-subtitle">
+                        Student: <strong>Student Candidate</strong> (ID: DOTJSS2-002 | Class: Junior Secondary JSS 2)
+                      </p>
+                    </div>
+                    <button type="button" className="fee-mock-schedule-btn">
+                      Official Fee Schedule
+                    </button>
+                  </div>
+
+                  {/* Mock 4 Metrics Bar */}
+                  <div className="fee-mock-metrics">
+                    <div className="fee-mock-metric-item">
+                      <span className="fee-mock-metric-label">Total Amount Due</span>
+                      <span className="fee-mock-metric-value">₦225,000</span>
+                    </div>
+                    <div className="fee-mock-metric-item">
+                      <span className="fee-mock-metric-label">Amount Paid</span>
+                      <span className="fee-mock-metric-value paid">₦0</span>
+                    </div>
+                    <div className="fee-mock-metric-item">
+                      <span className="fee-mock-metric-label">Remaining Balance</span>
+                      <span className="fee-mock-metric-value balance">₦225,000</span>
+                    </div>
+                    <div className="fee-mock-metric-item">
+                      <span className="fee-mock-metric-label">Payment Status</span>
+                      <span className="fee-mock-status-pill">UNPAID</span>
+                    </div>
+                  </div>
+
+                  {/* Mock Grid: Table + Sidebar */}
+                  <div className="fee-mock-grid">
+                    {/* Fee Table */}
+                    <div className="fee-mock-table-wrapper">
+                      <table className="fee-mock-table">
+                        <thead>
+                          <tr>
+                            <th>FEE DESCRIPTION</th>
+                            <th>DATE</th>
+                            <th>AMOUNT (₦)</th>
+                            <th>PAID (₦)</th>
+                            <th>BALANCE (₦)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><strong>Christmas Party</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦10,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦10,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Registration Form</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦5,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦5,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Sport Wear</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦10,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦10,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Notebook</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦10,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦10,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Development Fees</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦10,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦10,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Lesson Fees</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦10,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦10,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Security ID / Resource Management</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦10,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦10,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Tuition Fees</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦90,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦90,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Uniform Fees</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦40,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦40,000</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Textbook</strong></td>
+                            <td>Sep 14, 2026</td>
+                            <td><strong>₦30,000</strong></td>
+                            <td style={{ color: '#16a34a', fontWeight: 700 }}>₦0</td>
+                            <td style={{ color: '#dc2626', fontWeight: 700 }}>₦30,000</td>
+                          </tr>
+                          <tr className="fee-mock-table-total-row">
+                            <td><strong>Total</strong></td>
+                            <td></td>
+                            <td><strong>₦225,000</strong></td>
+                            <td><strong>₦0</strong></td>
+                            <td><strong>₦225,000</strong></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Sidebar Card */}
+                    <div className="fee-mock-sidebar">
+                      <div className="fee-mock-bank-card">
+                        <div className="fee-mock-bank-title">Dotmond School Bank Transfer Details</div>
+                        <div className="fee-mock-bank-row">
+                          <span className="fee-mock-bank-label">Bank Name</span>
+                          <span className="fee-mock-bank-value">FCMB</span>
+                        </div>
+                        <div className="fee-mock-bank-row">
+                          <span className="fee-mock-bank-label">Account Name</span>
+                          <span className="fee-mock-bank-value">DOTMOND SCHOOL</span>
+                        </div>
+                        <div className="fee-mock-bank-row">
+                          <span className="fee-mock-bank-label">Account No.</span>
+                          <span className="fee-mock-bank-value">
+                            3455888011 <Copy size={12} style={{ cursor: 'pointer', color: '#64748b' }} />
+                          </span>
+                        </div>
+                        <div className="fee-mock-bank-row">
+                          <span className="fee-mock-bank-label">Reference</span>
+                          <span className="fee-mock-bank-value" style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>
+                            DOTJSS2-002
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="fee-mock-upload-card">
+                        <button type="button" className="fee-mock-upload-btn">
+                          <Upload size={16} /> Upload Receipt
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -376,9 +532,9 @@ export default function ParentUserManual() {
             <div className="manual-callout important">
               <Info className="callout-icon" size={20} />
               <div>
-                <strong>Payment Methods Supported:</strong>
-                <br />• <strong>Online Card Payment:</strong> Instant automated credit/debit card processing (Paystack/Flutterwave).
-                <br />• <strong>Direct Wire Transfer / Bank Deposit:</strong> Transfer directly into the school's designated bank account listed on the invoice right sidebar.
+                <strong>Payment & Official Receipt Guidelines:</strong>
+                <br />• <strong>Direct Bank Transfer & School Payment:</strong> The school accepts direct bank transfers to the official school account listed on your fee invoice sidebar or direct payments made at the school bursary.
+                <br />• <strong>Automated Official Email Receipts:</strong> Once payment is completed and verified, official payment receipts are automatically issued and sent to your registered email address.
               </div>
             </div>
           </section>
