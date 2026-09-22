@@ -49,11 +49,43 @@
   line-height: 1.6;
 }
 
-.manual-search-wrapper {
+.manual-header-actions-row {
   margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.manual-search-wrapper {
+  flex: 1;
   display: flex;
   gap: 0.75rem;
   max-width: 650px;
+}
+
+.manual-print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.4rem;
+  background: #ffffff;
+  color: var(--primary-color, #0a192f);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.manual-print-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  background: #f8fafc;
 }
 
 .manual-search-input-box {
@@ -772,6 +804,67 @@
   }
   .fee-mock-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Print Styles for Parent User Manual */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .no-print,
+  .manual-search-wrapper,
+  .manual-quick-tags,
+  .manual-sticky-sidebar,
+  .manual-print-btn,
+  .screenshot-zoom-overlay {
+    display: none !important;
+  }
+
+  .manual-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .manual-header-banner {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    padding: 1.5rem !important;
+    box-shadow: none !important;
+    margin-bottom: 1.5rem !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .manual-main-grid {
+    display: block !important;
+  }
+
+  .manual-chapter-card {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .manual-callout,
+  .manual-step-item,
+  .manual-screenshot-card,
+  .fee-mock-container {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
 

@@ -86,18 +86,30 @@ export default function ParentUserManual() {
           Welcome to the step-by-step visual documentation guide for parents and guardians. Learn how to view student profiles, manage school fee payments, upload bank teller slips, print terminal report cards, track gate attendance, and receive real-time push alerts.
         </div>
 
-        {/* Search Input Bar */}
-        <div className="manual-search-wrapper">
-          <div className="manual-search-input-box">
-            <Search size={18} />
-            <input
-              type="text"
-              className="manual-search-input"
-              placeholder="Search guide by feature or keyword (e.g. upload teller, print result, fees, gate log)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        {/* Search Input Bar & Print Action Row */}
+        <div className="manual-header-actions-row">
+          <div className="manual-search-wrapper">
+            <div className="manual-search-input-box">
+              <Search size={18} />
+              <input
+                type="text"
+                className="manual-search-input"
+                placeholder="Search guide by feature or keyword (e.g. upload teller, print result, fees, gate log)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
+
+          <button
+            type="button"
+            className="manual-print-btn no-print"
+            onClick={() => window.print()}
+            title="Print Full Parent User Guide & Manual"
+          >
+            <Printer size={18} />
+            <span>Print User Manual</span>
+          </button>
         </div>
 
         {/* Quick Tags */}
