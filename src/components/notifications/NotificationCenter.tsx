@@ -88,7 +88,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
     );
     try {
-      await api.put(`/notifications/${id}/read`);
+      await api.put(`/notifications/${id}/read`, {});
     } catch (err) {
       console.error('Failed to mark notification read', err);
     }
@@ -98,7 +98,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const handleMarkAll = async () => {
     setLocalNotifs((prev) => prev.map((n) => ({ ...n, isRead: true })));
     try {
-      await api.put('/notifications/read-all');
+      await api.put('/notifications/read-all', {});
     } catch (err) {
       console.error('Failed to mark all notifications read', err);
     }
