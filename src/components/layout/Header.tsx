@@ -112,11 +112,6 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
           </div>
         )}
 
-        <button className="icon-btn notification-btn" title="Notifications">
-          <span className="icon">🔔</span>
-          <span className="badge">3</span>
-        </button>
-
         {/* Dark / Light Theme Mode Switcher beside Profile */}
         <button
           onClick={toggleTheme}
