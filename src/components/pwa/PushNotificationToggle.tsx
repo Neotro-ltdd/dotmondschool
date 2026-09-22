@@ -95,7 +95,7 @@ export const PushNotificationToggle: React.FC = () => {
           </div>
           <div className="push-title-block">
             <h4>Push Notifications</h4>
-            <p>{isSubscribed ? 'Alerts active for results & invoices' : 'Get instant alerts for grades & fee invoices'}</p>
+            <p>{isSubscribed ? 'Alerts active for Results,  Attendance & Invoices' : 'Get instant alerts for Results, Attendance & Invoices'}</p>
           </div>
         </div>
       </div>
