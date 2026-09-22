@@ -360,51 +360,127 @@ hr.top-rule {
   color: #111;
 }
 
-.remarks-panel,
-.remarks {
+/* Bottom split 2-card layout for Teacher & Principal Remarks */
+.remarks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.remark-card {
   background: #f4f8fc;
   border: 1px solid #dbe8f6;
   border-radius: 10px;
-  padding: 16px 22px;
-  margin-bottom: 20px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  font-size: 13.5px;
-}
-
-.remarks-panel .remark-row,
-.remarks .remark-row {
-  display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  width: 100%;
+  min-height: 130px;
+  position: relative;
 }
 
-.remarks-panel .remark-label,
-.remarks .remark-label,
-.remarks .label {
+.remark-card-header .remark-label {
   font-weight: 800;
   color: #0f294a;
   font-size: 13.5px;
-  min-width: 175px;
-  white-space: nowrap;
+  display: block;
+  margin-bottom: 6px;
 }
 
-.remarks-panel .remark-text,
-.remarks .remark-text,
-.remarks .text {
+.remark-card-body .remark-text {
   color: #1e3a8a;
   font-style: italic;
   font-size: 13.5px;
-  flex: 1;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.remark-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed #cbd5e1;
+  gap: 10px;
+}
+
+.sig-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* Reduced size for Class Teacher signature */
+.teacher-signature {
+  width: 75px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.teacher-signature img {
+  max-width: 75px;
+  max-height: 30px;
+  object-fit: contain;
+}
+
+.teacher-signature svg {
+  width: 65px;
+  height: 28px;
+}
+
+/* Principal Card Footer with Official Stamp */
+.principal-card .remark-card-footer {
+  justify-content: space-between;
+}
+
+.sig-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.principal-signature {
+  width: 90px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.principal-signature img {
+  max-width: 85px;
+  max-height: 34px;
+  object-fit: contain;
+}
+
+.principal-signature svg {
+  width: 75px;
+  height: 32px;
+}
+
+/* Official School Stamp Seal */
+.school-stamp {
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  transform: rotate(-7deg);
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 3px rgba(30, 64, 175, 0.15));
+}
+
+.school-stamp .stamp-svg {
+  width: 100%;
+  height: 100%;
 }
 
 .signature,
 .sig {
-  width: 120px;
-  height: 48px;
   display: flex;
   align-items: center;
   justify-content: flex-end;

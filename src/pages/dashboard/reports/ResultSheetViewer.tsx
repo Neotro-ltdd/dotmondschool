@@ -298,53 +298,98 @@ const ResultSheetViewer: React.FC = () => {
           </div>
         </div>
 
-        {/* Remarks & Signatures Section */}
-        <div className="remarks-panel">
-          <div className="remark-row">
-            <span className="remark-label">Class Teacher's Remark:</span>
-            <span className="remark-text">
-              {result.teacherComment || 'Average Result, you can do better'}
-            </span>
-            <div className="signature">
-              {result.teacherSignatureUrl ? (
-                <img
-                  src={getFullUrl(result.teacherSignatureUrl)}
-                  alt="Teacher Signature"
-                />
-              ) : (
-                <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M6 38 C 18 12, 26 44, 36 22 S 54 10, 60 30 S 78 40, 86 18 S 104 8, 114 26"
-                    stroke="#5B6672"
-                    strokeWidth="2"
-                    strokeLinecap="round"
+        {/* Remarks & Signatures Section (Split 2-Card Layout) */}
+        <div className="remarks-grid">
+          {/* Class Teacher Card (Left) */}
+          <div className="remark-card teacher-card">
+            <div className="remark-card-header">
+              <span className="remark-label">Class Teacher's Remark:</span>
+            </div>
+            <div className="remark-card-body">
+              <p className="remark-text">
+                {result.teacherComment || 'Average Result, you can do better'}
+              </p>
+            </div>
+            <div className="remark-card-footer">
+              <span className="sig-label">Signature:</span>
+              <div className="signature teacher-signature">
+                {result.teacherSignatureUrl ? (
+                  <img
+                    src={getFullUrl(result.teacherSignatureUrl)}
+                    alt="Teacher Signature"
                   />
-                </svg>
-              )}
+                ) : (
+                  <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M6 38 C 18 12, 26 44, 36 22 S 54 10, 60 30 S 78 40, 86 18 S 104 8, 114 26"
+                      stroke="#5B6672"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="remark-row">
-            <span className="remark-label">Principal's Remark:</span>
-            <span className="remark-text">
-              {result.principalComment || 'There is room for improvement, Just keep improving'}
-            </span>
-            <div className="signature">
-              {result.principalSignatureUrl ? (
-                <img
-                  src={getFullUrl(result.principalSignatureUrl)}
-                  alt="Principal Signature"
-                />
-              ) : (
-                <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M4 30 C 14 40, 20 8, 32 26 C 40 38, 46 14, 58 24 C 70 34, 78 12, 92 22 C 100 28, 106 20, 116 24"
-                    stroke="#5B6672"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+          {/* Principal Card (Right) */}
+          <div className="remark-card principal-card">
+            <div className="remark-card-header">
+              <span className="remark-label">Principal's Remark:</span>
+            </div>
+            <div className="remark-card-body">
+              <p className="remark-text">
+                {result.principalComment || 'There is room for improvement, Just keep improving'}
+              </p>
+            </div>
+            <div className="remark-card-footer">
+              {/* Official Approved Stamp Seal */}
+              <div className="school-stamp" title="Official Approved Stamp">
+                <svg viewBox="0 0 120 120" className="stamp-svg">
+                  <defs>
+                    <path id="viewerStampArc" d="M 15,60 A 45,45 0 1,1 105,60" fill="none" />
+                  </defs>
+                  <circle cx="60" cy="60" r="56" stroke="#1e40af" strokeWidth="2.5" fill="none" />
+                  <circle cx="60" cy="60" r="51" stroke="#1e40af" strokeWidth="1" strokeDasharray="3 2" fill="none" />
+                  <circle cx="60" cy="60" r="37" stroke="#1e40af" strokeWidth="1.5" fill="none" />
+
+                  <text fill="#1e40af" fontSize="8" fontWeight="bold" letterSpacing="0.8">
+                    <textPath href="#viewerStampArc" startOffset="50%" textAnchor="middle">
+                      {(result.schoolName || 'DOTMOND SCHOOL').toUpperCase()}
+                    </textPath>
+                  </text>
+
+                  <rect x="20" y="46" width="80" height="26" rx="4" fill="#ffffff" stroke="#1e40af" strokeWidth="1.8" />
+                  <text x="60" y="64" fill="#1e40af" fontSize="13" fontWeight="900" textAnchor="middle" letterSpacing="1.2">
+                    APPROVED
+                  </text>
+
+                  <text x="60" y="93" fill="#1e40af" fontSize="7" fontWeight="bold" textAnchor="middle" letterSpacing="0.8">
+                    OFFICIAL SEAL
+                  </text>
                 </svg>
-              )}
+              </div>
+
+              <div className="sig-group">
+                <span className="sig-label">Signature:</span>
+                <div className="signature principal-signature">
+                  {result.principalSignatureUrl ? (
+                    <img
+                      src={getFullUrl(result.principalSignatureUrl)}
+                      alt="Principal Signature"
+                    />
+                  ) : (
+                    <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M4 30 C 14 40, 20 8, 32 26 C 40 38, 46 14, 58 24 C 70 34, 78 12, 92 22 C 100 28, 106 20, 116 24"
+                        stroke="#5B6672"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
