@@ -3,6 +3,7 @@ import { api, API_ROOT, getTenantId } from '../../../services/api';
 import { useDialog } from '../../../context/DialogContext';
 import { useTenant } from '../../../context/TenantContext';
 import { useBranch, type Branch } from '../../../context/BranchContext';
+import ParentIntakePage from './ParentIntakePage';
 import './AdmissionsHub.css';
 
 interface AdmissionApp {
@@ -105,8 +106,9 @@ export default function AdmissionsHub() {
   const [classFilter, setClassFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Active Primary Tab: applications | visits
-  const [activeHubTab, setActiveHubTab] = useState<'applications' | 'visits'>('applications');
+  // Active Primary Tab: applications | visits | parent-forms
+  const [activeHubTab, setActiveHubTab] = useState<'applications' | 'visits' | 'parent-forms'>('applications');
+  const [parentFormsCount, setParentFormsCount] = useState<number>(0);
 
   // School Visits State
   const [schoolVisits, setSchoolVisits] = useState<SchoolVisit[]>([]);
@@ -185,10 +187,24 @@ export default function AdmissionsHub() {
     }
   };
 
+  const fetchParentFormsCount = async () => {
+    try {
+      const res: any = await api.get('/parents/intake-forms');
+      if (res?.data?.analytics?.totalCount !== undefined) {
+        setParentFormsCount(res.data.analytics.totalCount);
+      } else if (res?.data?.items) {
+        setParentFormsCount(res.data.items.length);
+      }
+    } catch (err) {
+      console.error('Failed to fetch parent forms count:', err);
+    }
+  };
+
   useEffect(() => {
     fetchApplications();
     fetchSchoolVisits();
     fetchClasses();
+    fetchParentFormsCount();
   }, [statusFilter, visitStatusFilter, activeHubTab]);
 
   const handleOpenEditModal = (appItem: AdmissionApp) => {
@@ -504,6 +520,13 @@ export default function AdmissionsHub() {
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             type="button"
+            onClick={() => handleOpenLinkModal('Public Parent Form Link', '/parent-form')}
+            className="public-parent-link-btn"
+          >
+            📋 Public Parent Form Link
+          </button>
+          <button
+            type="button"
             onClick={() => handleOpenLinkModal('Schedule a School Visit Link', '/schedule-visit')}
             className="public-schedule-link-btn"
           >
@@ -544,6 +567,18 @@ export default function AdmissionsHub() {
         >
           🏫 Scheduled Campus Visits
           <span className="tab-badge-amber">{schoolVisits.length}</span>
+        </button>
+
+        <button
+          type="button"
+          className={`hub-tab-btn ${activeHubTab === 'parent-forms' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveHubTab('parent-forms');
+            fetchParentFormsCount();
+          }}
+        >
+          📋 Parent Form Submissions
+          <span className="tab-badge-purple">{parentFormsCount}</span>
         </button>
       </div>
 
@@ -692,6 +727,11 @@ export default function AdmissionsHub() {
               </table>
             </div>
           </div>
+        </div>
+      ) : activeHubTab === 'parent-forms' ? (
+        /* Parent Form Submissions Management View */
+        <div className="parent-forms-management-section" style={{ marginTop: '0.5rem' }}>
+          <ParentIntakePage />
         </div>
       ) : (
         /* Applications View */
