@@ -814,10 +814,13 @@
     margin: 10mm 12mm;
   }
 
+  html,
   body {
     background: #ffffff !important;
     color: #0f172a !important;
-    font-size: 11pt !important;
+    font-size: 10pt !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   .no-print,
@@ -826,7 +829,9 @@
   .manual-sticky-sidebar,
   .manual-print-btn,
   .screenshot-zoom-overlay,
-  .holiday-banner-container {
+  .holiday-banner-container,
+  .screenshot-zoom-hint,
+  .screenshot-zoom-badge {
     display: none !important;
   }
 
@@ -839,20 +844,20 @@
   .manual-header-banner {
     background: #0f172a !important;
     color: #ffffff !important;
-    padding: 1.25rem 1.5rem !important;
+    padding: 0.85rem 1.25rem !important;
     box-shadow: none !important;
-    margin-bottom: 1.25rem !important;
-    border-radius: 8px !important;
+    margin-bottom: 0.85rem !important;
+    border-radius: 6px !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .manual-header-title {
-    font-size: 1.4rem !important;
+    font-size: 1.25rem !important;
   }
 
   .manual-header-subtitle {
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
   }
 
   .manual-main-grid {
@@ -860,67 +865,77 @@
   }
 
   .manual-content-body {
-    gap: 1.25rem !important;
+    gap: 0.85rem !important;
   }
 
-  /* Allow chapter cards to flow naturally without creating huge empty gaps */
+  /* Allow chapter cards and internal containers to flow naturally across page boundaries */
   .manual-chapter-card {
     box-shadow: none !important;
     border: 1px solid #cbd5e1 !important;
-    padding: 1.25rem !important;
-    margin-bottom: 1.25rem !important;
-    border-radius: 8px !important;
+    padding: 0.85rem !important;
+    margin-bottom: 0.85rem !important;
+    border-radius: 6px !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
   }
 
   .manual-chapter-header {
-    margin-bottom: 0.85rem !important;
-    padding-bottom: 0.6rem !important;
+    margin-bottom: 0.5rem !important;
+    padding-bottom: 0.4rem !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   .chapter-title {
-    font-size: 1.2rem !important;
+    font-size: 1.1rem !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .chapter-badge {
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.7rem !important;
   }
 
   .manual-text-block {
-    font-size: 0.88rem !important;
-    margin-bottom: 1rem !important;
-    line-height: 1.5 !important;
+    font-size: 0.82rem !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.4 !important;
   }
 
   .manual-steps-list {
-    margin: 1rem 0 !important;
-    gap: 0.65rem !important;
+    margin: 0.5rem 0 !important;
+    gap: 0.4rem !important;
   }
 
   .manual-step-item {
-    padding: 0.75rem 1rem !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    padding: 0.5rem 0.75rem !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 
   .manual-callout {
-    padding: 0.85rem 1rem !important;
-    margin: 1rem 0 !important;
-    font-size: 0.85rem !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    padding: 0.6rem 0.85rem !important;
+    margin: 0.6rem 0 !important;
+    font-size: 0.82rem !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .manual-screenshot-card {
-    margin: 1.25rem 0 !important;
+    margin: 0.6rem 0 !important;
+    padding: 0 !important;
     box-shadow: none !important;
     border: 1px solid #cbd5e1 !important;
     background: #ffffff !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 
   .manual-screenshot-img {
-    max-height: 380px !important;
+    max-height: 220px !important;
     width: auto !important;
     max-width: 100% !important;
     margin: 0 auto !important;
@@ -928,14 +943,45 @@
   }
 
   .fee-mock-container {
-    padding: 0.75rem !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    padding: 0.5rem !important;
+    margin: 0.6rem 0 !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .fee-mock-metrics {
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .fee-mock-metric-card {
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .fee-mock-section {
+    padding: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .fee-table-mini th,
+  .fee-table-mini td {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.78rem !important;
   }
 
   .faq-item-card {
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    padding: 0.6rem 0.85rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .faq-answer {
+    padding: 0.5rem 0 !important;
+    font-size: 0.8rem !important;
   }
 }
+
 
