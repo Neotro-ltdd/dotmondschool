@@ -831,7 +831,8 @@
   .screenshot-zoom-overlay,
   .holiday-banner-container,
   .screenshot-zoom-hint,
-  .screenshot-zoom-badge {
+  .screenshot-zoom-badge,
+  #ch7 {
     display: none !important;
   }
 
