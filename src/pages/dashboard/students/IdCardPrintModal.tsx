@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { api, API_ROOT } from '../../../services/api';
+import { api, API_ROOT, getTenantId } from '../../../services/api';
 import { useReactToPrint } from 'react-to-print';
 import { useTenant } from '../../../context/TenantContext';
 import './IdCardPrintModal.css';
@@ -127,6 +127,13 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
   const activePrimary = tenantPrimaryColor || schoolProfile?.primaryColor || '#12386E';
   const activeSecondary = tenantSecondaryColor || schoolProfile?.secondaryColor || '#C4293A';
   const activeLogoUrl = tenantLogoUrl || schoolProfile?.logoUrl || '';
+
+  const tenantId = getTenantId();
+  const isDotmondTenant =
+    (rawSchoolName && rawSchoolName.toLowerCase().includes('dotmond')) ||
+    tenantId === 'dotmond' ||
+    tenantId === 'dbo' ||
+    (import.meta.env.VITE_CLIENT_BRANDING || 'dotmond') === 'dotmond';
 
   const renderLogo = (size: string = '0.38in') => {
     if (activeLogoUrl) {
@@ -454,7 +461,9 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                       </div>
                       <div className="text-cell">
                         <div className="word-dotmond" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
-                        <div className="subline" style={{ color: activePrimary }}>{schoolAddress}</div>
+                        <div className="subline" style={{ color: activePrimary }}>
+                          {isDotmondTenant ? 'Attendance & Identification System' : schoolAddress}
+                        </div>
                       </div>
                     </div>
                   </div>
