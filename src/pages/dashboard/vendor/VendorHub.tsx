@@ -1001,7 +1001,7 @@ export default function VendorHub() {
                     </div>
                   </div>
 
-                  <div className="name-band">
+                  <div className="slanted-name-band">
                     <div className="name">
                       {formatStudentDisplayName(
                         student.surname,
