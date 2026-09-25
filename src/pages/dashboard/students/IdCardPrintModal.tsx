@@ -370,7 +370,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                   </div>
 
                   {/* Large Passport Box */}
-                  <div className="large-photo-box" style={{ borderColor: activeSecondary }}>
+                  <div className="large-photo-box" style={{ border: '1.8px solid #9f1d2c' }}>
                     {idCardData.passportUrl ? (
                       <img
                         src={getFullUrl(idCardData.passportUrl)}

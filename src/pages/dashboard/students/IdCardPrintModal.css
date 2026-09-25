@@ -160,7 +160,7 @@
   height: 1.62in;
   width: 1.62in;
   margin: 0.02in auto 0;
-  border: 1.8px solid #9f1d2c;
+  border: 1.8px solid #9f1d2c !important;
   border-radius: 0.1in;
   overflow: hidden;
   background: #ffffff;
