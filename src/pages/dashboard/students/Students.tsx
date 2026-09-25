@@ -81,6 +81,7 @@ export default function Students() {
   const [filterSearch, setFilterSearch] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>(queryClassId || '');
+  const [filterIdCardReady, setFilterIdCardReady] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -412,10 +413,10 @@ export default function Students() {
   };
 
   // Filter Computation
-  let filteredStudents = students;
+  let baseFilteredStudents = students;
   if (filterSearch) {
     const searchLower = filterSearch.toLowerCase();
-    filteredStudents = filteredStudents.filter(
+    baseFilteredStudents = baseFilteredStudents.filter(
       (s) =>
         s.surname.toLowerCase().includes(searchLower) ||
         s.firstName.toLowerCase().includes(searchLower) ||
@@ -424,11 +425,19 @@ export default function Students() {
     );
   }
   if (filterLevel) {
-    filteredStudents = filteredStudents.filter((s) => s.level === filterLevel);
+    baseFilteredStudents = baseFilteredStudents.filter((s) => s.level === filterLevel);
   }
   if (filterClassId) {
-    filteredStudents = filteredStudents.filter((s) => s.classId === filterClassId);
+    baseFilteredStudents = baseFilteredStudents.filter((s) => s.classId === filterClassId);
   }
+
+  const idCardReadyCount = baseFilteredStudents.filter(
+    (s) => Boolean(s.passportUrl && s.passportUrl.trim().length > 0),
+  ).length;
+
+  let filteredStudents = filterIdCardReady
+    ? baseFilteredStudents.filter((s) => Boolean(s.passportUrl && s.passportUrl.trim().length > 0))
+    : baseFilteredStudents;
 
   // Metrics calculation
   const totalCount = students.length;
@@ -596,6 +605,15 @@ export default function Students() {
           <div className="controls-batch-row">
             <span className="batch-actions-label">Batch Operations:</span>
             <div className="batch-buttons-group">
+              <button
+                className={`btn-batch-action id-card-ready ${filterIdCardReady ? 'active' : ''}`}
+                onClick={() => setFilterIdCardReady(!filterIdCardReady)}
+                title="Filter view to only show students with uploaded passport photos ready for ID cards"
+              >
+                <UserCheck size={16} />
+                {`ID Card Ready (${idCardReadyCount})`}
+              </button>
+
               <input
                 type="file"
                 accept=".xlsx,.xls"
