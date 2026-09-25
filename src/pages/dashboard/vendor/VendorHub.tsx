@@ -1070,7 +1070,7 @@ export default function VendorHub() {
 
                   <div className="rule"></div>
 
-                  <p className="notice">
+                  <p className="notice" style={{ fontWeight: 700 }}>
                     This card is the property of {fullSchoolTitle}. If found, please return to the
                     school office. Unauthorised use of this card is strictly prohibited.
                   </p>
@@ -1262,7 +1262,7 @@ export default function VendorHub() {
                       {staff.staffCode}
                     </div>
                     <div className="bottom-accent-rule"></div>
-                    <div className="bottom-school-watermark">Powered by NEOTRO ATTENDANCE SYSTEM</div>
+                    <div className="bottom-school-watermark">{fullSchoolTitle}</div>
                   </div>
                 </div>
               </div>
