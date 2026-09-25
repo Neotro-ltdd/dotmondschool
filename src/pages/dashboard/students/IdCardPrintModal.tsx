@@ -501,7 +501,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     <div className="sig-line-text" style={{ color: activePrimary, borderColor: activePrimary }}>Principal Signature</div>
                   </div>
 
-                  <div className="compact-back-footer" style={{ backgroundColor: activePrimary }}>{fullSchoolTitle}</div>
+                  <div className="compact-back-footer" style={{ backgroundColor: activePrimary }}>Powered by NEOTRO ATTENDANCE SYSTEM</div>
                 </>
               )}
             </div>

@@ -1262,7 +1262,7 @@ export default function VendorHub() {
                       {staff.staffCode}
                     </div>
                     <div className="bottom-accent-rule"></div>
-                    <div className="bottom-school-watermark">{fullSchoolTitle}</div>
+                    <div className="bottom-school-watermark">Powered by NEOTRO ATTENDANCE SYSTEM</div>
                   </div>
                 </div>
               </div>

@@ -379,7 +379,7 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                       {idCardData.formattedStaffCode}
                     </div>
                     <div className="bottom-accent-rule" style={{ backgroundColor: activeSecondary }}></div>
-                    <div className="bottom-school-watermark" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
+                    <div className="bottom-school-watermark" style={{ color: activePrimary }}>Powered by NEOTRO ATTENDANCE SYSTEM</div>
                   </div>
                 </>
               )}
