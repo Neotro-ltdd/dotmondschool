@@ -465,7 +465,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
 
                   <div className="rule" style={{ backgroundColor: activePrimary }}></div>
 
-                  <div className="notice">
+                  <div className="notice" style={{ fontWeight: 700 }}>
                     This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
                   </div>
 

@@ -1038,7 +1038,7 @@ export default function VendorHub() {
 
                   <div className="rule"></div>
 
-                  <p className="notice">
+                  <p className="notice" style={{ fontWeight: 700 }}>
                     This card is the property of {fullSchoolTitle}. If found, please return to the
                     school office. Unauthorised use of this card is strictly prohibited.
                   </p>
