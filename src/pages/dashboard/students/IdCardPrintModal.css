@@ -204,10 +204,10 @@
 }
 
 .slanted-name-band .name {
-  font-family: 'Arial Black', 'Arial', sans-serif;
-  font-weight: 900;
-  font-size: 12.5px;
-  letter-spacing: 0.3px;
+  font-family: 'Arial', system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.1px;
   margin: 0 0 3px;
   white-space: nowrap;
   overflow: hidden;
