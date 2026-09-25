@@ -236,7 +236,7 @@
   right: 0;
   bottom: 0.22in;
   height: 2px;
-  background: #9f1d2c;
+  background: #9f1d2c !important;
   z-index: 6;
 }
 

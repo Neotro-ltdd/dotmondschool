@@ -398,7 +398,7 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
                     )}
                   </div>
 
-                  <div className="red-accent-line" style={{ backgroundColor: activeSecondary }}></div>
+                  <div className="red-accent-line" style={{ backgroundColor: '#9f1d2c' }}></div>
 
                   {/* Footer Strip */}
                   <div className="foot-strip" style={{ backgroundColor: activePrimary }}>

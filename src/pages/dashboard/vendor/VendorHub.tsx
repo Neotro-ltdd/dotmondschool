@@ -1017,6 +1017,8 @@ export default function VendorHub() {
                     </div>
                   </div>
 
+                  <div className="red-accent-line" style={{ backgroundColor: '#9f1d2c' }}></div>
+
                   <div className="foot-strip">
                     <div className="cell">VALID</div>
                     <div className="cell">{activeSession}</div>
