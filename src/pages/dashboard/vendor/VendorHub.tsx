@@ -111,6 +111,7 @@ export default function VendorHub() {
   const [selectedClearanceStatus, setSelectedClearanceStatus] = useState<string>(''); // '', 'cleared', 'owing'
   const [selectedPrintStatus, setSelectedPrintStatus] = useState<string>(''); // '', 'pending', 'printed'
   const [studentSearchQuery, setStudentSearchQuery] = useState<string>('');
+  const [filterIdCardReady, setFilterIdCardReady] = useState<boolean>(false);
 
   // Staff Section State & Filters
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
@@ -223,8 +224,15 @@ export default function VendorHub() {
       )
     : classes;
 
+  const idCardReadyCount = students.filter(
+    (s) => Boolean(s.passportUrl && s.passportUrl.trim().length > 0)
+  ).length;
+
   // Filtered Students List
   const filteredStudents = students.filter((s) => {
+    if (filterIdCardReady && (!s.passportUrl || !s.passportUrl.trim())) {
+      return false;
+    }
     if (studentSearchQuery.trim()) {
       const q = studentSearchQuery.toLowerCase();
       const fullName = `${s.surname} ${s.firstName} ${s.otherNames}`.toLowerCase();
@@ -680,6 +688,21 @@ export default function VendorHub() {
               </span>
             </div>
             <div className="batch-action-buttons">
+              <button
+                className={`btn ${filterIdCardReady ? 'btn-primary' : 'btn-outline-primary'}`}
+                style={{
+                  background: filterIdCardReady ? '#16a34a' : '#f0fdf4',
+                  color: filterIdCardReady ? '#ffffff' : '#15803d',
+                  borderColor: '#86efac',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  marginRight: '0.5rem',
+                }}
+                onClick={() => setFilterIdCardReady(!filterIdCardReady)}
+                title="Filter view to only show students with uploaded passport photos ready for ID cards"
+              >
+                🪪 ID Card Ready ({idCardReadyCount})
+              </button>
               <button
                 className="btn btn-secondary action-btn-selected"
                 onClick={handlePrintCheckedStudents}
