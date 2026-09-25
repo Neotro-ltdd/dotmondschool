@@ -299,12 +299,10 @@
 }
 
 .back .subline {
-  font-size: 6.5px;
+  font-size: 7.2px;
   color: #0b2545;
   font-weight: 800;
-  margin-top: 2px;
-  white-space: nowrap;
-  text-align: center;
+  margin-top: 1px;
 }
 
 .back .rule {

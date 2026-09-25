@@ -1027,12 +1027,44 @@ export default function VendorHub() {
               {/* BACK OF STUDENT CARD */}
               <div className="id-card-wrapper">
                 <div className="card back">
-                  <div className="head" style={{ textAlign: 'center', padding: '0.04in 0.05in 0', display: 'block' }}>
-                    <div className="word-dotmond" style={{ textAlign: 'center', fontSize: '11px', whiteSpace: 'nowrap' }}>
-                      {fullSchoolTitle}
-                    </div>
-                    <div className="subline" style={{ textAlign: 'center', fontSize: '6.5px', whiteSpace: 'nowrap', fontWeight: 800, marginTop: '2px' }}>
-                      Attendance &amp; Identification System
+                  <div className="head">
+                    <div className="head-row">
+                      <div className="mark-cell">
+                        {schoolProfile?.logoUrl ? (
+                          <img
+                            src={getFullUrl(schoolProfile.logoUrl)}
+                            alt="Logo"
+                            style={{ width: '0.45in', height: 'auto', display: 'block' }}
+                          />
+                        ) : (
+                          <svg
+                            viewBox="0 0 500 660"
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{ width: '0.45in' }}
+                          >
+                            <path
+                              d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                              fill="#FFFFFF"
+                              stroke="#12386E"
+                              strokeWidth="10"
+                            />
+                            <g
+                              font-family="Georgia,'Times New Roman',serif"
+                              font-weight="700"
+                              font-size="40"
+                              fill="#12386E"
+                            >
+                              <text x="250" y="182" textAnchor="middle">
+                                RMS
+                              </text>
+                            </g>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="text-cell">
+                        <div className="word-dotmond">{fullSchoolTitle}</div>
+                        <div className="subline">Attendance &amp; Identification System</div>
+                      </div>
                     </div>
                   </div>
 
@@ -1238,10 +1270,36 @@ export default function VendorHub() {
               {/* BACK OF STAFF CARD */}
               <div className="id-card-wrapper">
                 <div className="card staff-card back">
-                  <div className="card-header" style={{ textAlign: 'center', justifyContent: 'center', display: 'block', padding: '0.04in 0.05in 0' }}>
-                    <div className="school-name" style={{ textAlign: 'center', fontSize: '11px', whiteSpace: 'nowrap' }}>{fullSchoolTitle}</div>
-                    <div className="school-addr" style={{ textAlign: 'center', fontSize: '6.5px', whiteSpace: 'nowrap', fontWeight: 800, marginTop: '2px' }}>
-                      Attendance &amp; Identification System
+                  <div className="card-header">
+                    {schoolProfile?.logoUrl ? (
+                      <img src={getFullUrl(schoolProfile.logoUrl)} alt="School Logo" />
+                    ) : (
+                      <svg
+                        viewBox="0 0 500 660"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ width: '32px' }}
+                      >
+                        <path
+                          d="M250,55 L425,118 L425,300 C425,435 342,502 250,545 C158,502 75,435 75,300 L75,118 Z"
+                          fill="#FFFFFF"
+                          stroke="#0B2545"
+                          strokeWidth="10"
+                        />
+                        <g
+                          font-family="Georgia,serif"
+                          font-weight="700"
+                          font-size="40"
+                          fill="#0B2545"
+                        >
+                          <text x="250" y="182" textAnchor="middle">
+                            RMS
+                          </text>
+                        </g>
+                      </svg>
+                    )}
+                    <div>
+                      <div className="school-name">{fullSchoolTitle}</div>
+                      <div className="school-addr">{renderSchoolAddress(schoolAddress)}</div>
                     </div>
                   </div>
 

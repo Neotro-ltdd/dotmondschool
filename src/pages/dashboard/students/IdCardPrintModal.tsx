@@ -454,19 +454,25 @@ export default function IdCardPrintModal({ studentId, onClose }: IdCardPrintModa
               ) : (
                 <>
                   {/* Header */}
-                  <div className="head" style={{ textAlign: 'center', padding: '0.04in 0.05in 0', display: 'block' }}>
-                    <div className="word-dotmond" style={{ color: activePrimary, textAlign: 'center', fontSize: '11px', whiteSpace: 'nowrap' }}>
-                      {fullSchoolTitle}
-                    </div>
-                    <div className="subline" style={{ color: activePrimary, textAlign: 'center', fontSize: '6.5px', whiteSpace: 'nowrap', fontWeight: 800, marginTop: '2px' }}>
-                      Attendance &amp; Identification System
+                  <div className="head">
+                    <div className="head-row">
+                      <div className="mark-cell">
+                        {renderLogo('0.38in')}
+                      </div>
+                      <div className="text-cell">
+                        <div className="word-dotmond" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
+                        <div className="subline" style={{ color: activePrimary }}>
+                          {isDotmondTenant ? 'Attendance & Identification System' : schoolAddress}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
                   <div className="rule" style={{ backgroundColor: activePrimary }}></div>
 
                   <div className="notice">
-                    This card is the property of {fullSchoolTitle}. If found, please return to the school office. Unauthorised use of this card is strictly prohibited.
+                    This card is official identification & attendance badge for {fullSchoolTitle}.
+                    If found, please return to the school office.
                   </div>
 
                   <div className="scan-block">

@@ -429,10 +429,11 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
                 </>
               ) : (
                 <>
-                  <div className="card-header" style={{ textAlign: 'center', justifyContent: 'center', display: 'block', padding: '0.04in 0.05in 0' }}>
-                    <div className="school-name" style={{ color: activePrimary, textAlign: 'center', fontSize: '11px', whiteSpace: 'nowrap' }}>{fullSchoolTitle}</div>
-                    <div className="school-addr" style={{ color: activePrimary, textAlign: 'center', fontSize: '6.5px', whiteSpace: 'nowrap', fontWeight: 800, marginTop: '2px' }}>
-                      Attendance &amp; Identification System
+                  <div className="card-header">
+                    {renderLogo('0.42in')}
+                    <div>
+                      <div className="school-name" style={{ color: activePrimary }}>{fullSchoolTitle}</div>
+                      <div className="school-addr" style={{ color: activePrimary }}>{renderSchoolAddress(schoolAddress)}</div>
                     </div>
                   </div>
 
