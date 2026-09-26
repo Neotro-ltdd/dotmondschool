@@ -379,6 +379,16 @@
   cursor: not-allowed;
 }
 
+.btn-batch-action.greyed-out,
+.btn-batch-action.greyed-out:disabled {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+  cursor: not-allowed !important;
+  opacity: 0.65;
+  box-shadow: none !important;
+}
+
 /* Monospaced Registration Pill Badge */
 .student-reg-badge {
   font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;

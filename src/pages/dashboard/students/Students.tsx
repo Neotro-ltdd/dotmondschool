@@ -632,10 +632,10 @@ export default function Students() {
               </button>
 
               <button
-                className="btn-batch-action warning"
+                className="btn-batch-action warning greyed-out"
                 onClick={handleStandardizeRegNumbers}
-                disabled={standardizing}
-                title="Audit and re-format all student registration numbers to standard DOT format"
+                disabled={true}
+                title="Disabled: Student ID cards have been printed. Standardizing again would alter existing registration numbers."
               >
                 <ShieldCheck size={16} />
                 {standardizing ? 'Standardizing...' : 'Standardize Reg Nos'}
