@@ -15,6 +15,9 @@ import {
   CheckCircle,
   XCircle,
   QrCode,
+  Mail,
+  Send,
+  X,
 } from 'lucide-react';
 import '../Dashboard.css';
 
@@ -56,6 +59,44 @@ export default function StaffAttendanceReport() {
   const [loading, setLoading] = useState<boolean>(true);
   const [reportData, setReportData] = useState<StaffAttendanceReportData | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // 🧪 Temporary Test Email Modal State
+  const [showTestModal, setShowTestModal] = useState<boolean>(false);
+  const [testEmail, setTestEmail] = useState<string>('');
+  const [sendingTestMail, setSendingTestMail] = useState<boolean>(false);
+  const [testFeedback, setTestFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const handleSendTestReport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testEmail || !testEmail.includes('@')) {
+      setTestFeedback({ type: 'error', message: 'Please enter a valid email address.' });
+      return;
+    }
+    try {
+      setSendingTestMail(true);
+      setTestFeedback(null);
+      const res = await api.post(`/attendance/trigger-weekly-staff-email?testEmail=${encodeURIComponent(testEmail.trim())}`, {});
+      if (res && res.sent) {
+        setTestFeedback({
+          type: 'success',
+          message: `Test weekly report successfully sent to ${testEmail}! Check your inbox.`,
+        });
+      } else {
+        setTestFeedback({
+          type: 'error',
+          message: res?.reason || 'Failed to dispatch test email.',
+        });
+      }
+    } catch (err: any) {
+      console.error('Test email error', err);
+      setTestFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to send test email.',
+      });
+    } finally {
+      setSendingTestMail(false);
+    }
+  };
 
   const fetchReport = async () => {
     try {
@@ -162,6 +203,31 @@ export default function StaffAttendanceReport() {
             }}
           >
             <QrCode size={16} /> Open Gate Scanner
+          </button>
+
+          {/* 🧪 Temporary Test Email Trigger Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setShowTestModal(true);
+              setTestFeedback(null);
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#0F1F5C',
+              color: '#F0CC55',
+              border: '1px solid #D4AF37',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(15, 31, 92, 0.2)',
+            }}
+          >
+            <Mail size={16} /> Send Test Weekly Email
           </button>
 
           <div
@@ -794,6 +860,185 @@ export default function StaffAttendanceReport() {
           </div>
         )}
       </div>
+
+      {/* ════════ 🧪 TEMPORARY TEST EMAIL POP-UP MODAL ════════ */}
+      {showTestModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px',
+          }}
+        >
+          <div
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '480px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+              overflow: 'hidden',
+              animation: 'fadeIn 0.2s ease-out',
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                background: '#0F1F5C',
+                color: '#FFFFFF',
+                padding: '20px 24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '4px solid #D4AF37',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Mail size={22} color="#F0CC55" />
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>
+                    Send Test Executive Report
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#CBD5E1' }}>
+                    Verify email delivery & template preview
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTestModal(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleSendTestReport} style={{ padding: '24px' }}>
+              <p style={{ fontSize: '0.88rem', color: '#475569', marginTop: 0, marginBottom: '16px', lineHeight: 1.5 }}>
+                Enter your email address below to receive an immediate sample dispatch of the Friday Executive Weekly Staff Attendance Digest.
+              </p>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label
+                  htmlFor="testEmailInput"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#0F1F5C',
+                    marginBottom: '6px',
+                  }}
+                >
+                  Recipient Email Address
+                </label>
+                <input
+                  id="testEmailInput"
+                  type="email"
+                  required
+                  placeholder="e.g. director@dotmondschools.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#64748B', display: 'block', marginTop: '4px' }}>
+                  If left blank or omitted, report will be sent to default Executive roles.
+                </span>
+              </div>
+
+              {testFeedback && (
+                <div
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    marginBottom: '16px',
+                    background: testFeedback.type === 'success' ? '#ECFDF5' : '#FEF2F2',
+                    color: testFeedback.type === 'success' ? '#065F46' : '#991B1B',
+                    border: `1px solid ${testFeedback.type === 'success' ? '#A7F3D0' : '#FECACA'}`,
+                  }}
+                >
+                  {testFeedback.message}
+                </div>
+              )}
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '12px',
+                  marginTop: '20px',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowTestModal(false)}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    background: '#F8FAFC',
+                    color: '#475569',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  disabled={sendingTestMail}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '9px 20px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#0F1F5C',
+                    color: '#FFFFFF',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: sendingTestMail ? 'not-allowed' : 'pointer',
+                    opacity: sendingTestMail ? 0.7 : 1,
+                  }}
+                >
+                  <Send size={15} /> {sendingTestMail ? 'Dispatching Email...' : 'Send Test Report'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
