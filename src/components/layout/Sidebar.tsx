@@ -203,11 +203,11 @@ export default function Sidebar({
   };
 
   return (
-    <aside className={`sidebar glass-panel ${isSidebarOpen ? 'mobile-open' : ''}`}>
+    <aside className={`sidebar glass-panel pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${isSidebarOpen ? 'mobile-open' : ''}`}>
       {/* Mobile Close Button */}
       {isSidebarOpen && setIsSidebarOpen && (
         <button
-          className="mobile-close-btn"
+          className="mobile-close-btn min-h-[44px] min-w-[44px] flex items-center justify-center"
           onClick={() => setIsSidebarOpen(false)}
           aria-label="Close menu"
         >
@@ -1121,14 +1121,14 @@ export default function Sidebar({
       </nav>
 
       {/* Sidebar Footer User Card */}
-      <div className="sidebar-user-card">
+      <div className="sidebar-user-card pb-[env(safe-area-inset-bottom)]">
         <div className="user-profile-box">
           <div className="user-avatar-badge">{getUserInitials()}</div>
           <div className="user-details-text">
             <span className="user-details-name">{userName || 'Administrator'}</span>
             <span className="user-details-role">{userRole || 'Staff User'}</span>
           </div>
-          <button onClick={handleLogout} className="btn-sidebar-logout" title="Sign out of portal">
+          <button onClick={handleLogout} className="btn-sidebar-logout min-h-[44px] min-w-[44px] flex items-center justify-center" title="Sign out of portal">
             <LogOut size={16} />
           </button>
         </div>

@@ -49,10 +49,10 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
   const avatarUrl = resolveAvatarUrl(userAvatar);
 
   return (
-    <header className="top-header glass-panel">
+    <header className="top-header glass-panel pt-[env(safe-area-inset-top)]">
       <div className="header-left">
         {toggleSidebar && (
-          <button className="mobile-menu-toggle" onClick={toggleSidebar} aria-label="Toggle menu">
+          <button className="mobile-menu-toggle min-h-[44px] min-w-[44px] flex items-center justify-center p-2.5 md:p-1.5" onClick={toggleSidebar} aria-label="Toggle menu">
             ☰
           </button>
         )}
@@ -66,7 +66,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         {/* Developer / SuperAdmin Role Switcher Dropdown - Only Visible to SuperAdmin */}
         {isSuperAdmin && availableRoles && availableRoles.length > 1 && (
           <div
-            className="role-switcher-box"
+            className="role-switcher-box min-h-[44px]"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -90,6 +90,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
             <select
               value={userRole || ''}
               onChange={(e) => setActiveRole(e.target.value)}
+              className="min-h-[38px] md:min-h-0"
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -115,7 +116,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         {/* Dark / Light Theme Mode Switcher beside Profile */}
         <button
           onClick={toggleTheme}
-          className="theme-toggle-btn"
+          className="theme-toggle-btn min-h-[44px] min-w-[44px] flex items-center justify-center p-2.5 md:p-1.5"
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           aria-label="Toggle theme mode"
         >
@@ -127,7 +128,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Link to="/dashboard/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link to="/dashboard/profile" className="min-h-[44px] flex items-center" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="user-profile" style={{ cursor: 'pointer' }}>
               {avatarUrl && !imgError ? (
                 <img
@@ -139,7 +140,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
                 />
               ) : (
                 <div
-                  className="avatar"
+                  className="avatar min-h-[40px] min-w-[40px]"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -159,7 +160,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
           <button
             onClick={handleLogout}
             title="Log out"
-            className="icon-btn logout-header-btn"
+            className="icon-btn logout-header-btn min-h-[44px] min-w-[44px]"
             style={{
               background: 'transparent',
               border: 'none',

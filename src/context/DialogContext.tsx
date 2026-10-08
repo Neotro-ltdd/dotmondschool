@@ -155,12 +155,13 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
       {dialog?.isOpen && (
         <div
+          className="min-h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]"
           style={{
             position: 'fixed',
             top: 0,
             left: 0,
             width: '100vw',
-            height: '100vh',
+            height: '100dvh',
             backgroundColor: 'rgba(15, 23, 42, 0.65)',
             display: 'flex',
             alignItems: 'center',
@@ -191,6 +192,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               {/* Close Button */}
               <button
                 onClick={() => handleClose(false)}
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center"
                 style={{
                   position: 'absolute',
                   top: '1.25rem',
@@ -198,8 +200,8 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                   border: 'none',
                   background: '#F8FAFC',
                   borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
+                  width: '44px',
+                  height: '44px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -217,7 +219,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 }}
                 title="Close"
               >
-                <X size={16} />
+                <X size={18} />
               </button>
 
               <div
@@ -271,6 +273,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                     value={promptValue}
                     onChange={(e) => setPromptValue(e.target.value)}
                     placeholder={dialog.options.placeholder || 'Enter value...'}
+                    className="min-h-[44px]"
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -301,16 +304,15 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               )}
 
               <div
+                className="flex flex-col sm:flex-row justify-end gap-3"
                 style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '0.75rem',
                   marginTop: '1.5rem',
                 }}
               >
                 {(dialog.isConfirm || dialog.isPrompt) && (
                   <button
                     onClick={() => handleClose(false)}
+                    className="min-h-[44px] min-w-[44px] w-full sm:w-auto"
                     style={{
                       padding: '0.65rem 1.4rem',
                       borderRadius: '10px',
@@ -336,6 +338,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 )}
                 <button
                   onClick={() => handleClose(true)}
+                  className="min-h-[44px] min-w-[44px] w-full sm:w-auto"
                   style={{
                     padding: '0.65rem 1.6rem',
                     borderRadius: '10px',

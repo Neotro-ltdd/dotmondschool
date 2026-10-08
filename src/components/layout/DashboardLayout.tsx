@@ -55,7 +55,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+    <div className={`dashboard-layout min-h-[100dvh] ${isSidebarOpen ? 'sidebar-open' : ''}`}>
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
@@ -63,7 +63,7 @@ export default function DashboardLayout() {
 
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-      <div className="dashboard-main" style={{ position: 'relative' }}>
+      <div className="dashboard-main min-h-[100dvh]" style={{ position: 'relative' }}>
         <img
           src={logoUrl || '/images/dotmond-logo-1.png'}
           alt=""
@@ -86,7 +86,7 @@ export default function DashboardLayout() {
           }}
         />
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-        <main className="dashboard-content" style={{ position: 'relative', zIndex: 1 }}>
+        <main className="dashboard-content pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]" style={{ position: 'relative', zIndex: 1 }}>
           <Outlet />
         </main>
       </div>

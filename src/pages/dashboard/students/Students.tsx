@@ -700,7 +700,7 @@ export default function Students() {
         </div>
       ) : viewMode === 'table' ? (
         /* TABLE VIEW */
-        <div className="students-table-wrapper" ref={dropdownRef}>
+        <div className="students-table-wrapper w-full overflow-x-auto overscroll-x-contain" ref={dropdownRef}>
           <table className="executive-students-table">
             <thead>
               <tr>

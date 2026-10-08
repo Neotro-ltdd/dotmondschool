@@ -28,7 +28,7 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
   };
 
   return (
-    <aside className={`system-sidebar ${isMobileOpen ? 'mobile-open' : ''}`}>
+    <aside className={`system-sidebar min-h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${isMobileOpen ? 'mobile-open' : ''}`}>
       {/* Brand Header */}
       <div className="sidebar-header">
         <div className="brand-logo-icon">
@@ -48,7 +48,7 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
           to="/system-admin"
           end
           onClick={closeMobile}
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          className={({ isActive }) => `nav-link min-h-[44px] ${isActive ? 'active' : ''}`}
         >
           <LayoutDashboard className="nav-icon" size={19} />
           <span>Overview</span>
@@ -57,7 +57,7 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
         <NavLink
           to="/system-admin/schools"
           onClick={closeMobile}
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          className={({ isActive }) => `nav-link min-h-[44px] ${isActive ? 'active' : ''}`}
         >
           <Building2 className="nav-icon" size={19} />
           <span>Provisioned Schools</span>
@@ -66,7 +66,7 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
         <NavLink
           to="/system-admin/settings"
           onClick={closeMobile}
-          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+          className={({ isActive }) => `nav-link min-h-[44px] ${isActive ? 'active' : ''}`}
         >
           <Sliders className="nav-icon" size={19} />
           <span>Platform Settings</span>
@@ -80,7 +80,7 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
             if (closeMobile) closeMobile();
             navigate('/system-admin/schools?provision=true', { state: { openProvisionModal: true } });
           }}
-          className="nav-action-btn"
+          className="nav-action-btn min-h-[44px]"
         >
           <PlusCircle size={17} />
           <span>Provision New Tenant</span>
@@ -88,13 +88,13 @@ export default function SystemSidebar({ isMobileOpen, closeMobile }: SystemSideb
       </nav>
 
       {/* Footer Status & Logout */}
-      <div className="sidebar-footer">
+      <div className="sidebar-footer pb-[env(safe-area-inset-bottom)]">
         <div className="system-health-pill">
           <span className="health-dot" />
           <span className="health-text">Systems Operational</span>
         </div>
         
-        <button onClick={handleLogout} className="logout-btn">
+        <button onClick={handleLogout} className="logout-btn min-h-[44px]">
           <LogOut size={18} />
           <span>Sign Out</span>
         </button>

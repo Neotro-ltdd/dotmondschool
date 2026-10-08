@@ -348,7 +348,7 @@ export default function ClassAllocations() {
         </div>
       ) : viewMode === 'table' ? (
         /* TABLE VIEW */
-        <div className="allocations-table-wrapper">
+        <div className="allocations-table-wrapper w-full overflow-x-auto overscroll-x-contain">
           <table className="executive-allocations-table">
             <thead>
               <tr>

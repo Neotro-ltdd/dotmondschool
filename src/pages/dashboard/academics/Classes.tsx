@@ -412,7 +412,7 @@ export default function Classes() {
         </div>
       ) : viewMode === 'table' ? (
         /* TABLE VIEW */
-        <div className="classes-table-wrapper" ref={dropdownRef}>
+        <div className="classes-table-wrapper w-full overflow-x-auto overscroll-x-contain" ref={dropdownRef}>
           <table className="executive-classes-table">
             <thead>
               <tr>

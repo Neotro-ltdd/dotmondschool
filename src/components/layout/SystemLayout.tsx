@@ -16,7 +16,7 @@ export default function SystemLayout() {
   };
 
   return (
-    <div className="system-layout">
+    <div className="system-layout min-h-[100dvh]">
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div className="system-mobile-overlay" onClick={() => setMobileOpen(false)} />
@@ -24,12 +24,12 @@ export default function SystemLayout() {
 
       <SystemSidebar isMobileOpen={mobileOpen} closeMobile={() => setMobileOpen(false)} />
 
-      <div className="system-main">
+      <div className="system-main min-h-[100dvh]">
         {/* Sticky Header Bar */}
-        <header className="system-header">
+        <header className="system-header pt-[env(safe-area-inset-top)]">
           <div className="header-left">
             <button
-              className="mobile-toggle-btn"
+              className="mobile-toggle-btn min-h-[44px] min-w-[44px] flex items-center justify-center"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
@@ -57,7 +57,7 @@ export default function SystemLayout() {
         </header>
 
         {/* Content Viewport */}
-        <main className="system-content">
+        <main className="system-content pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
           <Outlet />
         </main>
       </div>

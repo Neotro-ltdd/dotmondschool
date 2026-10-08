@@ -502,7 +502,7 @@ export default function Teachers() {
           </div>
         ) : viewMode === 'table' ? (
           /* TABLE VIEW */
-          <div className="table-container" ref={dropdownRef}>
+          <div className="table-container w-full overflow-x-auto overscroll-x-contain" ref={dropdownRef}>
             <table className="executive-table">
               <thead>
                 <tr>

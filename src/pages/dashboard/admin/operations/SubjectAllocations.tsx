@@ -335,7 +335,8 @@ export default function SubjectAllocations() {
               </span>
             </div>
 
-            <table className="executive-subject-alloc-table">
+            <div className="w-full overflow-x-auto overscroll-x-contain">
+              <table className="executive-subject-alloc-table">
               <thead>
                 <tr>
                   <th>Subject Name</th>
@@ -405,7 +406,8 @@ export default function SubjectAllocations() {
               </tbody>
             </table>
           </div>
-        ) : (
+        </div>
+      ) : (
           /* GRID CARDS VIEW */
           <div className="subject-alloc-grid-wrapper">
             {filteredSubjects.map((sub) => (

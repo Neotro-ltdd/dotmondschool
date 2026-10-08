@@ -69,15 +69,15 @@ export const SlideOver: React.FC<SlideOverProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      <div className={`slideover-container slideover-${width}`}>
-        <div className="slideover-header">
+      <div className={`slideover-container slideover-${width} min-h-[100dvh]`}>
+        <div className="slideover-header pt-[env(safe-area-inset-top)]">
           <div className="slideover-title-group">
             {title && <h3 className="slideover-title">{title}</h3>}
             {subtitle && <p className="slideover-subtitle">{subtitle}</p>}
           </div>
           <button
             type="button"
-            className="slideover-close-btn"
+            className="slideover-close-btn min-h-[44px] min-w-[44px] flex items-center justify-center p-2.5 md:p-1.5"
             onClick={onClose}
             aria-label="Close slide panel"
           >
@@ -87,7 +87,11 @@ export const SlideOver: React.FC<SlideOverProps> = ({
 
         <div className="slideover-body">{children}</div>
 
-        {footer && <div className="slideover-footer">{footer}</div>}
+        {footer && (
+          <div className="slideover-footer pb-[env(safe-area-inset-bottom)] flex-col sm:flex-row">
+            {footer}
+          </div>
+        )}
       </div>
     </div>,
     document.body,
