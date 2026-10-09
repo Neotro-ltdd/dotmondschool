@@ -187,7 +187,7 @@ export default function NeotroLogin() {
             {/* School Code Input */}
             <div className="neotro-input-group">
               <label htmlFor="neotro-school-code" className="neotro-input-label">
-                School Code / Tenant ID
+                School Code
               </label>
               <div className="neotro-input-wrapper">
                 <Building2 className="neotro-input-icon" size={18} />
@@ -323,7 +323,7 @@ export default function NeotroLogin() {
             {/* School Code Input */}
             <div className="neotro-input-group">
               <label htmlFor="neotro-school-code" className="neotro-input-label">
-                School Code / Institution ID
+                School Code
               </label>
               <div className="neotro-input-wrapper">
                 <Building2 className="neotro-input-icon" size={18} />

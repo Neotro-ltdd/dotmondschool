@@ -280,7 +280,7 @@ export default function Login() {
               {isForgotPasswordMode ? (
                 <form className="login-form" onSubmit={handleForgotPasswordSubmit}>
                   <div className="field">
-                    <label htmlFor="schoolCode">School Code / Tenant ID</label>
+                    <label htmlFor="schoolCode">School Code</label>
                     <input
                       type="text"
                       id="schoolCode"
@@ -464,7 +464,7 @@ export default function Login() {
               ) : (
                 <form onSubmit={handleLoginSubmit} className="login-form">
                   <div className="field">
-                    <label htmlFor="schoolCode">School Code / Tenant ID</label>
+                    <label htmlFor="schoolCode">School Code</label>
                     <input
                       type="text"
                       id="schoolCode"
