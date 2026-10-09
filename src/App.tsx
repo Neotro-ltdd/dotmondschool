@@ -100,6 +100,7 @@ function App() {
                     element={isNeotro ? <NeotroLogin /> : <Login />} 
                   />
                   <Route path="/neotro-login" element={<NeotroLogin />} />
+                  <Route path="/master-login" element={<MasterLogin />} />
                   <Route 
                     path="/apply-admission" 
                     element={isNeotro ? <NeotroAdmissionForm /> : <PublicAdmissionForm />} 
