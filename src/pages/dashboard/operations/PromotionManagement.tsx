@@ -406,16 +406,77 @@ export default function PromotionManagement() {
     enabled: !!dpSelectedStudentId && !!dpTargetClassId && activeTab === 'double-promote',
   });
 
+  const selectedStudentObj = allStudents.find((s) => s.id === dpSelectedStudentId);
+  const targetClassObj = classes.find((c) => c.id === dpTargetClassId);
+
+  // 1. Target Class Sequential Number (e.g. DOTKINDERGARTEN-010)
+  const targetSuggestedReg = React.useMemo(() => {
+    if (!dpTargetClassId || !targetClassObj) return null;
+    const targetStudents = allStudents.filter((s) => s.classId === dpTargetClassId);
+    let detectedPrefix = '';
+    const occupiedSeqs = new Set<number>();
+
+    targetStudents.forEach((s) => {
+      if (s.registrationNumber) {
+        const parts = s.registrationNumber.split('-');
+        if (parts.length > 1) {
+          if (!detectedPrefix && parts[0].trim()) {
+            detectedPrefix = parts[0].trim().toUpperCase();
+          }
+          const seq = parseInt(parts[parts.length - 1], 10);
+          if (!isNaN(seq)) occupiedSeqs.add(seq);
+        }
+      }
+    });
+
+    if (!detectedPrefix) {
+      const cleanName = targetClassObj.name.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      detectedPrefix = `DOT${cleanName}`;
+    }
+
+    const maxSeq = occupiedSeqs.size > 0 ? Math.max(...Array.from(occupiedSeqs)) : 0;
+    const nextSeq = Math.max(maxSeq, previewData?.assignedSequence ?? 0, targetStudents.length) + 1;
+    const seqToUse = previewData?.assignedSequence ?? nextSeq;
+    return `${detectedPrefix}-${String(seqToUse).padStart(3, '0')}`;
+  }, [dpTargetClassId, targetClassObj, allStudents, previewData?.assignedSequence]);
+
+  // 2. Origin Class Series Number (e.g. DOTNURSERY2-010)
+  const originSuggestedReg = React.useMemo(() => {
+    if (!selectedStudentObj?.registrationNumber) return null;
+    const parts = selectedStudentObj.registrationNumber.split('-');
+    if (parts.length < 2) return null;
+    const originPrefix = parts[0].trim().toUpperCase();
+    const seq = previewData?.assignedSequence ?? 10;
+    return `${originPrefix}-${String(seq).padStart(3, '0')}`;
+  }, [selectedStudentObj?.registrationNumber, previewData?.assignedSequence]);
+
   // Auto-populate suggested skipped class if not manually edited
   // Auto-populate suggested skipped class and assigned reg number when previewData loads
   React.useEffect(() => {
     if (previewData?.suggestedSkippedClass && (!dpSkippedClass || dpSkippedClass === 'Intervening Grade')) {
       setDpSkippedClass(previewData.suggestedSkippedClass);
     }
-    if (previewData?.assignedRegNumber) {
-      setDpAssignedRegNumber(previewData.assignedRegNumber);
+    let resolvedReg = previewData?.assignedRegNumber;
+    // Sanitize legacy backend abbreviation: DOTKG- -> DOTKINDERGARTEN- or based on target class
+    if (resolvedReg && resolvedReg.startsWith('DOTKG-')) {
+      if (targetSuggestedReg) {
+        resolvedReg = targetSuggestedReg;
+      } else {
+        const targetCls = classes.find((c) => c.id === dpTargetClassId);
+        if (targetCls?.name?.toUpperCase().includes('KINDER')) {
+          resolvedReg = resolvedReg.replace('DOTKG-', 'DOTKINDERGARTEN-');
+        }
+      }
     }
-  }, [previewData?.suggestedSkippedClass, previewData?.assignedRegNumber]);
+    if (resolvedReg) {
+      setDpAssignedRegNumber((prev) => {
+        if (!prev || prev.startsWith('DOTKG-')) {
+          return resolvedReg!;
+        }
+        return prev;
+      });
+    }
+  }, [previewData?.suggestedSkippedClass, previewData?.assignedRegNumber, targetSuggestedReg, dpTargetClassId, classes]);
 
   // 7. Fetch recent double promotions history
   const { data: accelerationHistory = [], isLoading: historyLoading } = useQuery<AccelerationHistoryItem[]>({
@@ -518,7 +579,6 @@ export default function PromotionManagement() {
     return matchesClass && matchesSearch;
   });
 
-  const selectedStudentObj = allStudents.find((s) => s.id === dpSelectedStudentId);
 
   const handleCurrentClassChange = (newClassId: string) => {
     setSelectedClassId(newClassId);
@@ -1684,12 +1744,65 @@ export default function PromotionManagement() {
                   }}
                   value={dpAssignedRegNumber}
                   onChange={(e) => setDpAssignedRegNumber(e.target.value.toUpperCase())}
-                  placeholder={previewData?.assignedRegNumber || 'e.g. DOTNURSERY2-010 or DOTKINDERGARTEN-010'}
+                  placeholder={targetSuggestedReg || originSuggestedReg || previewData?.assignedRegNumber || 'e.g. DOTNURSERY2-010 or DOTKINDERGARTEN-010'}
                   required
                 />
                 <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                  💡 Auto-calculated to match destination class convention ({previewData?.assignedRegNumber || 'Calculated'}). You can customize or edit this if your school uses a specific identifier.
+                  💡 Auto-calculated to match destination class convention ({targetSuggestedReg || previewData?.assignedRegNumber || 'Calculated'}). You can customize or edit this if your school uses a specific identifier.
                 </span>
+                {(originSuggestedReg || targetSuggestedReg) && (
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.4rem', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
+                      Quick Presets:
+                    </span>
+                    {originSuggestedReg && (
+                      <button
+                        type="button"
+                        onClick={() => setDpAssignedRegNumber(originSuggestedReg)}
+                        style={{
+                          padding: '0.25rem 0.65rem',
+                          fontSize: '0.78rem',
+                          borderRadius: '6px',
+                          border: dpAssignedRegNumber === originSuggestedReg ? '1.5px solid #0284c7' : '1px solid #cbd5e1',
+                          background: dpAssignedRegNumber === originSuggestedReg ? '#e0f2fe' : '#ffffff',
+                          color: dpAssignedRegNumber === originSuggestedReg ? '#0369a1' : '#334155',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                        }}
+                      >
+                        <span>📌</span>
+                        <span>{originSuggestedReg}</span>
+                        <span style={{ fontSize: '0.68rem', opacity: 0.8, fontWeight: 500 }}>(Origin Series)</span>
+                      </button>
+                    )}
+                    {targetSuggestedReg && (
+                      <button
+                        type="button"
+                        onClick={() => setDpAssignedRegNumber(targetSuggestedReg)}
+                        style={{
+                          padding: '0.25rem 0.65rem',
+                          fontSize: '0.78rem',
+                          borderRadius: '6px',
+                          border: dpAssignedRegNumber === targetSuggestedReg ? '1.5px solid #0284c7' : '1px solid #cbd5e1',
+                          background: dpAssignedRegNumber === targetSuggestedReg ? '#e0f2fe' : '#ffffff',
+                          color: dpAssignedRegNumber === targetSuggestedReg ? '#0369a1' : '#334155',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                        }}
+                      >
+                        <span>🎯</span>
+                        <span>{targetSuggestedReg}</span>
+                        <span style={{ fontSize: '0.68rem', opacity: 0.8, fontWeight: 500 }}>(Destination Series)</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Step 6: Official Justification Note */}
@@ -1751,7 +1864,7 @@ export default function PromotionManagement() {
                 <>
                   <div className="dp-reg-display-box">
                     <span className="dp-reg-label">Assigned New Registration Number</span>
-                    <span className="dp-reg-number-badge">{dpAssignedRegNumber || previewData.assignedRegNumber}</span>
+                    <span className="dp-reg-number-badge">{dpAssignedRegNumber || targetSuggestedReg || originSuggestedReg || previewData.assignedRegNumber}</span>
                     <span style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
                       Sequence Slot: #{previewData.assignedSequence} • Destination: {previewData.targetClassName} ({previewData.targetClassStudentCount} existing students)
                     </span>
