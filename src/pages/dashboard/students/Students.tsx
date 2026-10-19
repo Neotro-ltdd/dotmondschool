@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Search,
   FileSpreadsheet,
+  Download,
   UserPlus,
   MoreVertical,
   Eye,
@@ -131,6 +132,7 @@ export default function Students() {
   // Upload State
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [downloadingTemplate, setDownloadingTemplate] = useState(false);
   const [standardizing, setStandardizing] = useState(false);
   const [sendingReminders, setSendingReminders] = useState(false);
 
@@ -262,6 +264,28 @@ export default function Students() {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      setDownloadingTemplate(true);
+      const blob = await api.download('/setup/students/template');
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Student_Upload_Template.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showAlert(
+        'Student upload template downloaded successfully! Refer to the "Available Classes & Guide" sheet for valid class names.',
+        { type: 'success' }
+      );
+    } catch (err: any) {
+      showAlert(err.message || 'Failed to download student template.');
+    } finally {
+      setDownloadingTemplate(false);
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -272,10 +296,20 @@ export default function Students() {
     try {
       setUploading(true);
       const res = await api.post('/setup/students/upload', formData);
-      showAlert(res.message || 'Students uploaded successfully');
+      showAlert(res.message || 'Students uploaded successfully', { type: 'success' });
       fetchStudents();
     } catch (err: any) {
-      showAlert(err.message || 'Failed to upload students');
+      const errData = err.data;
+      if (errData?.errors && Array.isArray(errData.errors) && errData.errors.length > 0) {
+        const preview = errData.errors.slice(0, 8).join('\n• ');
+        const remainder =
+          errData.errors.length > 8 ? `\n...and ${errData.errors.length - 8} more errors.` : '';
+        showAlert(
+          `Upload Rejected (${errData.errors.length} error(s)):\n\n• ${preview}${remainder}\n\nTip: Click "Download Template" to ensure correct column headers and valid class names.`
+        );
+      } else {
+        showAlert(err.message || 'Failed to upload students');
+      }
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -352,6 +386,7 @@ export default function Students() {
     if (
       !(await showConfirm(
         `Are you sure you want to delete ${studentName}? This action cannot be undone.`,
+        { title: 'Delete Student', type: 'danger', confirmText: 'Delete', cancelText: 'Cancel' }
       ))
     ) {
       return;
@@ -361,6 +396,27 @@ export default function Students() {
       showAlert('Student deleted successfully');
       fetchStudents();
     } catch (err: any) {
+      if (err.data?.hasResults || err.data?.HasResults) {
+        const confirmResultsDelete = await showConfirm(
+          `${err.data?.message || err.data?.Message || 'This student has existing academic result records (assessments, examination scores, or term report cards).'}\n\nAre you sure you want to proceed and permanently erase this student and all their academic results?`,
+          {
+            title: 'Warning: Existing Academic Results',
+            type: 'warning',
+            confirmText: 'Yes, Delete All Records',
+            cancelText: 'Cancel',
+          }
+        );
+        if (confirmResultsDelete) {
+          try {
+            await api.delete(`/setup/students/${studentId}?confirmDeleteResults=true`);
+            showAlert('Student and all related records deleted successfully.', { type: 'success' });
+            fetchStudents();
+          } catch (retryErr: any) {
+            showAlert(retryErr.message || 'Failed to delete student.');
+          }
+        }
+        return;
+      }
       showAlert(err.message || 'Failed to delete student');
     }
   };
@@ -621,6 +677,15 @@ export default function Students() {
                 style={{ display: 'none' }}
                 onChange={handleFileUpload}
               />
+              <button
+                className="btn-batch-action"
+                onClick={handleDownloadTemplate}
+                disabled={downloadingTemplate}
+                title="Download official Excel template with active class references"
+              >
+                <Download size={16} />
+                {downloadingTemplate ? 'Downloading...' : 'Download Template'}
+              </button>
               <button
                 className="btn-batch-action"
                 onClick={() => fileInputRef.current?.click()}

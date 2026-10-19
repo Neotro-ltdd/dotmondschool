@@ -50,7 +50,7 @@ export default function Subjects() {
 
   // Filters & Controls
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterLevel, setFilterLevel] = useState<string>('');
+  const [filterClass, setFilterClass] = useState<string>('');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -60,7 +60,7 @@ export default function Subjects() {
   const [formData, setFormData] = useState({
     id: '',
     name: '',
-    level: '',
+    targetClass: '',
     isParent: false,
     parentSubjectId: '',
     departmentTrack: 'General',
@@ -71,8 +71,8 @@ export default function Subjects() {
   const fetchSubjects = async () => {
     try {
       setLoading(true);
-      const endpoint = filterLevel
-        ? `/academics/subjects?level=${encodeURIComponent(filterLevel)}`
+      const endpoint = filterClass
+        ? `/academics/subjects?level=${encodeURIComponent(filterClass)}`
         : '/academics/subjects';
       const data = await api.get(endpoint);
       setSubjects(data);
@@ -99,7 +99,7 @@ export default function Subjects() {
 
   useEffect(() => {
     fetchSubjects();
-  }, [filterLevel]);
+  }, [filterClass]);
 
   // Close 3-dots menu on outside click
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function Subjects() {
         id: isEditing ? formData.id : undefined,
         name: formData.name,
         code: '',
-        category: formData.level,
+        category: formData.targetClass,
         isParent: formData.isParent,
         parentSubjectId: formData.parentSubjectId || null,
         departmentTrack: formData.departmentTrack || 'General',
@@ -143,7 +143,7 @@ export default function Subjects() {
       setFormData({
         id: '',
         name: '',
-        level: formData.level,
+        targetClass: formData.targetClass,
         isParent: false,
         parentSubjectId: '',
         departmentTrack: 'General',
@@ -161,7 +161,7 @@ export default function Subjects() {
     setFormData({
       id: subject.id,
       name: subject.name,
-      level: subject.category,
+      targetClass: subject.category,
       isParent: subject.isParent || false,
       parentSubjectId: subject.parentSubjectId || '',
       departmentTrack: subject.departmentTrack || 'General',
@@ -193,7 +193,7 @@ export default function Subjects() {
     setFormData({
       id: '',
       name: '',
-      level: filterLevel,
+      targetClass: filterClass,
       isParent: false,
       parentSubjectId: '',
       departmentTrack: 'General',
@@ -204,7 +204,7 @@ export default function Subjects() {
 
   // Filtered subjects
   const filteredSubjects = subjects
-    .filter((sub) => !filterLevel || sub.category === filterLevel)
+    .filter((sub) => !filterClass || sub.category === filterClass || (sub.category && sub.category.toLowerCase() === filterClass.toLowerCase()))
     .filter((sub) => {
       const text = `${sub.name} ${sub.category} ${sub.departmentTrack || ''}`.toLowerCase();
       return text.includes(searchTerm.toLowerCase());
@@ -212,11 +212,16 @@ export default function Subjects() {
 
   // Metrics
   const totalSubjects = subjects.length;
-  const levelsCount = Array.from(new Set(subjects.map((s) => s.category))).length;
+  const classesCount = Array.from(new Set(subjects.map((s) => s.category))).length;
   const openSubjects = subjects.filter((s) => !s.isLocked).length;
   const parentSubjects = subjects.filter((s) => s.isParent).length;
 
-  const availableLevels = Array.from(new Set(classes.map((c) => c.level)));
+  const classesByLevel = classes.reduce((acc: Record<string, string[]>, c) => {
+    const lvl = c.level || 'General';
+    if (!acc[lvl]) acc[lvl] = [];
+    if (!acc[lvl].includes(c.name)) acc[lvl].push(c.name);
+    return acc;
+  }, {});
 
   return (
     <div className="subjects-page-container">
@@ -249,8 +254,8 @@ export default function Subjects() {
 
         <div className="subjects-metric-card">
           <div className="metric-info-box">
-            <span className="metric-label">Levels Covered</span>
-            <span className="metric-number">{levelsCount}</span>
+            <span className="metric-label">Classes Covered</span>
+            <span className="metric-number">{classesCount}</span>
           </div>
           <div className="metric-icon-badge levels">
             <Layers size={24} />
@@ -285,7 +290,7 @@ export default function Subjects() {
             <Search className="subjects-search-icon" size={16} />
             <input
               type="text"
-              placeholder="Search by subject name or level..."
+              placeholder="Search by subject name or class..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -293,14 +298,18 @@ export default function Subjects() {
 
           <select
             className="select-filter-input"
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value)}
+            value={filterClass}
+            onChange={(e) => setFilterClass(e.target.value)}
           >
-            <option value="">All Academic Levels</option>
-            {availableLevels.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
+            <option value="">All Classes</option>
+            {Object.entries(classesByLevel).map(([level, classNames]) => (
+              <optgroup key={level} label={level}>
+                {classNames.map((cls) => (
+                  <option key={cls} value={cls}>
+                    {cls}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
@@ -348,7 +357,7 @@ export default function Subjects() {
             <thead>
               <tr>
                 <th>Subject Name</th>
-                <th>Target Academic Level</th>
+                <th>Target Class</th>
                 <th>Department Track</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'center' }}>Actions</th>
@@ -580,7 +589,7 @@ export default function Subjects() {
                   {isEditing ? 'Edit Subject Details' : 'Add New Subject'}
                 </h2>
                 <p className="subject-slideover-subtitle">
-                  Configure target academic level, parent grouping, and track assignments
+                  Configure target class, parent grouping, and track assignments
                 </p>
               </div>
               <button className="btn-close-slideover" onClick={() => setShowModal(false)}>
@@ -599,7 +608,7 @@ export default function Subjects() {
               }}
             >
               <div className="subject-slideover-body">
-                {/* Target Level */}
+                {/* Target Class */}
                 <div className="form-group">
                   <label
                     style={{
@@ -610,11 +619,11 @@ export default function Subjects() {
                       marginBottom: '0.4rem',
                     }}
                   >
-                    Target Academic Level <span style={{ color: '#E11D48' }}>*</span>
+                    Target Class <span style={{ color: '#E11D48' }}>*</span>
                   </label>
                   <select
-                    name="level"
-                    value={formData.level}
+                    name="targetClass"
+                    value={formData.targetClass}
                     onChange={handleInputChange}
                     required
                     className="select-filter-input"
@@ -625,11 +634,15 @@ export default function Subjects() {
                       borderRadius: '10px',
                     }}
                   >
-                    <option value="">-- Select Target Level --</option>
-                    {availableLevels.map((level) => (
-                      <option key={level} value={level}>
-                        {level}
-                      </option>
+                    <option value="">-- Select Target Class --</option>
+                    {Object.entries(classesByLevel).map(([level, classNames]) => (
+                      <optgroup key={level} label={level}>
+                        {classNames.map((cls) => (
+                          <option key={cls} value={cls}>
+                            {cls}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                 </div>
@@ -757,7 +770,7 @@ export default function Subjects() {
                     >
                       <option value="">-- No Parent (Standalone) --</option>
                       {subjects
-                        .filter((s) => s.isParent && (!formData.level || s.category === formData.level))
+                        .filter((s) => s.isParent && (!formData.targetClass || s.category === formData.targetClass))
                         .map((parentSub) => (
                           <option key={parentSub.id} value={parentSub.id}>
                             {parentSub.name} ({parentSub.category})
