@@ -168,6 +168,7 @@ export default function PromotionManagement() {
     'Special Academic Acceleration: Student demonstrated superior cognitive readiness and academic milestone attainment. Following consultation and mutual agreement with parents, the School Board and Principal approved double promotion directly into the target class, skipping the intervening curriculum grade.'
   );
   const [dpConsultationConsent, setDpConsultationConsent] = useState<boolean>(false);
+  const [dpAssignedRegNumber, setDpAssignedRegNumber] = useState<string>('');
   const [printStudentId, setPrintStudentId] = useState<string | null>(null);
 
   // --- CLASS PROMOTION STATE ---
@@ -406,11 +407,15 @@ export default function PromotionManagement() {
   });
 
   // Auto-populate suggested skipped class if not manually edited
+  // Auto-populate suggested skipped class and assigned reg number when previewData loads
   React.useEffect(() => {
     if (previewData?.suggestedSkippedClass && (!dpSkippedClass || dpSkippedClass === 'Intervening Grade')) {
       setDpSkippedClass(previewData.suggestedSkippedClass);
     }
-  }, [previewData?.suggestedSkippedClass]);
+    if (previewData?.assignedRegNumber) {
+      setDpAssignedRegNumber(previewData.assignedRegNumber);
+    }
+  }, [previewData?.suggestedSkippedClass, previewData?.assignedRegNumber]);
 
   // 7. Fetch recent double promotions history
   const { data: accelerationHistory = [], isLoading: historyLoading } = useQuery<AccelerationHistoryItem[]>({
@@ -430,6 +435,7 @@ export default function PromotionManagement() {
       skippedClassName: string;
       reasonNote: string;
       regNumberStrategy: string;
+      customRegistrationNumber?: string;
       resetIdCardStatus: boolean;
     }) => {
       return await api.post('/academics/promotion/double-promote', payload);
@@ -478,8 +484,10 @@ export default function PromotionManagement() {
     const selectedStudentObj = allStudents.find((s) => s.id === dpSelectedStudentId);
     const targetClassObj = classes.find((c) => c.id === dpTargetClassId);
 
+    const assignedRegDisplay = dpAssignedRegNumber || previewData?.assignedRegNumber || 'Sequential';
+
     const confirmed = await showConfirm(
-      `Are you sure you want to accelerate ${selectedStudentObj ? selectedStudentObj.firstName + ' ' + selectedStudentObj.surname : 'this student'} into ${targetClassObj?.name || 'the target class'}?\n\nAssigned Reg Number: ${previewData?.assignedRegNumber || 'Sequential'}\nZero-Waste Guarantee: Existing students will remain 100% untouched.`,
+      `Are you sure you want to accelerate ${selectedStudentObj ? selectedStudentObj.firstName + ' ' + selectedStudentObj.surname : 'this student'} into ${targetClassObj?.name || 'the target class'}?\n\nAssigned Reg Number: ${assignedRegDisplay}\nZero-Waste Guarantee: Existing students will remain 100% untouched.`,
       {
         title: 'Confirm Academic Acceleration',
         type: 'warning',
@@ -495,6 +503,7 @@ export default function PromotionManagement() {
         skippedClassName: dpSkippedClass || 'Intervening Grade',
         reasonNote: dpReasonNote,
         regNumberStrategy: dpRegStrategy,
+        customRegistrationNumber: dpAssignedRegNumber ? dpAssignedRegNumber.trim() : undefined,
         resetIdCardStatus: true,
       });
     }
@@ -1655,10 +1664,38 @@ export default function PromotionManagement() {
                 </div>
               </div>
 
-              {/* Step 5: Official Justification Note */}
+              {/* Step 5: Assigned Registration Number (Editable) */}
               <div className="dp-form-row">
                 <label className="dp-form-label">
-                  <span>6. Accreditation Justification Note *</span>
+                  <span>6. Assigned Registration Number *</span>
+                  <span className="dp-form-hint">Editable & Non-Colliding</span>
+                </label>
+                <input
+                  type="text"
+                  className="dp-input"
+                  style={{
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    color: 'var(--primary-color, #000080)',
+                    letterSpacing: '0.04em',
+                    background: '#f8fafc',
+                    border: '1.5px solid #94a3b8',
+                  }}
+                  value={dpAssignedRegNumber}
+                  onChange={(e) => setDpAssignedRegNumber(e.target.value.toUpperCase())}
+                  placeholder={previewData?.assignedRegNumber || 'e.g. DOTNURSERY2-010 or DOTKINDERGARTEN-010'}
+                  required
+                />
+                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  💡 Auto-calculated to match destination class convention ({previewData?.assignedRegNumber || 'Calculated'}). You can customize or edit this if your school uses a specific identifier.
+                </span>
+              </div>
+
+              {/* Step 6: Official Justification Note */}
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>7. Accreditation Justification Note *</span>
                   <span className="dp-form-hint">Principal & Board Endorsement</span>
                 </label>
                 <textarea
@@ -1670,7 +1707,7 @@ export default function PromotionManagement() {
                 />
               </div>
 
-              {/* Step 6: Mandatory Consent Checkbox */}
+              {/* Step 7: Mandatory Consent Checkbox */}
               <div className="dp-consent-box" onClick={() => setDpConsultationConsent(!dpConsultationConsent)}>
                 <input
                   type="checkbox"
@@ -1714,7 +1751,7 @@ export default function PromotionManagement() {
                 <>
                   <div className="dp-reg-display-box">
                     <span className="dp-reg-label">Assigned New Registration Number</span>
-                    <span className="dp-reg-number-badge">{previewData.assignedRegNumber}</span>
+                    <span className="dp-reg-number-badge">{dpAssignedRegNumber || previewData.assignedRegNumber}</span>
                     <span style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
                       Sequence Slot: #{previewData.assignedSequence} • Destination: {previewData.targetClassName} ({previewData.targetClassStudentCount} existing students)
                     </span>
