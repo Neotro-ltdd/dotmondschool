@@ -30,16 +30,62 @@ import {
   Award,
   Trash2,
   Send,
+  Sparkles,
+  ShieldCheck,
+  Printer,
 } from 'lucide-react';
 import { SlideNotification } from '../../../components/ui/SlideNotification';
 import { useDialog } from '../../../context/DialogContext';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
+import IdCardPrintModal from '../students/IdCardPrintModal';
 import './PromotionManagement.css';
 
 interface ClassItem {
   id: string;
   name: string;
   level: string;
+}
+
+interface DPStudent {
+  id: string;
+  firstName: string;
+  surname: string;
+  otherNames?: string;
+  registrationNumber: string;
+  className?: string;
+  classId?: string;
+  isIdCardPrinted?: boolean;
+}
+
+interface AccelerationPreview {
+  studentId: string;
+  studentName: string;
+  currentClassId: string;
+  currentClassName: string;
+  currentRegNumber: string;
+  isIdCardPrintedCurrent: boolean;
+  targetClassId: string;
+  targetClassName: string;
+  targetClassStudentCount: number;
+  assignedSequence: number;
+  assignedRegNumber: string;
+  strategyUsed: string;
+  strategyNote: string;
+  suggestedSkippedClass: string;
+  existingStudentsUntouched: boolean;
+  safetyGuarantee: string;
+}
+
+interface AccelerationHistoryItem {
+  id: string;
+  studentId: string;
+  studentName: string;
+  currentClass: string;
+  originalDecision: string;
+  newDecision: string;
+  principalName: string;
+  reasonNote: string;
+  date: string;
 }
 
 interface StudentRecord {
@@ -86,7 +132,7 @@ export default function PromotionManagement() {
   const year = new Date().getFullYear();
 
   // Tab & View States
-  const [activeTab, setActiveTab] = useState<'promotion' | 'report' | 'history'>('promotion');
+  const [activeTab, setActiveTab] = useState<'promotion' | 'report' | 'history' | 'double-promote'>('promotion');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   // Notification Toast State
@@ -110,6 +156,19 @@ export default function PromotionManagement() {
   ) => {
     setNotification({ isOpen: true, message, type, title, action });
   };
+
+  // --- DOUBLE PROMOTION / ACADEMIC ACCELERATION STATE ---
+  const [dpOriginClassId, setDpOriginClassId] = useState<string>('');
+  const [dpStudentSearch, setDpStudentSearch] = useState<string>('');
+  const [dpSelectedStudentId, setDpSelectedStudentId] = useState<string>('');
+  const [dpTargetClassId, setDpTargetClassId] = useState<string>('');
+  const [dpSkippedClass, setDpSkippedClass] = useState<string>('');
+  const [dpRegStrategy, setDpRegStrategy] = useState<'TailAppend' | 'PreserveSuffix'>('TailAppend');
+  const [dpReasonNote, setDpReasonNote] = useState<string>(
+    'Special Academic Acceleration: Student demonstrated superior cognitive readiness and academic milestone attainment. Following consultation and mutual agreement with parents, the School Board and Principal approved double promotion directly into the target class, skipping the intervening curriculum grade.'
+  );
+  const [dpConsultationConsent, setDpConsultationConsent] = useState<boolean>(false);
+  const [printStudentId, setPrintStudentId] = useState<string | null>(null);
 
   // --- CLASS PROMOTION STATE ---
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -322,6 +381,135 @@ export default function PromotionManagement() {
       showNotification(err.message || 'Failed to delete promotion batch.', 'error', 'Delete Error');
     },
   });
+
+  // 5. Fetch all students for Double Promotion tab
+  const { data: allStudents = [], isLoading: allStudentsLoading } = useQuery<DPStudent[]>({
+    queryKey: ['studentsForDoublePromotion'],
+    queryFn: async () => {
+      const res = await api.get('/setup/students');
+      return res;
+    },
+    enabled: activeTab === 'double-promote',
+  });
+
+  // 6. Acceleration Preview Query
+  const { data: previewData, isLoading: previewLoading } = useQuery<AccelerationPreview | null>({
+    queryKey: ['previewDoublePromotion', dpSelectedStudentId, dpTargetClassId, dpRegStrategy],
+    queryFn: async () => {
+      if (!dpSelectedStudentId || !dpTargetClassId) return null;
+      const res = await api.get(
+        `/academics/promotion/preview-double-promotion?studentId=${dpSelectedStudentId}&targetClassId=${dpTargetClassId}&strategy=${dpRegStrategy}`
+      );
+      return res;
+    },
+    enabled: !!dpSelectedStudentId && !!dpTargetClassId && activeTab === 'double-promote',
+  });
+
+  // Auto-populate suggested skipped class if not manually edited
+  React.useEffect(() => {
+    if (previewData?.suggestedSkippedClass && (!dpSkippedClass || dpSkippedClass === 'Intervening Grade')) {
+      setDpSkippedClass(previewData.suggestedSkippedClass);
+    }
+  }, [previewData?.suggestedSkippedClass]);
+
+  // 7. Fetch recent double promotions history
+  const { data: accelerationHistory = [], isLoading: historyLoading } = useQuery<AccelerationHistoryItem[]>({
+    queryKey: ['doublePromotionsHistory'],
+    queryFn: async () => {
+      const res = await api.get('/academics/promotion/double-promotions');
+      return res;
+    },
+    enabled: activeTab === 'double-promote',
+  });
+
+  // 8. Execute Double Promotion Mutation
+  const doublePromoteMutation = useMutation({
+    mutationFn: async (payload: {
+      studentId: string;
+      targetClassId: string;
+      skippedClassName: string;
+      reasonNote: string;
+      regNumberStrategy: string;
+      resetIdCardStatus: boolean;
+    }) => {
+      return await api.post('/academics/promotion/double-promote', payload);
+    },
+    onSuccess: (res: any) => {
+      showNotification(
+        res?.message || 'Student accelerated successfully with Zero-Waste ID Card allocation!',
+        'success',
+        'Acceleration Executed',
+        {
+          label: 'Print New ID Card',
+          onClick: () => setPrintStudentId(res?.studentId),
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: ['doublePromotionsHistory'] });
+      queryClient.invalidateQueries({ queryKey: ['studentsForDoublePromotion'] });
+      queryClient.invalidateQueries({ queryKey: ['previewDoublePromotion'] });
+      queryClient.invalidateQueries({ queryKey: ['classes'] });
+      queryClient.invalidateQueries({ queryKey: ['promotionReport'] });
+      setDpConsultationConsent(false);
+    },
+    onError: (err: any) => {
+      showNotification(
+        err?.response?.data?.message || err?.message || 'Failed to execute double promotion.',
+        'error',
+        'Execution Error'
+      );
+    },
+  });
+
+  const handleExecuteDoublePromotion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dpSelectedStudentId || !dpTargetClassId) {
+      showNotification('Please select both a student and destination class.', 'warning', 'Missing Details');
+      return;
+    }
+    if (!dpConsultationConsent) {
+      showNotification('Please confirm parent consultation and administrative authorization.', 'warning', 'Consent Required');
+      return;
+    }
+    if (!dpReasonNote.trim() || dpReasonNote.trim().length < 10) {
+      showNotification('Please provide a complete justification note (at least 10 characters) for accreditation records.', 'warning', 'Justification Required');
+      return;
+    }
+
+    const selectedStudentObj = allStudents.find((s) => s.id === dpSelectedStudentId);
+    const targetClassObj = classes.find((c) => c.id === dpTargetClassId);
+
+    const confirmed = await showConfirm(
+      `Are you sure you want to accelerate ${selectedStudentObj ? selectedStudentObj.firstName + ' ' + selectedStudentObj.surname : 'this student'} into ${targetClassObj?.name || 'the target class'}?\n\nAssigned Reg Number: ${previewData?.assignedRegNumber || 'Sequential'}\nZero-Waste Guarantee: Existing students will remain 100% untouched.`,
+      {
+        title: 'Confirm Academic Acceleration',
+        type: 'warning',
+        confirmText: 'Confirm & Accelerate',
+        cancelText: 'Cancel',
+      }
+    );
+
+    if (confirmed) {
+      doublePromoteMutation.mutate({
+        studentId: dpSelectedStudentId,
+        targetClassId: dpTargetClassId,
+        skippedClassName: dpSkippedClass || 'Intervening Grade',
+        reasonNote: dpReasonNote,
+        regNumberStrategy: dpRegStrategy,
+        resetIdCardStatus: true,
+      });
+    }
+  };
+
+  const filteredStudentsForDP = allStudents.filter((s) => {
+    const matchesClass = !dpOriginClassId || s.classId === dpOriginClassId || s.className === dpOriginClassId;
+    const matchesSearch =
+      !dpStudentSearch ||
+      `${s.firstName} ${s.surname}`.toLowerCase().includes(dpStudentSearch.toLowerCase()) ||
+      (s.registrationNumber && s.registrationNumber.toLowerCase().includes(dpStudentSearch.toLowerCase()));
+    return matchesClass && matchesSearch;
+  });
+
+  const selectedStudentObj = allStudents.find((s) => s.id === dpSelectedStudentId);
 
   const handleCurrentClassChange = (newClassId: string) => {
     setSelectedClassId(newClassId);
@@ -593,6 +781,12 @@ export default function PromotionManagement() {
           onClick={() => setActiveTab('history')}
         >
           <History size={17} /> Approved Promotions (Revoke & Revert)
+        </button>
+        <button
+          className={`promo-tab-btn ${activeTab === 'double-promote' ? 'active' : ''}`}
+          onClick={() => setActiveTab('double-promote')}
+        >
+          <Sparkles size={17} /> Double Promotion & Acceleration
         </button>
       </div>
 
@@ -1280,6 +1474,388 @@ export default function PromotionManagement() {
         </div>
       )}
 
+      {/* =========================================
+          TAB 4: DOUBLE PROMOTION & ACADEMIC ACCELERATION
+          ========================================= */}
+      {activeTab === 'double-promote' && (
+        <div className="dp-container">
+          {/* Executive Hero Banner */}
+          <div className="dp-hero-banner">
+            <div className="dp-hero-title-row">
+              <h2 className="dp-hero-title">
+                <Sparkles size={24} color="#38bdf8" />
+                Zero-Waste Academic Acceleration & Double Promotion
+              </h2>
+              <span className="dp-hero-badge">
+                <ShieldCheck size={14} /> Zero Plastic Card Waste Guarantee
+              </span>
+            </div>
+            <p className="dp-hero-desc">
+              Promote gifted students across multiple grade levels or adjust already-executed annual promotions.
+              The zero-waste numbering engine allocates the next sequential tail number in the destination class,
+              ensuring <strong>100% of existing printed plastic ID cards in both classes remain completely valid and untouched</strong>.
+            </p>
+            <div className="dp-hero-tags">
+              <span className="dp-tag-pill">🛡️ Non-Colliding Tail Sequencing</span>
+              <span className="dp-tag-pill">📜 Permanent Transcript Accreditation</span>
+              <span className="dp-tag-pill">⚡ Dynamic Subject Enrollment</span>
+              <span className="dp-tag-pill">🏷️ Instant ID Card Queue Reset</span>
+            </div>
+          </div>
+
+          <div className="dp-content-grid">
+            {/* Left Card: Promotion Controls Form */}
+            <form onSubmit={handleExecuteDoublePromotion} className="dp-card">
+              <div className="dp-card-header">
+                <h3 className="dp-card-title">
+                  <ArrowRightCircle size={18} color="var(--primary-color, #000080)" />
+                  Acceleration Parameters
+                </h3>
+                <span className="dp-step-badge">Self-Service Engine</span>
+              </div>
+
+              {/* Step 1: Student Filter & Selection */}
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>1. Filter Student by Current Class</span>
+                  <span className="dp-form-hint">Optional</span>
+                </label>
+                <select
+                  className="dp-select"
+                  value={dpOriginClassId}
+                  onChange={(e) => {
+                    setDpOriginClassId(e.target.value);
+                    setDpSelectedStudentId('');
+                  }}
+                >
+                  <option value="">All Classes (All School Levels)</option>
+                  {classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.name} ({cls.level})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>2. Select Student to Accelerate *</span>
+                  <span className="dp-form-hint">{filteredStudentsForDP.length} available</span>
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                  <div style={{ position: 'relative', flex: 1 }}>
+                    <Search size={15} style={{ position: 'absolute', left: 10, top: 10, color: '#94a3b8' }} />
+                    <input
+                      type="text"
+                      className="dp-input"
+                      style={{ paddingLeft: '2rem' }}
+                      placeholder="Search by student name or reg number..."
+                      value={dpStudentSearch}
+                      onChange={(e) => setDpStudentSearch(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <select
+                  className="dp-select"
+                  value={dpSelectedStudentId}
+                  onChange={(e) => {
+                    setDpSelectedStudentId(e.target.value);
+                  }}
+                  required
+                >
+                  <option value="">-- Choose Student --</option>
+                  {filteredStudentsForDP.map((std) => (
+                    <option key={std.id} value={std.id}>
+                      {std.surname} {std.firstName} {std.otherNames ? std.otherNames + ' ' : ''}({std.registrationNumber} - {std.className || 'No Class'})
+                    </option>
+                  ))}
+                </select>
+
+                {selectedStudentObj && (
+                  <div className="dp-student-pill-preview">
+                    <div className="dp-student-avatar">
+                      {getStudentInitials(`${selectedStudentObj.firstName} ${selectedStudentObj.surname}`)}
+                    </div>
+                    <div className="dp-student-meta">
+                      <span className="dp-student-name">
+                        {selectedStudentObj.firstName} {selectedStudentObj.surname} {selectedStudentObj.otherNames || ''}
+                      </span>
+                      <span className="dp-student-sub">
+                        <span>Current Class: <strong>{selectedStudentObj.className || 'Unassigned'}</strong></span>
+                        <span>•</span>
+                        <span>Reg No: <strong>{selectedStudentObj.registrationNumber}</strong></span>
+                        <span>•</span>
+                        <span style={{ color: selectedStudentObj.isIdCardPrinted ? '#2563eb' : '#d97706', fontWeight: 700 }}>
+                          {selectedStudentObj.isIdCardPrinted ? 'ID Card Printed' : 'No ID Card Printed Yet'}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Step 2: Target Destination Class */}
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>3. Destination Target Class *</span>
+                  <span className="dp-form-hint">Grade student is entering</span>
+                </label>
+                <select
+                  className="dp-select"
+                  value={dpTargetClassId}
+                  onChange={(e) => setDpTargetClassId(e.target.value)}
+                  required
+                >
+                  <option value="">-- Select Destination Class --</option>
+                  {classes
+                    .filter((c) => !selectedStudentObj || c.id !== selectedStudentObj.classId)
+                    .map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.name} ({cls.level})
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {/* Step 3: Skipped Grade Recognition */}
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>4. Skipped Grade / Curriculum Gap</span>
+                  <span className="dp-form-hint">Stored on academic transcript</span>
+                </label>
+                <input
+                  type="text"
+                  className="dp-input"
+                  placeholder="e.g. Nursery 2, Primary 2, or Accelerated Curriculum"
+                  value={dpSkippedClass}
+                  onChange={(e) => setDpSkippedClass(e.target.value)}
+                />
+              </div>
+
+              {/* Step 4: Reg Number Numbering Strategy */}
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>5. Reg Number Allocation Strategy</span>
+                </label>
+                <div className="dp-strategy-toggle">
+                  <button
+                    type="button"
+                    className={`dp-strategy-btn ${dpRegStrategy === 'TailAppend' ? 'active' : ''}`}
+                    onClick={() => setDpRegStrategy('TailAppend')}
+                  >
+                    🛡️ Zero-Waste Tail Sequence (Recommended)
+                  </button>
+                  <button
+                    type="button"
+                    className={`dp-strategy-btn ${dpRegStrategy === 'PreserveSuffix' ? 'active' : ''}`}
+                    onClick={() => setDpRegStrategy('PreserveSuffix')}
+                  >
+                    🔢 Preserve Original Suffix (If Unoccupied)
+                  </button>
+                </div>
+              </div>
+
+              {/* Step 5: Official Justification Note */}
+              <div className="dp-form-row">
+                <label className="dp-form-label">
+                  <span>6. Accreditation Justification Note *</span>
+                  <span className="dp-form-hint">Principal & Board Endorsement</span>
+                </label>
+                <textarea
+                  className="dp-textarea"
+                  value={dpReasonNote}
+                  onChange={(e) => setDpReasonNote(e.target.value)}
+                  placeholder="Provide detailed justification for transcript audit trail..."
+                  required
+                />
+              </div>
+
+              {/* Step 6: Mandatory Consent Checkbox */}
+              <div className="dp-consent-box" onClick={() => setDpConsultationConsent(!dpConsultationConsent)}>
+                <input
+                  type="checkbox"
+                  id="dp-consent-check"
+                  checked={dpConsultationConsent}
+                  onChange={(e) => setDpConsultationConsent(e.target.checked)}
+                />
+                <label htmlFor="dp-consent-check" className="dp-consent-label" onClick={(e) => e.stopPropagation()}>
+                  I certify that parent consultation has taken place and this academic acceleration is formally authorized by the School Administration. I understand this action updates class rosters, re-enrolls curriculum subjects, and certifies the skipped grade permanently on transcripts.
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="btn-execute-dp"
+                disabled={!dpSelectedStudentId || !dpTargetClassId || !dpConsultationConsent || doublePromoteMutation.isPending}
+              >
+                <Sparkles size={18} />
+                {doublePromoteMutation.isPending ? 'Executing Acceleration...' : 'Execute Double Promotion & Acceleration'}
+              </button>
+            </form>
+
+            {/* Right Card: Live Non-Colliding Preview & Safety Verification */}
+            <div className={`dp-preview-card ${previewData ? 'has-data' : ''}`}>
+              <div className="dp-card-header">
+                <h3 className="dp-card-title">
+                  <Eye size={18} color="#0ea5e9" />
+                  Live Non-Colliding Preview
+                </h3>
+                <span className="dp-step-badge" style={{ background: previewData ? '#e0f2fe' : '#f1f5f9', color: previewData ? '#0284c7' : '#64748b' }}>
+                  {previewData ? 'Calculated' : 'Awaiting Input'}
+                </span>
+              </div>
+
+              {previewLoading ? (
+                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#64748b' }}>
+                  <div className="spinner" style={{ margin: '0 auto 0.75rem' }} />
+                  <span>Calculating non-colliding sequence for destination class...</span>
+                </div>
+              ) : previewData ? (
+                <>
+                  <div className="dp-reg-display-box">
+                    <span className="dp-reg-label">Assigned New Registration Number</span>
+                    <span className="dp-reg-number-badge">{previewData.assignedRegNumber}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
+                      Sequence Slot: #{previewData.assignedSequence} • Destination: {previewData.targetClassName} ({previewData.targetClassStudentCount} existing students)
+                    </span>
+                  </div>
+
+                  <div className="dp-reassurance-box">
+                    <ShieldCheck className="dp-reassurance-icon" size={20} />
+                    <div>
+                      <strong>Zero-Waste ID Card Engine Active</strong>
+                      <span>{previewData.safetyGuarantee}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>TRANSITION SPECIFICATIONS:</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                      <span style={{ color: '#64748b' }}>Origin Grade:</span>
+                      <span style={{ fontWeight: 600, color: '#0f172a' }}>{previewData.currentClassName}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                      <span style={{ color: '#64748b' }}>Skipped Curriculum Gap:</span>
+                      <span style={{ fontWeight: 600, color: '#b45309' }}>{dpSkippedClass || previewData.suggestedSkippedClass}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                      <span style={{ color: '#64748b' }}>Destination Class:</span>
+                      <span style={{ fontWeight: 700, color: '#059669' }}>{previewData.targetClassName} 🚀</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                      <span style={{ color: '#64748b' }}>ID Card Queue Action:</span>
+                      <span style={{ fontWeight: 700, color: '#2563eb' }}>Reset to Unprinted (Ready for Print)</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem' }}>
+                      <span style={{ color: '#64748b' }}>Transcript Certification:</span>
+                      <span style={{ fontWeight: 600, color: '#0f172a' }}>Permanent Override Log Endorsement</span>
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', background: '#f1f5f9', padding: '0.65rem 0.85rem', borderRadius: '8px' }}>
+                    💡 {previewData.strategyNote}
+                  </div>
+                </>
+              ) : (
+                <div className="dp-empty-state">
+                  <GraduationCap size={40} color="#cbd5e1" style={{ marginBottom: '0.75rem' }} />
+                  <p style={{ fontWeight: 700, color: '#475569', marginBottom: '0.25rem' }}>Live Sequence Calculation Ready</p>
+                  <p style={{ fontSize: '0.82rem', margin: 0 }}>
+                    Select a student and a destination class on the left to preview the non-colliding registration number and zero-waste safety assurance.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Recent Academic Accelerations & Endorsement History */}
+          <div className="dp-history-section">
+            <div className="dp-history-header">
+              <h3 className="dp-history-title">
+                <History size={19} color="var(--primary-color, #000080)" />
+                Recent Academic Acceleration Endorsements & Audit Trail
+              </h3>
+              <span className="dp-step-badge">
+                {accelerationHistory.length} Recorded Endorsements
+              </span>
+            </div>
+
+            {historyLoading ? (
+              <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#64748b' }}>
+                <div className="spinner" style={{ margin: '0 auto 0.5rem' }} />
+                <span>Loading acceleration endorsements...</span>
+              </div>
+            ) : accelerationHistory.length === 0 ? (
+              <div className="dp-empty-state">
+                <Award size={36} color="#cbd5e1" style={{ marginBottom: '0.5rem' }} />
+                <p style={{ fontWeight: 600, color: '#64748b', margin: 0 }}>
+                  No double promotions or academic accelerations recorded yet.
+                </p>
+              </div>
+            ) : (
+              <table className="executive-promo-table">
+                <thead>
+                  <tr>
+                    <th>STUDENT NAME</th>
+                    <th>TRANSITION PATHWAY</th>
+                    <th>REG NUMBER DETAILS</th>
+                    <th>AUTHORIZATION & REASON</th>
+                    <th>DATE</th>
+                    <th style={{ textAlign: 'center' }}>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accelerationHistory.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        <strong style={{ color: '#0f172a' }}>{item.studentName}</strong>
+                        <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Current: {item.currentClass}</div>
+                      </td>
+                      <td>
+                        <div className="batch-transition-cell">
+                          <span className="batch-class-name">{item.originalDecision.replace('Placement in ', '')}</span>
+                          <ChevronRight size={15} className="transition-arrow" />
+                          <span className="batch-target-name">{item.newDecision.replace('Academic Acceleration to ', '')}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '0.78rem', color: '#334155' }}>
+                          {item.reasonNote.includes('Assigned Reg:') 
+                            ? item.reasonNote.split('Assigned Reg:')[1].split('.')[0].trim() 
+                            : 'Updated'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ maxWidth: '320px', fontSize: '0.8rem', color: '#475569', lineHeight: 1.35 }}>
+                          <div><strong>By:</strong> {item.principalName}</div>
+                          <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {item.reasonNote}
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                        {new Date(item.date).toLocaleDateString()}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          type="button"
+                          className="btn-revoke-batch"
+                          style={{ background: '#f0f9ff', color: '#0284c7', borderColor: '#bae6fd' }}
+                          onClick={() => setPrintStudentId(item.studentId)}
+                          title="Print Plastic ID Card"
+                        >
+                          <Printer size={14} /> Print ID Card
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* OVERRIDE MODAL */}
       {showOverrideModal && (
         <div className="promo-modal-backdrop">
@@ -1341,6 +1917,13 @@ export default function PromotionManagement() {
             </form>
           </div>
         </div>
+      )}
+
+      {printStudentId && (
+        <IdCardPrintModal
+          studentId={printStudentId}
+          onClose={() => setPrintStudentId(null)}
+        />
       )}
     </div>
   );
