@@ -516,9 +516,108 @@
   color: #0d7847;
 }
 
-.status-pill.inactive {
+.status-pill.suspended {
   background: #fef3c7;
   color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.status-pill.withdrawn {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.status-pill.inactive {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Status Filter Tabs */
+.students-status-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f1f5f9;
+  padding: 0.25rem 0.3rem;
+  border-radius: 12px;
+  width: fit-content;
+  border: 1px solid #e2e8f0;
+}
+
+.students-status-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.students-status-tab-btn:hover {
+  color: #0f172a;
+}
+
+.students-status-tab-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.students-status-tab-btn.suspended.active {
+  background: #fef3c7;
+  color: #92400e;
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.15);
+}
+
+.students-status-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.45rem;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.students-status-tab-btn.active .students-status-tab-badge {
+  background: #000080;
+  color: #ffffff;
+}
+
+.students-status-tab-btn.suspended.active .students-status-tab-badge {
+  background: #d97706;
+  color: #ffffff;
+}
+
+.btn-revoke-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.25rem;
+}
+
+.btn-revoke-inline:hover {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
 }
 
 /* Action 3-Dots Dropdown */

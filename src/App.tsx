@@ -22,6 +22,7 @@ import Classes from './pages/dashboard/academics/Classes';
 import Subjects from './pages/dashboard/academics/Subjects';
 import Teachers from './pages/dashboard/teachers/Teachers';
 import Students from './pages/dashboard/students/Students';
+import StudentRecords from './pages/dashboard/records/StudentRecords';
 import Approvals from './pages/dashboard/approvals/Approvals';
 import OnlineVerifications from './pages/dashboard/finance/OnlineVerifications';
 import PointOfSale from './pages/dashboard/finance/PointOfSale';
@@ -164,6 +165,10 @@ function App() {
                       <Route path="academic-analysis" element={<AcademicAnalysis />} />
                       <Route path="attendance" element={<AttendanceReport />} />
                       <Route path="result/:studentId/:batchId" element={<ResultSheetViewer />} />
+                    </Route>
+                    <Route path="records">
+                      <Route index element={<StudentRecords />} />
+                      <Route path="students" element={<StudentRecords />} />
                     </Route>
                     <Route path="operations">
                       <Route path="roles" element={<RoleManagement />} />

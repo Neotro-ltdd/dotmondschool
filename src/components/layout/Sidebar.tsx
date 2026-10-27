@@ -24,6 +24,7 @@ import {
   Calendar,
   Wrench,
   QrCode,
+  Archive,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
@@ -129,6 +130,7 @@ export default function Sidebar({
   const [isFinanceOpen, setIsFinanceOpen] = useState(false);
   const [isFinanceSetupOpen, setIsFinanceSetupOpen] = useState(false);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isRecordsOpen, setIsRecordsOpen] = useState(false);
 
   // Auto-expand accordion if current location is within that group
   useEffect(() => {
@@ -182,6 +184,9 @@ export default function Sidebar({
     }
     if (path.includes('/dashboard/finance-setup/')) {
       setIsFinanceSetupOpen(true);
+    }
+    if (path.includes('/dashboard/records')) {
+      setIsRecordsOpen(true);
     }
     if (path.includes('/dashboard/reports') || path.includes('/dashboard/finance/reports')) {
       setIsReportsOpen(true);
@@ -1031,6 +1036,40 @@ export default function Sidebar({
                       )}
                     </div>
                   </>
+                )}
+
+                {/* 6.5. INSTITUTIONAL RECORDS & ARCHIVES */}
+                {(hasPermission('classes.view') ||
+                  hasPermission('classes.manage') ||
+                  isDeveloperRoot ||
+                  userRole === 'Principal' ||
+                  userRole === 'Admin') && (
+                  <div className="nav-group">
+                    <button
+                      className={`nav-item dropdown-toggle ${isRecordsOpen ? 'open' : ''}`}
+                      onClick={() => setIsRecordsOpen(!isRecordsOpen)}
+                    >
+                      <span className="nav-icon-box">
+                        <Archive size={18} />
+                      </span>
+                      Records
+                      <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                        {isRecordsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      </span>
+                    </button>
+                    {isRecordsOpen && (
+                      <div className="submenu">
+                        <NavLink
+                          to="/dashboard/records/students"
+                          className={({ isActive }) =>
+                            `nav-item submenu-item ${isActive ? 'active' : ''}`
+                          }
+                        >
+                          Students
+                        </NavLink>
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* 7. REPORTS & ANALYTICS */}

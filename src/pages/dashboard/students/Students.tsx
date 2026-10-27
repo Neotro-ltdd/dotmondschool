@@ -29,7 +29,10 @@ import {
   ShieldCheck,
   ShieldAlert,
   UserCheck,
+  UserMinus,
+  RotateCcw,
 } from 'lucide-react';
+import WithdrawStudentModal from './WithdrawStudentModal';
 import './Students.css';
 
 interface StudentItem {
@@ -49,6 +52,11 @@ interface StudentItem {
   departmentTrack?: string;
   gender?: string;
   passportUrl?: string;
+  withdrawnReason?: string;
+  withdrawnNotes?: string;
+  withdrawnAt?: string;
+  lastActiveSession?: string;
+  lastActiveTerm?: string;
 }
 
 import { useAuth } from '../../../context/AuthContext';
@@ -83,6 +91,7 @@ export default function Students() {
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>(queryClassId || '');
   const [filterIdCardReady, setFilterIdCardReady] = useState<boolean>(false);
+  const [filterStatus, setFilterStatus] = useState<'active' | 'suspended' | 'all'>('active');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -106,6 +115,19 @@ export default function Students() {
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
   const [printStudentId, setPrintStudentId] = useState<string | null>(null);
+  const [withdrawTargetStudent, setWithdrawTargetStudent] = useState<{
+    id: string;
+    fullName: string;
+    registrationNumber: string;
+    className: string;
+  } | null>(null);
+  const [withdrawInitialStatus, setWithdrawInitialStatus] = useState<'Withdrawn' | 'Suspended'>('Suspended');
+
+  // Reinstatement Modal State
+  const [reinstateTargetStudent, setReinstateTargetStudent] = useState<StudentItem | null>(null);
+  const [targetClassId, setTargetClassId] = useState<string>('');
+  const [reinstateNotes, setReinstateNotes] = useState<string>('');
+  const [submittingReinstate, setSubmittingReinstate] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
     surname: '',
@@ -155,7 +177,7 @@ export default function Students() {
     try {
       setLoading(true);
       const data = await api.get(
-        `/setup/students?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`,
+        `/setup/students?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}&status=${filterStatus}`,
       );
       setStudents(data);
       setError(null);
@@ -181,7 +203,39 @@ export default function Students() {
 
   useEffect(() => {
     fetchStudents();
-  }, [filterSession, filterTerm]);
+  }, [filterSession, filterTerm, filterStatus]);
+
+  const handleOpenReinstate = (student: StudentItem) => {
+    setOpenDropdownId(null);
+    setReinstateTargetStudent(student);
+    setTargetClassId(student.classId || classes[0]?.id || '');
+    setReinstateNotes('');
+  };
+
+  const handleReinstateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reinstateTargetStudent || !targetClassId) return;
+
+    try {
+      setSubmittingReinstate(true);
+      await api.post(`/setup/students/${reinstateTargetStudent.id}/reinstate`, {
+        targetClassId,
+        notes: reinstateNotes.trim() || undefined,
+      });
+
+      showAlert(
+        `Student ${reinstateTargetStudent.surname} ${reinstateTargetStudent.firstName} has been successfully reinstated to the active student roster.`,
+        { title: 'Suspension Revoked', type: 'success' }
+      );
+
+      setReinstateTargetStudent(null);
+      fetchStudents();
+    } catch (err: any) {
+      showAlert(err?.message || 'Failed to revoke student suspension.', { type: 'danger' });
+    } finally {
+      setSubmittingReinstate(false);
+    }
+  };
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -528,7 +582,9 @@ export default function Students() {
       <div className="students-metrics-grid">
         <div className="students-metric-card total">
           <div className="metric-info-box">
-            <span className="metric-label">TOTAL STUDENTS</span>
+            <span className="metric-label">
+              {filterStatus === 'suspended' ? 'SUSPENDED STUDENTS' : filterStatus === 'all' ? 'ALL ENROLLED' : 'ACTIVE STUDENTS'}
+            </span>
             <span className="metric-number">{totalCount}</span>
           </div>
           <div className="metric-icon-badge total">
@@ -565,6 +621,51 @@ export default function Students() {
             <School size={24} />
           </div>
         </div>
+      </div>
+
+      {/* Status Segmented Tabs */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="students-status-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={filterStatus === 'active'}
+            className={`students-status-tab-btn ${filterStatus === 'active' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('active')}
+          >
+            <UserCheck size={16} />
+            Active Students
+            {filterStatus === 'active' && <span className="students-status-tab-badge">{students.length}</span>}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={filterStatus === 'suspended'}
+            className={`students-status-tab-btn suspended ${filterStatus === 'suspended' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('suspended')}
+          >
+            <ShieldAlert size={16} />
+            Suspended Students
+            {filterStatus === 'suspended' && <span className="students-status-tab-badge">{students.length}</span>}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={filterStatus === 'all'}
+            className={`students-status-tab-btn ${filterStatus === 'all' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            <Users size={16} />
+            All Students
+            {filterStatus === 'all' && <span className="students-status-tab-badge">{students.length}</span>}
+          </button>
+        </div>
+
+        {filterStatus === 'suspended' && (
+          <div style={{ fontSize: '0.82rem', color: '#B45309', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <ShieldAlert size={15} color="#D97706" /> Excluded from Class Rosters & ID Card Printing
+          </div>
+        )}
       </div>
 
       {/* Two-Tier Controls Card */}
@@ -856,10 +957,22 @@ export default function Students() {
                     </td>
                     <td>
                       <span
-                        className={`status-pill ${student.status === 'Active' ? 'active' : 'inactive'}`}
+                        className={`status-pill ${student.status === 'Active' ? 'active' : student.status === 'Suspended' ? 'suspended' : student.status === 'Withdrawn' ? 'withdrawn' : 'inactive'}`}
                       >
                         {student.status || 'Active'}
                       </span>
+                      {student.status === 'Suspended' && (
+                        <div style={{ marginTop: '0.25rem' }}>
+                          <button
+                            type="button"
+                            className="btn-revoke-inline"
+                            onClick={() => handleOpenReinstate(student)}
+                            title="Revoke suspension and restore student to class roster"
+                          >
+                            <RotateCcw size={12} /> Revoke
+                          </button>
+                        </div>
+                      )}
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div className="action-dropdown-container">
@@ -882,7 +995,7 @@ export default function Students() {
                             >
                               <Eye size={15} color="#3B82F6" /> View Full Profile
                             </button>
-                            {canPrintStudentIdCard && (
+                            {canPrintStudentIdCard && student.status === 'Active' && (
                               <button
                                 className="dropdown-action-item"
                                 onClick={() => {
@@ -920,6 +1033,51 @@ export default function Students() {
                                   <KeyRound size={15} color="#D97706" /> Parent Credentials
                                 </button>
                                 <div className="dropdown-divider" />
+                                {student.status === 'Suspended' ? (
+                                  <button
+                                    className="dropdown-action-item success"
+                                    onClick={() => handleOpenReinstate(student)}
+                                    title="Revoke suspension and restore student to class roster"
+                                    style={{ color: '#059669', fontWeight: 600 }}
+                                  >
+                                    <RotateCcw size={15} color="#059669" /> Revoke Suspension / Reinstate
+                                  </button>
+                                ) : (
+                                  <>
+                                    <button
+                                      className="dropdown-action-item"
+                                      onClick={() => {
+                                        setOpenDropdownId(null);
+                                        setWithdrawInitialStatus('Suspended');
+                                        setWithdrawTargetStudent({
+                                          id: student.id,
+                                          fullName,
+                                          registrationNumber: student.registrationNumber,
+                                          className: student.className,
+                                        });
+                                      }}
+                                      title="Suspend student for this session so they do not appear on class lists or ID card print queues"
+                                    >
+                                      <UserMinus size={15} color="#D97706" /> Suspend Student
+                                    </button>
+                                    <button
+                                      className="dropdown-action-item"
+                                      onClick={() => {
+                                        setOpenDropdownId(null);
+                                        setWithdrawInitialStatus('Withdrawn');
+                                        setWithdrawTargetStudent({
+                                          id: student.id,
+                                          fullName,
+                                          registrationNumber: student.registrationNumber,
+                                          className: student.className,
+                                        });
+                                      }}
+                                      title="Withdraw student permanently from institution"
+                                    >
+                                      <UserMinus size={15} color="#64748B" /> Withdraw Student
+                                    </button>
+                                  </>
+                                )}
                                 <button
                                   className="dropdown-action-item danger"
                                   onClick={() => handleDelete(student.id, fullName)}
@@ -1009,7 +1167,7 @@ export default function Students() {
                         >
                           <Edit3 size={15} color="#000080" /> Edit Details
                         </button>
-                        {canPrintStudentIdCard && (
+                        {canPrintStudentIdCard && student.status === 'Active' && (
                           <button
                             className="dropdown-action-item"
                             onClick={() => {
@@ -1033,6 +1191,51 @@ export default function Students() {
                           <KeyRound size={15} color="#D97706" /> Parent Credentials
                         </button>
                         <div className="dropdown-divider" />
+                        {student.status === 'Suspended' ? (
+                          <button
+                            className="dropdown-action-item success"
+                            onClick={() => handleOpenReinstate(student)}
+                            title="Revoke suspension and restore student to class roster"
+                            style={{ color: '#059669', fontWeight: 600 }}
+                          >
+                            <RotateCcw size={15} color="#059669" /> Revoke Suspension / Reinstate
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              className="dropdown-action-item"
+                              onClick={() => {
+                                setOpenDropdownId(null);
+                                setWithdrawInitialStatus('Suspended');
+                                setWithdrawTargetStudent({
+                                  id: student.id,
+                                  fullName,
+                                  registrationNumber: student.registrationNumber,
+                                  className: student.className,
+                                });
+                              }}
+                              title="Suspend student for this session so they do not appear on class lists or ID card print queues"
+                            >
+                              <UserMinus size={15} color="#D97706" /> Suspend Student
+                            </button>
+                            <button
+                              className="dropdown-action-item"
+                              onClick={() => {
+                                setOpenDropdownId(null);
+                                setWithdrawInitialStatus('Withdrawn');
+                                setWithdrawTargetStudent({
+                                  id: student.id,
+                                  fullName,
+                                  registrationNumber: student.registrationNumber,
+                                  className: student.className,
+                                });
+                              }}
+                              title="Withdraw student permanently from institution"
+                            >
+                              <UserMinus size={15} color="#64748B" /> Withdraw Student
+                            </button>
+                          </>
+                        )}
                         <button
                           className="dropdown-action-item danger"
                           onClick={() => handleDelete(student.id, fullName)}
@@ -1044,7 +1247,7 @@ export default function Students() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                   <span
                     style={{
                       fontWeight: 700,
@@ -1062,6 +1265,21 @@ export default function Students() {
                   >
                     {student.isCleared ? 'Cleared' : 'Not Cleared'}
                   </span>
+                  <span
+                    className={`status-pill ${student.status === 'Active' ? 'active' : student.status === 'Suspended' ? 'suspended' : student.status === 'Withdrawn' ? 'withdrawn' : 'inactive'}`}
+                  >
+                    {student.status || 'Active'}
+                  </span>
+                  {student.status === 'Suspended' && (
+                    <button
+                      type="button"
+                      className="btn-revoke-inline"
+                      onClick={() => handleOpenReinstate(student)}
+                      title="Revoke suspension"
+                    >
+                      <RotateCcw size={11} /> Revoke
+                    </button>
+                  )}
                 </div>
 
                 <div
@@ -1754,6 +1972,134 @@ export default function Students() {
                 I have copied the password
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Withdraw / Suspend Student Modal */}
+      {withdrawTargetStudent && (
+        <WithdrawStudentModal
+          isOpen={!!withdrawTargetStudent}
+          onClose={() => setWithdrawTargetStudent(null)}
+          onSuccess={() => {
+            setWithdrawTargetStudent(null);
+            fetchStudents();
+          }}
+          student={withdrawTargetStudent}
+          currentSession={filterSession}
+          currentTerm={filterTerm}
+          initialStatus={withdrawInitialStatus}
+        />
+      )}
+
+      {/* Revoke Suspension / Reinstatement Modal */}
+      {reinstateTargetStudent && (
+        <div className="modal-overlay" onClick={() => setReinstateTargetStudent(null)}>
+          <div
+            className="modal-container"
+            style={{ maxWidth: '480px' }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="modal-header">
+              <div className="modal-title-wrap">
+                <div className="modal-icon-badge" style={{ background: '#ecfdf5', color: '#059669', padding: '0.6rem', borderRadius: '10px' }}>
+                  <RotateCcw size={20} />
+                </div>
+                <div>
+                  <h3 className="modal-title" style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>
+                    Revoke Suspension
+                  </h3>
+                  <p className="modal-subtitle" style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
+                    Restore student back to active classroom roster and records.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setReinstateTargetStudent(null)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleReinstateSubmit} style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>
+                  {reinstateTargetStudent.surname} {reinstateTargetStudent.firstName} {reinstateTargetStudent.otherNames}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>
+                  Reg: <strong>{reinstateTargetStudent.registrationNumber || 'Pending'}</strong> | Current Class: <strong>{reinstateTargetStudent.className || 'Unassigned'}</strong>
+                </div>
+                {reinstateTargetStudent.withdrawnReason && (
+                  <div style={{ fontSize: '0.78rem', color: '#b45309', marginTop: '0.35rem' }}>
+                    Suspension Reason: <em>{reinstateTargetStudent.withdrawnReason}</em>
+                  </div>
+                )}
+                {reinstateTargetStudent.lastActiveSession && (
+                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.15rem' }}>
+                    Suspended in Session: <strong>{reinstateTargetStudent.lastActiveSession}</strong>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
+                  Assign Active Class <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  className="field-input"
+                  value={targetClassId}
+                  onChange={(e) => setTargetClassId(e.target.value)}
+                  required
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                >
+                  <option value="">Select Target Class...</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {`${c.level} ${c.name} ${c.section}`.trim()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
+                  Reinstatement Remarks (Optional)
+                </label>
+                <textarea
+                  className="field-textarea"
+                  rows={2}
+                  placeholder="e.g. Student returned to school; suspension formally revoked by administrator."
+                  value={reinstateNotes}
+                  onChange={(e) => setReinstateNotes(e.target.value)}
+                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setReinstateTargetStudent(null)}
+                  disabled={submittingReinstate}
+                  style={{ padding: '0.55rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ padding: '0.55rem 1.15rem', borderRadius: '8px', background: '#059669', color: '#ffffff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                  disabled={submittingReinstate || !targetClassId}
+                >
+                  {submittingReinstate ? 'Reinstating...' : 'Confirm Revoke & Reinstate'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
