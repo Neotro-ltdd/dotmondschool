@@ -576,6 +576,12 @@
   box-shadow: 0 1px 4px rgba(245, 158, 11, 0.15);
 }
 
+.students-status-tab-btn.withdrawn.active {
+  background: #fee2e2;
+  color: #991b1b;
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.15);
+}
+
 .students-status-tab-badge {
   display: inline-flex;
   align-items: center;
@@ -595,6 +601,11 @@
 
 .students-status-tab-btn.suspended.active .students-status-tab-badge {
   background: #d97706;
+  color: #ffffff;
+}
+
+.students-status-tab-btn.withdrawn.active .students-status-tab-badge {
+  background: #dc2626;
   color: #ffffff;
 }
 
@@ -618,6 +629,31 @@
   background: #d1fae5;
   color: #065f46;
   border-color: #6ee7b7;
+}
+
+.btn-reinstate-direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.65rem;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.12);
+  margin-top: 0.35rem;
+}
+
+.btn-reinstate-direct:hover {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.28);
+  transform: translateY(-1px);
 }
 
 /* Action 3-Dots Dropdown */

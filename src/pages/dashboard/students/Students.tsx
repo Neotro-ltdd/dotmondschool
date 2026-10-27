@@ -91,7 +91,7 @@ export default function Students() {
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>(queryClassId || '');
   const [filterIdCardReady, setFilterIdCardReady] = useState<boolean>(false);
-  const [filterStatus, setFilterStatus] = useState<'active' | 'suspended' | 'all'>('active');
+  const [filterStatus, setFilterStatus] = useState<'active' | 'suspended' | 'withdrawn' | 'all'>('active');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -223,15 +223,16 @@ export default function Students() {
         notes: reinstateNotes.trim() || undefined,
       });
 
+      const isWithdrawn = reinstateTargetStudent.status?.toLowerCase() === 'withdrawn';
       showAlert(
         `Student ${reinstateTargetStudent.surname} ${reinstateTargetStudent.firstName} has been successfully reinstated to the active student roster.`,
-        { title: 'Suspension Revoked', type: 'success' }
+        { title: isWithdrawn ? 'Student Reinstated' : 'Suspension Revoked', type: 'success' }
       );
 
       setReinstateTargetStudent(null);
       fetchStudents();
     } catch (err: any) {
-      showAlert(err?.message || 'Failed to revoke student suspension.', { type: 'danger' });
+      showAlert(err?.message || 'Failed to reinstate student.', { type: 'danger' });
     } finally {
       setSubmittingReinstate(false);
     }
@@ -583,7 +584,13 @@ export default function Students() {
         <div className="students-metric-card total">
           <div className="metric-info-box">
             <span className="metric-label">
-              {filterStatus === 'suspended' ? 'SUSPENDED STUDENTS' : filterStatus === 'all' ? 'ALL ENROLLED' : 'ACTIVE STUDENTS'}
+              {filterStatus === 'suspended'
+                ? 'SUSPENDED STUDENTS'
+                : filterStatus === 'withdrawn'
+                ? 'WITHDRAWN STUDENTS'
+                : filterStatus === 'all'
+                ? 'ALL ENROLLED'
+                : 'ACTIVE STUDENTS'}
             </span>
             <span className="metric-number">{totalCount}</span>
           </div>
@@ -651,6 +658,17 @@ export default function Students() {
           <button
             type="button"
             role="tab"
+            aria-selected={filterStatus === 'withdrawn'}
+            className={`students-status-tab-btn withdrawn ${filterStatus === 'withdrawn' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('withdrawn')}
+          >
+            <UserMinus size={16} />
+            Withdrawn Students
+            {filterStatus === 'withdrawn' && <span className="students-status-tab-badge">{students.length}</span>}
+          </button>
+          <button
+            type="button"
+            role="tab"
             aria-selected={filterStatus === 'all'}
             className={`students-status-tab-btn ${filterStatus === 'all' ? 'active' : ''}`}
             onClick={() => setFilterStatus('all')}
@@ -664,6 +682,12 @@ export default function Students() {
         {filterStatus === 'suspended' && (
           <div style={{ fontSize: '0.82rem', color: '#B45309', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <ShieldAlert size={15} color="#D97706" /> Excluded from Class Rosters & ID Card Printing
+          </div>
+        )}
+
+        {filterStatus === 'withdrawn' && (
+          <div style={{ fontSize: '0.82rem', color: '#BE123C', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <UserMinus size={15} color="#E11D48" /> Withdrawn Students (Click "Reinstate to Active" to restore)
           </div>
         )}
       </div>
@@ -957,19 +981,39 @@ export default function Students() {
                     </td>
                     <td>
                       <span
-                        className={`status-pill ${student.status === 'Active' ? 'active' : student.status === 'Suspended' ? 'suspended' : student.status === 'Withdrawn' ? 'withdrawn' : 'inactive'}`}
+                        className={`status-pill ${
+                          student.status?.toLowerCase() === 'active'
+                            ? 'active'
+                            : student.status?.toLowerCase() === 'suspended'
+                            ? 'suspended'
+                            : student.status?.toLowerCase() === 'withdrawn'
+                            ? 'withdrawn'
+                            : 'inactive'
+                        }`}
                       >
                         {student.status || 'Active'}
                       </span>
-                      {(student.status === 'Suspended' || student.status === 'Withdrawn') && (
-                        <div style={{ marginTop: '0.25rem' }}>
+                      {student.status?.toLowerCase() === 'withdrawn' && (
+                        <div style={{ marginTop: '0.35rem' }}>
+                          <button
+                            type="button"
+                            className="btn-reinstate-direct"
+                            onClick={() => handleOpenReinstate(student)}
+                            title="Reinstate withdrawn student back to active classroom roster"
+                          >
+                            <RotateCcw size={12} /> Reinstate to Active
+                          </button>
+                        </div>
+                      )}
+                      {student.status?.toLowerCase() === 'suspended' && (
+                        <div style={{ marginTop: '0.35rem' }}>
                           <button
                             type="button"
                             className="btn-revoke-inline"
                             onClick={() => handleOpenReinstate(student)}
-                            title={student.status === 'Suspended' ? 'Revoke suspension and restore student to class roster' : 'Reinstate withdrawn student back to class roster'}
+                            title="Revoke suspension and restore student to class roster"
                           >
-                            <RotateCcw size={12} /> Reinstate
+                            <RotateCcw size={12} /> Revoke Suspension
                           </button>
                         </div>
                       )}
@@ -995,7 +1039,7 @@ export default function Students() {
                             >
                               <Eye size={15} color="#3B82F6" /> View Full Profile
                             </button>
-                            {canPrintStudentIdCard && student.status === 'Active' && (
+                            {canPrintStudentIdCard && student.status?.toLowerCase() === 'active' && (
                               <button
                                 className="dropdown-action-item"
                                 onClick={() => {
@@ -1033,14 +1077,23 @@ export default function Students() {
                                   <KeyRound size={15} color="#D97706" /> Parent Credentials
                                 </button>
                                 <div className="dropdown-divider" />
-                                {student.status === 'Suspended' || student.status === 'Withdrawn' ? (
+                                {student.status?.toLowerCase() === 'withdrawn' ? (
                                   <button
                                     className="dropdown-action-item success"
                                     onClick={() => handleOpenReinstate(student)}
-                                    title="Reinstate student back to active classroom roster"
+                                    title="Revoke withdrawal and reinstate student to active classroom roster"
                                     style={{ color: '#059669', fontWeight: 600 }}
                                   >
-                                    <RotateCcw size={15} color="#059669" /> Reinstate Student
+                                    <RotateCcw size={15} color="#059669" /> Reinstate to Active
+                                  </button>
+                                ) : student.status?.toLowerCase() === 'suspended' ? (
+                                  <button
+                                    className="dropdown-action-item success"
+                                    onClick={() => handleOpenReinstate(student)}
+                                    title="Revoke suspension and reinstate student to active classroom roster"
+                                    style={{ color: '#059669', fontWeight: 600 }}
+                                  >
+                                    <RotateCcw size={15} color="#059669" /> Revoke Suspension
                                   </button>
                                 ) : (
                                   <>
@@ -1167,7 +1220,7 @@ export default function Students() {
                         >
                           <Edit3 size={15} color="#000080" /> Edit Details
                         </button>
-                        {canPrintStudentIdCard && student.status === 'Active' && (
+                        {canPrintStudentIdCard && student.status?.toLowerCase() === 'active' && (
                           <button
                             className="dropdown-action-item"
                             onClick={() => {
@@ -1191,14 +1244,23 @@ export default function Students() {
                           <KeyRound size={15} color="#D97706" /> Parent Credentials
                         </button>
                         <div className="dropdown-divider" />
-                        {student.status === 'Suspended' || student.status === 'Withdrawn' ? (
+                        {student.status?.toLowerCase() === 'withdrawn' ? (
                           <button
                             className="dropdown-action-item success"
                             onClick={() => handleOpenReinstate(student)}
-                            title="Reinstate student back to active classroom roster"
+                            title="Revoke withdrawal and reinstate student to active classroom roster"
                             style={{ color: '#059669', fontWeight: 600 }}
                           >
-                            <RotateCcw size={15} color="#059669" /> Reinstate Student
+                            <RotateCcw size={15} color="#059669" /> Reinstate to Active
+                          </button>
+                        ) : student.status?.toLowerCase() === 'suspended' ? (
+                          <button
+                            className="dropdown-action-item success"
+                            onClick={() => handleOpenReinstate(student)}
+                            title="Revoke suspension and reinstate student to active classroom roster"
+                            style={{ color: '#059669', fontWeight: 600 }}
+                          >
+                            <RotateCcw size={15} color="#059669" /> Revoke Suspension
                           </button>
                         ) : (
                           <>
@@ -1266,18 +1328,38 @@ export default function Students() {
                     {student.isCleared ? 'Cleared' : 'Not Cleared'}
                   </span>
                   <span
-                    className={`status-pill ${student.status === 'Active' ? 'active' : student.status === 'Suspended' ? 'suspended' : student.status === 'Withdrawn' ? 'withdrawn' : 'inactive'}`}
+                    className={`status-pill ${
+                      student.status?.toLowerCase() === 'active'
+                        ? 'active'
+                        : student.status?.toLowerCase() === 'suspended'
+                        ? 'suspended'
+                        : student.status?.toLowerCase() === 'withdrawn'
+                        ? 'withdrawn'
+                        : 'inactive'
+                    }`}
                   >
                     {student.status || 'Active'}
                   </span>
-                  {(student.status === 'Suspended' || student.status === 'Withdrawn') && (
+                  {student.status?.toLowerCase() === 'withdrawn' && (
+                    <button
+                      type="button"
+                      className="btn-reinstate-direct"
+                      onClick={() => handleOpenReinstate(student)}
+                      title="Reinstate student back to active classroom roster"
+                      style={{ marginTop: 0 }}
+                    >
+                      <RotateCcw size={11} /> Reinstate to Active
+                    </button>
+                  )}
+                  {student.status?.toLowerCase() === 'suspended' && (
                     <button
                       type="button"
                       className="btn-revoke-inline"
                       onClick={() => handleOpenReinstate(student)}
-                      title="Reinstate student"
+                      title="Revoke suspension"
+                      style={{ marginTop: 0 }}
                     >
-                      <RotateCcw size={11} /> Reinstate
+                      <RotateCcw size={11} /> Revoke Suspension
                     </button>
                   )}
                 </div>
@@ -1459,12 +1541,38 @@ export default function Students() {
                 >
                   Account Status
                 </span>
-                <span
-                  className={`status-pill ${viewingStudent.status === 'Active' ? 'active' : 'inactive'}`}
-                  style={{ marginTop: '0.25rem' }}
-                >
-                  {viewingStudent.status || 'Active'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span
+                    className={`status-pill ${
+                      viewingStudent.status?.toLowerCase() === 'active'
+                        ? 'active'
+                        : viewingStudent.status?.toLowerCase() === 'suspended'
+                        ? 'suspended'
+                        : viewingStudent.status?.toLowerCase() === 'withdrawn'
+                        ? 'withdrawn'
+                        : 'inactive'
+                    }`}
+                    style={{ marginTop: '0.25rem' }}
+                  >
+                    {viewingStudent.status || 'Active'}
+                  </span>
+                  {(viewingStudent.status?.toLowerCase() === 'withdrawn' ||
+                    viewingStudent.status?.toLowerCase() === 'suspended') && !isReadOnly && (
+                    <button
+                      type="button"
+                      className="btn-reinstate-direct"
+                      onClick={() => {
+                        const target = viewingStudent;
+                        setViewingStudent(null);
+                        handleOpenReinstate(target);
+                      }}
+                      title="Reinstate student back to active classroom roster"
+                      style={{ marginTop: '0.25rem' }}
+                    >
+                      <RotateCcw size={12} /> {viewingStudent.status?.toLowerCase() === 'withdrawn' ? 'Reinstate to Active' : 'Revoke Suspension'}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -2009,12 +2117,12 @@ export default function Students() {
                 </div>
                 <div>
                   <h3 className="modal-title" style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>
-                    {reinstateTargetStudent.status === 'Withdrawn' ? 'Reinstate Withdrawn Student' : 'Revoke Suspension & Reinstate'}
+                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Reinstate Withdrawn Student' : 'Revoke Suspension & Reinstate'}
                   </h3>
                   <p className="modal-subtitle" style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
-                    {reinstateTargetStudent.status === 'Withdrawn'
-                      ? 'Restore student back to active classroom roster and school records.'
-                      : 'Restore student back to active classroom roster and records.'}
+                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn'
+                      ? 'Restore withdrawn student back to active classroom roster and school records.'
+                      : 'Revoke suspension and restore student back to active classroom roster.'}
                   </p>
                 </div>
               </div>
@@ -2038,13 +2146,13 @@ export default function Students() {
                 </div>
                 {reinstateTargetStudent.withdrawnReason && (
                   <div style={{ fontSize: '0.78rem', color: '#b45309', marginTop: '0.35rem' }}>
-                    {reinstateTargetStudent.status === 'Withdrawn' ? 'Departure Reason: ' : 'Suspension Reason: '}
+                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Departure Reason: ' : 'Suspension Reason: '}
                     <em>{reinstateTargetStudent.withdrawnReason}</em>
                   </div>
                 )}
                 {reinstateTargetStudent.lastActiveSession && (
                   <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.15rem' }}>
-                    {reinstateTargetStudent.status === 'Withdrawn' ? 'Last Active Session: ' : 'Suspended in Session: '}
+                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Last Active Session: ' : 'Suspended in Session: '}
                     <strong>{reinstateTargetStudent.lastActiveSession}</strong>
                   </div>
                 )}
