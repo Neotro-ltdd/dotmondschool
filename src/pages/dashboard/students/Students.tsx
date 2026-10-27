@@ -961,15 +961,15 @@ export default function Students() {
                       >
                         {student.status || 'Active'}
                       </span>
-                      {student.status === 'Suspended' && (
+                      {(student.status === 'Suspended' || student.status === 'Withdrawn') && (
                         <div style={{ marginTop: '0.25rem' }}>
                           <button
                             type="button"
                             className="btn-revoke-inline"
                             onClick={() => handleOpenReinstate(student)}
-                            title="Revoke suspension and restore student to class roster"
+                            title={student.status === 'Suspended' ? 'Revoke suspension and restore student to class roster' : 'Reinstate withdrawn student back to class roster'}
                           >
-                            <RotateCcw size={12} /> Revoke
+                            <RotateCcw size={12} /> Reinstate
                           </button>
                         </div>
                       )}
@@ -1033,14 +1033,14 @@ export default function Students() {
                                   <KeyRound size={15} color="#D97706" /> Parent Credentials
                                 </button>
                                 <div className="dropdown-divider" />
-                                {student.status === 'Suspended' ? (
+                                {student.status === 'Suspended' || student.status === 'Withdrawn' ? (
                                   <button
                                     className="dropdown-action-item success"
                                     onClick={() => handleOpenReinstate(student)}
-                                    title="Revoke suspension and restore student to class roster"
+                                    title="Reinstate student back to active classroom roster"
                                     style={{ color: '#059669', fontWeight: 600 }}
                                   >
-                                    <RotateCcw size={15} color="#059669" /> Revoke Suspension / Reinstate
+                                    <RotateCcw size={15} color="#059669" /> Reinstate Student
                                   </button>
                                 ) : (
                                   <>
@@ -1191,14 +1191,14 @@ export default function Students() {
                           <KeyRound size={15} color="#D97706" /> Parent Credentials
                         </button>
                         <div className="dropdown-divider" />
-                        {student.status === 'Suspended' ? (
+                        {student.status === 'Suspended' || student.status === 'Withdrawn' ? (
                           <button
                             className="dropdown-action-item success"
                             onClick={() => handleOpenReinstate(student)}
-                            title="Revoke suspension and restore student to class roster"
+                            title="Reinstate student back to active classroom roster"
                             style={{ color: '#059669', fontWeight: 600 }}
                           >
-                            <RotateCcw size={15} color="#059669" /> Revoke Suspension / Reinstate
+                            <RotateCcw size={15} color="#059669" /> Reinstate Student
                           </button>
                         ) : (
                           <>
@@ -1270,14 +1270,14 @@ export default function Students() {
                   >
                     {student.status || 'Active'}
                   </span>
-                  {student.status === 'Suspended' && (
+                  {(student.status === 'Suspended' || student.status === 'Withdrawn') && (
                     <button
                       type="button"
                       className="btn-revoke-inline"
                       onClick={() => handleOpenReinstate(student)}
-                      title="Revoke suspension"
+                      title="Reinstate student"
                     >
-                      <RotateCcw size={11} /> Revoke
+                      <RotateCcw size={11} /> Reinstate
                     </button>
                   )}
                 </div>
@@ -2009,10 +2009,12 @@ export default function Students() {
                 </div>
                 <div>
                   <h3 className="modal-title" style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>
-                    Revoke Suspension
+                    {reinstateTargetStudent.status === 'Withdrawn' ? 'Reinstate Withdrawn Student' : 'Revoke Suspension & Reinstate'}
                   </h3>
                   <p className="modal-subtitle" style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
-                    Restore student back to active classroom roster and records.
+                    {reinstateTargetStudent.status === 'Withdrawn'
+                      ? 'Restore student back to active classroom roster and school records.'
+                      : 'Restore student back to active classroom roster and records.'}
                   </p>
                 </div>
               </div>
@@ -2036,12 +2038,14 @@ export default function Students() {
                 </div>
                 {reinstateTargetStudent.withdrawnReason && (
                   <div style={{ fontSize: '0.78rem', color: '#b45309', marginTop: '0.35rem' }}>
-                    Suspension Reason: <em>{reinstateTargetStudent.withdrawnReason}</em>
+                    {reinstateTargetStudent.status === 'Withdrawn' ? 'Departure Reason: ' : 'Suspension Reason: '}
+                    <em>{reinstateTargetStudent.withdrawnReason}</em>
                   </div>
                 )}
                 {reinstateTargetStudent.lastActiveSession && (
                   <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.15rem' }}>
-                    Suspended in Session: <strong>{reinstateTargetStudent.lastActiveSession}</strong>
+                    {reinstateTargetStudent.status === 'Withdrawn' ? 'Last Active Session: ' : 'Suspended in Session: '}
+                    <strong>{reinstateTargetStudent.lastActiveSession}</strong>
                   </div>
                 )}
               </div>
