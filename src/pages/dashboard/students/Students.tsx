@@ -4,6 +4,7 @@ import { getSessionOptions } from '../../../utils/sessionOptions';
 import { api } from '../../../services/api';
 import IdCardPrintModal from './IdCardPrintModal';
 import EditStudentModal from './EditStudentModal';
+import AdminEditRegNumberModal from './AdminEditRegNumberModal';
 import { useDialog } from '../../../context/DialogContext';
 import {
   Users,
@@ -117,6 +118,7 @@ export default function Students() {
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
   const [printStudentId, setPrintStudentId] = useState<string | null>(null);
+  const [adminEditRegStudent, setAdminEditRegStudent] = useState<StudentItem | null>(null);
   const [withdrawTargetStudent, setWithdrawTargetStudent] = useState<{
     id: string;
     fullName: string;
@@ -1014,6 +1016,18 @@ export default function Students() {
                                 >
                                   <Edit3 size={15} color="#000080" /> Edit Details
                                 </button>
+                                {(!isReadOnly && (userRole === 'Admin' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SystemAdmin')) && (
+                                  <button
+                                    className="dropdown-action-item"
+                                    onClick={() => {
+                                      setAdminEditRegStudent(student);
+                                      setOpenDropdownId(null);
+                                    }}
+                                    style={{ color: '#4F46E5', fontWeight: 600 }}
+                                  >
+                                    <ShieldCheck size={15} color="#4F46E5" /> Admin Edit: Reg No
+                                  </button>
+                                )}
                                 <button
                                   className="dropdown-action-item"
                                   onClick={() =>
@@ -1173,6 +1187,18 @@ export default function Students() {
                         >
                           <Edit3 size={15} color="#000080" /> Edit Details
                         </button>
+                        {(!isReadOnly && (userRole === 'Admin' || userRole === 'Principal' || userRole === 'Superadmin' || userRole === 'SystemAdmin')) && (
+                          <button
+                            className="dropdown-action-item"
+                            onClick={() => {
+                              setAdminEditRegStudent(student);
+                              setOpenDropdownId(null);
+                            }}
+                            style={{ color: '#4F46E5', fontWeight: 600 }}
+                          >
+                            <ShieldCheck size={15} color="#4F46E5" /> Admin Edit: Reg No
+                          </button>
+                        )}
                         {canPrintStudentIdCard && student.status?.toLowerCase() === 'active' && (
                           <button
                             className="dropdown-action-item"
@@ -1585,6 +1611,25 @@ export default function Students() {
           onClose={() => setEditingStudent(null)}
           onSuccess={() => {
             setEditingStudent(null);
+            fetchStudents();
+          }}
+        />
+      )}
+
+      {/* ADMIN EDIT REGISTRATION NUMBER MODAL */}
+      {adminEditRegStudent && (
+        <AdminEditRegNumberModal
+          isOpen={true}
+          student={{
+            id: adminEditRegStudent.id,
+            fullName: `${adminEditRegStudent.firstName} ${adminEditRegStudent.surname}`,
+            registrationNumber: adminEditRegStudent.registrationNumber,
+            className: adminEditRegStudent.className,
+            gender: adminEditRegStudent.gender,
+          }}
+          onClose={() => setAdminEditRegStudent(null)}
+          onSuccess={(_updatedReg) => {
+            setAdminEditRegStudent(null);
             fetchStudents();
           }}
         />

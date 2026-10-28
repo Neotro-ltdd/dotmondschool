@@ -1,0 +1,249 @@
+/* Admin Edit Registration Number Modal Styling */
+.admin-edit-reg-modal {
+  max-width: 520px;
+  width: 95%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.admin-reg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
+
+.admin-reg-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-reg-icon-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f46e5;
+}
+
+.admin-reg-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-reg-student-snapshot {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.admin-reg-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.admin-reg-student-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-reg-name {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.admin-reg-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-reg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.admin-reg-badge.class-badge {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.admin-reg-badge.current-badge {
+  background: #fee2e2;
+  color: #991b1b;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.admin-reg-badge.idcard-badge-printed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-reg-badge.idcard-badge-unprinted {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.admin-reg-qr-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  color: #1e40af;
+  line-height: 1.45;
+}
+
+.admin-reg-qr-notice strong {
+  color: #1e3a8a;
+}
+
+.admin-reg-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-reg-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-reg-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.admin-reg-input.monospace {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+
+.admin-reg-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.admin-reg-helper {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.admin-reg-checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fafafa;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+}
+
+.admin-reg-checkbox-group input {
+  margin-top: 3px;
+  cursor: pointer;
+  accent-color: #4f46e5;
+  width: 16px;
+  height: 16px;
+}
+
+.admin-reg-checkbox-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-reg-checkbox-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.admin-reg-checkbox-desc {
+  font-size: 0.76rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.admin-reg-error-box {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-reg-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
