@@ -93,7 +93,7 @@ export default function Students() {
   const [filterLevel, setFilterLevel] = useState<string>('');
   const [filterClassId, setFilterClassId] = useState<string>(queryClassId || '');
   const [filterIdCardReady, setFilterIdCardReady] = useState<boolean>(false);
-  const [filterStatus, setFilterStatus] = useState<'active' | 'suspended' | 'withdrawn' | 'all'>('active');
+  const [filterStatus, setFilterStatus] = useState<'active' | 'suspended' | 'withdrawn'>('active');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -590,8 +590,6 @@ export default function Students() {
                 ? 'SUSPENDED STUDENTS'
                 : filterStatus === 'withdrawn'
                 ? 'WITHDRAWN STUDENTS'
-                : filterStatus === 'all'
-                ? 'ALL ENROLLED'
                 : 'ACTIVE STUDENTS'}
             </span>
             <span className="metric-number">{totalCount}</span>
@@ -667,17 +665,6 @@ export default function Students() {
             <UserMinus size={16} />
             Withdrawn Students
             {filterStatus === 'withdrawn' && <span className="students-status-tab-badge">{students.length}</span>}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={filterStatus === 'all'}
-            className={`students-status-tab-btn ${filterStatus === 'all' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('all')}
-          >
-            <Users size={16} />
-            All Students
-            {filterStatus === 'all' && <span className="students-status-tab-badge">{students.length}</span>}
           </button>
         </div>
 
