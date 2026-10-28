@@ -631,7 +631,7 @@ export default function Students() {
       </div>
 
       {/* Status Segmented Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div className="students-status-tabs" role="tablist">
           <button
             type="button"
@@ -667,18 +667,6 @@ export default function Students() {
             {filterStatus === 'withdrawn' && <span className="students-status-tab-badge">{students.length}</span>}
           </button>
         </div>
-
-        {filterStatus === 'suspended' && (
-          <div style={{ fontSize: '0.82rem', color: '#B45309', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <ShieldAlert size={15} color="#D97706" /> Excluded from Class Rosters & ID Card Printing
-          </div>
-        )}
-
-        {filterStatus === 'withdrawn' && (
-          <div style={{ fontSize: '0.82rem', color: '#BE123C', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <UserMinus size={15} color="#E11D48" /> Withdrawn Students (Use action menu ⋮ to Reinstate)
-          </div>
-        )}
       </div>
 
       {/* Two-Tier Controls Card */}
