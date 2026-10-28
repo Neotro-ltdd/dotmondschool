@@ -31,6 +31,8 @@ import {
   UserCheck,
   UserMinus,
   RotateCcw,
+  Calendar,
+  FileCheck2,
 } from 'lucide-react';
 import WithdrawStudentModal from './WithdrawStudentModal';
 import './Students.css';
@@ -687,7 +689,7 @@ export default function Students() {
 
         {filterStatus === 'withdrawn' && (
           <div style={{ fontSize: '0.82rem', color: '#BE123C', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <UserMinus size={15} color="#E11D48" /> Withdrawn Students (Click "Reinstate to Active" to restore)
+            <UserMinus size={15} color="#E11D48" /> Withdrawn Students (Use action menu ⋮ to Reinstate)
           </div>
         )}
       </div>
@@ -993,30 +995,6 @@ export default function Students() {
                       >
                         {student.status || 'Active'}
                       </span>
-                      {student.status?.toLowerCase() === 'withdrawn' && (
-                        <div style={{ marginTop: '0.35rem' }}>
-                          <button
-                            type="button"
-                            className="btn-reinstate-direct"
-                            onClick={() => handleOpenReinstate(student)}
-                            title="Reinstate withdrawn student back to active classroom roster"
-                          >
-                            <RotateCcw size={12} /> Reinstate to Active
-                          </button>
-                        </div>
-                      )}
-                      {student.status?.toLowerCase() === 'suspended' && (
-                        <div style={{ marginTop: '0.35rem' }}>
-                          <button
-                            type="button"
-                            className="btn-revoke-inline"
-                            onClick={() => handleOpenReinstate(student)}
-                            title="Revoke suspension and restore student to class roster"
-                          >
-                            <RotateCcw size={12} /> Revoke Suspension
-                          </button>
-                        </div>
-                      )}
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div className="action-dropdown-container">
@@ -1340,28 +1318,6 @@ export default function Students() {
                   >
                     {student.status || 'Active'}
                   </span>
-                  {student.status?.toLowerCase() === 'withdrawn' && (
-                    <button
-                      type="button"
-                      className="btn-reinstate-direct"
-                      onClick={() => handleOpenReinstate(student)}
-                      title="Reinstate student back to active classroom roster"
-                      style={{ marginTop: 0 }}
-                    >
-                      <RotateCcw size={11} /> Reinstate to Active
-                    </button>
-                  )}
-                  {student.status?.toLowerCase() === 'suspended' && (
-                    <button
-                      type="button"
-                      className="btn-revoke-inline"
-                      onClick={() => handleOpenReinstate(student)}
-                      title="Revoke suspension"
-                      style={{ marginTop: 0 }}
-                    >
-                      <RotateCcw size={11} /> Revoke Suspension
-                    </button>
-                  )}
                 </div>
 
                 <div
@@ -2104,24 +2060,30 @@ export default function Students() {
       {reinstateTargetStudent && (
         <div className="modal-overlay" onClick={() => setReinstateTargetStudent(null)}>
           <div
-            className="modal-container"
-            style={{ maxWidth: '480px' }}
+            className="modal-container reinstate-modal"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
+            aria-labelledby="reinstate-modal-title"
           >
             <div className="modal-header">
               <div className="modal-title-wrap">
-                <div className="modal-icon-badge" style={{ background: '#ecfdf5', color: '#059669', padding: '0.6rem', borderRadius: '10px' }}>
+                <div
+                  className={`modal-icon-badge ${
+                    reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'reinstate' : 'revoke'
+                  }`}
+                >
                   <RotateCcw size={20} />
                 </div>
                 <div>
-                  <h3 className="modal-title" style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>
-                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Reinstate Withdrawn Student' : 'Revoke Suspension & Reinstate'}
-                  </h3>
-                  <p className="modal-subtitle" style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
+                  <h3 id="reinstate-modal-title" className="modal-title">
                     {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn'
-                      ? 'Restore withdrawn student back to active classroom roster and school records.'
+                      ? 'Reinstate Withdrawn Student'
+                      : 'Revoke Suspension & Reinstate'}
+                  </h3>
+                  <p className="modal-subtitle">
+                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn'
+                      ? 'Restore withdrawn student back to active classroom roster and institutional records.'
                       : 'Revoke suspension and restore student back to active classroom roster.'}
                   </p>
                 </div>
@@ -2130,44 +2092,59 @@ export default function Students() {
                 type="button"
                 className="modal-close-btn"
                 onClick={() => setReinstateTargetStudent(null)}
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                aria-label="Close modal"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleReinstateSubmit} style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>
-                  {reinstateTargetStudent.surname} {reinstateTargetStudent.firstName} {reinstateTargetStudent.otherNames}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>
-                  Reg: <strong>{reinstateTargetStudent.registrationNumber || 'Pending'}</strong> | Current Class: <strong>{reinstateTargetStudent.className || 'Unassigned'}</strong>
-                </div>
-                {reinstateTargetStudent.withdrawnReason && (
-                  <div style={{ fontSize: '0.78rem', color: '#b45309', marginTop: '0.35rem' }}>
-                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Departure Reason: ' : 'Suspension Reason: '}
-                    <em>{reinstateTargetStudent.withdrawnReason}</em>
+            <form onSubmit={handleReinstateSubmit} className="reinstate-form">
+              {/* Student Profile Snapshot Card */}
+              <div className="student-snapshot-card">
+                <div className="student-snapshot-info">
+                  <span className="snapshot-reg">{reinstateTargetStudent.registrationNumber || 'No Reg No'}</span>
+                  <h4 className="snapshot-name">
+                    {reinstateTargetStudent.surname} {reinstateTargetStudent.firstName} {reinstateTargetStudent.otherNames}
+                  </h4>
+                  <div className="snapshot-meta-grid">
+                    <span className="snapshot-meta-item">
+                      <School size={14} /> Previous Class: <strong>{reinstateTargetStudent.className || 'Unassigned'}</strong>
+                    </span>
+                    {reinstateTargetStudent.lastActiveSession && (
+                      <span className="snapshot-meta-item">
+                        <Calendar size={14} />
+                        {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Last Active: ' : 'Suspended in: '}
+                        <strong>
+                          {reinstateTargetStudent.lastActiveSession} {reinstateTargetStudent.lastActiveTerm || ''}
+                        </strong>
+                      </span>
+                    )}
                   </div>
-                )}
-                {reinstateTargetStudent.lastActiveSession && (
-                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.15rem' }}>
-                    {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn' ? 'Last Active Session: ' : 'Suspended in Session: '}
-                    <strong>{reinstateTargetStudent.lastActiveSession}</strong>
-                  </div>
-                )}
+                  {reinstateTargetStudent.withdrawnReason && (
+                    <div className="snapshot-reason-badge">
+                      <span className="reason-label">
+                        {reinstateTargetStudent.status?.toLowerCase() === 'withdrawn'
+                          ? 'Departure Reason:'
+                          : 'Suspension Reason:'}
+                      </span>
+                      <span className="reason-text">{reinstateTargetStudent.withdrawnReason}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                  Assign Active Class <span style={{ color: '#ef4444' }}>*</span>
+              {/* Form Input: Class Assignment */}
+              <div className="form-field-group">
+                <label htmlFor="reinstate-target-class" className="field-label">
+                  <School size={14} />
+                  Assign Active Class <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="reinstate-target-class"
                   className="field-input"
                   value={targetClassId}
                   onChange={(e) => setTargetClassId(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
                 >
                   <option value="">Select Target Class...</option>
                   {classes.map((c) => (
@@ -2178,37 +2155,53 @@ export default function Students() {
                 </select>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '0.35rem' }}>
-                  Reinstatement Remarks (Optional)
+              {/* Form Input: Remarks */}
+              <div className="form-field-group">
+                <label htmlFor="reinstate-notes" className="field-label">
+                  Reinstatement Remarks <span className="text-gray-400 font-normal">(Optional)</span>
                 </label>
                 <textarea
+                  id="reinstate-notes"
                   className="field-textarea"
                   rows={2}
-                  placeholder="e.g. Student returned to school; suspension formally revoked by administrator."
+                  placeholder={
+                    reinstateTargetStudent.status?.toLowerCase() === 'withdrawn'
+                      ? 'e.g. Student returned to school; readmitted and placed into active class roster.'
+                      : 'e.g. Disciplinary suspension served; student cleared to resume classes.'
+                  }
                   value={reinstateNotes}
                   onChange={(e) => setReinstateNotes(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              {/* Institutional Assurance Guarantee Note */}
+              <div className="guarantee-box reinstate">
+                <FileCheck2 size={18} className="guarantee-icon" />
+                <div className="guarantee-text">
+                  <strong>Roster Restoration:</strong> Reinstating will update the student's status to <strong>Active</strong>, place them in the selected class roster, and restore their profile to continuous assessments, attendance, and fee billing.
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="modal-actions">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="btn-modal-cancel"
                   onClick={() => setReinstateTargetStudent(null)}
                   disabled={submittingReinstate}
-                  style={{ padding: '0.55rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
-                  style={{ padding: '0.55rem 1.15rem', borderRadius: '8px', background: '#059669', color: '#ffffff', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                  className="btn-modal-confirm reinstate"
                   disabled={submittingReinstate || !targetClassId}
                 >
-                  {submittingReinstate ? 'Reinstating...' : 'Confirm Revoke & Reinstate'}
+                  {submittingReinstate
+                    ? 'Processing...'
+                    : reinstateTargetStudent.status?.toLowerCase() === 'withdrawn'
+                    ? 'Confirm Reinstatement'
+                    : 'Confirm Revoke & Reinstate'}
                 </button>
               </div>
             </form>
