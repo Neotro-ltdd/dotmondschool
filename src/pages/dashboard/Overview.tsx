@@ -28,7 +28,7 @@ interface SystemActivityItem {
 export default function Overview() {
   const { userRole, userName, userTitle, updateUserInfo } = useAuth();
   const { schoolName } = useTenant();
-  const { session, term, isHoliday, resumptionDate } = useActiveTerm();
+  const { session, term, isHoliday, resumptionDate, holidayType } = useActiveTerm();
 
   const isHolidayMode =
     isHoliday || term === 'Holiday' || term === 'MTB (Mid Term Break)' || term === 'MTB';
@@ -293,6 +293,7 @@ export default function Overview() {
           displayTerm={displayTerm || 'First Term'}
           isHolidayMode={isHolidayMode}
           resumptionDate={resumptionDate}
+          holidayType={holidayType}
           adminData={adminData}
           loading={loading}
           onToggleActivityLog={() => setShowActivityLog((prev) => !prev)}

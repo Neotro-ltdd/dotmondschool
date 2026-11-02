@@ -6,6 +6,9 @@ let cachedTerm = 'First Term';
 let cachedIsHoliday = false;
 let cachedStatus = 'Active';
 let cachedResumptionDate = '';
+let cachedHolidayType = 'Mid-Term Break';
+let cachedHolidayStartDate = '';
+let cachedHolidayReason = '';
 let fetchPromise: Promise<void> | null = null;
 
 /**
@@ -31,6 +34,9 @@ export function useActiveTerm() {
   const [isHoliday, setIsHoliday] = useState<boolean>(cachedIsHoliday);
   const [status, setStatus] = useState<string>(cachedStatus);
   const [resumptionDate, setResumptionDate] = useState<string>(cachedResumptionDate);
+  const [holidayType, setHolidayType] = useState<string>(cachedHolidayType);
+  const [holidayStartDate, setHolidayStartDate] = useState<string>(cachedHolidayStartDate);
+  const [holidayReason, setHolidayReason] = useState<string>(cachedHolidayReason);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -52,6 +58,15 @@ export function useActiveTerm() {
             if (isJsonString(profileData.resumptionDate)) {
               cachedResumptionDate = profileData.resumptionDate.split('T')[0];
             }
+            if (isJsonString(profileData.holidayType)) {
+              cachedHolidayType = profileData.holidayType;
+            }
+            if (isJsonString(profileData.holidayStartDate)) {
+              cachedHolidayStartDate = profileData.holidayStartDate.split('T')[0];
+            }
+            if (isJsonString(profileData.holidayReason)) {
+              cachedHolidayReason = profileData.holidayReason;
+            }
           }
 
           // 2. Query /setup/terms to get detailed term status & resumption date
@@ -64,6 +79,15 @@ export function useActiveTerm() {
               if (termData.status) cachedStatus = termData.status;
               if (isJsonString(termData.nextTermResumptionDate)) {
                 cachedResumptionDate = termData.nextTermResumptionDate.split('T')[0];
+              }
+              if (isJsonString(termData.holidayType)) {
+                cachedHolidayType = termData.holidayType;
+              }
+              if (isJsonString(termData.holidayStartDate)) {
+                cachedHolidayStartDate = termData.holidayStartDate.split('T')[0];
+              }
+              if (isJsonString(termData.holidayReason)) {
+                cachedHolidayReason = termData.holidayReason;
               }
             }
           } catch (termErr) {
@@ -81,6 +105,9 @@ export function useActiveTerm() {
       setIsHoliday(cachedIsHoliday);
       setStatus(cachedStatus);
       setResumptionDate(cachedResumptionDate);
+      setHolidayType(cachedHolidayType);
+      setHolidayStartDate(cachedHolidayStartDate);
+      setHolidayReason(cachedHolidayReason);
       setLoading(false);
     });
   }, []);
@@ -95,6 +122,13 @@ export function useActiveTerm() {
     status,
     setStatus,
     resumptionDate,
+    setResumptionDate,
+    holidayType,
+    setHolidayType,
+    holidayStartDate,
+    setHolidayStartDate,
+    holidayReason,
+    setHolidayReason,
     loading,
   };
 }
@@ -105,5 +139,8 @@ export function invalidateActiveTermCache() {
   cachedIsHoliday = false;
   cachedStatus = 'Active';
   cachedResumptionDate = '';
+  cachedHolidayType = 'Mid-Term Break';
+  cachedHolidayStartDate = '';
+  cachedHolidayReason = '';
   fetchPromise = null;
 }

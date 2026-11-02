@@ -37,6 +37,7 @@ interface AdminDashboardViewProps {
   displayTerm?: string;
   isHolidayMode?: boolean;
   resumptionDate?: string;
+  holidayType?: string;
   adminData?: any;
   loading?: boolean;
   onToggleActivityLog?: () => void;
@@ -51,6 +52,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   displayTerm = 'First Term',
   isHolidayMode = true,
   resumptionDate,
+  holidayType,
   adminData,
   loading,
   onToggleActivityLog,
@@ -108,7 +110,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   return (
     <div className="overview-page">
       {/* ════════ HOLIDAY OPERATIONAL NOTICE BANNER ════════ */}
-      <HolidayBanner isHolidayMode={isHolidayMode} resumptionDate={resumptionDate} />
+      <HolidayBanner isHolidayMode={isHolidayMode} resumptionDate={resumptionDate} holidayType={holidayType} />
 
       {/* ════════ EXECUTIVE HERO BANNER (AMBIENT GLASS) ════════ */}
       <div className="dashboard-banner">
