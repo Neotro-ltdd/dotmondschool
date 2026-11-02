@@ -23,7 +23,7 @@ import {
 interface HolidayTypeOption {
   id: string;
   label: string;
-  badge: string;
+  badge?: string;
   icon: React.ElementType;
   description: string;
   themeColor: string;
@@ -55,6 +55,7 @@ const HOLIDAY_TYPES: HolidayTypeOption[] = [
   {
     id: 'Session Ended',
     label: 'Session Ended / Long Vacation',
+    badge: 'SESSION ENDED',
     icon: Layers,
     description: 'Annual session holiday after Third Term. Awaiting new academic session promotion & setup.',
     themeColor: '#7C3AED',
@@ -64,6 +65,7 @@ const HOLIDAY_TYPES: HolidayTypeOption[] = [
   {
     id: 'Public Holiday',
     label: 'Public Holiday / Observance',
+    badge: 'PUBLIC HOLIDAY',
     icon: Sparkles,
     description: 'Official national or religious holiday (1-3 days). Attendance scanners automatically frozen.',
     themeColor: '#059669',
