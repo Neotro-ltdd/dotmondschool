@@ -4,7 +4,7 @@ import { CheckCircle2, AlertTriangle, XCircle, Info, X } from 'lucide-react';
 
 interface DialogOptions {
   title?: string;
-  type?: 'info' | 'success' | 'warning' | 'danger';
+  type?: 'info' | 'success' | 'warning' | 'danger' | 'error';
   confirmText?: string;
   cancelText?: string;
   defaultValue?: string;
@@ -99,6 +99,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'success':
         return <CheckCircle2 size={26} style={{ color: '#10B981' }} />;
       case 'danger':
+      case 'error':
         return <XCircle size={26} style={{ color: '#EF4444' }} />;
       case 'warning':
         return <AlertTriangle size={26} style={{ color: '#F59E0B' }} />;
@@ -113,6 +114,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'success':
         return 'linear-gradient(90deg, #10B981 0%, #059669 100%)';
       case 'danger':
+      case 'error':
         return 'linear-gradient(90deg, #EF4444 0%, #DC2626 100%)';
       case 'warning':
         return 'linear-gradient(90deg, #F59E0B 0%, #D97706 100%)';
@@ -127,6 +129,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'success':
         return '#ECFDF5';
       case 'danger':
+      case 'error':
         return '#FEF2F2';
       case 'warning':
         return '#FFFBEB';
@@ -141,6 +144,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       case 'success':
         return '#10B981';
       case 'danger':
+      case 'error':
         return '#EF4444';
       case 'warning':
         return '#F59E0B';

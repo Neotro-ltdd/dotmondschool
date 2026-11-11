@@ -294,7 +294,7 @@ export default function Students() {
     setOpenDropdownId(null);
     const targetId = identityUserId || studentId;
     if (!targetId && !studentParentEmail) {
-      showAlert('This student does not have parent contact details or an active login account.', { type: 'error' });
+      showAlert('This student does not have parent contact details or an active login account.', { type: 'danger' });
       return;
     }
     if (
@@ -324,7 +324,7 @@ export default function Students() {
         );
       }
     } catch (err: any) {
-      showAlert(err.message || 'Failed to regenerate credentials.', { type: 'error' });
+      showAlert(err.message || 'Failed to regenerate credentials.', { type: 'danger' });
     } finally {
       setGeneratingId(null);
     }
