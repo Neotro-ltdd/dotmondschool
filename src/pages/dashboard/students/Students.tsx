@@ -146,13 +146,6 @@ export default function Students() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // Credentials Modal State
-  const [showCredsModal, setShowCredsModal] = useState(false);
-  const [credsData, setCredsData] = useState<{
-    username: string;
-    password: string;
-    emailQueued: boolean;
-  } | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
 
   // Upload State
@@ -292,10 +285,16 @@ export default function Students() {
     }
   };
 
-  const handleRegenerateCredentials = async (identityUserId: string, name: string) => {
+  const handleRegenerateCredentials = async (
+    identityUserId: string | null | undefined,
+    name: string,
+    studentId?: string,
+    studentParentEmail?: string
+  ) => {
     setOpenDropdownId(null);
-    if (!identityUserId) {
-      showAlert('This parent does not have an active login account.');
+    const targetId = identityUserId || studentId;
+    if (!targetId && !studentParentEmail) {
+      showAlert('This student does not have parent contact details or an active login account.', { type: 'error' });
       return;
     }
     if (
@@ -306,18 +305,26 @@ export default function Students() {
       return;
 
     try {
-      setGeneratingId(identityUserId);
+      setGeneratingId(targetId || null);
       const response = await api.post('/user-management/regenerate-credentials', {
-        userId: identityUserId,
+        userId: targetId,
       });
-      setCredsData({
-        username: response.username,
-        password: response.password,
-        emailQueued: response.emailQueued,
-      });
-      setShowCredsModal(true);
+
+      if (response.emailQueued) {
+        showAlert(
+          response.message ||
+            `Parent credentials regenerated successfully! An email with the updated login details has been sent to the parent.`,
+          { type: 'success' },
+        );
+      } else {
+        showAlert(
+          response.message ||
+            `Credentials regenerated, but email could not be delivered. Please verify the parent's email address.`,
+          { type: 'warning' },
+        );
+      }
     } catch (err: any) {
-      showAlert(err.message || 'Failed to regenerate credentials.');
+      showAlert(err.message || 'Failed to regenerate credentials.', { type: 'error' });
     } finally {
       setGeneratingId(null);
     }
@@ -1032,13 +1039,16 @@ export default function Students() {
                                   className="dropdown-action-item"
                                   onClick={() =>
                                     handleRegenerateCredentials(
-                                      student.parentIdentityUserId!,
+                                      student.parentIdentityUserId,
                                       fullName,
+                                      student.id,
+                                      student.parentEmail,
                                     )
                                   }
                                   disabled={
                                     generatingId === student.parentIdentityUserId ||
-                                    !student.parentIdentityUserId
+                                    generatingId === student.id ||
+                                    (!student.parentIdentityUserId && !student.parentEmail)
                                   }
                                 >
                                   <KeyRound size={15} color="#D97706" /> Parent Credentials
@@ -1213,11 +1223,17 @@ export default function Students() {
                         <button
                           className="dropdown-action-item"
                           onClick={() =>
-                            handleRegenerateCredentials(student.parentIdentityUserId!, fullName)
+                            handleRegenerateCredentials(
+                              student.parentIdentityUserId,
+                              fullName,
+                              student.id,
+                              student.parentEmail,
+                            )
                           }
                           disabled={
                             generatingId === student.parentIdentityUserId ||
-                            !student.parentIdentityUserId
+                            generatingId === student.id ||
+                            (!student.parentIdentityUserId && !student.parentEmail)
                           }
                         >
                           <KeyRound size={15} color="#D97706" /> Parent Credentials
@@ -1972,93 +1988,6 @@ export default function Students() {
         </div>
       )}
 
-      {/* REGENERATE PARENT CREDENTIALS MODAL */}
-      {showCredsModal && credsData && (
-        <div className="modal-overlay">
-          <div className="modal-content glass-panel">
-            <div
-              style={{ borderLeft: '4px solid #10b981', paddingLeft: '1rem', marginBottom: '1rem' }}
-            >
-              <h2 style={{ margin: 0, color: '#10b981' }}>Parent Credentials Regenerated!</h2>
-              <p className="text-muted text-sm mt-1">Please copy these details immediately.</p>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.2)',
-                padding: '1.5rem',
-                borderRadius: '8px',
-                marginBottom: '1.5rem',
-              }}
-            >
-              <div style={{ marginBottom: '1rem' }}>
-                <label
-                  className="text-muted text-sm"
-                  style={{ display: 'block', marginBottom: '0.2rem' }}
-                >
-                  Username / Email
-                </label>
-                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{credsData.username}</div>
-              </div>
-              <div>
-                <label
-                  className="text-muted text-sm"
-                  style={{ display: 'block', marginBottom: '0.2rem' }}
-                >
-                  New Password
-                </label>
-                <div
-                  style={{
-                    fontSize: '1.4rem',
-                    fontWeight: 'bold',
-                    letterSpacing: '2px',
-                    color: '#60a5fa',
-                  }}
-                >
-                  {credsData.password}
-                </div>
-              </div>
-            </div>
-
-            {credsData.emailQueued ? (
-              <div
-                className="alert-success"
-                style={{
-                  marginBottom: '1.5rem',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  fontSize: '0.9rem',
-                }}
-              >
-                ✅ A welcome email containing these credentials has also been queued for delivery.
-              </div>
-            ) : (
-              <div
-                className="alert-warning"
-                style={{
-                  marginBottom: '1.5rem',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  fontSize: '0.9rem',
-                }}
-              >
-                ⚠️ No email was sent because this parent does not have a real email address on file.
-                You MUST copy this password and send it to them manually.
-              </div>
-            )}
-
-            <div className="modal-actions" style={{ justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setShowCredsModal(false)}
-              >
-                I have copied the password
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Withdraw / Suspend Student Modal */}
       {withdrawTargetStudent && (
