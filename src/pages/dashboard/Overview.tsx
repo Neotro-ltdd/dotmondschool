@@ -77,7 +77,9 @@ export default function Overview() {
           try {
             res = await api.get('/setup/admin/dashboard');
           } catch {
-            res = await api.get('/platform/summary').catch(() => null);
+            if (userRole === 'SuperAdmin' || userRole === 'SystemAdmin') {
+              res = await api.get('/platform/summary').catch(() => null);
+            }
           }
           setAdminData(res?.data || res);
         } else if (userRole === 'Director' || userRole === 'Principal' || userRole === 'Chairman') {
@@ -85,7 +87,6 @@ export default function Overview() {
             api.get('/academics/principal/dashboard').catch(() => null),
             api
               .get('/setup/admin/dashboard')
-              .catch(() => api.get('/platform/summary'))
               .catch(() => null),
           ]);
           setPrincipalData({
@@ -198,7 +199,9 @@ export default function Overview() {
             try {
               res = await api.get('/setup/admin/dashboard');
             } catch {
-              res = await api.get('/platform/summary').catch(() => null);
+              if (['SuperAdmin', 'Superadmin', 'SystemAdmin'].includes(userRole)) {
+                res = await api.get('/platform/summary').catch(() => null);
+              }
             }
             setAdminData(res?.data || res);
           }

@@ -8,31 +8,31 @@ const TESTIMONIALS = [
     text: "Dotmond School has been a blessing to our family. My children have grown in confidence, character, and academic excellence. The teachers genuinely care about every student's progress.",
     name: 'Mrs. Funke Adeyemi',
     role: 'Parent, Ikeja, Lagos',
-    img: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80',
+    img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="80" height="80" rx="40" fill="%230F1F5C"/><text x="50%" y="54%" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="%23FACC15" text-anchor="middle" dominant-baseline="middle">FA</text></svg>',
   },
   {
     text: 'The nurturing environment at Dotmond School is unmatched. The teachers lay strong foundations for our children and it reflects in their outstanding performances.',
     name: 'Mr. Chinedu Okafor',
     role: 'Parent, Ajah, Lagos',
-    img: 'https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&q=80',
+    img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="80" height="80" rx="40" fill="%231E3A8A"/><text x="50%" y="54%" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="%2360A5FA" text-anchor="middle" dominant-baseline="middle">CO</text></svg>',
   },
   {
     text: "I am amazed at the level of care and academic rigor Dotmond School provides. My son's performance has improved tremendously since joining the school.",
     name: 'Mrs. Amina Yusuf',
     role: 'Parent, Lekki, Lagos',
-    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
+    img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="80" height="80" rx="40" fill="%23047857"/><text x="50%" y="54%" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="%236EE7B7" text-anchor="middle" dominant-baseline="middle">AY</text></svg>',
   },
   {
     text: 'Dotmond School offers more than just education; they offer holistic development. The extra-curricular activities and sports are fantastic.',
     name: 'Mr. David Olatunde',
     role: 'Parent, VGC, Lagos',
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+    img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="80" height="80" rx="40" fill="%23B45309"/><text x="50%" y="54%" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="%23FDE68A" text-anchor="middle" dominant-baseline="middle">DO</text></svg>',
   },
   {
     text: 'We love the safety and security at Dotmond. As parents, having peace of mind while our children are learning is our top priority, and Dotmond delivers.',
     name: 'Mrs. Grace Edet',
     role: 'Parent, Sangotedo, Lagos',
-    img: 'https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=200&q=80',
+    img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="80" height="80" rx="40" fill="%236D28D9"/><text x="50%" y="54%" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="%23DDD6FE" text-anchor="middle" dominant-baseline="middle">GE</text></svg>',
   },
 ];
 
@@ -215,7 +215,7 @@ export default function LandingPage() {
           <div className="lp-programs-grid">
             <div className="lp-program-card">
               <img
-                src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80"
+                src="/images/hero-slide-2.jpg"
                 alt="Early Years & Nursery"
                 className="lp-program-img"
               />
@@ -227,7 +227,7 @@ export default function LandingPage() {
 
             <div className="lp-program-card">
               <img
-                src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&q=80"
+                src="/images/hero-slide-1.jpg"
                 alt="Primary School"
                 className="lp-program-img"
               />
@@ -239,7 +239,7 @@ export default function LandingPage() {
 
             <div className="lp-program-card">
               <img
-                src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80"
+                src="/images/hero-slide-3.png"
                 alt="Secondary College"
                 className="lp-program-img"
               />

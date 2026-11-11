@@ -689,7 +689,7 @@ export default function TeacherResults() {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <a
-                          href={`/dashboard/reports/result/${r.studentId}/${data.batchId}`}
+                          href={`/dashboard/reports/result/${r.studentId}/${data.batchId || 'latest'}?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{

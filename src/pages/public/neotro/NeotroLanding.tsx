@@ -28,28 +28,28 @@ export default function NeotroLanding() {
       headingHighlight: "Infinitely",
       headingEnd: "You",
       subtext: "For who you are. For who you will become.",
-      bgImage: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1800&auto=format&fit=crop"
+      bgImage: "/images/hero-slide-1.jpg"
     },
     {
       headingLead: "Shine",
       headingHighlight: "Infinitely",
       headingEnd: "Brighter",
       subtext: "For your passions. For your potential.",
-      bgImage: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1800&auto=format&fit=crop"
+      bgImage: "/images/hero-slide-2.jpg"
     },
     {
       headingLead: "Grow",
       headingHighlight: "Infinitely",
       headingEnd: "Stronger",
       subtext: "For your moral compass. For your greater purpose.",
-      bgImage: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1800&auto=format&fit=crop"
+      bgImage: "/images/hero-slide-3.png"
     },
     {
       headingLead: "Care",
       headingHighlight: "Infinitely",
       headingEnd: "More",
       subtext: "For your community. For your world.",
-      bgImage: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1800&auto=format&fit=crop"
+      bgImage: "/images/hero-slide-4.png"
     }
   ];
 
@@ -74,35 +74,35 @@ export default function NeotroLanding() {
       title: "Early Childhood Division",
       subtitle: "Nursery 1 – Nursery 2",
       desc: "Constructive play, rich conversation, and meaningful experiences provide the foundation for learning in our Early Childhood Division.",
-      image: "https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/hero-slide-2.jpg",
       badgeColor: "#E2BDC0"
     },
     {
       title: "Lower Primary",
       subtitle: "Kindergarten – Primary 3",
       desc: "Inquiry-based experiences allow our Lower Primary students to internalize structure while engaging deeply with academic exploration.",
-      image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/hero-slide-1.jpg",
       badgeColor: "#FDE3B2"
     },
     {
       title: "Basic Education",
       subtitle: "Primary 4 – Primary 5",
       desc: "An exciting stage as students develop a deeper capacity for abstract thinking, critical analysis, and greater independence.",
-      image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/hero-slide-3.png",
       badgeColor: "#FFFFFF"
     },
     {
       title: "Middle School",
       subtitle: "JSS 1 – JSS 3",
       desc: "Junior Secondary represents a time of tremendous transition for these young scholars—intellectually, socially, emotionally, and morally.",
-      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/hero-slide-4.png",
       badgeColor: "#D0E3E5"
     },
     {
       title: "High School",
       subtitle: "SS 1 – SS 3",
       desc: "Preparing scholars for WAEC, NECO, IGCSE, SATs, and entrance into top global universities with specialized academic rigor and leadership.",
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/hero-slide-5.png",
       badgeColor: "#E2BDC0"
     }
   ];
@@ -112,7 +112,7 @@ export default function NeotroLanding() {
       title: "Gate Security & Attendance",
       badge: "REAL-TIME ALERTS",
       desc: "Instant barcode & RFID gate verification terminal with automatic WhatsApp & SMS arrival/departure notifications sent directly to parents.",
-      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop",
+      image: "/images/hero-slide-5.png",
       icon: <Shield size={20} color="#B2CEB6" />,
       tag: "Gate Terminal & SMS"
     },
@@ -120,7 +120,7 @@ export default function NeotroLanding() {
       title: "Result & Broadsheet Engine",
       badge: "AUTOMATED GRADING",
       desc: "Instant continuous assessment (CA) computation, term broadsheets, digital principal signature authorization, and downloadable PDF report cards.",
-      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop",
+      image: "/images/hero-slide-3.png",
       icon: <BarChart3 size={20} color="#B2CEB6" />,
       tag: "CA & Report Cards"
     },
@@ -128,7 +128,7 @@ export default function NeotroLanding() {
       title: "Cashless Fee Portal",
       badge: "ONLINE PAYMENTS",
       desc: "Seamless online tuition payment gateway, automated invoice generation, digital receipt dispatch, and real-time revenue analytics per student.",
-      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop",
+      image: "/images/hero-slide-1.jpg",
       icon: <CreditCard size={20} color="#B2CEB6" />,
       tag: "Tuition & Receipts"
     },
@@ -136,7 +136,7 @@ export default function NeotroLanding() {
       title: "Student Profile & Clearances",
       badge: "LIFECYCLE MANAGEMENT",
       desc: "Comprehensive student profile records, ID card printing, automated exit clearance approvals, disciplinary logs, and parent communication portal.",
-      image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop",
+      image: "/images/hero-slide-2.jpg",
       icon: <Users size={20} color="#B2CEB6" />,
       tag: "Profiles & Clearances"
     }
@@ -147,25 +147,25 @@ export default function NeotroLanding() {
       title: "Student-Centered Approach",
       subtitle: "Personalized Growth & Agency",
       description: "Student-centered learning puts the individual learner's desire to make meaning out of the wider world at the very heart of the work we do.",
-      image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1000&auto=format&fit=crop"
+      image: "/images/hero-slide-1.jpg"
     },
     {
       title: "Inquiry-Based Learning",
       subtitle: "The Tools to Succeed",
       description: "We consider project and inquiry-based learning essential to motivating our students to remain inspired, curious, and analytical.",
-      image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000&auto=format&fit=crop"
+      image: "/images/hero-slide-2.jpg"
     },
     {
       title: "Design & Collaboration Lab",
       subtitle: "Innovation & Problem Solving",
       description: "Crossing the threshold of the Design & Collaboration Lab allows students to focus on appropriate risk-taking—testing and iterating approaches that result in successful problem-solving.",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1000&auto=format&fit=crop"
+      image: "/images/hero-slide-4.png"
     },
     {
       title: "Exceptional Literacy",
       subtitle: "Critical Insight & Expression",
       description: "We encourage our students to collaborate in transforming information into insights that lead to creative, sometimes ingenious, solutions.",
-      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1000&auto=format&fit=crop"
+      image: "/images/hero-slide-3.png"
     }
   ];
 

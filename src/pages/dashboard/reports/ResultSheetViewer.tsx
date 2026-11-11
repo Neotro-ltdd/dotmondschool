@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Download, Loader2 } from 'lucide-react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Printer, Download, Loader2, AlertCircle } from 'lucide-react';
 import { api, API_ROOT, downloadReportCardPdf } from '../../../services/api';
 import './ResultSheet.css';
 
@@ -41,9 +41,13 @@ interface ResultData {
 
 const ResultSheetViewer: React.FC = () => {
   const { studentId, batchId } = useParams<{ studentId: string; batchId: string }>();
+  const [searchParams] = useSearchParams();
+  const querySession = searchParams.get('session');
+  const queryTerm = searchParams.get('term');
   const navigate = useNavigate();
   const [result, setResult] = useState<ResultData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const getFullUrl = (url: string): string => {
@@ -57,7 +61,11 @@ const ResultSheetViewer: React.FC = () => {
       setDownloadingPdf(true);
       await downloadReportCardPdf(
         studentId,
-        { batchId },
+        {
+          batchId: batchId && batchId !== 'latest' ? batchId : undefined,
+          session: querySession || result?.session,
+          term: queryTerm || result?.term,
+        },
         `Report_Card_${result?.registrationNumber || 'Student'}_${result?.session || ''}_${result?.term || ''}.pdf`
       );
     } catch (err: any) {
@@ -71,17 +79,25 @@ const ResultSheetViewer: React.FC = () => {
     const fetchResult = async () => {
       try {
         setLoading(true);
-        const data = await api.get(`/academics/students/${studentId}/report-card/${batchId}`);
+        setErrorMessage(null);
+        const params = new URLSearchParams();
+        if (querySession) params.set('session', querySession);
+        if (queryTerm) params.set('term', queryTerm);
+        const qs = params.toString() ? `?${params.toString()}` : '';
+
+        const effectiveBatch = batchId || 'latest';
+        const data = await api.get(`/academics/students/${studentId}/report-card/${effectiveBatch}${qs}`);
         setResult(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch result', error);
+        setErrorMessage(error?.message || 'Result sheet not found for the selected session and term.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchResult();
-  }, [studentId, batchId]);
+  }, [studentId, batchId, querySession, queryTerm]);
 
   if (loading)
     return (
@@ -92,7 +108,23 @@ const ResultSheetViewer: React.FC = () => {
   if (!result)
     return (
       <div className="result-sheet-container">
-        <p className="py-8 text-center text-red-500">Result sheet not found.</p>
+        <div style={{ maxWidth: '480px', margin: '48px auto', padding: '32px 24px', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', textAlign: 'center', border: '1px solid #E2E8F0' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#FEF2F2', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <AlertCircle size={24} />
+          </div>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1E293B', marginBottom: '8px' }}>Result Card Status</h3>
+          <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: '1.5', marginBottom: '24px' }}>
+            {errorMessage || 'Result sheet not found for the selected session and term.'}
+          </p>
+          <button
+            className="sheet-btn sheet-btn-back"
+            onClick={() => navigate(-1)}
+            style={{ margin: '0 auto', display: 'inline-flex', padding: '8px 18px', background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
+          >
+            <ArrowLeft size={16} />
+            <span>Go Back</span>
+          </button>
+        </div>
       </div>
     );
 

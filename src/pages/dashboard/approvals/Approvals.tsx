@@ -1069,7 +1069,7 @@ export default function Approvals() {
                             </td>
                             <td style={{ padding: '14px 16px' }}>
                               <Link
-                                to={`/dashboard/reports/result/${st.studentId}/${classData.batchId}`}
+                                to={`/dashboard/reports/result/${st.studentId}/${classData.batchId || 'latest'}?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`}
                                 target="_blank"
                                 style={{
                                   color: '#000080',

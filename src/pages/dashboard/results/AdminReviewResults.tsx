@@ -352,7 +352,7 @@ export default function AdminReviewResults() {
             <tbody>
               {filteredResults.map((r) => {
                 const isDropdownOpen = openDropdownId === r.id;
-                const reportUrl = `/dashboard/reports/result/${r.studentId}/${data.batchId}`;
+                const reportUrl = `/dashboard/reports/result/${r.studentId}/${data.batchId || 'latest'}?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`;
 
                 return (
                   <tr key={r.id}>
@@ -441,7 +441,7 @@ export default function AdminReviewResults() {
         <div className="review-grid-wrapper" ref={dropdownRef}>
           {filteredResults.map((r) => {
             const isDropdownOpen = openDropdownId === r.id;
-            const reportUrl = `/dashboard/reports/result/${r.studentId}/${data.batchId}`;
+            const reportUrl = `/dashboard/reports/result/${r.studentId}/${data.batchId || 'latest'}?session=${encodeURIComponent(filterSession)}&term=${encodeURIComponent(filterTerm)}`;
 
             return (
               <div key={r.id} className="review-grid-card">
