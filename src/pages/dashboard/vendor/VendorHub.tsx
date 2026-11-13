@@ -261,6 +261,26 @@ export default function VendorHub() {
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: activeTab === 'students' ? 'Student_ID_Cards_Batch' : 'Staff_ID_Cards_Batch',
+    pageStyle: `
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+      @media print {
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #ffffff !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        * {
+          visibility: visible !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    `,
     onAfterPrint: async () => {
       if (activeTab === 'students' && selectedStudentsToPrint.length > 0) {
         try {

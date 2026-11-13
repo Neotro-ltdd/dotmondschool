@@ -678,6 +678,16 @@
 }
 
 @media print {
+  .id-cards-grid,
+  .id-cards-grid *,
+  .id-card-wrapper,
+  .id-card-wrapper * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
   .id-card-wrapper {
     box-shadow: none;
     border: 1px dashed #ccc;

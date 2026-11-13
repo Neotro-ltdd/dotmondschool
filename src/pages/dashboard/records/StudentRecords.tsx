@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
 import { api } from '../../../services/api';
 import { useActiveTerm } from '../../../hooks/useActiveTerm';
 import { getSessionOptions } from '../../../utils/sessionOptions';
@@ -115,6 +116,39 @@ export default function StudentRecords() {
   const [submittingReinstate, setSubmittingReinstate] = useState(false);
 
   const [dossierStudent, setDossierStudent] = useState<StudentRecord | null>(null);
+
+  const transcriptRef = useRef<HTMLDivElement>(null);
+  const handlePrintTranscript = useReactToPrint({
+    contentRef: transcriptRef,
+    documentTitle: selectedTranscriptStudent?.fullName
+      ? `${selectedTranscriptStudent.fullName}_Academic_Transcript`
+      : 'Academic_Transcript',
+    pageStyle: `
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+      @media print {
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #ffffff !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        * {
+          visibility: visible !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .modal-header .btn-records-secondary,
+        .modal-header .modal-close-btn,
+        .modal-actions {
+          display: none !important;
+        }
+      }
+    `,
+  });
 
   // Fetch classes for dropdown filter & reinstatement
   useEffect(() => {
@@ -605,6 +639,7 @@ export default function StudentRecords() {
         <div className="modal-overlay" onClick={() => setSelectedTranscriptStudent(null)}>
           <div 
             className="modal-container transcript-modal"
+            ref={transcriptRef}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -625,7 +660,7 @@ export default function StudentRecords() {
                 <button
                   type="button"
                   className="btn-records-secondary"
-                  onClick={() => window.print()}
+                  onClick={() => handlePrintTranscript()}
                   title="Print official transcript sheet"
                 >
                   <Printer size={16} /> Print

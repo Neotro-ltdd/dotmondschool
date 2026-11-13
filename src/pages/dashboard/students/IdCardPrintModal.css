@@ -700,6 +700,8 @@
     background: #ffffff !important;
     padding: 0 !important;
     margin: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .no-print,
@@ -725,6 +727,22 @@
     overflow: visible !important;
   }
 
+  .id-card-overlay,
+  .id-card-overlay *,
+  .id-card-modal-content,
+  .id-card-modal-content *,
+  .id-card-preview-area,
+  .id-card-preview-area *,
+  .id-card-wrapper,
+  .id-card-wrapper *,
+  .card,
+  .card * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
   .id-card-preview-area {
     display: flex !important;
     flex-direction: row !important;
@@ -735,8 +753,7 @@
     padding: 0.35in 0 0 !important;
     width: 100% !important;
     page-break-inside: avoid !important;
-    transform: scale(1.35) !important;
-    transform-origin: top center !important;
+    transform: none !important;
   }
 
   .id-card-wrapper {

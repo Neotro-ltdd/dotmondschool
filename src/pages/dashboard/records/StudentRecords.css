@@ -705,20 +705,18 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
   .transcript-modal,
   .transcript-modal * {
-    visibility: visible;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .transcript-modal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    box-shadow: none;
-    border: none;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
   }
   .modal-actions,
   .modal-close-btn,
