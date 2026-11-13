@@ -50,6 +50,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
   const [schoolProfile, setSchoolProfile] = useState<SchoolProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const rawTemplate = idCardTemplate || schoolProfile?.idCardTemplate || 'Vertical CR80';
+  const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
+  const isSquare = rawTemplate.toLowerCase().includes('square');
+
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
     contentRef: printRef,
@@ -71,6 +75,19 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           visibility: visible !important;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+        }
+        .id-card-preview-area {
+          display: flex !important;
+          flex-direction: ${isLandscape ? 'column' : 'row'} !important;
+          justify-content: center !important;
+          align-items: ${isLandscape ? 'center' : 'flex-start'} !important;
+          gap: 0.35in !important;
+          margin: 0 auto !important;
+          padding: 0.4in 0 0 !important;
+          width: 100% !important;
+          page-break-inside: avoid !important;
+          transform: scale(${isLandscape ? '1.35' : isSquare ? '1.15' : '1.45'}) !important;
+          transform-origin: top center !important;
         }
       }
     `,
@@ -230,10 +247,6 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
     return `${surname}, ${firstName} ${abbreviatedOthers}`.trim();
   };
 
-  const rawTemplate = idCardTemplate || 'Vertical CR80';
-  const isLandscape = rawTemplate.toLowerCase().includes('landscape') || rawTemplate.toLowerCase().includes('horizontal');
-  const isSquare = rawTemplate.toLowerCase().includes('square');
-
   const wrapperStyle = isLandscape
     ? { width: '3.375in', height: '2.125in', minWidth: '3.375in', minHeight: '2.125in' }
     : isSquare
@@ -303,7 +316,10 @@ export default function StaffIdCardPrintModal({ staffId, onClose }: StaffIdCardP
           </div>
         </div>
 
-        <div className="id-card-preview-area flex flex-col md:flex-row gap-8 justify-center items-center" ref={printRef}>
+        <div
+          className={`id-card-preview-area ${isLandscape ? 'preview-landscape' : isSquare ? 'preview-square' : 'preview-portrait'} flex flex-col md:flex-row gap-8 justify-center items-center`}
+          ref={printRef}
+        >
           {/* ================= FRONT SIDE ================= */}
           <div className="id-card-wrapper" style={wrapperStyle}>
             <div
